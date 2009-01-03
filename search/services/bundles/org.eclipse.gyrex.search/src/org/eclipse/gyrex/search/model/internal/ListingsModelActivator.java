@@ -9,13 +9,13 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.internal;
+package org.eclipse.cloudfree.cds.model.internal;
 
 import org.eclipse.cloudfree.common.runtime.BaseBundleActivator;
 
 public class ListingsModelActivator extends BaseBundleActivator {
 
-	private static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.listings.model";
+	private static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.cds.model";
 
 	/**
 	 * Creates a new instance.

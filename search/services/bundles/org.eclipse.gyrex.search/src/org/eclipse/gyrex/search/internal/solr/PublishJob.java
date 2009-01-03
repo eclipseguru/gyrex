@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.solr.internal;
+package org.eclipse.cloudfree.cds.model.solr.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,9 +17,9 @@ import java.util.List;
 
 
 import org.apache.solr.common.SolrInputDocument;
+import org.eclipse.cloudfree.cds.model.documents.Document;
+import org.eclipse.cloudfree.cds.model.documents.Field;
 import org.eclipse.cloudfree.common.status.BundleStatusUtil;
-import org.eclipse.cloudfree.listings.model.documents.Document;
-import org.eclipse.cloudfree.listings.model.documents.Field;
 import org.eclipse.cloudfree.monitoring.metrics.ThroughputMetric;
 import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
 import org.eclipse.core.runtime.IProgressMonitor;

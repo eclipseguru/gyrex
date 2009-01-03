@@ -18,5 +18,5 @@
  * listing service clients must not rely on any API defined in this package.
  * </p>
  */
-package org.eclipse.cloudfree.services.listings.implementors;
+package org.eclipse.cloudfree.cds.service.implementors;
 

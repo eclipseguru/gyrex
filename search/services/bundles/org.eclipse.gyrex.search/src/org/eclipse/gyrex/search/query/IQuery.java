@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.services.listings.query;
+package org.eclipse.cloudfree.cds.service.query;
 
 import java.util.ArrayList;
 import java.util.Collections;

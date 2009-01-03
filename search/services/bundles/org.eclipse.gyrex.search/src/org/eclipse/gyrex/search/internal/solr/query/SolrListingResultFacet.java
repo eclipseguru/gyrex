@@ -9,13 +9,13 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.service.solr.internal;
+package org.eclipse.cloudfree.cds.service.solr.internal;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.cloudfree.services.listings.restult.IListingResultFacet;
-import org.eclipse.cloudfree.services.listings.restult.IListingResultFacetValue;
+import org.eclipse.cloudfree.cds.service.result.IListingResultFacet;
+import org.eclipse.cloudfree.cds.service.result.IListingResultFacetValue;
 
 public class SolrListingResultFacet implements IListingResultFacet {
 
@@ -40,7 +40,7 @@ public class SolrListingResultFacet implements IListingResultFacet {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultFacet#getId()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultFacet#getId()
 	 */
 	@Override
 	public String getId() {
@@ -48,7 +48,7 @@ public class SolrListingResultFacet implements IListingResultFacet {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultFacet#getLabel()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultFacet#getLabel()
 	 */
 	@Override
 	public String getLabel() {
@@ -56,7 +56,7 @@ public class SolrListingResultFacet implements IListingResultFacet {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultFacet#getValues()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultFacet#getValues()
 	 */
 	@Override
 	public IListingResultFacetValue[] getValues() {

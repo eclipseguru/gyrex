@@ -9,15 +9,11 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.services.listings;
+package org.eclipse.cloudfree.cds.service;
 
-import java.util.concurrent.Future;
-
-
+import org.eclipse.cloudfree.cds.service.query.ListingQuery;
+import org.eclipse.cloudfree.cds.service.result.IListingResult;
 import org.eclipse.cloudfree.services.common.IService;
-import org.eclipse.cloudfree.services.listings.query.ListingQuery;
-import org.eclipse.cloudfree.services.listings.restult.IListingResult;
-import org.eclipse.cloudfree.services.listings.restult.IListingResultCallback;
 
 /**
  * The listing service.
@@ -33,6 +29,22 @@ import org.eclipse.cloudfree.services.listings.restult.IListingResultCallback;
  */
 public interface IListingService extends IService {
 
+	/**
+	 * Finds listings matching the specified query.
+	 * <p>
+	 * The query is designed to support raw input strings provided by users with
+	 * no special escaping. <code>'+'</code> and <code>'-'</code> characters are
+	 * treated as <em>"mandatory"</em> and <em>"prohibited"</em> modifiers for
+	 * the subsequent terms. Text wrapped in <em>balanced</em> quote characters
+	 * <code>'"'</code> are treated as phrases, any query containing an odd
+	 * number of quote characters is evaluated as if there were no quote
+	 * characters at all. Wildcards in a query are not supported.
+	 * </p>
+	 * 
+	 * @param query
+	 *            the query object
+	 * @return the listings result
+	 */
 	IListingResult findListings(ListingQuery query);
 
 	/**
@@ -54,5 +66,5 @@ public interface IListingService extends IService {
 	 *            asynchronous manner instead of using the future
 	 * @return the listings result
 	 */
-	Future<IListingResult> findListings(ListingQuery query, IListingResultCallback callback);
+	//Future<IListingResult> findListings(ListingQuery query, IListingResultCallback callback);
 }

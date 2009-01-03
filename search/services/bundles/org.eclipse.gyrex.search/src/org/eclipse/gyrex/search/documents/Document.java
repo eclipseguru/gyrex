@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.documents;
+package org.eclipse.cloudfree.cds.model.documents;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.cloudfree.listings.model.IListingManager;
+import org.eclipse.cloudfree.cds.model.IListingManager;
 
 /**
  * A listing document can be fed to the {@link IListingManager} to generate

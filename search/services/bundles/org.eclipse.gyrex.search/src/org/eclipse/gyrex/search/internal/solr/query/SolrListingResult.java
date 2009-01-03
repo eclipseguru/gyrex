@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.service.solr.internal;
+package org.eclipse.cloudfree.cds.service.solr.internal;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,19 +17,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocumentList;
+import org.eclipse.cloudfree.cds.model.IListing;
+import org.eclipse.cloudfree.cds.model.solr.internal.SolrListing;
+import org.eclipse.cloudfree.cds.service.implementors.BaseListingResult;
+import org.eclipse.cloudfree.cds.service.query.ListingQuery;
+import org.eclipse.cloudfree.cds.service.result.IListingResultFacet;
 import org.eclipse.cloudfree.common.context.IContext;
 import org.eclipse.cloudfree.configuration.preferences.PlatformScope;
-import org.eclipse.cloudfree.listings.model.IListing;
-import org.eclipse.cloudfree.listings.model.solr.internal.SolrListing;
-import org.eclipse.cloudfree.services.listings.implementors.BaseListingResult;
-import org.eclipse.cloudfree.services.listings.query.ListingQuery;
-import org.eclipse.cloudfree.services.listings.restult.IListingResultFacet;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -66,6 +65,7 @@ public class SolrListingResult extends BaseListingResult {
 		}
 
 		for (final Count count : values) {
+			// TODO: this should be configurable
 			if (count.getCount() > 0) {
 				facet.addValue(new SolrListingResultFacetValue(count.getCount(), count.getName(), count.getAsFilterQuery()));
 			}
@@ -89,6 +89,7 @@ public class SolrListingResult extends BaseListingResult {
 					queryFacets.put(facetId, new SolrListingResultFacet(facetId, queryInfo[1]));
 				}
 				final long count = facetQueryEntry.getValue();
+				// TODO: this should be configurable
 				if (count > 0) {
 					queryFacets.get(facetId).addValue(new SolrListingResultFacetValue(count, queryInfo[2], facetQueryEntry.getKey()));
 				}
@@ -149,7 +150,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResult#getFacets()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getFacets()
 	 */
 	@Override
 	public IListingResultFacet[] getFacets() {
@@ -179,7 +180,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResult#getListings()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getListings()
 	 */
 	@Override
 	public IListing[] getListings() {
@@ -195,7 +196,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResult#getNumFound()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getNumFound()
 	 */
 	@Override
 	public long getNumFound() {
@@ -203,7 +204,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResult#getQueryTime()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getQueryTime()
 	 */
 	@Override
 	public long getQueryTime() {

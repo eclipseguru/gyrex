@@ -9,12 +9,12 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.solr.internal;
+package org.eclipse.cloudfree.cds.model.solr.internal;
 
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.eclipse.cloudfree.listings.model.solr.ISolrQueryExecutor;
+import org.eclipse.cloudfree.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
 
 /**

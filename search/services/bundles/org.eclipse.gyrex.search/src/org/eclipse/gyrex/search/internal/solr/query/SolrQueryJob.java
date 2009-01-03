@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.service.solr.internal;
+package org.eclipse.cloudfree.cds.service.solr.internal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.eclipse.cloudfree.cds.model.solr.ISolrQueryExecutor;
+import org.eclipse.cloudfree.cds.service.query.ListingQuery;
+import org.eclipse.cloudfree.cds.service.query.ListingQuery.SortDirection;
 import org.eclipse.cloudfree.common.context.IContext;
 import org.eclipse.cloudfree.configuration.preferences.PlatformScope;
-import org.eclipse.cloudfree.listings.model.solr.ISolrQueryExecutor;
-import org.eclipse.cloudfree.services.listings.query.ListingQuery;
-import org.eclipse.cloudfree.services.listings.query.ListingQuery.SortDirection;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

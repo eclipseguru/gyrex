@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.service.solr.internal;
+package org.eclipse.cloudfree.cds.service.solr.internal;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -19,8 +19,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.cloudfree.services.listings.restult.IListingResult;
-import org.eclipse.cloudfree.services.listings.restult.IListingResultCallback;
+import org.eclipse.cloudfree.cds.service.result.IListingResult;
+import org.eclipse.cloudfree.cds.service.result.IListingResultCallback;
 
 /**
  * 
@@ -113,7 +113,7 @@ public class SolrListingFuture implements Future<IListingResult>, IListingResult
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultCallback#onError(java.lang.Throwable)
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultCallback#onError(java.lang.Throwable)
 	 */
 	@Override
 	public void onError(final Throwable exception) {
@@ -128,7 +128,7 @@ public class SolrListingFuture implements Future<IListingResult>, IListingResult
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultCallback#onResult(org.eclipse.cloudfree.services.listings.restult.IListingResult)
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultCallback#onResult(org.eclipse.cloudfree.cds.service.result.IListingResult)
 	 */
 	@Override
 	public void onResult(final IListingResult result) {

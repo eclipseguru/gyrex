@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.documents;
+package org.eclipse.cloudfree.cds.model.documents;
 
 import java.util.ArrayList;
 import java.util.Collections;

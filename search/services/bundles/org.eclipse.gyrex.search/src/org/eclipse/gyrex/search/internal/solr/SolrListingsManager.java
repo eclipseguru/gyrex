@@ -9,20 +9,21 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.solr.internal;
+package org.eclipse.cloudfree.cds.model.solr.internal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocumentList;
+import org.eclipse.cloudfree.cds.model.IListing;
+import org.eclipse.cloudfree.cds.model.IListingManager;
+import org.eclipse.cloudfree.cds.model.documents.Document;
+import org.eclipse.cloudfree.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.listings.model.IListing;
-import org.eclipse.cloudfree.listings.model.IListingManager;
-import org.eclipse.cloudfree.listings.model.documents.Document;
-import org.eclipse.cloudfree.listings.model.solr.ISolrQueryExecutor;
 import org.eclipse.cloudfree.model.common.provider.BaseModelManager;
 import org.eclipse.cloudfree.monitoring.metrics.ThroughputMetric;
 import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
@@ -33,7 +34,7 @@ import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
 public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IListingManager {
 
 	private static String createMetricsId(final IContext context, final SolrRepository repository) {
-		return "org.eclipse.cloudfree.listings.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
+		return "org.eclipse.cloudfree.cds.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
 	}
 
 	/**
@@ -82,6 +83,9 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 		if (ISolrQueryExecutor.class.equals(adapter)) {
 			return new SolrQueryExecutor(getRepository());
 		}
+		if (SolrRepository.class.equals(adapter)) {
+			return getRepository();
+		}
 		return super.getAdapter(adapter);
 	}
 
@@ -107,15 +111,19 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 
 	@Override
 	public void publish(final Iterable<Document> documents) {
-		// assign ids
+		// create a copy of the list to avoid clearing the list by outsiders
+		final List<Document> docsToPublish = new ArrayList<Document>();
+
+		// assign ids and copy docs into the list
 		for (final Document document : documents) {
 			if (null == document.getId()) {
 				document.setId(UUID.randomUUID().toString());
 			}
+			docsToPublish.add(document);
 		}
 
 		// publish
-		new PublishJob(documents, getRepository(), getSolrListingsManagerMetrics()).schedule();
+		new PublishJob(docsToPublish, getRepository(), getSolrListingsManagerMetrics()).schedule();
 	}
 
 }

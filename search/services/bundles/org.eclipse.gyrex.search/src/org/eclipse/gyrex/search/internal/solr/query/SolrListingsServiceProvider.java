@@ -9,14 +9,14 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.service.solr.internal;
+package org.eclipse.cloudfree.cds.service.solr.internal;
 
 
+import org.eclipse.cloudfree.cds.service.IListingService;
 import org.eclipse.cloudfree.common.context.IContext;
 import org.eclipse.cloudfree.services.common.provider.BaseService;
 import org.eclipse.cloudfree.services.common.provider.ServiceProvider;
 import org.eclipse.cloudfree.services.common.status.IStatusMonitor;
-import org.eclipse.cloudfree.services.listings.IListingService;
 
 public class SolrListingsServiceProvider extends ServiceProvider {
 

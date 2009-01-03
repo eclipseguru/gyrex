@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.solr.internal;
+package org.eclipse.cloudfree.cds.model.solr.internal;
 
 import org.eclipse.cloudfree.monitoring.metrics.MetricSet;
 import org.eclipse.cloudfree.monitoring.metrics.ThroughputMetric;

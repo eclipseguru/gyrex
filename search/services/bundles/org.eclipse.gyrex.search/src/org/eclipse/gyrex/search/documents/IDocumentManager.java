@@ -9,10 +9,10 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model;
+package org.eclipse.cloudfree.cds.model;
 
 
-import org.eclipse.cloudfree.listings.model.documents.Document;
+import org.eclipse.cloudfree.cds.model.documents.Document;
 import org.eclipse.cloudfree.model.common.IModelManager;
 
 /**

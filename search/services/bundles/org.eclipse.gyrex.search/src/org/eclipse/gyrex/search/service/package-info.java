@@ -37,5 +37,5 @@
  * complexity from them.
  * </p>
  */
-package org.eclipse.cloudfree.services.listings;
+package org.eclipse.cloudfree.cds.service;
 

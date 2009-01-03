@@ -9,12 +9,12 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.solr.internal;
+package org.eclipse.cloudfree.cds.model.solr.internal;
 
 import java.util.Collection;
 
 
-import org.eclipse.cloudfree.listings.model.IListingAttribute;
+import org.eclipse.cloudfree.cds.model.IListingAttribute;
 import org.eclipse.core.runtime.PlatformObject;
 
 /**
@@ -37,7 +37,7 @@ public class SolrListingAttribute extends PlatformObject implements IListingAttr
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.listings.model.IListingAttribute#getName()
+	 * @see org.eclipse.cloudfree.cds.model.IListingAttribute#getName()
 	 */
 	@Override
 	public String getName() {
@@ -45,7 +45,7 @@ public class SolrListingAttribute extends PlatformObject implements IListingAttr
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.listings.model.IListingAttribute#getValues()
+	 * @see org.eclipse.cloudfree.cds.model.IListingAttribute#getValues()
 	 */
 	@Override
 	public Object[] getValues() {

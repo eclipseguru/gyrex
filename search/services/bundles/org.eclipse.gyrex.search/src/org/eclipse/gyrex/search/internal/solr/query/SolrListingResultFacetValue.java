@@ -9,9 +9,9 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.service.solr.internal;
+package org.eclipse.cloudfree.cds.service.solr.internal;
 
-import org.eclipse.cloudfree.services.listings.restult.IListingResultFacetValue;
+import org.eclipse.cloudfree.cds.service.result.IListingResultFacetValue;
 
 /**
  * 
@@ -34,7 +34,7 @@ public class SolrListingResultFacetValue implements IListingResultFacetValue {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultFacetValue#getCount()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultFacetValue#getCount()
 	 */
 	@Override
 	public long getCount() {
@@ -42,7 +42,7 @@ public class SolrListingResultFacetValue implements IListingResultFacetValue {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultFacetValue#getValue()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultFacetValue#getValue()
 	 */
 	@Override
 	public String getValue() {
@@ -50,7 +50,7 @@ public class SolrListingResultFacetValue implements IListingResultFacetValue {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.services.listings.restult.IListingResultFacetValue#toFilterQuery()
+	 * @see org.eclipse.cloudfree.cds.service.result.IListingResultFacetValue#toFilterQuery()
 	 */
 	@Override
 	public String toFilterQuery() {

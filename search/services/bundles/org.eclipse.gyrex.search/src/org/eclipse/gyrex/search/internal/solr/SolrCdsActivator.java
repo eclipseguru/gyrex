@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.solr.internal;
+package org.eclipse.cloudfree.cds.model.solr.internal;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -20,8 +20,8 @@ import org.osgi.framework.BundleContext;
 
 public class ListingsSolrModelActivator extends BaseBundleActivator {
 
-	/** <code>"org.eclipse.cloudfree.listings.model.solr"</code> */
-	public static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.listings.model.solr";
+	/** <code>"org.eclipse.cloudfree.cds.model.solr"</code> */
+	public static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.cds.model.solr";
 
 	private static final AtomicReference<ListingsSolrModelActivator> instance = new AtomicReference<ListingsSolrModelActivator>();
 

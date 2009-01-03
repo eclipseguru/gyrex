@@ -9,12 +9,12 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.services.listings.implementors;
+package org.eclipse.cloudfree.cds.service.implementors;
 
 
+import org.eclipse.cloudfree.cds.service.query.ListingQuery;
+import org.eclipse.cloudfree.cds.service.result.IListingResult;
 import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.services.listings.query.ListingQuery;
-import org.eclipse.cloudfree.services.listings.restult.IListingResult;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.PlatformObject;
 

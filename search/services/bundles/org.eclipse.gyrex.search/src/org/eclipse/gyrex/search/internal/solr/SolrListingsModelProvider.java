@@ -9,11 +9,11 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.listings.model.solr.internal;
+package org.eclipse.cloudfree.cds.model.solr.internal;
 
 
+import org.eclipse.cloudfree.cds.model.IListingManager;
 import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.listings.model.IListingManager;
 import org.eclipse.cloudfree.model.common.provider.BaseModelManager;
 import org.eclipse.cloudfree.model.common.provider.ModelProvider;
 import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
