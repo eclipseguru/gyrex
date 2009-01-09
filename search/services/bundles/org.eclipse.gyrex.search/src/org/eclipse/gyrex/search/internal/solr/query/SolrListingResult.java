@@ -103,7 +103,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	private SolrListingResultFacet getFacetFieldInfo(final String fieldName) {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.listings.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
 		try {
 			for (final String facetId : facets.keys()) {
 				final String facetString = facets.get(facetId, null);
@@ -123,7 +123,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	private String[] getFacetQueryValueInfo(final String query) {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.listings.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
 		try {
 			for (final String facetId : facets.keys()) {
 				final String facetString = facets.get(facetId, null);

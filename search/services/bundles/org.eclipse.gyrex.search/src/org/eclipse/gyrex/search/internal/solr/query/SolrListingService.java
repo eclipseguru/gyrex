@@ -36,7 +36,7 @@ public class SolrListingService extends BaseService implements IListingService {
 	 * @param metrics
 	 */
 	protected SolrListingService(final IContext context, final IStatusMonitor statusMonitor) {
-		super(context, statusMonitor, new SolrListingServiceMetrics(createMetricsId("org.eclipse.cloudfree.listings.service.solr", context)));
+		super(context, statusMonitor, new SolrListingServiceMetrics(createMetricsId("org.eclipse.cloudfree.cds.service.solr", context)));
 	}
 
 	/* (non-Javadoc)

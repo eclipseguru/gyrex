@@ -105,7 +105,7 @@ public class SolrQueryJob extends Job {
 	}
 
 	private static String[] getFacetFields() {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.listings.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
 		try {
 			final List<String> fields = new ArrayList<String>();
 			for (final String facetId : facets.keys()) {
@@ -127,7 +127,7 @@ public class SolrQueryJob extends Job {
 	}
 
 	private static String[] getFacetQueries() {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.listings.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
 		try {
 			final List<String> queries = new ArrayList<String>();
 			for (final String facetId : facets.keys()) {

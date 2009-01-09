@@ -18,7 +18,7 @@ import org.osgi.framework.BundleContext;
 
 public class SolrListingServiceActivator extends BaseBundleActivator {
 
-	public static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.listings.service.solr";
+	public static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.cds.service.solr";
 
 	/**
 	 * Creates a new instance.

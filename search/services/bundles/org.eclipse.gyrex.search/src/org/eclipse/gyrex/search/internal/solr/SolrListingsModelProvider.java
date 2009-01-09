@@ -11,14 +11,13 @@
  *******************************************************************************/
 package org.eclipse.cloudfree.cds.model.solr.internal;
 
-
 import org.eclipse.cloudfree.cds.model.IListingManager;
 import org.eclipse.cloudfree.common.context.IContext;
 import org.eclipse.cloudfree.model.common.provider.BaseModelManager;
 import org.eclipse.cloudfree.model.common.provider.ModelProvider;
 import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
 import org.eclipse.cloudfree.persistence.storage.Repository;
-import org.eclipse.cloudfree.persistence.storage.content.ContentType;
+import org.eclipse.cloudfree.persistence.storage.content.RepositoryContentType;
 
 /**
  * 
@@ -29,7 +28,7 @@ public class SolrListingsModelProvider extends ModelProvider {
 	 * Creates a new instance.
 	 */
 	/*package*/SolrListingsModelProvider() {
-		super(new ContentType("application/x-cf-listings-solr", ListingsSolrModelActivator.getInstance().getBundleVersion().toString()), IListingManager.class);
+		super(new RepositoryContentType("application", "x-cf-listings-solr", SolrRepository.class.getName(), ListingsSolrModelActivator.getInstance().getBundleVersion().toString()), IListingManager.class);
 	}
 
 	/* (non-Javadoc)
