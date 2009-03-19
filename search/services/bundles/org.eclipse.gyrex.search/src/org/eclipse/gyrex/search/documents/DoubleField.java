@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.model.documents;
+package org.eclipse.gyrex.cds.model.documents;
 
 /**
  * A Double field.
@@ -29,7 +29,7 @@ public final class DoubleField extends Field<Double> {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.documents.Field#getType()
+	 * @see org.eclipse.gyrex.cds.model.documents.Field#getType()
 	 */
 	@Override
 	Class<Double> getType() {

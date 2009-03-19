@@ -9,16 +9,16 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service;
+package org.eclipse.gyrex.cds.service;
 
-import org.eclipse.cloudfree.cds.service.query.ListingQuery;
-import org.eclipse.cloudfree.cds.service.result.IListingResult;
-import org.eclipse.cloudfree.services.common.IService;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.cds.service.result.IListingResult;
+import org.eclipse.gyrex.services.common.IService;
 
 /**
  * The listing service.
  * <p>
- * The CloudFree platform uses the concept of a listing service to deliver
+ * Gyrex uses the concept of a listing service to deliver
  * listings (eg., products) to storefronts or other external sites. The listing
  * service defines methods for querying a listings repository.
  * </p>

@@ -9,15 +9,15 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.model.solr.internal;
+package org.eclipse.gyrex.cds.model.solr.internal;
 
-import org.eclipse.cloudfree.cds.model.IListingManager;
-import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.model.common.provider.BaseModelManager;
-import org.eclipse.cloudfree.model.common.provider.ModelProvider;
-import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
-import org.eclipse.cloudfree.persistence.storage.Repository;
-import org.eclipse.cloudfree.persistence.storage.content.RepositoryContentType;
+import org.eclipse.gyrex.cds.model.IListingManager;
+import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.model.common.provider.BaseModelManager;
+import org.eclipse.gyrex.model.common.provider.ModelProvider;
+import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
+import org.eclipse.gyrex.persistence.storage.Repository;
+import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 
 /**
  * 
@@ -32,7 +32,7 @@ public class SolrListingsModelProvider extends ModelProvider {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.model.common.provider.ModelProvider#createModelManagerInstance(java.lang.Class, org.eclipse.cloudfree.persistence.storage.Repository, org.eclipse.cloudfree.common.context.IContext)
+	 * @see org.eclipse.gyrex.model.common.provider.ModelProvider#createModelManagerInstance(java.lang.Class, org.eclipse.gyrex.persistence.storage.Repository, org.eclipse.gyrex.common.context.IContext)
 	 */
 	@Override
 	public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IContext context) {

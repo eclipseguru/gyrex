@@ -9,19 +9,19 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.model.solr.internal;
+package org.eclipse.gyrex.cds.model.solr.internal;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 
-import org.eclipse.cloudfree.common.runtime.BaseBundleActivator;
-import org.eclipse.cloudfree.model.common.provider.ModelProvider;
+import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
+import org.eclipse.gyrex.model.common.provider.ModelProvider;
 import org.osgi.framework.BundleContext;
 
 public class ListingsSolrModelActivator extends BaseBundleActivator {
 
-	/** <code>"org.eclipse.cloudfree.cds.model.solr"</code> */
-	public static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.cds.model.solr";
+	/** <code>"org.eclipse.gyrex.cds.model.solr"</code> */
+	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.model.solr";
 
 	private static final AtomicReference<ListingsSolrModelActivator> instance = new AtomicReference<ListingsSolrModelActivator>();
 
@@ -46,16 +46,16 @@ public class ListingsSolrModelActivator extends BaseBundleActivator {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.common.runtime.BaseBundleActivator#doStart(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.gyrex.common.runtime.BaseBundleActivator#doStart(org.osgi.framework.BundleContext)
 	 */
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance.set(this);
-		getServiceHelper().registerService(ModelProvider.class.getName(), new SolrListingsModelProvider(), "CloudFree.net", "CloudFree Solr based listing model provider", null, null);
+		getServiceHelper().registerService(ModelProvider.class.getName(), new SolrListingsModelProvider(), "Gyrex.net", "Gyrex Solr based listing model provider", null, null);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.common.runtime.BaseBundleActivator#doStop(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.gyrex.common.runtime.BaseBundleActivator#doStop(org.osgi.framework.BundleContext)
 	 */
 	@Override
 	protected void doStop(final BundleContext context) throws Exception {

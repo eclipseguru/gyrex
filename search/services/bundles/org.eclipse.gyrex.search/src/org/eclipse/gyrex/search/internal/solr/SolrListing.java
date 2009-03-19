@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.model.solr.internal;
+package org.eclipse.gyrex.cds.model.solr.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,11 +17,11 @@ import java.util.List;
 
 
 import org.apache.solr.common.SolrDocument;
-import org.eclipse.cloudfree.cds.model.IListing;
-import org.eclipse.cloudfree.cds.model.IListingAttribute;
-import org.eclipse.cloudfree.cds.model.documents.Document;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.gyrex.cds.model.IListing;
+import org.eclipse.gyrex.cds.model.IListingAttribute;
+import org.eclipse.gyrex.cds.model.documents.Document;
 
 /**
  * 
@@ -41,7 +41,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getAttribute(java.lang.String)
+	 * @see org.eclipse.gyrex.cds.model.IListing#getAttribute(java.lang.String)
 	 */
 	@Override
 	public IListingAttribute getAttribute(final String name) {
@@ -57,7 +57,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getAttributes()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getAttributes()
 	 */
 	@Override
 	public IListingAttribute[] getAttributes() {
@@ -78,7 +78,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getDescription()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getDescription()
 	 */
 	@Override
 	public String getDescription() {
@@ -86,7 +86,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getEnd()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getEnd()
 	 */
 	@Override
 	public long getEnd() {
@@ -94,7 +94,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getId()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getId()
 	 */
 	@Override
 	public String getId() {
@@ -102,7 +102,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getName()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getName()
 	 */
 	@Override
 	public String getName() {
@@ -110,7 +110,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getPaths()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getPaths()
 	 */
 	@Override
 	public IPath[] getPaths() {
@@ -118,7 +118,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getStart()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getStart()
 	 */
 	@Override
 	public long getStart() {
@@ -126,7 +126,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getTags()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getTags()
 	 */
 	@Override
 	public String[] getTags() {
@@ -134,7 +134,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getTitle()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getTitle()
 	 */
 	@Override
 	public String getTitle() {
@@ -142,7 +142,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.IListing#getUriPath()
+	 * @see org.eclipse.gyrex.cds.model.IListing#getUriPath()
 	 */
 	@Override
 	public String getUriPath() {

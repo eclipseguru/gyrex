@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.internal;
+package org.eclipse.gyrex.cds.service.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

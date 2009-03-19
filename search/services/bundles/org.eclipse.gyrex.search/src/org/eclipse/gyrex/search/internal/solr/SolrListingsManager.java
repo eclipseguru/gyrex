@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.model.solr.internal;
+package org.eclipse.gyrex.cds.model.solr.internal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +19,14 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocumentList;
-import org.eclipse.cloudfree.cds.model.IListing;
-import org.eclipse.cloudfree.cds.model.IListingManager;
-import org.eclipse.cloudfree.cds.model.documents.Document;
-import org.eclipse.cloudfree.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.model.common.provider.BaseModelManager;
-import org.eclipse.cloudfree.monitoring.metrics.ThroughputMetric;
-import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
+import org.eclipse.gyrex.cds.model.IListing;
+import org.eclipse.gyrex.cds.model.IListingManager;
+import org.eclipse.gyrex.cds.model.documents.Document;
+import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
+import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.model.common.provider.BaseModelManager;
+import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
+import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
 
 /**
  * {@link IListingManager} implementation based on Apache Solr.
@@ -34,7 +34,7 @@ import org.eclipse.cloudfree.persistence.solr.internal.SolrRepository;
 public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IListingManager {
 
 	private static String createMetricsId(final IContext context, final SolrRepository repository) {
-		return "org.eclipse.cloudfree.cds.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
+		return "org.eclipse.gyrex.cds.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
 	}
 
 	/**

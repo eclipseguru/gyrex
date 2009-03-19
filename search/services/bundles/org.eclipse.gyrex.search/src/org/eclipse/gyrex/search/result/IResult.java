@@ -9,13 +9,13 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.result;
+package org.eclipse.gyrex.cds.service.result;
 
 
-import org.eclipse.cloudfree.cds.model.IListing;
-import org.eclipse.cloudfree.cds.service.query.ListingQuery;
-import org.eclipse.cloudfree.common.context.IContext;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.gyrex.cds.model.IListing;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.common.context.IContext;
 
 /**
  * The listing result.
@@ -32,13 +32,13 @@ import org.eclipse.core.runtime.IAdaptable;
  * <p>
  * Note, clients which contribute a listing service must not implement this
  * interface directly but subclass
- * {@link org.eclipse.cloudfree.cds.service.implementors.BaseListingResult
+ * {@link org.eclipse.gyrex.cds.service.implementors.BaseListingResult
  * BaseListingResult} instead.
  * </p>
  * 
  * @noimplement This interface is not intended to be implemented by clients.
  *              They must subclass
- *              {@link org.eclipse.cloudfree.cds.service.implementors.BaseListingResult
+ *              {@link org.eclipse.gyrex.cds.service.implementors.BaseListingResult
  *              BaseListingResult} instead.
  */
 public interface IListingResult extends IAdaptable {

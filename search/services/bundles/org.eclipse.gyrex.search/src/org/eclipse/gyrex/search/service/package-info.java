@@ -11,7 +11,7 @@
  *******************************************************************************/
 
 /**
- * The CloudFree Listings Story
+ * The Gyrex Listings Story
  * <p>
  * A common concept of on-line shop systems is to have store items which
  * represent products. Some shop systems work with products directly. In the
@@ -20,7 +20,7 @@
  * concerns) and performance.
  * </p>
  * <p>
- * The listing story provided by the CloudFree Platform is a based on the same
+ * The listing story provided by Gyrex is a based on the same
  * basic principles. However, the concept goes beyond those principles and
  * creates a full-fledged listing store which is suitable for serving auction
  * sites as well as classic storefronts and can be extended for any other
@@ -32,10 +32,10 @@
  * underlying store. Traditional browsing will be possible by filtering.
  * </p>
  * <p>
- * Following the CloudFree approach the listing service provides a common
+ * Following the Gyrex approach the listing service provides a common
  * interface for storefront/auction (i.e., web site) developers and hides the
  * complexity from them.
  * </p>
  */
-package org.eclipse.cloudfree.cds.service;
+package org.eclipse.gyrex.cds.service;
 

@@ -9,11 +9,11 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.model;
+package org.eclipse.gyrex.cds.model;
 
 
-import org.eclipse.cloudfree.cds.model.documents.Document;
-import org.eclipse.cloudfree.model.common.IModelManager;
+import org.eclipse.gyrex.cds.model.documents.Document;
+import org.eclipse.gyrex.model.common.IModelManager;
 
 /**
  * The model manager for {@link IListing listings}.

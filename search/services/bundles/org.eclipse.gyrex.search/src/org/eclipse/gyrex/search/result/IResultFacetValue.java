@@ -9,9 +9,9 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.result;
+package org.eclipse.gyrex.cds.service.result;
 
-import org.eclipse.cloudfree.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
 
 /**
  * A {@link IListingResultFacet facet} value.

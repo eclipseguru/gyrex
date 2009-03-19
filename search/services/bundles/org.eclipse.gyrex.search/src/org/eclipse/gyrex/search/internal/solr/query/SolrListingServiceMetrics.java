@@ -9,10 +9,10 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.solr.internal;
+package org.eclipse.gyrex.cds.service.solr.internal;
 
-import org.eclipse.cloudfree.monitoring.metrics.MetricSet;
-import org.eclipse.cloudfree.monitoring.metrics.StatusMetric;
+import org.eclipse.gyrex.monitoring.metrics.MetricSet;
+import org.eclipse.gyrex.monitoring.metrics.StatusMetric;
 
 /**
  * 

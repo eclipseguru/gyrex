@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.query;
+package org.eclipse.gyrex.cds.service.query;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -673,7 +673,7 @@ public class ListingQuery {
 	 * <p>
 	 * If you want to retrieve <em>all</em> listings then multiple requests
 	 * should be issued one after each other in a resource friendly way.
-	 * Otherwise the CloudFree platform may deny requests based on configured
+	 * Otherwise Gyrex may deny requests based on configured
 	 * capacity/throughput limits.
 	 * </p>
 	 * 

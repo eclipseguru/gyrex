@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.solr.internal;
+package org.eclipse.gyrex.cds.service.solr.internal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +22,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.eclipse.cloudfree.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.cloudfree.cds.service.query.ListingQuery;
-import org.eclipse.cloudfree.cds.service.query.ListingQuery.SortDirection;
-import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.configuration.preferences.PlatformScope;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.cds.service.query.ListingQuery.SortDirection;
+import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.configuration.preferences.PlatformScope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -105,7 +105,7 @@ public class SolrQueryJob extends Job {
 	}
 
 	private static String[] getFacetFields() {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
 		try {
 			final List<String> fields = new ArrayList<String>();
 			for (final String facetId : facets.keys()) {
@@ -127,7 +127,7 @@ public class SolrQueryJob extends Job {
 	}
 
 	private static String[] getFacetQueries() {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
 		try {
 			final List<String> queries = new ArrayList<String>();
 			for (final String facetId : facets.keys()) {

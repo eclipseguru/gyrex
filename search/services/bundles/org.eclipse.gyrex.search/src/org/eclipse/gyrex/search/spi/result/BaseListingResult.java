@@ -9,14 +9,14 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.implementors;
+package org.eclipse.gyrex.cds.service.implementors;
 
 
-import org.eclipse.cloudfree.cds.service.query.ListingQuery;
-import org.eclipse.cloudfree.cds.service.result.IListingResult;
-import org.eclipse.cloudfree.common.context.IContext;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.cds.service.result.IListingResult;
+import org.eclipse.gyrex.common.context.IContext;
 
 /**
  * {@link IListingResult} base class for listing service implementations.

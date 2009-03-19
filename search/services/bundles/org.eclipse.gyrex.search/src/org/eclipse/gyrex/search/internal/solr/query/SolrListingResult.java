@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.solr.internal;
+package org.eclipse.gyrex.cds.service.solr.internal;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,13 +22,13 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocumentList;
-import org.eclipse.cloudfree.cds.model.IListing;
-import org.eclipse.cloudfree.cds.model.solr.internal.SolrListing;
-import org.eclipse.cloudfree.cds.service.implementors.BaseListingResult;
-import org.eclipse.cloudfree.cds.service.query.ListingQuery;
-import org.eclipse.cloudfree.cds.service.result.IListingResultFacet;
-import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.configuration.preferences.PlatformScope;
+import org.eclipse.gyrex.cds.model.IListing;
+import org.eclipse.gyrex.cds.model.solr.internal.SolrListing;
+import org.eclipse.gyrex.cds.service.implementors.BaseListingResult;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.cds.service.result.IListingResultFacet;
+import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.configuration.preferences.PlatformScope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -103,7 +103,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	private SolrListingResultFacet getFacetFieldInfo(final String fieldName) {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
 		try {
 			for (final String facetId : facets.keys()) {
 				final String facetString = facets.get(facetId, null);
@@ -123,7 +123,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	private String[] getFacetQueryValueInfo(final String query) {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.cloudfree.cds.service.solr").node("facets");
+		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
 		try {
 			for (final String facetId : facets.keys()) {
 				final String facetString = facets.get(facetId, null);
@@ -150,7 +150,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getFacets()
+	 * @see org.eclipse.gyrex.cds.service.result.IListingResult#getFacets()
 	 */
 	@Override
 	public IListingResultFacet[] getFacets() {
@@ -180,7 +180,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getListings()
+	 * @see org.eclipse.gyrex.cds.service.result.IListingResult#getListings()
 	 */
 	@Override
 	public IListing[] getListings() {
@@ -196,7 +196,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getNumFound()
+	 * @see org.eclipse.gyrex.cds.service.result.IListingResult#getNumFound()
 	 */
 	@Override
 	public long getNumFound() {
@@ -204,7 +204,7 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.service.result.IListingResult#getQueryTime()
+	 * @see org.eclipse.gyrex.cds.service.result.IListingResult#getQueryTime()
 	 */
 	@Override
 	public long getQueryTime() {

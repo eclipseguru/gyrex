@@ -9,19 +9,19 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.solr.internal;
+package org.eclipse.gyrex.cds.service.solr.internal;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.eclipse.cloudfree.cds.model.IListingManager;
-import org.eclipse.cloudfree.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.cloudfree.cds.service.IListingService;
-import org.eclipse.cloudfree.cds.service.query.ListingQuery;
-import org.eclipse.cloudfree.cds.service.result.IListingResult;
-import org.eclipse.cloudfree.common.context.IContext;
-import org.eclipse.cloudfree.model.common.ModelUtil;
-import org.eclipse.cloudfree.services.common.provider.BaseService;
-import org.eclipse.cloudfree.services.common.status.IStatusMonitor;
+import org.eclipse.gyrex.cds.model.IListingManager;
+import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
+import org.eclipse.gyrex.cds.service.IListingService;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.cds.service.result.IListingResult;
+import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.model.common.ModelUtil;
+import org.eclipse.gyrex.services.common.provider.BaseService;
+import org.eclipse.gyrex.services.common.status.IStatusMonitor;
 
 /**
  * Solr based {@link IListingService} implementation.
@@ -36,11 +36,11 @@ public class SolrListingService extends BaseService implements IListingService {
 	 * @param metrics
 	 */
 	protected SolrListingService(final IContext context, final IStatusMonitor statusMonitor) {
-		super(context, statusMonitor, new SolrListingServiceMetrics(createMetricsId("org.eclipse.cloudfree.cds.service.solr", context)));
+		super(context, statusMonitor, new SolrListingServiceMetrics(createMetricsId("org.eclipse.gyrex.cds.service.solr", context)));
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.service.IListingService#findListings(org.eclipse.cloudfree.cds.service.query.ListingQuery)
+	 * @see org.eclipse.gyrex.cds.service.IListingService#findListings(org.eclipse.gyrex.cds.service.query.ListingQuery)
 	 */
 	@Override
 	public IListingResult findListings(final ListingQuery query) {
@@ -58,7 +58,7 @@ public class SolrListingService extends BaseService implements IListingService {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.service.IListingService#findListings(org.eclipse.cloudfree.cds.service.query.ListingQuery, org.eclipse.cloudfree.cds.service.result.IListingResultCallback)
+	 * @see org.eclipse.gyrex.cds.service.IListingService#findListings(org.eclipse.gyrex.cds.service.query.ListingQuery, org.eclipse.gyrex.cds.service.result.IListingResultCallback)
 	 */
 	//	@Override
 	//	public Future<IListingResult> findListings(final ListingQuery query, final IListingResultCallback callback) {

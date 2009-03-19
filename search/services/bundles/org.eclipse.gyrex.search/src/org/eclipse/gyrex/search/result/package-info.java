@@ -13,5 +13,5 @@
 /**
  * Result API for the listing service.
  */
-package org.eclipse.cloudfree.cds.service.result;
+package org.eclipse.gyrex.cds.service.result;
 

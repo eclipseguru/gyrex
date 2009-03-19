@@ -13,5 +13,5 @@
 /**
  * Query API for the listing service.
  */
-package org.eclipse.cloudfree.cds.service.query;
+package org.eclipse.gyrex.cds.service.query;
 

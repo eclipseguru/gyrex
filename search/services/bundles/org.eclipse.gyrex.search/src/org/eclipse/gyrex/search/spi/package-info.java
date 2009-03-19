@@ -13,10 +13,10 @@
 /**
  * A set of base and utility classes which listing service implementors may depend on.
  * <p>
- * Note, security restrictions in the CloudFree platform may restrict the import 
+ * Note, security restrictions in Gyrex may restrict the import 
  * of this package to a set of trusted listing service implementors. Therefore,
  * listing service clients must not rely on any API defined in this package.
  * </p>
  */
-package org.eclipse.cloudfree.cds.service.implementors;
+package org.eclipse.gyrex.cds.service.implementors;
 

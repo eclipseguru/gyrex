@@ -9,16 +9,16 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.service.solr.internal;
+package org.eclipse.gyrex.cds.service.solr.internal;
 
 
-import org.eclipse.cloudfree.common.runtime.BaseBundleActivator;
-import org.eclipse.cloudfree.services.common.provider.ServiceProvider;
+import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
+import org.eclipse.gyrex.services.common.provider.ServiceProvider;
 import org.osgi.framework.BundleContext;
 
 public class SolrListingServiceActivator extends BaseBundleActivator {
 
-	public static final String SYMBOLIC_NAME = "org.eclipse.cloudfree.cds.service.solr";
+	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.service.solr";
 
 	/**
 	 * Creates a new instance.
@@ -30,11 +30,11 @@ public class SolrListingServiceActivator extends BaseBundleActivator {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.common.runtime.BaseBundleActivator#doStart(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.gyrex.common.runtime.BaseBundleActivator#doStart(org.osgi.framework.BundleContext)
 	 */
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		// register service provider
-		getServiceHelper().registerService(ServiceProvider.class.getName(), new SolrListingsServiceProvider(), "CloudFree", "Solr based listings service", null, null);
+		getServiceHelper().registerService(ServiceProvider.class.getName(), new SolrListingsServiceProvider(), "Gyrex", "Solr based listings service", null, null);
 	}
 }

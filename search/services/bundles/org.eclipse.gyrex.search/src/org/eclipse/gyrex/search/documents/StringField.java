@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.cloudfree.cds.model.documents;
+package org.eclipse.gyrex.cds.model.documents;
 
 /**
  * A String field.
@@ -39,7 +39,7 @@ public final class StringField extends Field<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.cloudfree.cds.model.documents.Field#getType()
+	 * @see org.eclipse.gyrex.cds.model.documents.Field#getType()
 	 */
 	@Override
 	Class<String> getType() {
