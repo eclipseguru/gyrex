@@ -13,7 +13,7 @@ package org.eclipse.gyrex.cds.service.solr.internal;
 
 
 import org.eclipse.gyrex.cds.service.IListingService;
-import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.provider.ServiceProvider;
 import org.eclipse.gyrex.services.common.status.IStatusMonitor;
@@ -28,10 +28,10 @@ public class SolrListingsServiceProvider extends ServiceProvider {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.services.common.provider.ServiceProvider#createServiceInstance(java.lang.Class, org.eclipse.gyrex.common.context.IContext, org.eclipse.gyrex.services.common.status.IStatusMonitor)
+	 * @see org.eclipse.gyrex.services.common.provider.ServiceProvider#createServiceInstance(java.lang.Class, org.eclipse.gyrex.context.IRuntimeContext, org.eclipse.gyrex.services.common.status.IStatusMonitor)
 	 */
 	@Override
-	public BaseService createServiceInstance(final Class serviceType, final IContext context, final IStatusMonitor statusMonitor) {
+	public BaseService createServiceInstance(final Class serviceType, final IRuntimeContext context, final IStatusMonitor statusMonitor) {
 		if (IListingService.class.equals(serviceType)) {
 			return new SolrListingService(context, statusMonitor);
 		}

@@ -15,7 +15,7 @@ package org.eclipse.gyrex.cds.service.result;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.gyrex.cds.model.IListing;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
-import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.context.IRuntimeContext;
 
 /**
  * The listing result.
@@ -51,7 +51,7 @@ public interface IListingResult extends IAdaptable {
 	 * 
 	 * @return the context
 	 */
-	IContext getContext();
+	IRuntimeContext getContext();
 
 	/**
 	 * Returns the facets available in the result.

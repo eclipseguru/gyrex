@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.result.IListingResult;
-import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.context.IRuntimeContext;
 
 /**
  * {@link IListingResult} base class for listing service implementations.
@@ -27,7 +27,7 @@ public abstract class BaseListingResult extends PlatformObject implements IListi
 	private final ListingQuery query;
 
 	/** the context */
-	private final IContext context;
+	private final IRuntimeContext context;
 
 	/**
 	 * Called by subclasses to initialize the result with the original query.
@@ -35,7 +35,7 @@ public abstract class BaseListingResult extends PlatformObject implements IListi
 	 * @param query
 	 *            the original query as submitted to the listing service
 	 */
-	protected BaseListingResult(final IContext context, final ListingQuery query) {
+	protected BaseListingResult(final IRuntimeContext context, final ListingQuery query) {
 		if (null == context) {
 			throw new IllegalArgumentException("context may not be null");
 		}
@@ -78,7 +78,7 @@ public abstract class BaseListingResult extends PlatformObject implements IListi
 	}
 
 	@Override
-	public final IContext getContext() {
+	public final IRuntimeContext getContext() {
 		return context;
 	}
 

@@ -29,8 +29,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.query.ListingQuery.SortDirection;
-import org.eclipse.gyrex.common.context.IContext;
-import org.eclipse.gyrex.configuration.preferences.PlatformScope;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.preferences.PlatformScope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -160,7 +160,7 @@ public class SolrQueryJob extends Job {
 
 	private final AtomicReference<SolrListingFuture> solrListingFutureRef = new AtomicReference<SolrListingFuture>();
 
-	private final IContext context;
+	private final IRuntimeContext context;
 
 	/**
 	 * Creates a new instance.
@@ -169,7 +169,7 @@ public class SolrQueryJob extends Job {
 	 * @param queryExecutor
 	 * @param context
 	 */
-	public SolrQueryJob(final ListingQuery query, final ISolrQueryExecutor queryExecutor, final IContext context) {
+	public SolrQueryJob(final ListingQuery query, final ISolrQueryExecutor queryExecutor, final IRuntimeContext context) {
 		super("Solr Query Job - " + query);
 		this.query = query;
 		this.queryExecutor = queryExecutor;

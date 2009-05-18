@@ -23,7 +23,7 @@ import org.eclipse.gyrex.cds.model.IListing;
 import org.eclipse.gyrex.cds.model.IListingManager;
 import org.eclipse.gyrex.cds.model.documents.Document;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
@@ -33,7 +33,7 @@ import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
  */
 public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IListingManager {
 
-	private static String createMetricsId(final IContext context, final SolrRepository repository) {
+	private static String createMetricsId(final IRuntimeContext context, final SolrRepository repository) {
 		return "org.eclipse.gyrex.cds.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
 	}
 
@@ -45,7 +45,7 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 	 * @param repository
 	 *            the repository
 	 */
-	protected SolrListingsManager(final IContext context, final SolrRepository repository) {
+	protected SolrListingsManager(final IRuntimeContext context, final SolrRepository repository) {
 		super(context, repository, new SolrListingsManagerMetrics(createMetricsId(context, repository)));
 	}
 

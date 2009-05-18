@@ -27,8 +27,8 @@ import org.eclipse.gyrex.cds.model.solr.internal.SolrListing;
 import org.eclipse.gyrex.cds.service.implementors.BaseListingResult;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.result.IListingResultFacet;
-import org.eclipse.gyrex.common.context.IContext;
-import org.eclipse.gyrex.configuration.preferences.PlatformScope;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.preferences.PlatformScope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -48,7 +48,7 @@ public class SolrListingResult extends BaseListingResult {
 	 * @param query
 	 * @param response
 	 */
-	protected SolrListingResult(final IContext context, final ListingQuery query, final QueryResponse response) {
+	protected SolrListingResult(final IRuntimeContext context, final ListingQuery query, final QueryResponse response) {
 		super(context, query);
 		this.response = response;
 	}

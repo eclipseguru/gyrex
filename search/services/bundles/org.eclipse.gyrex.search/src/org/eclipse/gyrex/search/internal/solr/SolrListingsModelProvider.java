@@ -12,7 +12,7 @@
 package org.eclipse.gyrex.cds.model.solr.internal;
 
 import org.eclipse.gyrex.cds.model.IListingManager;
-import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.model.common.provider.ModelProvider;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
@@ -32,10 +32,10 @@ public class SolrListingsModelProvider extends ModelProvider {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.model.common.provider.ModelProvider#createModelManagerInstance(java.lang.Class, org.eclipse.gyrex.persistence.storage.Repository, org.eclipse.gyrex.common.context.IContext)
+	 * @see org.eclipse.gyrex.model.common.provider.ModelProvider#createModelManagerInstance(java.lang.Class, org.eclipse.gyrex.persistence.storage.Repository, org.eclipse.gyrex.context.IRuntimeContext)
 	 */
 	@Override
-	public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IContext context) {
+	public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IRuntimeContext context) {
 		if (IListingManager.class.equals(modelManagerType) && (repository instanceof SolrRepository)) {
 			return new SolrListingsManager(context, (SolrRepository) repository);
 		}

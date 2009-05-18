@@ -18,7 +18,7 @@ import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.gyrex.cds.service.IListingService;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.result.IListingResult;
-import org.eclipse.gyrex.common.context.IContext;
+import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelUtil;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.status.IStatusMonitor;
@@ -35,7 +35,7 @@ public class SolrListingService extends BaseService implements IListingService {
 	 * @param statusMonitor
 	 * @param metrics
 	 */
-	protected SolrListingService(final IContext context, final IStatusMonitor statusMonitor) {
+	protected SolrListingService(final IRuntimeContext context, final IStatusMonitor statusMonitor) {
 		super(context, statusMonitor, new SolrListingServiceMetrics(createMetricsId("org.eclipse.gyrex.cds.service.solr", context)));
 	}
 
