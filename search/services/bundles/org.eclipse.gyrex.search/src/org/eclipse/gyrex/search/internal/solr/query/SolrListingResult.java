@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -28,12 +28,11 @@ import org.eclipse.gyrex.cds.service.implementors.BaseListingResult;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.result.IListingResultFacet;
 import org.eclipse.gyrex.context.IRuntimeContext;
-import org.eclipse.gyrex.preferences.PlatformScope;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
+import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
+import org.eclipse.gyrex.context.preferences.PreferencesUtil;
 
 /**
- * 
+ *
  */
 public class SolrListingResult extends BaseListingResult {
 
@@ -103,50 +102,44 @@ public class SolrListingResult extends BaseListingResult {
 	}
 
 	private SolrListingResultFacet getFacetFieldInfo(final String fieldName) {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
-		try {
-			for (final String facetId : facets.keys()) {
-				final String facetString = facets.get(facetId, null);
-				if (null != facetString) {
-					final String[] split = StringUtils.split(facetString, ',');
-					if ((split.length == 3) && split[1].equals("field") && StringUtils.isNotBlank(split[2])) {
-						if (split[2].equals(fieldName)) {
-							return new SolrListingResultFacet(facetId, split[0]);
-						}
+		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(getContext());
+		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		for (final String facetId : activeFacets) {
+			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			if (null != facetString) {
+				final String[] split = StringUtils.split(facetString, ',');
+				if ((split.length == 3) && split[1].equals("field") && StringUtils.isNotBlank(split[2])) {
+					if (split[2].equals(fieldName)) {
+						return new SolrListingResultFacet(facetId, split[0]);
 					}
 				}
 			}
-			return null;
-		} catch (final BackingStoreException e) {
-			return null;
 		}
+		return null;
 	}
 
 	private String[] getFacetQueryValueInfo(final String query) {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
-		try {
-			for (final String facetId : facets.keys()) {
-				final String facetString = facets.get(facetId, null);
-				if (null != facetString) {
-					final String[] split = StringUtils.split(facetString, ',');
-					if ((split.length == 3) && split[1].equals("queries") && StringUtils.isNotBlank(split[2])) {
-						final String[] split2 = StringUtils.split(split[2], ';');
-						for (final String queryString : split2) {
-							final String[] split3 = StringUtils.split(queryString, '=');
-							if ((split3.length == 2) && StringUtils.isNotBlank(split3[0])) {
-								if (split3[0].equals(queryString)) {
-									// id, label, query label
-									return new String[] { facetId, split[0], split3[1] };
-								}
+		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(getContext());
+		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		for (final String facetId : activeFacets) {
+			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			if (null != facetString) {
+				final String[] split = StringUtils.split(facetString, ',');
+				if ((split.length == 3) && split[1].equals("queries") && StringUtils.isNotBlank(split[2])) {
+					final String[] split2 = StringUtils.split(split[2], ';');
+					for (final String queryString : split2) {
+						final String[] split3 = StringUtils.split(queryString, '=');
+						if ((split3.length == 2) && StringUtils.isNotBlank(split3[0])) {
+							if (split3[0].equals(queryString)) {
+								// id, label, query label
+								return new String[] { facetId, split[0], split3[1] };
 							}
 						}
 					}
 				}
 			}
-			return null;
-		} catch (final BackingStoreException e) {
-			return null;
 		}
+		return null;
 	}
 
 	/* (non-Javadoc)

@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
-
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -30,16 +29,15 @@ import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.query.ListingQuery.SortDirection;
 import org.eclipse.gyrex.context.IRuntimeContext;
-import org.eclipse.gyrex.preferences.PlatformScope;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
+import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
+import org.eclipse.gyrex.context.preferences.PreferencesUtil;
 
 /**
- * 
+ *
  */
 public class SolrQueryJob extends Job {
 
-	static SolrQuery createSolrQuery(final ListingQuery query) {
+	static SolrQuery createSolrQuery(final ListingQuery query, final IRuntimeContext context) {
 		final SolrQuery solrQuery = new SolrQuery();
 
 		// advanced or user query
@@ -75,11 +73,11 @@ public class SolrQueryJob extends Job {
 		}
 
 		// facets
-		final String[] facetFields = getFacetFields();
+		final String[] facetFields = getFacetFields(context);
 		if (null != facetFields) {
 			solrQuery.addFacetField(facetFields);
 		}
-		final String[] facetQueries = getFacetQueries();
+		final String[] facetQueries = getFacetQueries(context);
 		if (null != facetQueries) {
 			for (final String string : facetQueries) {
 				solrQuery.addFacetQuery(string);
@@ -104,54 +102,48 @@ public class SolrQueryJob extends Job {
 		return solrQuery;
 	}
 
-	private static String[] getFacetFields() {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
-		try {
-			final List<String> fields = new ArrayList<String>();
-			for (final String facetId : facets.keys()) {
-				final String facetString = facets.get(facetId, null);
-				if (null != facetString) {
-					final String[] split = StringUtils.split(facetString, ',');
-					if ((split.length == 3) && split[1].equals("field") && StringUtils.isNotBlank(split[2])) {
-						fields.add(split[2]);
-					}
+	private static String[] getFacetFields(final IRuntimeContext context) {
+		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(context);
+		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		final List<String> fields = new ArrayList<String>();
+		for (final String facetId : activeFacets) {
+			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			if (null != facetString) {
+				final String[] split = StringUtils.split(facetString, ',');
+				if ((split.length == 3) && split[1].equals("field") && StringUtils.isNotBlank(split[2])) {
+					fields.add(split[2]);
 				}
 			}
-			if (fields.isEmpty()) {
-				return null;
-			}
-			return fields.toArray(new String[fields.size()]);
-		} catch (final BackingStoreException e) {
+		}
+		if (fields.isEmpty()) {
 			return null;
 		}
+		return fields.toArray(new String[fields.size()]);
 	}
 
-	private static String[] getFacetQueries() {
-		final Preferences facets = new PlatformScope().getNode("org.eclipse.gyrex.cds.service.solr").node("facets");
-		try {
-			final List<String> queries = new ArrayList<String>();
-			for (final String facetId : facets.keys()) {
-				final String facetString = facets.get(facetId, null);
-				if (null != facetString) {
-					final String[] split = StringUtils.split(facetString, ',');
-					if ((split.length == 3) && split[1].equals("queries") && StringUtils.isNotBlank(split[2])) {
-						final String[] split2 = StringUtils.split(split[2], ';');
-						for (final String queryString : split2) {
-							final String[] split3 = StringUtils.split(queryString, '=');
-							if ((split3.length == 2) && StringUtils.isNotBlank(split3[0])) {
-								queries.add(split3[0]);
-							}
+	private static String[] getFacetQueries(final IRuntimeContext context) {
+		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(context);
+		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		final List<String> queries = new ArrayList<String>();
+		for (final String facetId : activeFacets) {
+			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			if (null != facetString) {
+				final String[] split = StringUtils.split(facetString, ',');
+				if ((split.length == 3) && split[1].equals("queries") && StringUtils.isNotBlank(split[2])) {
+					final String[] split2 = StringUtils.split(split[2], ';');
+					for (final String queryString : split2) {
+						final String[] split3 = StringUtils.split(queryString, '=');
+						if ((split3.length == 2) && StringUtils.isNotBlank(split3[0])) {
+							queries.add(split3[0]);
 						}
 					}
 				}
 			}
-			if (queries.isEmpty()) {
-				return null;
-			}
-			return queries.toArray(new String[queries.size()]);
-		} catch (final BackingStoreException e) {
+		}
+		if (queries.isEmpty()) {
 			return null;
 		}
+		return queries.toArray(new String[queries.size()]);
 	}
 
 	private final ListingQuery query;
@@ -185,7 +177,7 @@ public class SolrQueryJob extends Job {
 		monitor.beginTask(query.toString(), 3);
 		try {
 			monitor.subTask("creating query");
-			final SolrQuery solrQuery = createSolrQuery(query);
+			final SolrQuery solrQuery = createSolrQuery(query, context);
 			monitor.worked(1);
 			final SolrListingFuture solrListingFuture = solrListingFutureRef.get();
 			if ((null == solrListingFuture) || monitor.isCanceled() || solrListingFuture.isCancelled()) {
