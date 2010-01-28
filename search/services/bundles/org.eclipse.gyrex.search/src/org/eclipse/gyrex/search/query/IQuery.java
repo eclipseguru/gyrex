@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -16,8 +16,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -48,6 +46,31 @@ public class ListingQuery {
 		ASCENDING, DESCENDING;
 	}
 
+	/**
+	 * Escapes the specified input string according to the query syntax escaping
+	 * requirements as noted in {@link #setAdvancedQuery(String)}.
+	 * 
+	 * @param input
+	 *            the input string
+	 * @return the input string with special chars escaped.
+	 * @see #setAdvancedQuery(String)
+	 */
+	public static String escapeQueryChars(final String input) {
+		if (null == input) {
+			return null;
+		}
+		final StringBuilder sb = new StringBuilder(input.length() + 100);
+		for (int i = 0; i < input.length(); i++) {
+			final char c = input.charAt(i);
+			// escape all chars which are part of the advanced syntax
+			if ((c == '\\') || (c == '+') || (c == '-') || (c == '!') || (c == '(') || (c == ')') || (c == ':') || (c == '^') || (c == '[') || (c == ']') || (c == '\"') || (c == '{') || (c == '}') || (c == '~') || (c == '*') || (c == '?') || (c == '|') || (c == '&') || (c == ';') || Character.isWhitespace(c)) {
+				sb.append('\\');
+			}
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
 	/** the user query */
 	private String query;
 
@@ -68,25 +91,6 @@ public class ListingQuery {
 
 	/** the fields to sort on */
 	private final LinkedHashMap<String, SortDirection> sortFields = new LinkedHashMap<String, SortDirection>(4);
-
-	private static final Pattern escapePattern = Pattern.compile("(\\W)");
-
-	/**
-	 * Escapes the specified input string according to the query syntax escaping
-	 * requirements as noted in {@link #setAdvancedQuery(String)}.
-	 * 
-	 * @param input
-	 *            the input string
-	 * @return the input string with special chars escaped.
-	 * @see #setAdvancedQuery(String)
-	 */
-	public static String escapeQueryChars(final String input) {
-		if (null == input) {
-			return null;
-		}
-		final Matcher matcher = escapePattern.matcher(input);
-		return matcher.replaceAll("\\\\$1");
-	}
 
 	/**
 	 * Adds a filter query.
@@ -673,8 +677,8 @@ public class ListingQuery {
 	 * <p>
 	 * If you want to retrieve <em>all</em> listings then multiple requests
 	 * should be issued one after each other in a resource friendly way.
-	 * Otherwise Gyrex may deny requests based on configured
-	 * capacity/throughput limits.
+	 * Otherwise Gyrex may deny requests based on configured capacity/throughput
+	 * limits.
 	 * </p>
 	 * 
 	 * @param maxResults
