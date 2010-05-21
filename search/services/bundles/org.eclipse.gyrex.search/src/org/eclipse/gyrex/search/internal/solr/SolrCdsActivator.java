@@ -50,7 +50,7 @@ public class ListingsSolrModelActivator extends BaseBundleActivator {
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance.set(this);
-		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new SolrListingsModelProvider(), "Gyrex.net", "Gyrex Solr based listing model provider", null, null);
+		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new SolrListingsModelProvider(), "Eclipse Gyrex", "Gyrex Solr based listing model provider", null, null);
 	}
 
 	/* (non-Javadoc)
