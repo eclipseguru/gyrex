@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -63,6 +63,22 @@ public abstract class Field<T> {
 		}
 	}
 
+	public void addValuesIfAbsent(final Iterable<T> values) {
+		for (final T value : values) {
+			if (!this.values.contains(value)) {
+				this.values.add(value);
+			}
+		}
+	}
+
+	public void addValuesIfAbsent(final T... values) {
+		for (final T value : values) {
+			if (!this.values.contains(value)) {
+				this.values.add(value);
+			}
+		}
+	}
+
 	public T getFirstValue() {
 		if (values.size() > 0) {
 			return values.get(0);
@@ -80,11 +96,6 @@ public abstract class Field<T> {
 	}
 
 	abstract Class<T> getType();
-
-	//	public T[] getValues() {
-	//		final List<T> list = Collections.unmodifiableList(values);
-	//		return list.toArray(createArray(list.size()));
-	//	}
 
 	/**
 	 * Returns an unmodifiable list of all field values.
@@ -119,9 +130,6 @@ public abstract class Field<T> {
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return name + "=" + (values.size() > 1 ? "[" + values + "]" : getFirstValue());
