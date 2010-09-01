@@ -17,11 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.gyrex.cds.model.IListing;
 import org.eclipse.gyrex.cds.model.solr.internal.SolrListing;
 import org.eclipse.gyrex.cds.service.implementors.BaseListingResult;
@@ -30,6 +25,12 @@ import org.eclipse.gyrex.cds.service.result.IListingResultFacet;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
 import org.eclipse.gyrex.context.preferences.PreferencesUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 
 /**
  *
@@ -65,7 +66,7 @@ public class SolrListingResult extends BaseListingResult {
 
 		for (final Count count : values) {
 			// TODO: this should be configurable
-			if (count.getCount() > 0) {
+			if (count.getCount() >= 0) {
 				facet.addValue(new SolrListingResultFacetValue(count.getCount(), count.getName(), count.getAsFilterQuery()));
 			}
 		}
@@ -89,7 +90,7 @@ public class SolrListingResult extends BaseListingResult {
 				}
 				final long count = facetQueryEntry.getValue();
 				// TODO: this should be configurable
-				if (count > 0) {
+				if (count >= 0) {
 					queryFacets.get(facetId).addValue(new SolrListingResultFacetValue(count, queryInfo[2], facetQueryEntry.getKey()));
 				}
 			}
