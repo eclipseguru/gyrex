@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -14,21 +14,23 @@ package org.eclipse.gyrex.cds.model.solr.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-
-import org.apache.solr.common.SolrInputDocument;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.gyrex.cds.model.documents.Document;
 import org.eclipse.gyrex.cds.model.documents.Field;
 import org.eclipse.gyrex.common.status.BundleStatusUtil;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+
+import org.apache.solr.common.SolrInputDocument;
+
 /**
- * 
+ *
  */
 public class PublishJob extends Job {
 
@@ -78,9 +80,7 @@ public class PublishJob extends Job {
 		}
 		try {
 			// add to repository
-			solrRepository.add(docs);
-			// commit
-			solrRepository.commit();
+			solrRepository.add(docs, (int) TimeUnit.MILLISECONDS.toMillis(3)); // TODO should be configurable
 			publishedMetric.requestFinished(docs.size(), System.currentTimeMillis() - requestStarted);
 		} catch (final Exception e) {
 			publishedMetric.requestFailed();
