@@ -37,12 +37,16 @@ public class PublishJob extends Job {
 	private final Iterable<Document> documents;
 	private final SolrRepository solrRepository;
 	private final SolrListingsManagerMetrics solrListingsManagerMetrics;
+	private final boolean commit;
 
-	public PublishJob(final Iterable<Document> documents, final SolrRepository solrRepository, final SolrListingsManagerMetrics solrListingsManagerMetrics) {
+	public PublishJob(final Iterable<Document> documents, final SolrRepository solrRepository, final SolrListingsManagerMetrics solrListingsManagerMetrics, final boolean commit) {
 		super("Solr Document Publish");
 		this.documents = documents;
 		this.solrRepository = solrRepository;
 		this.solrListingsManagerMetrics = solrListingsManagerMetrics;
+		this.commit = commit;
+		setSystem(true);
+		setPriority(LONG);
 	}
 
 	private SolrInputDocument createSolrDoc(final Document document) {
@@ -80,7 +84,11 @@ public class PublishJob extends Job {
 		}
 		try {
 			// add to repository
-			solrRepository.add(docs, (int) TimeUnit.MILLISECONDS.toMillis(3)); // TODO should be configurable
+			if (commit) {
+				solrRepository.add(docs, (int) TimeUnit.MILLISECONDS.toMillis(3)); // TODO should be configurable
+			} else {
+				solrRepository.add(docs); // TODO should be configurable
+			}
 			publishedMetric.requestFinished(docs.size(), System.currentTimeMillis() - requestStarted);
 		} catch (final Exception e) {
 			publishedMetric.requestFailed();

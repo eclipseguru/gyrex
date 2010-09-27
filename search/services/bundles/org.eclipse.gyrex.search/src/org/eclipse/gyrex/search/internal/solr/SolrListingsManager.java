@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -14,28 +14,33 @@ package org.eclipse.gyrex.cds.model.solr.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.gyrex.cds.model.IListing;
 import org.eclipse.gyrex.cds.model.IListingManager;
 import org.eclipse.gyrex.cds.model.documents.Document;
+import org.eclipse.gyrex.cds.model.solr.ISolrListingManager;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocumentList;
+
 /**
  * {@link IListingManager} implementation based on Apache Solr.
  */
-public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IListingManager {
+public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IListingManager, ISolrListingManager {
 
 	private static String createMetricsId(final IRuntimeContext context, final SolrRepository repository) {
 		return "org.eclipse.gyrex.cds.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
 	}
+
+	private final AtomicBoolean commitsAllowed = new AtomicBoolean(true);
 
 	/**
 	 * Creates a new instance.
@@ -47,6 +52,11 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 	 */
 	protected SolrListingsManager(final IRuntimeContext context, final SolrRepository repository) {
 		super(context, repository, new SolrListingsManagerMetrics(createMetricsId(context, repository)));
+	}
+
+	@Override
+	public void commit(final boolean waitFlush, final boolean waitSearcher) {
+		getRepository().commit(waitFlush, waitSearcher);
 	}
 
 	@Override
@@ -80,6 +90,9 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 
 	@Override
 	public final Object getAdapter(final Class adapter) {
+		if (ISolrListingManager.class.equals(adapter)) {
+			return this;
+		}
 		if (ISolrQueryExecutor.class.equals(adapter)) {
 			return new SolrQueryExecutor(getRepository());
 		}
@@ -87,10 +100,6 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 			return getRepository();
 		}
 		return super.getAdapter(adapter);
-	}
-
-	private SolrListingsManagerMetrics getSolrListingsManagerMetrics() {
-		return (SolrListingsManagerMetrics) getMetrics();
 	}
 
 	//	public IListing findByFieldValue(final String path) {
@@ -109,6 +118,15 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 	//		return null;
 	//	}
 
+	private SolrListingsManagerMetrics getSolrListingsManagerMetrics() {
+		return (SolrListingsManagerMetrics) getMetrics();
+	}
+
+	@Override
+	public void optimize(final boolean waitFlush, final boolean waitSearcher) {
+		getRepository().optimize(waitFlush, waitSearcher);
+	}
+
 	@Override
 	public void publish(final Iterable<Document> documents) {
 		// create a copy of the list to avoid clearing the list by outsiders
@@ -123,7 +141,12 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 		}
 
 		// publish
-		new PublishJob(docsToPublish, getRepository(), getSolrListingsManagerMetrics()).schedule();
+		new PublishJob(docsToPublish, getRepository(), getSolrListingsManagerMetrics(), commitsAllowed.get()).schedule();
+	}
+
+	@Override
+	public boolean setCommitsEnabled(final boolean enabled) {
+		return commitsAllowed.getAndSet(enabled);
 	}
 
 }
