@@ -12,7 +12,11 @@
 package org.eclipse.gyrex.cds.model.solr.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,9 +30,11 @@ import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 /**
@@ -60,32 +66,100 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 	}
 
 	@Override
-	public IListing findById(final String id) {
+	public Map<String, IListing> findById(final Iterable<String> ids) {
+		if (null == ids) {
+			throw new IllegalArgumentException("ids must not be null");
+		}
+
 		// collect stats
 		final ThroughputMetric retrievedByIdMetric = getSolrListingsManagerMetrics().getDocsRetrievedByIdMetric();
 		final long requestStarted = retrievedByIdMetric.requestStarted();
-
-		// build query
-		final SolrQuery query = new SolrQuery();
-		query.setQuery(Document.ID + ":" + ClientUtils.escapeQueryChars(id));
-		query.setStart(0).setRows(1);
-		query.setFields("*");
-
-		// execute
-		final QueryResponse response = getRepository().query(query);
-		final SolrDocumentList results = response.getResults();
-		if (!results.isEmpty()) {
-			// got result
-			try {
-				return new SolrListing(results.iterator().next());
-			} finally {
-				retrievedByIdMetric.requestFinished(1, System.currentTimeMillis() - requestStarted);
+		try {
+			// build query
+			final SolrQuery query = new SolrQuery();
+			final StringBuilder queryStr = new StringBuilder();
+			int length = 0;
+			queryStr.append(Document.ID).append(":(");
+			for (final String id : ids) {
+				if (StringUtils.isBlank(id)) {
+					throw new IllegalArgumentException("unsupport blank id found in ids list");
+				}
+				if (length > 0) {
+					queryStr.append(" OR ");
+				}
+				queryStr.append(ClientUtils.escapeQueryChars(id));
+				length++;
 			}
+			if (length == 0) {
+				throw new IllegalArgumentException("ids list is empty");
+			}
+			query.setQuery(queryStr.append(')').toString());
+			query.setStart(0).setRows(length);
+			query.setFields("*");
+
+			// execute
+			final QueryResponse response = getRepository().query(query);
+			final SolrDocumentList results = response.getResults();
+
+			// check for result
+			if (!results.isEmpty()) {
+				final Map<String, IListing> map = new HashMap<String, IListing>(results.size());
+				for (final Iterator<SolrDocument> stream = results.iterator(); stream.hasNext();) {
+					final SolrListing doc = new SolrListing(stream.next());
+					map.put(doc.getId(), doc);
+				}
+				retrievedByIdMetric.requestFinished(length, System.currentTimeMillis() - requestStarted);
+				return Collections.unmodifiableMap(map);
+			}
+
+			// nothing found
+			retrievedByIdMetric.requestFinished(length, System.currentTimeMillis() - requestStarted);
+			return Collections.emptyMap();
+		} catch (final RuntimeException e) {
+			retrievedByIdMetric.requestFailed();
+			throw e;
+		} catch (final Error e) {
+			retrievedByIdMetric.requestFailed();
+			throw e;
+		}
+	}
+
+	@Override
+	public IListing findById(final String id) {
+		if (null == id) {
+			throw new IllegalArgumentException("id must not be null");
 		}
 
-		// nothing found
-		retrievedByIdMetric.requestFailed();
-		return null;
+		// collect stats
+		final ThroughputMetric retrievedByIdMetric = getSolrListingsManagerMetrics().getDocsRetrievedByIdMetric();
+		final long requestStarted = retrievedByIdMetric.requestStarted();
+		try {
+			// build query
+			final SolrQuery query = new SolrQuery();
+			query.setQuery(Document.ID + ":" + ClientUtils.escapeQueryChars(id));
+			query.setStart(0).setRows(1);
+			query.setFields("*");
+
+			// query
+			final QueryResponse response = getRepository().query(query);
+			final SolrDocumentList results = response.getResults();
+
+			// check for result
+			if (!results.isEmpty()) {
+				retrievedByIdMetric.requestFinished(1, System.currentTimeMillis() - requestStarted);
+				return new SolrListing(results.iterator().next());
+			}
+
+			// nothing found
+			retrievedByIdMetric.requestFinished(1, System.currentTimeMillis() - requestStarted);
+			return null;
+		} catch (final RuntimeException e) {
+			retrievedByIdMetric.requestFailed();
+			throw e;
+		} catch (final Error e) {
+			retrievedByIdMetric.requestFailed();
+			throw e;
+		}
 	}
 
 	@Override

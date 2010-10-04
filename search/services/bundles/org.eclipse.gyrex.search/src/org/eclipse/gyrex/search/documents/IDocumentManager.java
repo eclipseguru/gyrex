@@ -1,16 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
 package org.eclipse.gyrex.cds.model;
 
+import java.util.Map;
 
 import org.eclipse.gyrex.cds.model.documents.Document;
 import org.eclipse.gyrex.model.common.IModelManager;
@@ -27,6 +28,17 @@ import org.eclipse.gyrex.model.common.IModelManager;
  * </p>
  */
 public interface IListingManager extends IModelManager {
+
+	/**
+	 * Finds multiple listing by their {@link IListing#getId() ids}.
+	 * 
+	 * @param ids
+	 *            the listing ids to find
+	 * @return an unmodifiable map of found {@link IListing} with
+	 *         {@link IListing#getId() the listing id} as map key and the
+	 *         {@link IListing} as map value
+	 */
+	Map<String, IListing> findById(Iterable<String> ids);
 
 	/**
 	 * Finds a listing by its {@link IListing#getId()}.
