@@ -2,18 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.gyrex.cds
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.gyrex.cds.model.internal.ListingsModelActivator
+Bundle-Activator: org.eclipse.gyrex.cds.internal.ListingsModelActivator
 Bundle-Name: %bundle.name
 Bundle-Vendor: %provider.name
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.gyrex.cds.model;version="1.0.0";uses:="org.eclipse.gyrex.model.common",
+Export-Package: org.eclipse.gyrex.cds.internal;version="1.0.0";x-internal:=true,
+ org.eclipse.gyrex.cds.model;version="1.0.0";uses:="org.eclipse.gyrex.model.common",
  org.eclipse.gyrex.cds.model.documents;version="1.0.0",
- org.eclipse.gyrex.cds.model.internal;version="1.0.0";x-internal:=true,
  org.eclipse.gyrex.cds.service;version="1.0.0",
  org.eclipse.gyrex.cds.service.implementors;version="1.0.0",
- org.eclipse.gyrex.cds.service.internal;version="1.0.0";x-internal:=true,
  org.eclipse.gyrex.cds.service.query;version="1.0.0",
  org.eclipse.gyrex.cds.service.result;version="1.0.0"
 Import-Package: org.apache.commons.lang;version="2.4.0",

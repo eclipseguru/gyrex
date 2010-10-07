@@ -9,25 +9,18 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.service.internal;
+package org.eclipse.gyrex.cds.internal;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 
-public class ListingsActivator implements BundleActivator {
+public class ListingsModelActivator extends BaseBundleActivator {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+	private static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.model";
+
+	/**
+	 * Creates a new instance.
 	 */
-	public void start(BundleContext context) throws Exception {
+	public ListingsModelActivator() {
+		super(SYMBOLIC_NAME);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-	}
-
 }
