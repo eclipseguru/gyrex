@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.model.solr.internal;
+package org.eclipse.gyrex.cds.solr.internal;
 
 import org.eclipse.gyrex.cds.model.IListingManager;
 import org.eclipse.gyrex.context.IRuntimeContext;

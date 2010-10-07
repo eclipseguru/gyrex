@@ -18,10 +18,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.gyrex.cds.model.IListing;
-import org.eclipse.gyrex.cds.model.solr.internal.SolrListing;
 import org.eclipse.gyrex.cds.service.implementors.BaseListingResult;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.result.IListingResultFacet;
+import org.eclipse.gyrex.cds.solr.internal.SolrListing;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
 import org.eclipse.gyrex.context.preferences.PreferencesUtil;
