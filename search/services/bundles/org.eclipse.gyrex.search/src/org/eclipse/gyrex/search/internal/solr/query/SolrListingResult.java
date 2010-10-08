@@ -21,6 +21,7 @@ import org.eclipse.gyrex.cds.model.IListing;
 import org.eclipse.gyrex.cds.service.implementors.BaseListingResult;
 import org.eclipse.gyrex.cds.service.query.ListingQuery;
 import org.eclipse.gyrex.cds.service.result.IListingResultFacet;
+import org.eclipse.gyrex.cds.solr.internal.ListingsSolrModelActivator;
 import org.eclipse.gyrex.cds.solr.internal.SolrListing;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
@@ -104,9 +105,9 @@ public class SolrListingResult extends BaseListingResult {
 
 	private SolrListingResultFacet getFacetFieldInfo(final String fieldName) {
 		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(getContext());
-		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		final String[] activeFacets = StringUtils.split(preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
 		for (final String facetId : activeFacets) {
-			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			final String facetString = preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
 			if (null != facetString) {
 				final String[] split = StringUtils.split(facetString, ',');
 				if ((split.length == 3) && split[1].equals("field") && StringUtils.isNotBlank(split[2])) {
@@ -121,9 +122,9 @@ public class SolrListingResult extends BaseListingResult {
 
 	private String[] getFacetQueryValueInfo(final String query) {
 		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(getContext());
-		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		final String[] activeFacets = StringUtils.split(preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
 		for (final String facetId : activeFacets) {
-			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			final String facetString = preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
 			if (null != facetString) {
 				final String[] split = StringUtils.split(facetString, ',');
 				if ((split.length == 3) && split[1].equals("queries") && StringUtils.isNotBlank(split[2])) {

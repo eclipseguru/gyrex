@@ -13,14 +13,14 @@ package org.eclipse.gyrex.cds.internal;
 
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 
-public class ListingsModelActivator extends BaseBundleActivator {
+public class ContentDeliveryActivator extends BaseBundleActivator {
 
 	private static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds";
 
 	/**
 	 * Creates a new instance.
 	 */
-	public ListingsModelActivator() {
+	public ContentDeliveryActivator() {
 		super(SYMBOLIC_NAME);
 	}
 }

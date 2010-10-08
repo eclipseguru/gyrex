@@ -17,14 +17,14 @@ import org.eclipse.gyrex.cds.model.documents.Document;
 import org.eclipse.gyrex.model.common.IModelManager;
 
 /**
- * The model manager for {@link IListing listings}.
+ * The manager manager for working with {@link IListing listings}.
  * <p>
- * The listings model manager provides a low-level, generic way of working with
- * listings in a repository.
+ * The listings model manager provides a generic way of working with listings in
+ * a repository.
  * </p>
  * <p>
- * This interface is intended to be implemented by clients that contribute a
- * listing model implementation.
+ * This interface is intended to be extended and implemented by clients that
+ * contribute a listing model implementation.
  * </p>
  */
 public interface IListingManager extends IModelManager {

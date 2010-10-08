@@ -17,20 +17,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.response.QueryResponse;
+import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
+import org.eclipse.gyrex.cds.service.query.ListingQuery;
+import org.eclipse.gyrex.cds.service.query.ListingQuery.SortDirection;
+import org.eclipse.gyrex.cds.solr.internal.ListingsSolrModelActivator;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
+import org.eclipse.gyrex.context.preferences.PreferencesUtil;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.gyrex.cds.service.query.ListingQuery;
-import org.eclipse.gyrex.cds.service.query.ListingQuery.SortDirection;
-import org.eclipse.gyrex.context.IRuntimeContext;
-import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
-import org.eclipse.gyrex.context.preferences.PreferencesUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.response.QueryResponse;
 
 /**
  *
@@ -104,10 +107,10 @@ public class SolrQueryJob extends Job {
 
 	private static String[] getFacetFields(final IRuntimeContext context) {
 		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(context);
-		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		final String[] activeFacets = StringUtils.split(preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
 		final List<String> fields = new ArrayList<String>();
 		for (final String facetId : activeFacets) {
-			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			final String facetString = preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
 			if (null != facetString) {
 				final String[] split = StringUtils.split(facetString, ',');
 				if ((split.length == 3) && split[1].equals("field") && StringUtils.isNotBlank(split[2])) {
@@ -123,10 +126,10 @@ public class SolrQueryJob extends Job {
 
 	private static String[] getFacetQueries(final IRuntimeContext context) {
 		final IRuntimeContextPreferences preferences = PreferencesUtil.getPreferences(context);
-		final String[] activeFacets = StringUtils.split(preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
+		final String[] activeFacets = StringUtils.split(preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "activeFacets", null), ',');
 		final List<String> queries = new ArrayList<String>();
 		for (final String facetId : activeFacets) {
-			final String facetString = preferences.get(SolrListingServiceActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
+			final String facetString = preferences.get(ListingsSolrModelActivator.SYMBOLIC_NAME, "facets/" + facetId, null);
 			if (null != facetString) {
 				final String[] split = StringUtils.split(facetString, ',');
 				if ((split.length == 3) && split[1].equals("queries") && StringUtils.isNotBlank(split[2])) {

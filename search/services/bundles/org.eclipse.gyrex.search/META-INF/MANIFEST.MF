@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.gyrex.cds
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.gyrex.cds.internal.ListingsModelActivator
+Bundle-Activator: org.eclipse.gyrex.cds.internal.ContentDeliveryActivator
 Bundle-Name: %bundle.name
 Bundle-Vendor: %provider.name
 Bundle-Localization: plugin

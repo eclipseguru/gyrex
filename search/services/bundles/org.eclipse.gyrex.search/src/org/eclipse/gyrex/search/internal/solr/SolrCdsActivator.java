@@ -13,14 +13,16 @@ package org.eclipse.gyrex.cds.solr.internal;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.gyrex.cds.service.solr.internal.SolrListingsServiceProvider;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.context.provider.RuntimeContextObjectProvider;
+
 import org.osgi.framework.BundleContext;
 
 public class ListingsSolrModelActivator extends BaseBundleActivator {
 
 	/** <code>"org.eclipse.gyrex.cds.model.solr"</code> */
-	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.model.solr";
+	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.solr";
 
 	private static final AtomicReference<ListingsSolrModelActivator> instance = new AtomicReference<ListingsSolrModelActivator>();
 
@@ -50,7 +52,9 @@ public class ListingsSolrModelActivator extends BaseBundleActivator {
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance.set(this);
+		// register service provider
 		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new SolrListingsModelProvider(), "Eclipse Gyrex", "Gyrex Solr based listing model provider", null, null);
+		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new SolrListingsServiceProvider(), "Gyrex", "Solr based listings service", null, null);
 	}
 
 	/* (non-Javadoc)
