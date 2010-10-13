@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.service.result;
+package org.eclipse.gyrex.cds.result;
 
 /**
  * A facet available in a listing result.

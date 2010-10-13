@@ -15,7 +15,8 @@ import java.util.Collection;
 
 
 import org.eclipse.core.runtime.PlatformObject;
-import org.eclipse.gyrex.cds.model.IListingAttribute;
+
+import org.eclipse.gyrex.cds.IListingAttribute;
 
 /**
  * 

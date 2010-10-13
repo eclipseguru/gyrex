@@ -19,8 +19,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.gyrex.cds.service.result.IListingResult;
-import org.eclipse.gyrex.cds.service.result.IListingResultCallback;
+import org.eclipse.gyrex.cds.result.IListingResult;
+import org.eclipse.gyrex.cds.result.IListingResultCallback;
 
 /**
  * 

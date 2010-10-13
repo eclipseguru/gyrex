@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.internal;
 
-import org.eclipse.gyrex.cds.model.IListingManager;
+import org.eclipse.gyrex.cds.IListingManager;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.model.common.provider.ModelProvider;

@@ -9,10 +9,10 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.service;
+package org.eclipse.gyrex.cds;
 
-import org.eclipse.gyrex.cds.service.query.ListingQuery;
-import org.eclipse.gyrex.cds.service.result.IListingResult;
+import org.eclipse.gyrex.cds.query.ListingQuery;
+import org.eclipse.gyrex.cds.result.IListingResult;
 import org.eclipse.gyrex.services.common.IService;
 
 /**

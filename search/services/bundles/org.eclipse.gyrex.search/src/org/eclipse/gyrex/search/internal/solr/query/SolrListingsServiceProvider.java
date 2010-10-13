@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.service.solr.internal;
 
-import org.eclipse.gyrex.cds.service.IListingService;
+import org.eclipse.gyrex.cds.IListingService;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.provider.ServiceProvider;

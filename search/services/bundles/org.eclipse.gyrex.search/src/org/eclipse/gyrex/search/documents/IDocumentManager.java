@@ -9,11 +9,11 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.model;
+package org.eclipse.gyrex.cds;
 
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.model.documents.Document;
+import org.eclipse.gyrex.cds.documents.Document;
 import org.eclipse.gyrex.model.common.IModelManager;
 
 /**

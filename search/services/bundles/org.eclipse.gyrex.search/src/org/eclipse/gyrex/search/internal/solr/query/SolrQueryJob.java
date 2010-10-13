@@ -18,8 +18,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.gyrex.cds.service.query.ListingQuery;
-import org.eclipse.gyrex.cds.service.query.ListingQuery.SortDirection;
+import org.eclipse.gyrex.cds.query.ListingQuery;
+import org.eclipse.gyrex.cds.query.ListingQuery.SortDirection;
 import org.eclipse.gyrex.cds.solr.internal.ListingsSolrModelActivator;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;

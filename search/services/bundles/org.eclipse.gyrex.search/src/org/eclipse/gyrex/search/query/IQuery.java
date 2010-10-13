@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.service.query;
+package org.eclipse.gyrex.cds.query;
 
 import java.util.ArrayList;
 import java.util.Collections;

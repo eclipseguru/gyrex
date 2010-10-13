@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.service.solr.internal;
 
-import org.eclipse.gyrex.cds.service.result.IListingResultFacetValue;
+import org.eclipse.gyrex.cds.result.IListingResultFacetValue;
 
 /**
  * 

@@ -1,0 +1,11 @@
+1286961867635	Rename package 'org.eclipse.gyrex.cds.service.query'
+1286962374357	Rename package 'org.eclipse.gyrex.cds.service.implementors'
+1286962431600	Move compilation unit
+1286962462290	Rename package 'org.eclipse.gyrex.cds.service.result'
+1286962487485	Move compilation unit
+1286962489983	Delete element
+1286962556421	Rename package 'org.eclipse.gyrex.cds.model.documents'
+1286962570129	Rename package 'org.eclipse.gyrex.cds.model.query'
+1286962581540	Rename package 'org.eclipse.gyrex.cds.model.result'
+1286962591147	Move compilation units
+1286962595957	Delete element

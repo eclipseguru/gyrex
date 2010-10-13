@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.model;
+package org.eclipse.gyrex.cds;
 
 
 import org.eclipse.core.runtime.IPath;

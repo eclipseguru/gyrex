@@ -19,9 +19,10 @@ import java.util.List;
 import org.apache.solr.common.SolrDocument;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.PlatformObject;
-import org.eclipse.gyrex.cds.model.IListing;
-import org.eclipse.gyrex.cds.model.IListingAttribute;
-import org.eclipse.gyrex.cds.model.documents.Document;
+
+import org.eclipse.gyrex.cds.IListing;
+import org.eclipse.gyrex.cds.IListingAttribute;
+import org.eclipse.gyrex.cds.documents.Document;
 
 /**
  * 

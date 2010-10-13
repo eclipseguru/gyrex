@@ -13,11 +13,12 @@ package org.eclipse.gyrex.cds.service.solr.internal;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.eclipse.gyrex.cds.model.IListingManager;
+
+import org.eclipse.gyrex.cds.IListingManager;
+import org.eclipse.gyrex.cds.IListingService;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.gyrex.cds.service.IListingService;
-import org.eclipse.gyrex.cds.service.query.ListingQuery;
-import org.eclipse.gyrex.cds.service.result.IListingResult;
+import org.eclipse.gyrex.cds.query.ListingQuery;
+import org.eclipse.gyrex.cds.result.IListingResult;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelUtil;
 import org.eclipse.gyrex.services.common.provider.BaseService;

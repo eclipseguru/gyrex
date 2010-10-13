@@ -1,21 +1,21 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.service.result;
+package org.eclipse.gyrex.cds.result;
 
+import org.eclipse.gyrex.cds.IListing;
+import org.eclipse.gyrex.cds.query.ListingQuery;
+import org.eclipse.gyrex.context.IRuntimeContext;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.gyrex.cds.model.IListing;
-import org.eclipse.gyrex.cds.service.query.ListingQuery;
-import org.eclipse.gyrex.context.IRuntimeContext;
 
 /**
  * The listing result.
@@ -32,13 +32,13 @@ import org.eclipse.gyrex.context.IRuntimeContext;
  * <p>
  * Note, clients which contribute a listing service must not implement this
  * interface directly but subclass
- * {@link org.eclipse.gyrex.cds.service.implementors.BaseListingResult
- * BaseListingResult} instead.
+ * {@link org.eclipse.gyrex.cds.spi.result.BaseListingResult BaseListingResult}
+ * instead.
  * </p>
  * 
  * @noimplement This interface is not intended to be implemented by clients.
  *              They must subclass
- *              {@link org.eclipse.gyrex.cds.service.implementors.BaseListingResult
+ *              {@link org.eclipse.gyrex.cds.spi.result.BaseListingResult
  *              BaseListingResult} instead.
  */
 public interface IListingResult extends IAdaptable {

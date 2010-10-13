@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.gyrex.cds.model.IListing;
-import org.eclipse.gyrex.cds.model.IListingManager;
-import org.eclipse.gyrex.cds.model.documents.Document;
+import org.eclipse.gyrex.cds.IListing;
+import org.eclipse.gyrex.cds.IListingManager;
+import org.eclipse.gyrex.cds.documents.Document;
 import org.eclipse.gyrex.cds.model.solr.ISolrListingManager;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.gyrex.context.IRuntimeContext;

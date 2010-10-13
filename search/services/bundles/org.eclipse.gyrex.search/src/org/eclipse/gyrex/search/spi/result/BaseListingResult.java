@@ -9,13 +9,14 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.service.implementors;
+package org.eclipse.gyrex.cds.spi.result;
 
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.PlatformObject;
-import org.eclipse.gyrex.cds.service.query.ListingQuery;
-import org.eclipse.gyrex.cds.service.result.IListingResult;
+
+import org.eclipse.gyrex.cds.query.ListingQuery;
+import org.eclipse.gyrex.cds.result.IListingResult;
 import org.eclipse.gyrex.context.IRuntimeContext;
 
 /**

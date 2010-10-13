@@ -16,8 +16,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.gyrex.cds.model.documents.Document;
-import org.eclipse.gyrex.cds.model.documents.Field;
+import org.eclipse.gyrex.cds.documents.Document;
+import org.eclipse.gyrex.cds.documents.Field;
 import org.eclipse.gyrex.common.status.BundleStatusUtil;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
