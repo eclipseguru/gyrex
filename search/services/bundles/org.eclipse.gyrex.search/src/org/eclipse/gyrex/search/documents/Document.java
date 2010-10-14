@@ -26,24 +26,6 @@ import java.util.Map;
  */
 public class Document {
 
-	/** name of the description field (value <code>"description"</code>) */
-	public static final String DESCRIPTION = "description";
-
-	/** name of the title field (value <code>"title"</code>) */
-	public static final String TITLE = "title";
-
-	/** name of the name field (value <code>"name"</code>) */
-	public static final String NAME = "name";
-
-	/** name of the id field (value <code>"id"</code>) */
-	public static final String ID = "id";
-
-	/** name of the URI path field (value <code>"uripath"</code>) */
-	public static final String URI_PATH = "uripath";
-
-	/** name of the tags field (value <code>"tags"</code>) */
-	public static final String TAGS = "tags";
-
 	private final Map<String, Field<?>> fields = new LinkedHashMap<String, Field<?>>();
 
 	/**
@@ -52,12 +34,12 @@ public class Document {
 	 * @param title
 	 */
 	public Document() {
-		addField(new StringField(ID));
-		addField(new StringField(NAME));
-		addField(new StringField(TITLE));
-		addField(new StringField(DESCRIPTION));
-		addField(new StringField(URI_PATH));
-		addField(new StringField(TAGS));
+		addField(new StringField(IDocument.ATTRIBUTE_ID));
+		addField(new StringField(IDocument.ATTRIBUTE_NAME));
+		addField(new StringField(IDocument.ATTRIBUTE_TITLE));
+		addField(new StringField(IDocument.ATTRIBUTE_DESCRIPTION));
+		addField(new StringField(IDocument.ATTRIBUTE_URI_PATH));
+		addField(new StringField(IDocument.ATTRIBUTE_TAGS));
 	}
 
 	/**
@@ -87,12 +69,12 @@ public class Document {
 
 	/**
 	 * Returns the description which is the first value of the
-	 * {@value #DESCRIPTION} field.
+	 * {@value IDocument#ATTRIBUTE_DESCRIPTION} field.
 	 * 
 	 * @return the description
 	 */
 	public String getDescription() {
-		return getField(DESCRIPTION, StringField.class).getFirstValue();
+		return getField(IDocument.ATTRIBUTE_DESCRIPTION, StringField.class).getFirstValue();
 	}
 
 	public Field<?> getField(final String name) {
@@ -120,53 +102,53 @@ public class Document {
 	}
 
 	/**
-	 * Returns the id which is the first value of the {@value #ID} field.
+	 * Returns the id which is the first value of the {@value IDocument#ATTRIBUTE_ID} field.
 	 * 
 	 * @return the id
 	 */
 	public String getId() {
-		return getField(ID, StringField.class).getFirstValue();
+		return getField(IDocument.ATTRIBUTE_ID, StringField.class).getFirstValue();
 	}
 
 	/**
-	 * Returns the name which is the first value of the {@value #NAME} field.
+	 * Returns the name which is the first value of the {@value IDocument#ATTRIBUTE_NAME} field.
 	 * 
 	 * @return the name
 	 */
 	public String getName() {
-		return getField(NAME, StringField.class).getFirstValue();
+		return getField(IDocument.ATTRIBUTE_NAME, StringField.class).getFirstValue();
 	}
 
 	/**
 	 * Returns the document tags.
 	 * <p>
 	 * Internally, the tags will be stored as {@link StringField} with the field
-	 * name {@value #TAGS}.
+	 * name {@value IDocument#ATTRIBUTE_TAGS}.
 	 * </p>
 	 * 
 	 * @return an unmodifiable list of tags
 	 */
 	public List<String> getTags() {
-		return getField(TAGS, StringField.class).getValues();
+		return getField(IDocument.ATTRIBUTE_TAGS, StringField.class).getValues();
 	}
 
 	/**
-	 * Returns the title which is the first value of the {@value #TITLE} field.
+	 * Returns the title which is the first value of the {@value IDocument#ATTRIBUTE_TITLE} field.
 	 * 
 	 * @return the title
 	 */
 	public String getTitle() {
-		return getField(TITLE, StringField.class).getFirstValue();
+		return getField(IDocument.ATTRIBUTE_TITLE, StringField.class).getFirstValue();
 	}
 
 	/**
-	 * Returns the URI path which is the first value of the {@value #URI_PATH}
+	 * Returns the URI path which is the first value of the {@value IDocument#ATTRIBUTE_URI_PATH}
 	 * field.
 	 * 
 	 * @return the URI path
 	 */
 	public String getUriPath() {
-		return getField(URI_PATH, StringField.class).getFirstValue();
+		return getField(IDocument.ATTRIBUTE_URI_PATH, StringField.class).getFirstValue();
 	}
 
 	public boolean hasField(final String name) {
@@ -182,13 +164,13 @@ public class Document {
 	 * Sets the description.
 	 * <p>
 	 * Internally, the id will be stored as {@link StringField} with the field
-	 * name {@value #DESCRIPTION}.
+	 * name {@value IDocument#ATTRIBUTE_DESCRIPTION}.
 	 * </p>
 	 * 
 	 * @param description
 	 */
 	public Document setDescription(final String description) {
-		getField(DESCRIPTION, StringField.class).setValue(description);
+		getField(IDocument.ATTRIBUTE_DESCRIPTION, StringField.class).setValue(description);
 		return this;
 	}
 
@@ -196,13 +178,13 @@ public class Document {
 	 * Sets the id.
 	 * <p>
 	 * Internally, the id will be stored as {@link StringField} with the field
-	 * name {@value #ID}.
+	 * name {@value IDocument#ATTRIBUTE_ID}.
 	 * </p>
 	 * 
 	 * @param id
 	 */
 	public Document setId(final String id) {
-		getField(ID, StringField.class).setValue(id);
+		getField(IDocument.ATTRIBUTE_ID, StringField.class).setValue(id);
 		return this;
 	}
 
@@ -210,13 +192,13 @@ public class Document {
 	 * Sets the name.
 	 * <p>
 	 * Internally, the id will be stored as {@link StringField} with the field
-	 * name {@value #NAME}.
+	 * name {@value IDocument#ATTRIBUTE_NAME}.
 	 * </p>
 	 * 
 	 * @param name
 	 */
 	public Document setName(final String name) {
-		getField(NAME, StringField.class).setValue(name);
+		getField(IDocument.ATTRIBUTE_NAME, StringField.class).setValue(name);
 		return this;
 	}
 
@@ -224,13 +206,13 @@ public class Document {
 	 * Sets the document tags.
 	 * <p>
 	 * Internally, the tags will be stored as {@link StringField} with the field
-	 * name {@value #TAGS}.
+	 * name {@value IDocument#ATTRIBUTE_TAGS}.
 	 * </p>
 	 * 
 	 * @param description
 	 */
 	public Document setTags(final String... tags) {
-		getField(TAGS, StringField.class).setValues(tags);
+		getField(IDocument.ATTRIBUTE_TAGS, StringField.class).setValues(tags);
 		return this;
 	}
 
@@ -238,13 +220,13 @@ public class Document {
 	 * Sets the title.
 	 * <p>
 	 * Internally, the id will be stored as {@link StringField} with the field
-	 * name {@value #TITLE}.
+	 * name {@value IDocument#ATTRIBUTE_TITLE}.
 	 * </p>
 	 * 
 	 * @param title
 	 */
 	public Document setTitle(final String title) {
-		getField(TITLE, StringField.class).setValue(title);
+		getField(IDocument.ATTRIBUTE_TITLE, StringField.class).setValue(title);
 		return this;
 	}
 
@@ -252,13 +234,13 @@ public class Document {
 	 * Sets the URI path.
 	 * <p>
 	 * Internally, the URI path will be stored as {@link StringField} with the
-	 * field name {@value #URI_PATH}.
+	 * field name {@value IDocument#ATTRIBUTE_URI_PATH}.
 	 * </p>
 	 * 
 	 * @param description
 	 */
 	public Document setUriPath(final String path) {
-		getField(URI_PATH, StringField.class).setValue(path);
+		getField(IDocument.ATTRIBUTE_URI_PATH, StringField.class).setValue(path);
 		return this;
 	}
 

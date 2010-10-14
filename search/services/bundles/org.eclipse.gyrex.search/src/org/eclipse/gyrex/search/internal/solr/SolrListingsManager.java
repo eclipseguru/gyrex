@@ -79,7 +79,7 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 			final SolrQuery query = new SolrQuery();
 			final StringBuilder queryStr = new StringBuilder();
 			int length = 0;
-			queryStr.append(Document.ID).append(":(");
+			queryStr.append(IDocument.ATTRIBUTE_ID).append(":(");
 			for (final String id : ids) {
 				if (StringUtils.isBlank(id)) {
 					throw new IllegalArgumentException("unsupport blank id found in ids list");
@@ -136,7 +136,7 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 		try {
 			// build query
 			final SolrQuery query = new SolrQuery();
-			query.setQuery(Document.ID + ":" + ClientUtils.escapeQueryChars(id));
+			query.setQuery(IDocument.ATTRIBUTE_ID + ":" + ClientUtils.escapeQueryChars(id));
 			query.setStart(0).setRows(1);
 			query.setFields("*");
 

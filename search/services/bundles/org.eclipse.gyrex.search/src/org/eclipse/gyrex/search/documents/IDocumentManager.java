@@ -29,6 +29,20 @@ import org.eclipse.gyrex.model.common.IModelManager;
 public interface IDocumentManager extends IModelManager {
 
 	/**
+	 * Creates and returns a new transient document.
+	 * <p>
+	 * The document will not be contained in the repository until it has been
+	 * {@link #publish(Iterable) published}.
+	 * </p>
+	 * 
+	 * @param attributeId
+	 *            the id of the {@link IDocumentAttribute attribute} to create
+	 *            the facet for
+	 * @return a transient facet
+	 */
+	IDocument createDocument();
+
+	/**
 	 * Finds multiple listing by their {@link IDocument#getId() ids}.
 	 * 
 	 * @param ids
@@ -51,7 +65,7 @@ public interface IDocumentManager extends IModelManager {
 	/**
 	 * Publishes a set of documents to the repository.
 	 * <p>
-	 * If a document does not have an id, the model manager will assign a new
+	 * If a document does not have an id, the manager will assign a new
 	 * generated id to the document prior to submitting the documents to the
 	 * repository. The mechanism used for generating the id is implementation
 	 * specific.
@@ -72,6 +86,20 @@ public interface IDocumentManager extends IModelManager {
 	 * @param documents
 	 *            the documents to publish
 	 */
-	void publish(Iterable<Document> documents);
+	void publish(Iterable<IDocument> documents);
 
+	/**
+	 * Removes a set of documents from the repository.
+	 * <p>
+	 * Note, a remove operation is considered to finish asynchronously, i.e.
+	 * when this method returns the documents might still be accessible using
+	 * the <code>find...</code> methods. Depending on the repository and amount
+	 * of input the process is allowed to take a few minutes till several hours
+	 * (or even days if you are removing millions of documents).
+	 * </p>
+	 * 
+	 * @param documentIds
+	 *            the document ids to remove
+	 */
+	void remove(Iterable<String> documentIds);
 }

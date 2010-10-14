@@ -11,7 +11,12 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.documents;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.gyrex.model.common.IModelObject;
+import org.eclipse.gyrex.model.common.contracts.IModifiableInMemory;
+import org.eclipse.gyrex.model.common.contracts.IModificationAware;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -52,26 +57,100 @@ import org.eclipse.core.runtime.IPath;
  * optimized for a single language only.
  * </p>
  */
-public interface IDocument extends IModelObject {
+public interface IDocument extends IModelObject, IModifiableInMemory, IModificationAware {
 
 	/**
-	 * Returns the listing attribute with the specified name.
-	 * 
-	 * @return the listing attribute
+	 * id of {@link #getPaths() the id attribute} (value <code>"id"</code>, type
+	 * {@link String})
 	 */
-	IDocumentAttribute getAttribute(String name);
+	String ATTRIBUTE_ID = "id";
 
 	/**
-	 * Returns the listing attributes.
-	 * 
-	 * @return the listing attributes
+	 * id of {@link #getPaths() the name attribute} (value <code>"name"</code>,
+	 * type {@link String})
 	 */
-	IDocumentAttribute[] getAttributes();
+	String ATTRIBUTE_NAME = "name";
+
+	/**
+	 * id of {@link #getPaths() the title attribute} (value <code>"title"</code>
+	 * , type {@link String})
+	 */
+	String ATTRIBUTE_TITLE = "title";
+
+	/**
+	 * id of {@link #getPaths() the description attribute} (value
+	 * <code>"description"</code>, type {@link String})
+	 */
+	String ATTRIBUTE_DESCRIPTION = "description";
+
+	/**
+	 * id of {@link #getPaths() the URI path attribute} (value
+	 * <code>"uripath"</code>, type {@link String})
+	 */
+	String ATTRIBUTE_URI_PATH = "uripath";
+
+	/**
+	 * id of {@link #getPaths() the tags attribute} (value <code>"tags"</code>,
+	 * type {@link String})
+	 */
+	String ATTRIBUTE_TAGS = "tags";
+
+	/**
+	 * id of {@link #getPaths() the paths attribute} <code>"paths"</code>, type
+	 * {@link String})
+	 */
+	String ATTRIBUTE_PATHS = "paths";
+
+	/**
+	 * id of {@link #getStart() the start attribute} <code>"start"</code>, type
+	 * {@link Long})
+	 */
+	String ATTRIBUTE_START = "start";
+
+	/**
+	 * id of {@link #getEnd() the end attribute} <code>"end"</code>, type
+	 * {@link Long})
+	 */
+	String ATTRIBUTE_END = "end";
+
+	/**
+	 * Indicates if an attribute is set on the document.
+	 * <p>
+	 * An attribute is considered set if a call to {@link #get(String)} will not
+	 * return <code>null</code>, even if the attribute contains no values.
+	 * </p>
+	 * 
+	 * @param attributeId
+	 * @return <code>true</code> if an attribute of the specified id is set,
+	 *         <code>false</code> otherwise
+	 */
+	boolean contains(String attributeId);
+
+	/**
+	 * Returns the attribute with the specified id.
+	 * 
+	 * @param attributeId
+	 *            the attribute id (may not be <code>null</code>)
+	 * @return the attribute (maybe <code>null</code> if an attribute with that
+	 *         id is not defined)
+	 */
+	IDocumentAttribute<?> get(String attributeId);
+
+	/**
+	 * Returns a map of all attributes set in the document.
+	 * 
+	 * @return an unmodifiable map of all document attributes
+	 */
+	Map<String, IDocumentAttribute> getAttributes();
 
 	/**
 	 * Returns a human-readable description of the listing.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_DESCRIPTION} as
+	 * the attribute id.
+	 * </p>
 	 * 
-	 * @return a human-readable description
+	 * @return a human-readable description (maybe <code>null</code> if not set)
 	 */
 	String getDescription();
 
@@ -81,19 +160,28 @@ public interface IDocument extends IModelObject {
 	 * <p>
 	 * This allows to control the visibility of listings.
 	 * </p>
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_PATHS} as the
+	 * attribute id.
+	 * </p>
 	 * 
 	 * @return the milliseconds from the Java epoch of
 	 *         <code>1970-01-01T00:00:00Z</code> when the listing should be
 	 *         hidden, or <code>0</code> if the listings visibility end time is
-	 *         not limited
+	 *         not limited (or is not set)
 	 */
 	long getEnd();
 
 	/**
-	 * Returns a machine generated unique identifier of a listing. It's purpose
-	 * is to locate a single specific listing if necessary.
+	 * Returns a unique identifier of a document. It's purpose is to locate a
+	 * single specific document if necessary.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_ID} as the
+	 * attribute id.
+	 * </p>
 	 * 
-	 * @return a machine generated unique identifier of a listing
+	 * @return a unique identifier of the document (maybe <code>null</code> if
+	 *         not set)
 	 */
 	String getId();
 
@@ -101,52 +189,86 @@ public interface IDocument extends IModelObject {
 	 * Returns a human-readable name of a listing which is typically an
 	 * identifier that is unique and makes sense in a specific context (eg. a
 	 * product/sku number).
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_NAME} as the
+	 * attribute id.
+	 * </p>
 	 * 
-	 * @return a human-readable name of a listing
+	 * @return a human-readable name (maybe <code>null</code> if not set)
 	 */
 	String getName();
 
 	/**
+	 * Returns the attribute with the specified id creating one if necessary.
+	 * <p>
+	 * In contrast to {@link #get(String)} this method will create and return
+	 * new, transient attribute if an attribute with the specified id is not
+	 * currently set.
+	 * </p>
+	 * <p>
+	 * If a new transient attribute was created it will be added to the document
+	 * and returned by {@link #getAttributes()} after this method returns.
+	 * </p>
+	 * 
+	 * @param attributeId
+	 *            the attribute id (may not be <code>null</code>)
+	 * @return the attribute
+	 */
+	IDocumentAttribute<?> getOrCreate(String attributeId);
+
+	/**
 	 * Returns all paths a listing is located in (eg.
 	 * <code>"folder/sub/subsub"</code>).
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_PATHS} as the
+	 * attribute id.
+	 * </p>
 	 * 
-	 * @return all paths a listing is located in
+	 * @return a modifiable list of all paths a listing is located in
 	 */
-	IPath[] getPaths();
+	List<IPath> getPaths();
 
 	/**
 	 * Returns the milliseconds from the Java epoch of
 	 * <code>1970-01-01T00:00:00Z</code> when the listing should be visible.
 	 * <p>
-	 * This allows to control the visibility of listings.
+	 * This allows to control the visibility of documents.
+	 * </p>
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_DESCRIPTION} as
+	 * the attribute id.
 	 * </p>
 	 * 
 	 * @return the milliseconds from the Java epoch of
 	 *         <code>1970-01-01T00:00:00Z</code> when the listing should be
 	 *         visible, or <code>0</code> if the listings visibility start time
-	 *         is not limited
+	 *         is not limited (or is not set)
 	 */
 	long getStart();
 
 	/**
 	 * Returns all tags (aka. labels) attached to a listing.
 	 * <p>
-	 * This allows to navigate listings through a tag cloud or to filter based
+	 * This allows to navigate documents through a tag cloud or to filter based
 	 * on tags.
 	 * </p>
 	 * <p>
-	 * Because tags are optional, an empty array will be returned if no tags are
-	 * attached with the listing.
+	 * This is a convenience method which uses {@link #ATTRIBUTE_TAGS} as the
+	 * attribute id.
 	 * </p>
 	 * 
-	 * @return all tags attached to a listing
+	 * @return a modifiable list of all tags attached to a document
 	 */
-	String[] getTags();
+	List<String> getTags();
 
 	/**
 	 * Returns a human-readable listing title.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_TITLE} as the
+	 * attribute id.
+	 * </p>
 	 * 
-	 * @return a human-readable listing title
+	 * @return a human-readable title (maybe <code>null</code> if not set)
 	 */
 	String getTitle();
 
@@ -155,16 +277,109 @@ public interface IDocument extends IModelObject {
 	 * <p>
 	 * The URI path is useful for building search engine friendly site URLs. The
 	 * URI does not need to be unique across the board but should be unique
-	 * within the same lookup context (eg. unique across all auction listings of
-	 * a site). Thus, it must be interpreted relative to the context base.
+	 * within the same lookup context (eg. unique across all products of an
+	 * online shop). Thus, it must be interpreted relative to the context base.
 	 * </p>
 	 * <p>
 	 * The returned URI path is absolute, will start with a slash and is
 	 * guaranteed to not contain relative segments such as <code>"."</code> and
 	 * <code>".."</code>.
+	 * </p>
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_URI_PATH} as
+	 * the attribute id.
+	 * </p>
 	 * 
-	 * @return a canonical URI pathname to the listing
+	 * @return a canonical URI pathname (maybe <code>null</code> if not set)
 	 */
 	String getUriPath();
+
+	/**
+	 * Returns {@link IDocumentAttribute#getValue() the attribute value} of the
+	 * attribute with the specified id.
+	 * <p>
+	 * This is a convenience method which gets the attribute using
+	 * {@link #get(String)} and if an attribute exists just calls
+	 * {@link IDocumentAttribute#getValue()} and returns that value.
+	 * </p>
+	 * 
+	 * @param attributeId
+	 *            the attribute id (may not be <code>null</code>)
+	 * @return the value (maybe <code>null</code> if an attribute with that id
+	 *         is not defined or the value is <code>null</code>)
+	 * @see IDocumentAttribute#getValue()
+	 */
+	Object getValue(String attributeId);
+
+	/**
+	 * Removes the attribute with the specified id from the document
+	 * 
+	 * @param attributeId
+	 *            the attribute id (may not be <code>null</code>)
+	 * @return the attribute that has been removed (maybe <code>null</code> if
+	 *         an attribute with that id was not defined)
+	 */
+	IDocumentAttribute<?> remove(String attributeId);
+
+	/**
+	 * Sets the document description.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_DESCRIPTION} as
+	 * the attribute id.
+	 * </p>
+	 * 
+	 * @param description
+	 *            the description to set (maybe <code>null</code> to unset)
+	 */
+	void setDescription(String description);
+
+	/**
+	 * Sets the document unique identifier.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_ID} as the
+	 * attribute id.
+	 * </p>
+	 * 
+	 * @param id
+	 *            the id to set (maybe <code>null</code> to unset)
+	 */
+	void setId(String id);
+
+	/**
+	 * Sets the document name
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_NAME} as the
+	 * attribute id.
+	 * </p>
+	 * 
+	 * @param name
+	 *            the name to set (maybe <code>null</code> to unset)
+	 * @param value
+	 */
+	void setName(String name);
+
+	/**
+	 * Sets the document title.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_TITLE} as the
+	 * attribute id.
+	 * </p>
+	 * 
+	 * @param title
+	 *            the title to set (maybe <code>null</code> to unset)
+	 */
+	void setTitle(String title);
+
+	/**
+	 * Sets the document URI path.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_URI_PATH} as
+	 * the attribute id.
+	 * </p>
+	 * 
+	 * @param uriPath
+	 *            the URI path to set (maybe <code>null</code> to unset)
+	 */
+	void setUriPath(String uriPath);
 
 }
