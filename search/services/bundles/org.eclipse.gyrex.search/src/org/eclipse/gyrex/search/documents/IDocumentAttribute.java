@@ -9,14 +9,14 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds;
+package org.eclipse.gyrex.cds.documents;
 
 import org.eclipse.gyrex.model.common.IModelObject;
 
 /**
  * A listing attribute.
  */
-public interface IListingAttribute extends IModelObject {
+public interface IDocumentAttribute extends IModelObject {
 
 	/**
 	 * Returns the attribute name.

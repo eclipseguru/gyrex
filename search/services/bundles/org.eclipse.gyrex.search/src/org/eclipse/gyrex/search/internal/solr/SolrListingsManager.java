@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.gyrex.cds.IListing;
-import org.eclipse.gyrex.cds.IListingManager;
 import org.eclipse.gyrex.cds.documents.Document;
+import org.eclipse.gyrex.cds.documents.IDocument;
+import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.model.solr.ISolrListingManager;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.gyrex.context.IRuntimeContext;
@@ -38,9 +38,9 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 /**
- * {@link IListingManager} implementation based on Apache Solr.
+ * {@link IDocumentManager} implementation based on Apache Solr.
  */
-public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IListingManager, ISolrListingManager {
+public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IDocumentManager, ISolrListingManager {
 
 	private static String createMetricsId(final IRuntimeContext context, final SolrRepository repository) {
 		return "org.eclipse.gyrex.cds.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
@@ -66,7 +66,7 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 	}
 
 	@Override
-	public Map<String, IListing> findById(final Iterable<String> ids) {
+	public Map<String, IDocument> findById(final Iterable<String> ids) {
 		if (null == ids) {
 			throw new IllegalArgumentException("ids must not be null");
 		}
@@ -103,7 +103,7 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 
 			// check for result
 			if (!results.isEmpty()) {
-				final Map<String, IListing> map = new HashMap<String, IListing>(results.size());
+				final Map<String, IDocument> map = new HashMap<String, IDocument>(results.size());
 				for (final Iterator<SolrDocument> stream = results.iterator(); stream.hasNext();) {
 					final SolrListing doc = new SolrListing(stream.next());
 					map.put(doc.getId(), doc);
@@ -125,7 +125,7 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 	}
 
 	@Override
-	public IListing findById(final String id) {
+	public IDocument findById(final String id) {
 		if (null == id) {
 			throw new IllegalArgumentException("id must not be null");
 		}

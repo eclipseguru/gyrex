@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.result;
 
-import org.eclipse.gyrex.cds.IListing;
+import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.query.ListingQuery;
 import org.eclipse.gyrex.context.IRuntimeContext;
 
@@ -65,7 +65,7 @@ public interface IListingResult extends IAdaptable {
 	 * 
 	 * @return the list of listings
 	 */
-	IListing[] getListings();
+	IDocument[] getListings();
 
 	/**
 	 * Returns the total number of listings found.

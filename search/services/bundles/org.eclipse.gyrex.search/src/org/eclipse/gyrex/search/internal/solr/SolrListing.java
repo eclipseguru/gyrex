@@ -20,17 +20,17 @@ import org.apache.solr.common.SolrDocument;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.PlatformObject;
 
-import org.eclipse.gyrex.cds.IListing;
-import org.eclipse.gyrex.cds.IListingAttribute;
 import org.eclipse.gyrex.cds.documents.Document;
+import org.eclipse.gyrex.cds.documents.IDocument;
+import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
 
 /**
  * 
  */
-public class SolrListing extends PlatformObject implements IListing {
+public class SolrListing extends PlatformObject implements IDocument {
 
 	private final SolrDocument document;
-	private IListingAttribute[] attributes;
+	private IDocumentAttribute[] attributes;
 
 	/**
 	 * Creates a new instance.
@@ -45,7 +45,7 @@ public class SolrListing extends PlatformObject implements IListing {
 	 * @see org.eclipse.gyrex.cds.model.IListing#getAttribute(java.lang.String)
 	 */
 	@Override
-	public IListingAttribute getAttribute(final String name) {
+	public IDocumentAttribute getAttribute(final String name) {
 		if (name.equals(Document.ID) || name.equals(Document.NAME) || name.equals(Document.TITLE) || name.equals(Document.DESCRIPTION) || name.equals(Document.URI_PATH)) {
 			return null;
 		}
@@ -61,12 +61,12 @@ public class SolrListing extends PlatformObject implements IListing {
 	 * @see org.eclipse.gyrex.cds.model.IListing#getAttributes()
 	 */
 	@Override
-	public IListingAttribute[] getAttributes() {
+	public IDocumentAttribute[] getAttributes() {
 		if (null != attributes) {
 			return attributes;
 		}
 
-		final List<IListingAttribute> attributes = new ArrayList<IListingAttribute>();
+		final List<IDocumentAttribute> attributes = new ArrayList<IDocumentAttribute>();
 		final Collection<String> fieldNames = document.getFieldNames();
 		for (final String name : fieldNames) {
 			if (name.equals(Document.ID) || name.equals(Document.NAME) || name.equals(Document.TITLE) || name.equals(Document.DESCRIPTION) || name.equals(Document.URI_PATH)) {
@@ -75,7 +75,7 @@ public class SolrListing extends PlatformObject implements IListing {
 			final Collection<Object> values = document.getFieldValues(name);
 			attributes.add(new SolrListingAttribute(name, values));
 		}
-		return this.attributes = attributes.toArray(new IListingAttribute[attributes.size()]);
+		return this.attributes = attributes.toArray(new IDocumentAttribute[attributes.size()]);
 	}
 
 	/* (non-Javadoc)

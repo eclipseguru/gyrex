@@ -19,10 +19,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.IListingManager;
 
 /**
- * A listing document can be fed to the {@link IListingManager} to generate
+ * A listing document can be fed to the {@link IDocumentManager} to generate
  * listings.
  */
 public class Document {

@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.internal;
 
-import org.eclipse.gyrex.cds.IListingManager;
+import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.model.common.provider.ModelProvider;
@@ -28,7 +28,7 @@ public class SolrListingsModelProvider extends ModelProvider {
 	 * Creates a new instance.
 	 */
 	/*package*/SolrListingsModelProvider() {
-		super(new RepositoryContentType("application", "x-cf-listings-solr", SolrRepository.class.getName(), ListingsSolrModelActivator.getInstance().getBundleVersion().toString()), IListingManager.class);
+		super(new RepositoryContentType("application", "x-cf-listings-solr", SolrRepository.class.getName(), ListingsSolrModelActivator.getInstance().getBundleVersion().toString()), IDocumentManager.class);
 	}
 
 	/* (non-Javadoc)
@@ -36,7 +36,7 @@ public class SolrListingsModelProvider extends ModelProvider {
 	 */
 	@Override
 	public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IRuntimeContext context) {
-		if (IListingManager.class.equals(modelManagerType) && (repository instanceof SolrRepository)) {
+		if (IDocumentManager.class.equals(modelManagerType) && (repository instanceof SolrRepository)) {
 			return new SolrListingsManager(context, (SolrRepository) repository);
 		}
 		return null;

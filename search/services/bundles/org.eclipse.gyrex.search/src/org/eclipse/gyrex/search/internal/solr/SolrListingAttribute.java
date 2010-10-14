@@ -16,12 +16,12 @@ import java.util.Collection;
 
 import org.eclipse.core.runtime.PlatformObject;
 
-import org.eclipse.gyrex.cds.IListingAttribute;
+import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
 
 /**
  * 
  */
-public class SolrListingAttribute extends PlatformObject implements IListingAttribute {
+public class SolrListingAttribute extends PlatformObject implements IDocumentAttribute {
 
 	private final String name;
 	private final Object[] values;

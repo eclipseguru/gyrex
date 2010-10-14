@@ -14,8 +14,8 @@ package org.eclipse.gyrex.cds.service.solr.internal;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
-import org.eclipse.gyrex.cds.IListingManager;
 import org.eclipse.gyrex.cds.IListingService;
+import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
 import org.eclipse.gyrex.cds.query.ListingQuery;
 import org.eclipse.gyrex.cds.result.IListingResult;
@@ -45,7 +45,7 @@ public class SolrListingService extends BaseService implements IListingService {
 	 */
 	@Override
 	public IListingResult findListings(final ListingQuery query) {
-		final IListingManager manager = ModelUtil.getManager(IListingManager.class, getContext());
+		final IDocumentManager manager = ModelUtil.getManager(IDocumentManager.class, getContext());
 
 		final ISolrQueryExecutor queryExecutor = (ISolrQueryExecutor) manager.getAdapter(ISolrQueryExecutor.class);
 		if (null == queryExecutor) {

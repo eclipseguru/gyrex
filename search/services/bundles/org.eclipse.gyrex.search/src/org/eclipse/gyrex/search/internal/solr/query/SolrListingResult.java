@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.gyrex.cds.IListing;
+import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.query.ListingQuery;
 import org.eclipse.gyrex.cds.result.IListingResultFacet;
 import org.eclipse.gyrex.cds.solr.internal.ListingsSolrModelActivator;
@@ -39,7 +39,7 @@ import org.apache.solr.common.SolrDocumentList;
 public class SolrListingResult extends BaseListingResult {
 
 	private final QueryResponse response;
-	private IListing[] listings;
+	private IDocument[] listings;
 	private IListingResultFacet[] facets;
 
 	/**
@@ -178,12 +178,12 @@ public class SolrListingResult extends BaseListingResult {
 	 * @see org.eclipse.gyrex.cds.service.result.IListingResult#getListings()
 	 */
 	@Override
-	public IListing[] getListings() {
+	public IDocument[] getListings() {
 		if (null != listings) {
 			return listings;
 		}
 		final SolrDocumentList results = response.getResults();
-		final IListing[] listings = new IListing[results.size()];
+		final IDocument[] listings = new IDocument[results.size()];
 		for (int i = 0; i < listings.length; i++) {
 			listings[i] = new SolrListing(results.get(i));
 		}

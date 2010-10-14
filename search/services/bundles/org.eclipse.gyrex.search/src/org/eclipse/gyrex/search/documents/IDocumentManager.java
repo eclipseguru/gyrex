@@ -9,15 +9,14 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds;
+package org.eclipse.gyrex.cds.documents;
 
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.documents.Document;
 import org.eclipse.gyrex.model.common.IModelManager;
 
 /**
- * The manager manager for working with {@link IListing listings}.
+ * The manager manager for working with {@link IDocument listings}.
  * <p>
  * The listings model manager provides a generic way of working with listings in
  * a repository.
@@ -27,27 +26,27 @@ import org.eclipse.gyrex.model.common.IModelManager;
  * contribute a listing model implementation.
  * </p>
  */
-public interface IListingManager extends IModelManager {
+public interface IDocumentManager extends IModelManager {
 
 	/**
-	 * Finds multiple listing by their {@link IListing#getId() ids}.
+	 * Finds multiple listing by their {@link IDocument#getId() ids}.
 	 * 
 	 * @param ids
 	 *            the listing ids to find
-	 * @return an unmodifiable map of found {@link IListing} with
-	 *         {@link IListing#getId() the listing id} as map key and the
-	 *         {@link IListing} as map value
+	 * @return an unmodifiable map of found {@link IDocument} with
+	 *         {@link IDocument#getId() the listing id} as map key and the
+	 *         {@link IDocument} as map value
 	 */
-	Map<String, IListing> findById(Iterable<String> ids);
+	Map<String, IDocument> findById(Iterable<String> ids);
 
 	/**
-	 * Finds a listing by its {@link IListing#getId()}.
+	 * Finds a listing by its {@link IDocument#getId()}.
 	 * 
 	 * @param id
 	 *            the listing id
-	 * @return the found {@link IListing} or <code>null</code>
+	 * @return the found {@link IDocument} or <code>null</code>
 	 */
-	IListing findById(String id);
+	IDocument findById(String id);
 
 	/**
 	 * Publishes a set of documents to the repository.

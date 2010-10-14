@@ -9,3 +9,10 @@
 1286962581540	Rename package 'org.eclipse.gyrex.cds.model.result'
 1286962591147	Move compilation units
 1286962595957	Delete element
+1286970844891	Rename type 'SelectStrategy'
+1286980048002	Move compilation unit
+1286980156115	Move type 'SelectionStrategy' to new file
+1287053513193	Rename type 'IListing'
+1287053882550	Rename type 'IListingAttribute'
+1287054004868	Rename type 'IListingManager'
+1287054048939	Move compilation units

@@ -1,67 +1,72 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds;
+package org.eclipse.gyrex.cds.documents;
 
-
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.gyrex.model.common.IModelObject;
 
+import org.eclipse.core.runtime.IPath;
+
 /**
- * A listing model object.
+ * A document model object.
  * <p>
- * Listings are a core element of the listings story. They can represent
- * products for sale on a storefront or items for sale in an auction. However,
- * the key is that they are not limited to those two possibilities. Basically, a
- * listing can by anything that you want to present in some way to somebody.
- * It's also possible that listings are digital goods which can be downloaded or
- * simply texts which can be viewed on-line.
+ * Documents are a core element of the content delivery story. They can
+ * represent products for sale on a storefront or items for sale in an auction.
+ * However, they are not limited to those two possibilities. Basically, a
+ * document can by anything that you want to present in some way to somebody.
+ * It's also possible that documents are digital goods which can be downloaded
+ * or formatted articles/texts which can be viewed on-line.
  * </p>
  * <p>
- * Therefore, listings do not provide a fixed structure. They are unstructured
+ * Therefore, documents do not provide a fixed structure. They are unstructured
  * documents consisting of a bunch of simple name-value attributes. The
- * attributes describe the listing further.
+ * attributes describe a document further.
  * </p>
  * <p>
- * In order to provide a common infrastructure for working with listings a set
- * of base listing attributes is defined by this interface.
+ * In order to provide a common infrastructure for working with documents a set
+ * of base attributes is defined by this interface.
  * </p>
  * <p>
- * Listings can be navigated. In order to make the navigation as flexible as
- * possible it will be based on the listing attributes as well. A set of common
- * navigational attributes is defined by this interface.
+ * Documents can be navigated. In order to make the navigation as flexible as
+ * possible it will be based on attributes as well. A set of common navigational
+ * attributes is defined by this interface.
  * </p>
  * <p>
- * By definition, listings do <strong>not</strong> implement multi-language
- * behavior. Instead, different language should be represented by different
- * listings. It may also be necessary to separate listings in different
+ * Documents are stored in a repository. The kind of repository is defined by
+ * the actual model implementation. Typically, a document repository offers rich
+ * query capabilities in order to implement full-text as well as faceted search.
+ * </p>
+ * <p>
+ * By definition, documents do <strong>not</strong> implement multi-language
+ * behavior. Instead, different languages should be represented by different
+ * documents It may also be necessary to organize documents in different
  * languages into different repositories because a single repository may be
  * optimized for a single language only.
  * </p>
  */
-public interface IListing extends IModelObject {
+public interface IDocument extends IModelObject {
 
 	/**
 	 * Returns the listing attribute with the specified name.
 	 * 
 	 * @return the listing attribute
 	 */
-	IListingAttribute getAttribute(String name);
+	IDocumentAttribute getAttribute(String name);
 
 	/**
 	 * Returns the listing attributes.
 	 * 
 	 * @return the listing attributes
 	 */
-	IListingAttribute[] getAttributes();
+	IDocumentAttribute[] getAttributes();
 
 	/**
 	 * Returns a human-readable description of the listing.
