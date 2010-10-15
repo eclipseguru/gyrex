@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 <enter-company-name-here> and others.
+ * Copyright (c) 2010 AGETO Service GmbH and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,7 +7,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *     <enter-developer-name-here> - initial API and implementation
+ *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
 package org.eclipse.gyrex.cds.query;
 
@@ -55,6 +55,9 @@ public interface IFacetFilter extends IFilter<IFacetFilter> {
 	 * <p>
 	 * Blank and <code>null</code> values will be ignored.
 	 * </p>
+	 * <p>
+	 * The value <strong>must not</strong> be escaped.
+	 * </p>
 	 * 
 	 * @param value
 	 *            the value to select
@@ -66,6 +69,9 @@ public interface IFacetFilter extends IFilter<IFacetFilter> {
 	 * Sets multiple values to select.
 	 * <p>
 	 * Blank and <code>null</code> values will be ignored.
+	 * </p>
+	 * <p>
+	 * The values <strong>must not</strong> be escaped.
 	 * </p>
 	 * 
 	 * @param values

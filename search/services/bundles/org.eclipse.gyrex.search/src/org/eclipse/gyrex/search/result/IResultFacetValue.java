@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Gunnar Wagenknecht and others.
+ * Copyright (c) 2008, 2010 AGETO Service GmbH and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.result;
 
+import org.eclipse.gyrex.cds.query.IFacetFilter;
 import org.eclipse.gyrex.cds.query.IQuery;
 
 /**
@@ -39,10 +40,12 @@ public interface IResultFacetValue {
 	long getCount();
 
 	/**
-	 * Returns the raw, un-encoded facet value.
+	 * Returns the raw, un-escaped facet value string.
 	 * <p>
-	 * Note, the value is not encoded in any way. Before using it in a
-	 * {@link IQuery#addFilterQuery(String) filter query} it has to be encoded.
+	 * Note, the value is not escaped in any way. Before using it in a
+	 * {@link IQuery#addFilterQuery(String) filter query} it has to be escaped.
+	 * However, {@link IFacetFilter} generally work with un-escaped values so it
+	 * can be used as is in {@link IFacetFilter}.
 	 * </p>
 	 * 
 	 * @return the value
