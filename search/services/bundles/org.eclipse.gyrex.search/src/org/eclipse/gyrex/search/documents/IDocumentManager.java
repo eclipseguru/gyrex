@@ -16,15 +16,27 @@ import java.util.Map;
 import org.eclipse.gyrex.model.common.IModelManager;
 
 /**
- * The manager manager for working with {@link IDocument listings}.
+ * The manager for working with {@link IDocument documents}.
  * <p>
- * The listings model manager provides a generic way of working with listings in
+ * The document model manager provides a generic way of working with document in
  * a repository.
  * </p>
  * <p>
- * This interface is intended to be extended and implemented by clients that
- * contribute a listing model implementation.
+ * This interface must be implemented by contributors of a document model
+ * implementation. As such it is considered part of a service provider API which
+ * may evolve faster than the general API. Please get in touch with the
+ * development team through the prefered channels listed on <a
+ * href="http://www.eclipse.org/gyrex">the Gyrex website</a> to stay up-to-date
+ * of possible changes.
  * </p>
+ * <p>
+ * Clients may not implement or extend this interface directly. If
+ * specialization is desired they should look at the options provided by the
+ * model implementation.
+ * </p>
+ * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IDocumentManager extends IModelManager {
 

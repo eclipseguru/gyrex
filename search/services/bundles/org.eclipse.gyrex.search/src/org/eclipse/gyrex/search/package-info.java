@@ -31,6 +31,19 @@
  * underlying repositories. This includes support for advanced concepts such as
  * facetted navigation, flexible filtering and content relevancy sorting.
  * </p>
+ * <p>
+ * This package contains a lot of API which must be implemented by contributors of
+ * a document model implementation. This API is considered part of a service provider
+ * API which may evolve faster than the general API. Please get in touch with the
+ * development team through the prefered channels listed on <a
+ * href="http://www.eclipse.org/gyrex">the Gyrex website</a> to stay up-to-date
+ * of possible changes.
+ * </p>
+ * <p>
+ * Clients may not implement or extend any API directly (if not stated otherwise). If
+ * specialization is desired they should look at the options provided by the
+ * model implementation.
+ * </p>
  */
 package org.eclipse.gyrex.cds;
 

@@ -15,6 +15,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
+import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
+import org.eclipse.gyrex.cds.query.TermCombination;
 import org.eclipse.gyrex.model.common.IModelObject;
 import org.eclipse.gyrex.model.common.contracts.IModelManagerAware;
 
@@ -22,7 +24,17 @@ import org.eclipse.gyrex.model.common.contracts.IModelManagerAware;
  * A facet is used to implement <a
  * href="http://en.wikipedia.org/wiki/Faceted_search">faceted search</a>.
  * <p>
- * The content delivery
+ * This interface must be implemented by contributors of a document model
+ * implementation. As such it is considered part of a service provider API which
+ * may evolve faster than the general API. Please get in touch with the
+ * development team through the prefered channels listed on <a
+ * href="http://www.eclipse.org/gyrex">the Gyrex website</a> to stay up-to-date
+ * of possible changes.
+ * </p>
+ * <p>
+ * Clients may not implement or extend this interface directly. If
+ * specialization is desired they should look at the options provided by the
+ * model implementation.
  * </p>
  */
 public interface IFacet extends IModelObject, IModelManagerAware<IFacetManager> {
@@ -69,12 +81,22 @@ public interface IFacet extends IModelObject, IModelManagerAware<IFacetManager> 
 	Map<Locale, String> getNames();
 
 	/**
-	 * Indicates the select strategy used by the facet.
+	 * Returns the default select strategy used by the facet.
 	 * 
-	 * @return the select strategy
-	 * @see SelectionStrategy
+	 * @return the select strategy (may be <code>null</code> if no default is
+	 *         set)
+	 * @see #setSelectionStrategy(FacetSelectionStrategy)
 	 */
-	SelectionStrategy getSelectionStrategy();
+	FacetSelectionStrategy getSelectionStrategy();
+
+	/**
+	 * Returns the default term combination used by the facet.
+	 * 
+	 * @return the default term combination (may be <code>null</code> if no
+	 *         default is set)
+	 * @see #setTermCombination(TermCombination)
+	 */
+	TermCombination getTermCombination(TermCombination combination);
 
 	/**
 	 * Sets or unsets a human-readable name for the default locale.
@@ -114,12 +136,20 @@ public interface IFacet extends IModelObject, IModelManagerAware<IFacetManager> 
 	void setName(String name, Locale locale);
 
 	/**
-	 * Sets the selection strategy that should be used.
+	 * Sets the default selection strategy that should be used.
 	 * 
 	 * @param strategy
 	 *            the strategy to use
-	 * @see SelectionStrategy
+	 * @see FacetSelectionStrategy
 	 */
-	void setSelectionStrategy(SelectionStrategy strategy);
+	void setSelectionStrategy(FacetSelectionStrategy strategy);
 
+	/**
+	 * Sets the default term combination that should be used.
+	 * 
+	 * @param combination
+	 *            the term combination to set
+	 * @see TermCombination
+	 */
+	void setTermCombination(TermCombination combination);
 }

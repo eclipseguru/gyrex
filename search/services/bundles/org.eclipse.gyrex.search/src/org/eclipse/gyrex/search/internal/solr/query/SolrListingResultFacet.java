@@ -14,10 +14,10 @@ package org.eclipse.gyrex.cds.service.solr.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.gyrex.cds.result.IListingResultFacet;
-import org.eclipse.gyrex.cds.result.IListingResultFacetValue;
+import org.eclipse.gyrex.cds.result.IResultFacet;
+import org.eclipse.gyrex.cds.result.IResultFacetValue;
 
-public class SolrListingResultFacet implements IListingResultFacet {
+public class SolrListingResultFacet implements IResultFacet {
 
 	private final String id;
 	private final String label;
@@ -59,8 +59,8 @@ public class SolrListingResultFacet implements IListingResultFacet {
 	 * @see org.eclipse.gyrex.cds.service.result.IListingResultFacet#getValues()
 	 */
 	@Override
-	public IListingResultFacetValue[] getValues() {
-		return values.toArray(new IListingResultFacetValue[values.size()]);
+	public IResultFacetValue[] getValues() {
+		return values.toArray(new IResultFacetValue[values.size()]);
 	}
 
 	/* (non-Javadoc)

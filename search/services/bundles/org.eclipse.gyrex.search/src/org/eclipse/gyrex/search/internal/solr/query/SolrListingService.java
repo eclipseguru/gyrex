@@ -14,20 +14,20 @@ package org.eclipse.gyrex.cds.service.solr.internal;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
-import org.eclipse.gyrex.cds.IListingService;
+import org.eclipse.gyrex.cds.IContentDeliveryService;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.gyrex.cds.query.ListingQuery;
-import org.eclipse.gyrex.cds.result.IListingResult;
+import org.eclipse.gyrex.cds.query.IQuery;
+import org.eclipse.gyrex.cds.result.IResult;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelUtil;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.status.IStatusMonitor;
 
 /**
- * Solr based {@link IListingService} implementation.
+ * Solr based {@link IContentDeliveryService} implementation.
  */
-public class SolrListingService extends BaseService implements IListingService {
+public class SolrListingService extends BaseService implements IContentDeliveryService {
 
 	/**
 	 * Creates a new instance.
@@ -44,7 +44,7 @@ public class SolrListingService extends BaseService implements IListingService {
 	 * @see org.eclipse.gyrex.cds.service.IListingService#findListings(org.eclipse.gyrex.cds.service.query.ListingQuery)
 	 */
 	@Override
-	public IListingResult findListings(final ListingQuery query) {
+	public IResult findByQuery(final IQuery query) {
 		final IDocumentManager manager = ModelUtil.getManager(IDocumentManager.class, getContext());
 
 		final ISolrQueryExecutor queryExecutor = (ISolrQueryExecutor) manager.getAdapter(ISolrQueryExecutor.class);

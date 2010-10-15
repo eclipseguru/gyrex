@@ -35,3 +35,28 @@
 1287058207418	Rename method 'getAttribute'
 1287063249657	Rename method 'get'
 1287063336085	Change method 'getOrCreate'
+1287064935836	Delete elements
+1287122342709	Rename type 'IListingService'
+1287125550769	Rename type 'ListingQuery'
+1287125645146	Delete element
+1287125651792	Delete element
+1287125888706	Move member 'escapeQueryChars'
+1287125962664	Copy compilation unit
+1287126001980	Move type 'ResultDimension' to new file
+1287126010865	Move type 'SortDirection' to new file
+1287126468320	Rename type 'ResultDimension'
+1287126494976	Rename method 'setResultDimension'
+1287126500539	Rename type 'ResultProjection'
+1287126536272	Rename method 'setProjection'
+1287126550967	Rename type 'Projection'
+1287126568426	Rename method 'setResultDataProjection'
+1287126578348	Rename type 'DataProjection'
+1287126588925	Rename method 'getResultDimension'
+1287129237780	Rename type 'ValueCombination'
+1287130860303	Rename type 'SelectionStrategy'
+1287130865592	Move compilation unit
+1287135686341	Delete element
+1287135738887	Rename method 'findListings'
+1287135799767	Rename type 'IListingResult'
+1287136423844	Rename type 'IListingResultFacet'
+1287136878927	Rename type 'IListingResultFacetValue'

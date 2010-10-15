@@ -11,42 +11,44 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.result;
 
+import java.util.Map;
+
 import org.eclipse.gyrex.cds.documents.IDocument;
-import org.eclipse.gyrex.cds.query.ListingQuery;
+import org.eclipse.gyrex.cds.facets.IFacet;
+import org.eclipse.gyrex.cds.query.IQuery;
 import org.eclipse.gyrex.context.IRuntimeContext;
 
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
- * The listing result.
+ * The result of a query.
  * <p>
- * This object is the result of a search using the listings service. It provides
- * general information about the found listings, the listings itself and
- * optionally (implementation/context specific) a set of filter to further
- * narrow the results (useful for guided navigation).
+ * This object is the result of a search using the content delivery service. It
+ * provides general information about the found documents, the documents itself
+ * and optionally (implementation/context specific) a set of filter to further
+ * narrow the results (useful for faceted search).
  * </p>
  * <p>
- * This interfaces extends the {@link IAdaptable} interface in order to support
- * extensibility of the result.
+ * This interface must be implemented by contributors of a document model
+ * implementation. As such it is considered part of a service provider API which
+ * may evolve faster than the general API. Please get in touch with the
+ * development team through the prefered channels listed on <a
+ * href="http://www.eclipse.org/gyrex">the Gyrex website</a> to stay up-to-date
+ * of possible changes.
  * </p>
  * <p>
- * Note, clients which contribute a listing service must not implement this
- * interface directly but subclass
- * {@link org.eclipse.gyrex.cds.spi.result.BaseListingResult BaseListingResult}
- * instead.
+ * Clients may not implement or extend this interface directly. If
+ * specialization is desired they should look at the options provided by the
+ * model implementation.
  * </p>
- * 
- * @noimplement This interface is not intended to be implemented by clients.
- *              They must subclass
- *              {@link org.eclipse.gyrex.cds.spi.result.BaseListingResult
- *              BaseListingResult} instead.
  */
-public interface IListingResult extends IAdaptable {
+public interface IResult extends IAdaptable {
 
 	/**
 	 * Returns the context this result is associated to.
 	 * <p>
-	 * Note, this is the context of listing service which generated the result.
+	 * Note, this is the context of content delivery service which generated the
+	 * result.
 	 * </p>
 	 * 
 	 * @return the context
@@ -54,33 +56,35 @@ public interface IListingResult extends IAdaptable {
 	IRuntimeContext getContext();
 
 	/**
-	 * Returns the facets available in the result.
+	 * Returns a map of facets available in the result.
 	 * 
-	 * @return a list of facets
+	 * @return an unmodifiable map of all facets in the result with
+	 *         {@link IFacet#getAttributeId() the attribute id} as the map key
+	 *         and the {@link IFacet facet} as the value
 	 */
-	IListingResultFacet[] getFacets();
+	Map<String, IResultFacet> getFacets();
 
 	/**
-	 * Returns the list of listings that match the query.
+	 * Returns the list of documents that match the query.
 	 * 
-	 * @return the list of listings
+	 * @return the list of documents
 	 */
 	IDocument[] getListings();
 
 	/**
-	 * Returns the total number of listings found.
+	 * Returns the total number of documents found.
 	 * 
-	 * @return the number of found listings
+	 * @return the number of found documents
 	 */
 	long getNumFound();
 
 	/**
-	 * Returns the query that was passed to the listing service to generate the
-	 * result.
+	 * Returns the query that was passed to the content delivery service to
+	 * generate the result.
 	 * 
 	 * @return the query
 	 */
-	ListingQuery getQuery();
+	IQuery getQuery();
 
 	/**
 	 * Returns the query time in milliseconds.

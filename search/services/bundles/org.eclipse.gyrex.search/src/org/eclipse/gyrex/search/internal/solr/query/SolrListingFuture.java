@@ -19,18 +19,18 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.gyrex.cds.result.IListingResult;
-import org.eclipse.gyrex.cds.result.IListingResultCallback;
+import org.eclipse.gyrex.cds.result.IResult;
+import org.eclipse.gyrex.cds.result.IResult;
 
 /**
  * 
  */
-public class SolrListingFuture implements Future<IListingResult>, IListingResultCallback {
+public class SolrListingFuture implements Future<IResult>, IListingResultCallback {
 
 	private final AtomicReference<SolrQueryJob> queryJobRef = new AtomicReference<SolrQueryJob>();
 	private final AtomicBoolean canceled = new AtomicBoolean();
 	private final AtomicBoolean done = new AtomicBoolean();
-	private final AtomicReference<IListingResult> resultRef = new AtomicReference<IListingResult>();
+	private final AtomicReference<IResult> resultRef = new AtomicReference<IResult>();
 	private final AtomicReference<Throwable> exceptionRef = new AtomicReference<Throwable>();
 	private final AtomicReference<IListingResultCallback> callbackRef = new AtomicReference<IListingResultCallback>();
 	private final CountDownLatch gotResult = new CountDownLatch(1);
@@ -67,7 +67,7 @@ public class SolrListingFuture implements Future<IListingResult>, IListingResult
 	 * @see java.util.concurrent.Future#get()
 	 */
 	@Override
-	public IListingResult get() throws InterruptedException, ExecutionException {
+	public IResult get() throws InterruptedException, ExecutionException {
 		gotResult.await();
 		return getResultOrException();
 	}
@@ -76,14 +76,14 @@ public class SolrListingFuture implements Future<IListingResult>, IListingResult
 	 * @see java.util.concurrent.Future#get(long, java.util.concurrent.TimeUnit)
 	 */
 	@Override
-	public IListingResult get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+	public IResult get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		if (!gotResult.await(timeout, unit)) {
 			throw new TimeoutException("timeout while waiting on result");
 		}
 		return getResultOrException();
 	}
 
-	private IListingResult getResultOrException() throws ExecutionException {
+	private IResult getResultOrException() throws ExecutionException {
 		final Throwable throwable = exceptionRef.get();
 		if (null != throwable) {
 			throw new ExecutionException(throwable);
@@ -131,7 +131,7 @@ public class SolrListingFuture implements Future<IListingResult>, IListingResult
 	 * @see org.eclipse.gyrex.cds.service.result.IListingResultCallback#onResult(org.eclipse.gyrex.cds.service.result.IListingResult)
 	 */
 	@Override
-	public void onResult(final IListingResult result) {
+	public void onResult(final IResult result) {
 		if (resultRef.compareAndSet(null, result)) {
 			markDone();
 			gotResult.countDown();

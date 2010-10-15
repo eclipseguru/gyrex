@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.service.solr.internal;
 
-import org.eclipse.gyrex.cds.IListingService;
+import org.eclipse.gyrex.cds.IContentDeliveryService;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.provider.ServiceProvider;
@@ -23,7 +23,7 @@ public class SolrListingsServiceProvider extends ServiceProvider {
 	 * Creates a new instance.
 	 */
 	public SolrListingsServiceProvider() {
-		super(IListingService.class);
+		super(IContentDeliveryService.class);
 	}
 
 	/* (non-Javadoc)
@@ -31,7 +31,7 @@ public class SolrListingsServiceProvider extends ServiceProvider {
 	 */
 	@Override
 	public BaseService createServiceInstance(final Class serviceType, final IRuntimeContext context, final IStatusMonitor statusMonitor) {
-		if (IListingService.class.equals(serviceType)) {
+		if (IContentDeliveryService.class.equals(serviceType)) {
 			return new SolrListingService(context, statusMonitor);
 		}
 		return null;

@@ -28,6 +28,19 @@ import org.eclipse.gyrex.model.common.IModelObject;
  * minimum {@link String}, {@link Boolean}, {@link Double}, {@link Long} and
  * {@link Date}.
  * </p>
+ * <p>
+ * This interface must be implemented by contributors of a document model
+ * implementation. As such it is considered part of a service provider API which
+ * may evolve faster than the general API. Please get in touch with the
+ * development team through the prefered channels listed on <a
+ * href="http://www.eclipse.org/gyrex">the Gyrex website</a> to stay up-to-date
+ * of possible changes.
+ * </p>
+ * <p>
+ * Clients may not implement or extend this interface directly. If
+ * specialization is desired they should look at the options provided by the
+ * model implementation.
+ * </p>
  * 
  * @param <T>
  *            the attribute value type

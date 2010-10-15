@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Gunnar Wagenknecht and others.
+ * Copyright (c) 2010 <enter-company-name-here> and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,23 +7,12 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *     Gunnar Wagenknecht - initial API and implementation
+ *     <enter-developer-name-here> - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds;
-
-import java.util.concurrent.Future;
-
-import org.eclipse.gyrex.cds.query.IQuery;
-import org.eclipse.gyrex.cds.result.IResult;
-import org.eclipse.gyrex.services.common.IService;
+package org.eclipse.gyrex.cds.query;
 
 /**
- * The content delivery service.
- * <p>
- * Gyrex uses the concept of a content delivery service to deliver documents
- * (eg., products) to clients (eg., websites). The delivery service defines
- * methods for querying a document repository.
- * </p>
+ * To filter for an attribute.
  * <p>
  * This interface must be implemented by contributors of a document model
  * implementation. As such it is considered part of a service provider API which
@@ -38,26 +27,14 @@ import org.eclipse.gyrex.services.common.IService;
  * model implementation.
  * </p>
  */
-public interface IContentDeliveryService extends IService {
+public interface IAttributeFilter extends IFilter<IAttributeFilter> {
 
 	/**
-	 * Creates a new query object.
-	 * <p>
-	 * This is the primary way of creating {@link IQuery query} object
-	 * instances.
-	 * </p>
+	 * Sets a single value to match
 	 * 
-	 * @return a model implementation of {@link IQuery}.
+	 * @param value
+	 *            the value to match
 	 */
-	IQuery createQuery();
-
-	/**
-	 * Finds documents matching the specified query.
-	 * 
-	 * @param query
-	 *            the query object
-	 * @return the result
-	 */
-	Future<IResult> findByQuery(IQuery query);
+	void matchValue(String value);
 
 }

@@ -15,17 +15,17 @@ package org.eclipse.gyrex.cds.spi.result;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.PlatformObject;
 
-import org.eclipse.gyrex.cds.query.ListingQuery;
-import org.eclipse.gyrex.cds.result.IListingResult;
+import org.eclipse.gyrex.cds.query.IQuery;
+import org.eclipse.gyrex.cds.result.IResult;
 import org.eclipse.gyrex.context.IRuntimeContext;
 
 /**
- * {@link IListingResult} base class for listing service implementations.
+ * {@link IResult} base class for listing service implementations.
  */
-public abstract class BaseListingResult extends PlatformObject implements IListingResult {
+public abstract class BaseListingResult extends PlatformObject implements IResult {
 
 	/** the query */
-	private final ListingQuery query;
+	private final IQuery query;
 
 	/** the context */
 	private final IRuntimeContext context;
@@ -36,7 +36,7 @@ public abstract class BaseListingResult extends PlatformObject implements IListi
 	 * @param query
 	 *            the original query as submitted to the listing service
 	 */
-	protected BaseListingResult(final IRuntimeContext context, final ListingQuery query) {
+	protected BaseListingResult(final IRuntimeContext context, final IQuery query) {
 		if (null == context) {
 			throw new IllegalArgumentException("context may not be null");
 		}
@@ -84,7 +84,7 @@ public abstract class BaseListingResult extends PlatformObject implements IListi
 	}
 
 	@Override
-	public final ListingQuery getQuery() {
+	public final IQuery getQuery() {
 		return query;
 	}
 }

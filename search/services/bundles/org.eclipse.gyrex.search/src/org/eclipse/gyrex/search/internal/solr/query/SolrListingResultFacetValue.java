@@ -11,12 +11,12 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.service.solr.internal;
 
-import org.eclipse.gyrex.cds.result.IListingResultFacetValue;
+import org.eclipse.gyrex.cds.result.IResultFacetValue;
 
 /**
  * 
  */
-public class SolrListingResultFacetValue implements IListingResultFacetValue {
+public class SolrListingResultFacetValue implements IResultFacetValue {
 
 	private final long count;
 	private final String value;

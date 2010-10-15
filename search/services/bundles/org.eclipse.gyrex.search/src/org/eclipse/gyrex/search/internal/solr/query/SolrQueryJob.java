@@ -18,8 +18,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
-import org.eclipse.gyrex.cds.query.ListingQuery;
-import org.eclipse.gyrex.cds.query.ListingQuery.SortDirection;
+import org.eclipse.gyrex.cds.query.IQuery;
+import org.eclipse.gyrex.cds.query.SortDirection;
 import org.eclipse.gyrex.cds.solr.internal.ListingsSolrModelActivator;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.preferences.IRuntimeContextPreferences;
@@ -40,7 +40,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
  */
 public class SolrQueryJob extends Job {
 
-	static SolrQuery createSolrQuery(final ListingQuery query, final IRuntimeContext context) {
+	static SolrQuery createSolrQuery(final IQuery query, final IRuntimeContext context) {
 		final SolrQuery solrQuery = new SolrQuery();
 
 		// advanced or user query
@@ -88,7 +88,7 @@ public class SolrQueryJob extends Job {
 		}
 
 		// dimension
-		switch (query.getResultDimension()) {
+		switch (query.getResultProjection()) {
 			case FULL:
 				solrQuery.setFields("*");
 				break;
@@ -149,7 +149,7 @@ public class SolrQueryJob extends Job {
 		return queries.toArray(new String[queries.size()]);
 	}
 
-	private final ListingQuery query;
+	private final IQuery query;
 
 	private final ISolrQueryExecutor queryExecutor;
 
@@ -164,7 +164,7 @@ public class SolrQueryJob extends Job {
 	 * @param queryExecutor
 	 * @param context
 	 */
-	public SolrQueryJob(final ListingQuery query, final ISolrQueryExecutor queryExecutor, final IRuntimeContext context) {
+	public SolrQueryJob(final IQuery query, final ISolrQueryExecutor queryExecutor, final IRuntimeContext context) {
 		super("Solr Query Job - " + query);
 		this.query = query;
 		this.queryExecutor = queryExecutor;

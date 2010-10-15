@@ -10,6 +10,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.gyrex.cds;version="1.0.0",
  org.eclipse.gyrex.cds.documents;version="1.0.0",
+ org.eclipse.gyrex.cds.facets;version="1.0.0",
  org.eclipse.gyrex.cds.internal;version="1.0.0";x-internal:=true,
  org.eclipse.gyrex.cds.query;version="1.0.0",
  org.eclipse.gyrex.cds.result;version="1.0.0",

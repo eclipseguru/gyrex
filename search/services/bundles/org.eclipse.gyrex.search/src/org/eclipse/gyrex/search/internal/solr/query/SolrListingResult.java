@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
-import org.eclipse.gyrex.cds.query.ListingQuery;
-import org.eclipse.gyrex.cds.result.IListingResultFacet;
+import org.eclipse.gyrex.cds.query.IQuery;
+import org.eclipse.gyrex.cds.result.IResultFacet;
 import org.eclipse.gyrex.cds.solr.internal.ListingsSolrModelActivator;
 import org.eclipse.gyrex.cds.solr.internal.SolrListing;
 import org.eclipse.gyrex.cds.spi.result.BaseListingResult;
@@ -40,7 +40,7 @@ public class SolrListingResult extends BaseListingResult {
 
 	private final QueryResponse response;
 	private IDocument[] listings;
-	private IListingResultFacet[] facets;
+	private IResultFacet[] facets;
 
 	/**
 	 * Creates a new instance.
@@ -49,12 +49,12 @@ public class SolrListingResult extends BaseListingResult {
 	 * @param query
 	 * @param response
 	 */
-	protected SolrListingResult(final IRuntimeContext context, final ListingQuery query, final QueryResponse response) {
+	protected SolrListingResult(final IRuntimeContext context, final IQuery query, final QueryResponse response) {
 		super(context, query);
 		this.response = response;
 	}
 
-	private IListingResultFacet createResultFacet(final FacetField facetField) {
+	private IResultFacet createResultFacet(final FacetField facetField) {
 		final SolrListingResultFacet facet = getFacetFieldInfo(facetField.getName());
 		if (null == facet) {
 			return null;
@@ -79,7 +79,7 @@ public class SolrListingResult extends BaseListingResult {
 		return facet;
 	}
 
-	private void createResultFacets(final Map<String, Integer> facetQuery, final List<IListingResultFacet> facets) {
+	private void createResultFacets(final Map<String, Integer> facetQuery, final List<IResultFacet> facets) {
 		final Map<String, SolrListingResultFacet> queryFacets = new LinkedHashMap<String, SolrListingResultFacet>(facetQuery.size());
 		for (final Entry<String, Integer> facetQueryEntry : facetQuery.entrySet()) {
 			final String[] queryInfo = getFacetQueryValueInfo(facetQueryEntry.getKey());
@@ -148,7 +148,7 @@ public class SolrListingResult extends BaseListingResult {
 	 * @see org.eclipse.gyrex.cds.service.result.IListingResult#getFacets()
 	 */
 	@Override
-	public IListingResultFacet[] getFacets() {
+	public IResultFacet[] getFacets() {
 		if (null != facets) {
 			return facets;
 		}
@@ -156,13 +156,13 @@ public class SolrListingResult extends BaseListingResult {
 		final Map<String, Integer> facetQuery = response.getFacetQuery();
 
 		if ((null == facetFields) && (null == facetQuery)) {
-			return facets = new IListingResultFacet[0];
+			return facets = new IResultFacet[0];
 		}
 
-		final List<IListingResultFacet> facets = new ArrayList<IListingResultFacet>();
+		final List<IResultFacet> facets = new ArrayList<IResultFacet>();
 		if (null != facetFields) {
 			for (final FacetField facetField : facetFields) {
-				final IListingResultFacet facet = createResultFacet(facetField);
+				final IResultFacet facet = createResultFacet(facetField);
 				if (null != facet) {
 					facets.add(facet);
 				}
@@ -171,7 +171,7 @@ public class SolrListingResult extends BaseListingResult {
 		if (null != facetQuery) {
 			createResultFacets(facetQuery, facets);
 		}
-		return this.facets = facets.toArray(new IListingResultFacet[facets.size()]);
+		return this.facets = facets.toArray(new IResultFacet[facets.size()]);
 	}
 
 	/* (non-Javadoc)
