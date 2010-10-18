@@ -11,14 +11,13 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.documents;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gyrex.model.common.IModelObject;
 import org.eclipse.gyrex.model.common.contracts.IModifiableInMemory;
 import org.eclipse.gyrex.model.common.contracts.IModificationAware;
-
-import org.eclipse.core.runtime.IPath;
 
 /**
  * A document model object.
@@ -113,12 +112,6 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	 * type {@link List} of {@link String})
 	 */
 	String ATTRIBUTE_TAGS = "tags";
-
-	/**
-	 * id of {@link #getPaths() the paths attribute} <code>"paths"</code>, type
-	 * {@link List} of {@link IPath})
-	 */
-	String ATTRIBUTE_PATHS = "paths";
 
 	/**
 	 * id of {@link #getStart() the start attribute} <code>"start"</code>, type
@@ -236,18 +229,6 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	IDocumentAttribute<?> getOrCreate(String attributeId);
 
 	/**
-	 * Returns all paths a document is located in (eg.
-	 * <code>"folder/sub/subsub"</code>).
-	 * <p>
-	 * This is a convenience method which uses {@link #ATTRIBUTE_PATHS} as the
-	 * attribute id.
-	 * </p>
-	 * 
-	 * @return a modifiable list of all paths a document is located in
-	 */
-	List<IPath> getPaths();
-
-	/**
 	 * Returns the milliseconds from the Java epoch of
 	 * <code>1970-01-01T00:00:00Z</code> when the document should be visible.
 	 * <p>
@@ -287,9 +268,9 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	 * attribute id.
 	 * </p>
 	 * 
-	 * @return a modifiable list of all tags attached to a document
+	 * @return a modifiable collection of all tags attached to a document
 	 */
-	List<String> getTags();
+	Collection<String> getTags();
 
 	/**
 	 * Returns a human-readable title.
@@ -364,6 +345,15 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	void setDescription(String description);
 
 	/**
+	 * Sets the end visibility.
+	 * 
+	 * @param end
+	 *            the end time to set
+	 * @see #getEnd()
+	 */
+	void setEnd(long end);
+
+	/**
 	 * Sets the document unique identifier.
 	 * <p>
 	 * This is a convenience method which uses {@link #ATTRIBUTE_ID} as the
@@ -387,6 +377,15 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	 * @param value
 	 */
 	void setName(String name);
+
+	/**
+	 * Sets the start visibility.
+	 * 
+	 * @param start
+	 *            the start time to set
+	 * @see #getStart()
+	 */
+	void setStart(long start);
 
 	/**
 	 * Sets the document summary.
