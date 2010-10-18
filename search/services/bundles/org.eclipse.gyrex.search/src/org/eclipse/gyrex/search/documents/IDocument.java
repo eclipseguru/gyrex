@@ -73,44 +73,50 @@ import org.eclipse.core.runtime.IPath;
 public interface IDocument extends IModelObject, IModifiableInMemory, IModificationAware {
 
 	/**
-	 * id of {@link #getPaths() the id attribute} (value <code>"id"</code>, type
+	 * id of {@link #getId() the id attribute} (value <code>"id"</code>, type
 	 * {@link String})
 	 */
 	String ATTRIBUTE_ID = "id";
 
 	/**
-	 * id of {@link #getPaths() the name attribute} (value <code>"name"</code>,
+	 * id of {@link #getName() the name attribute} (value <code>"name"</code>,
 	 * type {@link String})
 	 */
 	String ATTRIBUTE_NAME = "name";
 
 	/**
-	 * id of {@link #getPaths() the title attribute} (value <code>"title"</code>
+	 * id of {@link #getTitle() the title attribute} (value <code>"title"</code>
 	 * , type {@link String})
 	 */
 	String ATTRIBUTE_TITLE = "title";
 
 	/**
-	 * id of {@link #getPaths() the description attribute} (value
+	 * id of {@link #getTitle() the summary attribute} (value
+	 * <code>"summary"</code> , type {@link String})
+	 */
+	String ATTRIBUTE_SUMMARY = "summary";
+
+	/**
+	 * id of {@link #getDescription() the description attribute} (value
 	 * <code>"description"</code>, type {@link String})
 	 */
 	String ATTRIBUTE_DESCRIPTION = "description";
 
 	/**
-	 * id of {@link #getPaths() the URI path attribute} (value
+	 * id of {@link #getUriPath() the URI path attribute} (value
 	 * <code>"uripath"</code>, type {@link String})
 	 */
 	String ATTRIBUTE_URI_PATH = "uripath";
 
 	/**
-	 * id of {@link #getPaths() the tags attribute} (value <code>"tags"</code>,
-	 * type {@link String})
+	 * id of {@link #getTags() the tags attribute} (value <code>"tags"</code>,
+	 * type {@link List} of {@link String})
 	 */
 	String ATTRIBUTE_TAGS = "tags";
 
 	/**
 	 * id of {@link #getPaths() the paths attribute} <code>"paths"</code>, type
-	 * {@link String})
+	 * {@link List} of {@link IPath})
 	 */
 	String ATTRIBUTE_PATHS = "paths";
 
@@ -157,7 +163,7 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	Map<String, IDocumentAttribute> getAttributes();
 
 	/**
-	 * Returns a human-readable description of the listing.
+	 * Returns a human-readable description.
 	 * <p>
 	 * This is a convenience method which uses {@link #ATTRIBUTE_DESCRIPTION} as
 	 * the attribute id.
@@ -169,9 +175,9 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 
 	/**
 	 * Returns the milliseconds from the Java epoch of
-	 * <code>1970-01-01T00:00:00Z</code> when the listing should be hidden.
+	 * <code>1970-01-01T00:00:00Z</code> when the document should be hidden.
 	 * <p>
-	 * This allows to control the visibility of listings.
+	 * This allows to control the visibility of documents.
 	 * </p>
 	 * <p>
 	 * This is a convenience method which uses {@link #ATTRIBUTE_PATHS} as the
@@ -179,8 +185,8 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	 * </p>
 	 * 
 	 * @return the milliseconds from the Java epoch of
-	 *         <code>1970-01-01T00:00:00Z</code> when the listing should be
-	 *         hidden, or <code>0</code> if the listings visibility end time is
+	 *         <code>1970-01-01T00:00:00Z</code> when the document should be
+	 *         hidden, or <code>0</code> if the documents visibility end time is
 	 *         not limited (or is not set)
 	 */
 	long getEnd();
@@ -199,7 +205,7 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	String getId();
 
 	/**
-	 * Returns a human-readable name of a listing which is typically an
+	 * Returns a human-readable name of a document which is typically an
 	 * identifier that is unique and makes sense in a specific context (eg. a
 	 * product/sku number).
 	 * <p>
@@ -230,20 +236,20 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	IDocumentAttribute<?> getOrCreate(String attributeId);
 
 	/**
-	 * Returns all paths a listing is located in (eg.
+	 * Returns all paths a document is located in (eg.
 	 * <code>"folder/sub/subsub"</code>).
 	 * <p>
 	 * This is a convenience method which uses {@link #ATTRIBUTE_PATHS} as the
 	 * attribute id.
 	 * </p>
 	 * 
-	 * @return a modifiable list of all paths a listing is located in
+	 * @return a modifiable list of all paths a document is located in
 	 */
 	List<IPath> getPaths();
 
 	/**
 	 * Returns the milliseconds from the Java epoch of
-	 * <code>1970-01-01T00:00:00Z</code> when the listing should be visible.
+	 * <code>1970-01-01T00:00:00Z</code> when the document should be visible.
 	 * <p>
 	 * This allows to control the visibility of documents.
 	 * </p>
@@ -253,14 +259,25 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	 * </p>
 	 * 
 	 * @return the milliseconds from the Java epoch of
-	 *         <code>1970-01-01T00:00:00Z</code> when the listing should be
-	 *         visible, or <code>0</code> if the listings visibility start time
+	 *         <code>1970-01-01T00:00:00Z</code> when the document should be
+	 *         visible, or <code>0</code> if the documents visibility start time
 	 *         is not limited (or is not set)
 	 */
 	long getStart();
 
 	/**
-	 * Returns all tags (aka. labels) attached to a listing.
+	 * Returns a human-readable summary.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_SUMMARY} as the
+	 * attribute id.
+	 * </p>
+	 * 
+	 * @return a human-readable summary (maybe <code>null</code> if not set)
+	 */
+	String getSummary();
+
+	/**
+	 * Returns all tags (aka. labels) attached to a document.
 	 * <p>
 	 * This allows to navigate documents through a tag cloud or to filter based
 	 * on tags.
@@ -275,7 +292,7 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	List<String> getTags();
 
 	/**
-	 * Returns a human-readable listing title.
+	 * Returns a human-readable title.
 	 * <p>
 	 * This is a convenience method which uses {@link #ATTRIBUTE_TITLE} as the
 	 * attribute id.
@@ -286,7 +303,7 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	String getTitle();
 
 	/**
-	 * Returns a canonical URI pathname to the listing.
+	 * Returns a canonical URI pathname to the document.
 	 * <p>
 	 * The URI path is useful for building search engine friendly site URLs. The
 	 * URI does not need to be unique across the board but should be unique
@@ -370,6 +387,18 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	 * @param value
 	 */
 	void setName(String name);
+
+	/**
+	 * Sets the document summary.
+	 * <p>
+	 * This is a convenience method which uses {@link #ATTRIBUTE_SUMMARY} as the
+	 * attribute id.
+	 * </p>
+	 * 
+	 * @param summary
+	 *            the summary to set (maybe <code>null</code> to unset)
+	 */
+	void setSummary(String summary);
 
 	/**
 	 * Sets the document title.
