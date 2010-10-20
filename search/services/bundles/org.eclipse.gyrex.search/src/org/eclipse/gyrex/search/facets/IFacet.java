@@ -96,7 +96,7 @@ public interface IFacet extends IModelObject, IModelManagerAware<IFacetManager> 
 	 *         default is set)
 	 * @see #setTermCombination(TermCombination)
 	 */
-	TermCombination getTermCombination(TermCombination combination);
+	TermCombination getTermCombination();
 
 	/**
 	 * Sets or unsets a human-readable name for the default locale.

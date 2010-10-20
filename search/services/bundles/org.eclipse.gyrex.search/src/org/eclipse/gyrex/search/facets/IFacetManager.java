@@ -78,8 +78,10 @@ public interface IFacetManager extends IModelManager {
 	 * @return an unmodifiable map of all facets with
 	 *         {@link IFacet#getAttributeId() the attribute id} as the map key
 	 *         and the {@link IFacet facet} as the value
+	 * @throws ModelException
+	 *             if an error occurred while loading the facet
 	 */
-	Map<String, IFacet> getFacets();
+	Map<String, IFacet> getFacets() throws ModelException;
 
 	/**
 	 * Saves a facet from the underlying repository.
