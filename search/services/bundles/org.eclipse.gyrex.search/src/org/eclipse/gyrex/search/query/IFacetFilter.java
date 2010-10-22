@@ -42,6 +42,37 @@ public interface IFacetFilter extends IFilter<IFacetFilter> {
 	IFacetFilter combineUsing(TermCombination combination);
 
 	/**
+	 * Returns the facet the filter operates on
+	 * 
+	 * @return the facet
+	 */
+	IFacet getFacet();
+
+	/**
+	 * Returns the {@link FacetSelectionStrategy selection strategy} to use.
+	 * <p>
+	 * If the filter does not have a selection strategy set, the default from
+	 * the facet will be returned.
+	 * </p>
+	 * 
+	 * @return the selection strategy (maybe <code>null</code> if neither the
+	 *         filter not the facet has a selection strategy)
+	 */
+	FacetSelectionStrategy getSelectionStrategy();
+
+	/**
+	 * Returns the {@link TermCombination term combination to use.}
+	 * <p>
+	 * If the filter does not have a term combination set, the default from the
+	 * facet will be returned.
+	 * </p>
+	 * 
+	 * @return the term combination (maybe <code>null</code> if neither the
+	 *         filter not the facet has a term combination)
+	 */
+	TermCombination getTermCombination();
+
+	/**
 	 * Sets the {@link FacetSelectionStrategy selection strategy} that should be
 	 * used to influence the behavior of the facets returned in the results.
 	 * 

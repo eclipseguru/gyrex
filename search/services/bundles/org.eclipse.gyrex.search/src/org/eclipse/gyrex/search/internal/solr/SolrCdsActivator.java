@@ -13,26 +13,24 @@ package org.eclipse.gyrex.cds.solr.internal;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.gyrex.cds.service.solr.internal.SolrListingsServiceProvider;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
-import org.eclipse.gyrex.context.provider.RuntimeContextObjectProvider;
 
 import org.osgi.framework.BundleContext;
 
-public class ListingsSolrModelActivator extends BaseBundleActivator {
+public class SolrCdsActivator extends BaseBundleActivator {
 
 	/** <code>"org.eclipse.gyrex.cds.model.solr"</code> */
 	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.solr";
 
-	private static final AtomicReference<ListingsSolrModelActivator> instance = new AtomicReference<ListingsSolrModelActivator>();
+	private static final AtomicReference<SolrCdsActivator> instance = new AtomicReference<SolrCdsActivator>();
 
 	/**
 	 * Returns the shared instance.
 	 * 
 	 * @return the shared instance
 	 */
-	public static ListingsSolrModelActivator getInstance() {
-		final ListingsSolrModelActivator modelActivator = instance.get();
+	public static SolrCdsActivator getInstance() {
+		final SolrCdsActivator modelActivator = instance.get();
 		if (null == modelActivator) {
 			throw new IllegalStateException("inactive");
 		}
@@ -42,26 +40,22 @@ public class ListingsSolrModelActivator extends BaseBundleActivator {
 	/**
 	 * Creates a new instance.
 	 */
-	public ListingsSolrModelActivator() {
+	public SolrCdsActivator() {
 		super(SYMBOLIC_NAME);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.common.runtime.BaseBundleActivator#doStart(org.osgi.framework.BundleContext)
-	 */
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance.set(this);
-		// register service provider
-		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new SolrListingsModelProvider(), "Eclipse Gyrex", "Gyrex Solr based listing model provider", null, null);
-		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new SolrListingsServiceProvider(), "Gyrex", "Solr based listings service", null, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.common.runtime.BaseBundleActivator#doStop(org.osgi.framework.BundleContext)
-	 */
 	@Override
 	protected void doStop(final BundleContext context) throws Exception {
 		instance.set(null);
+	}
+
+	@Override
+	protected Class getDebugOptions() {
+		return SolrCdsDebug.class;
 	}
 }

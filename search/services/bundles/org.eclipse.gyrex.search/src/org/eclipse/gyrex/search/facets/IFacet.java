@@ -99,6 +99,30 @@ public interface IFacet extends IModelObject, IModelManagerAware<IFacetManager> 
 	TermCombination getTermCombination();
 
 	/**
+	 * Indicates if the facet is enabled.
+	 * 
+	 * @return <code>true</code> if the facet is enabled, <code>false</code>
+	 *         otherwise
+	 * @see #setEnabled(boolean)
+	 */
+	boolean isEnabled();
+
+	/**
+	 * Allows to explicitly disabled a facet.
+	 * <p>
+	 * Only enabled facet will be actively used in search. This allows to define
+	 * facets without making them appear in search results.
+	 * </p>
+	 * <p>
+	 * By default a facet is enabled.
+	 * </p>
+	 * 
+	 * @param enabled
+	 *            <code>true</code> to enabled, <code>false</code> to diable
+	 */
+	void setEnabled(boolean enabled);
+
+	/**
 	 * Sets or unsets a human-readable name for the default locale.
 	 * <p>
 	 * This is a convenience method which just calles

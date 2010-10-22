@@ -9,17 +9,17 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal;
+package org.eclipse.gyrex.cds.solr.internal.documents;
 
 import org.eclipse.gyrex.monitoring.metrics.MetricSet;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 
-public class SolrListingsManagerMetrics extends MetricSet {
+public class SolrDocumentManagerMetrics extends MetricSet {
 
 	private final ThroughputMetric docsPublishedMetric;
 	private final ThroughputMetric docsRetrievedByIdMetric;
 
-	public SolrListingsManagerMetrics(final String id) {
+	public SolrDocumentManagerMetrics(final String id) {
 		super(id, new ThroughputMetric(id + ".docs.published"), new ThroughputMetric(id + ".docs.retrieved.byId"));
 		docsPublishedMetric = getMetric(0, ThroughputMetric.class);
 		docsRetrievedByIdMetric = getMetric(1, ThroughputMetric.class);

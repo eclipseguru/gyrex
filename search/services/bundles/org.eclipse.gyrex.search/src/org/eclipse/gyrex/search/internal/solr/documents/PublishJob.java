@@ -9,24 +9,26 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal;
+package org.eclipse.gyrex.cds.solr.internal.documents;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.gyrex.cds.documents.Document;
-import org.eclipse.gyrex.cds.documents.Field;
+import org.eclipse.gyrex.cds.documents.IDocument;
+import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
+import org.eclipse.gyrex.cds.solr.internal.SolrCdsActivator;
 import org.eclipse.gyrex.common.status.BundleStatusUtil;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
-import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.common.SolrInputDocument;
 
 /**
@@ -34,42 +36,39 @@ import org.apache.solr.common.SolrInputDocument;
  */
 public class PublishJob extends Job {
 
-	private final Iterable<Document> documents;
-	private final SolrRepository solrRepository;
-	private final SolrListingsManagerMetrics solrListingsManagerMetrics;
+	private final Iterable<IDocument> documents;
+	private final SolrServer solrServer;
+	private final SolrDocumentManagerMetrics solrListingsManagerMetrics;
 	private final boolean commit;
 
-	public PublishJob(final Iterable<Document> documents, final SolrRepository solrRepository, final SolrListingsManagerMetrics solrListingsManagerMetrics, final boolean commit) {
+	public PublishJob(final Iterable<IDocument> documents, final SolrServer solrServer, final SolrDocumentManagerMetrics solrListingsManagerMetrics, final boolean commit) {
 		super("Solr Document Publish");
 		this.documents = documents;
-		this.solrRepository = solrRepository;
+		this.solrServer = solrServer;
 		this.solrListingsManagerMetrics = solrListingsManagerMetrics;
 		this.commit = commit;
 		setSystem(true);
 		setPriority(LONG);
 	}
 
-	private SolrInputDocument createSolrDoc(final Document document) {
+	private SolrInputDocument createSolrDoc(final IDocument document) {
 		final SolrInputDocument solrDoc = new SolrInputDocument();
-		final Collection<Field<?>> fields = document.getFields();
-		for (final Field<?> field : fields) {
-			final Collection<?> values = field.getValues();
+		final Collection<IDocumentAttribute> attributes = document.getAttributes().values();
+		for (final IDocumentAttribute attr : attributes) {
+			final Collection<?> values = attr.getValues();
 			for (final Object value : values) {
-				solrDoc.addField(field.getName(), value);
+				solrDoc.addField(attr.getId(), value);
 			}
 		}
 		return solrDoc;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
-	 */
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 		// check if we are active
 		BundleStatusUtil statusUtil;
 		try {
-			statusUtil = ListingsSolrModelActivator.getInstance().getStatusUtil();
+			statusUtil = SolrCdsActivator.getInstance().getStatusUtil();
 		} catch (final IllegalStateException e) {
 			return Status.CANCEL_STATUS;
 		}
@@ -79,15 +78,18 @@ public class PublishJob extends Job {
 
 		// create solr docs
 		final List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
-		for (final Document document : documents) {
+		for (final IDocument document : documents) {
 			docs.add(createSolrDoc(document));
 		}
 		try {
 			// add to repository
 			if (commit) {
-				solrRepository.add(docs, (int) TimeUnit.MILLISECONDS.toMillis(3)); // TODO should be configurable
+				final UpdateRequest req = new UpdateRequest();
+				req.add(docs);
+				req.setCommitWithin((int) TimeUnit.MINUTES.toMillis(3)); // TODO: should be configurable
+				req.process(solrServer);
 			} else {
-				solrRepository.add(docs); // TODO should be configurable
+				solrServer.add(docs);
 			}
 			publishedMetric.requestFinished(docs.size(), System.currentTimeMillis() - requestStarted);
 		} catch (final Exception e) {

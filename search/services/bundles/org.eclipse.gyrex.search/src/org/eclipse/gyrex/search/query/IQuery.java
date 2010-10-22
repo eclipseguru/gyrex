@@ -58,7 +58,7 @@ public interface IQuery extends IAdaptable {
 	 *            the facet to filter on
 	 * @return the added facet filter
 	 */
-	public IFacetFilter addFacetFilter(final IFacet facets);
+	public IFacetFilter addFacetFilter(final IFacet facet);
 
 	/**
 	 * Adds a filter query.
@@ -108,12 +108,23 @@ public interface IQuery extends IAdaptable {
 	public String getAdvancedQuery();
 
 	/**
-	 * Returns the list of filter queries.
-	 * <p>
-	 * Note, the returned list does not allow modifications.
-	 * </p>
+	 * Returns the list of attribute filters.
 	 * 
-	 * @return the list of filter queries
+	 * @return an unmodifiable list of attribute filters
+	 */
+	public List<IAttributeFilter> getAttributeFilters();
+
+	/**
+	 * Returns the list of facet filters.
+	 * 
+	 * @return an unmodifiable list of facet filters
+	 */
+	public List<IFacetFilter> getFacetFilters();
+
+	/**
+	 * Returns the list of filter queries.
+	 * 
+	 * @return an unmodifiable list of filter queries
 	 */
 	public List<String> getFilterQueries();
 

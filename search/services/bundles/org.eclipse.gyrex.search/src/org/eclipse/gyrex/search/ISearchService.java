@@ -11,8 +11,6 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds;
 
-import java.util.concurrent.Future;
-
 import org.eclipse.gyrex.cds.query.IQuery;
 import org.eclipse.gyrex.cds.result.IResult;
 import org.eclipse.gyrex.services.common.IService;
@@ -58,6 +56,6 @@ public interface IContentDeliveryService extends IService {
 	 *            the query object
 	 * @return the result
 	 */
-	Future<IResult> findByQuery(IQuery query);
+	IResult findByQuery(IQuery query);
 
 }

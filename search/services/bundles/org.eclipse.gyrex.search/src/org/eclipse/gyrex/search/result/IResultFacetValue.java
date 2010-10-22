@@ -51,18 +51,4 @@ public interface IResultFacetValue {
 	 * @return the value
 	 */
 	String getValue();
-
-	/**
-	 * Returns a filter query which can be passed to
-	 * {@link IQuery#addFilterQuery(String)} to narrow a query on the facet
-	 * value.
-	 * <p>
-	 * Note, the returned filter query may only work within the same listing
-	 * service implementation.
-	 * </p>
-	 * 
-	 * @return a filter query
-	 */
-	String toFilterQuery();
-
 }

@@ -9,8 +9,9 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal;
+package org.eclipse.gyrex.cds.solr.internal.documents;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,18 +21,20 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.gyrex.cds.documents.Document;
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
-import org.eclipse.gyrex.cds.model.solr.ISolrListingManager;
-import org.eclipse.gyrex.cds.model.solr.ISolrQueryExecutor;
+import org.eclipse.gyrex.cds.solr.documents.ISolrDocumentManager;
+import org.eclipse.gyrex.cds.solr.solrj.ISolrQueryExecutor;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
-import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
+import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
@@ -40,11 +43,7 @@ import org.apache.solr.common.SolrDocumentList;
 /**
  * {@link IDocumentManager} implementation based on Apache Solr.
  */
-public class SolrListingsManager extends BaseModelManager<SolrRepository> implements IDocumentManager, ISolrListingManager {
-
-	private static String createMetricsId(final IRuntimeContext context, final SolrRepository repository) {
-		return "org.eclipse.gyrex.cds.model.solr.manager[" + context.getContextPath().toString() + "," + repository.getRepositoryId() + "].metrics";
-	}
+public class SolrDocumentManager extends BaseModelManager<org.eclipse.gyrex.persistence.solr.SolrServerRepository> implements IDocumentManager, ISolrDocumentManager, ISolrQueryExecutor {
 
 	private final AtomicBoolean commitsAllowed = new AtomicBoolean(true);
 
@@ -56,13 +55,23 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 	 * @param repository
 	 *            the repository
 	 */
-	protected SolrListingsManager(final IRuntimeContext context, final SolrRepository repository) {
-		super(context, repository, new SolrListingsManagerMetrics(createMetricsId(context, repository)));
+	protected SolrDocumentManager(final IRuntimeContext context, final org.eclipse.gyrex.persistence.solr.SolrServerRepository repository) {
+		super(context, repository, new SolrDocumentManagerMetrics(createMetricsId("org.eclipse.gyrex.cds.solr.documents", context, repository)));
 	}
 
 	@Override
 	public void commit(final boolean waitFlush, final boolean waitSearcher) {
-		getRepository().commit(waitFlush, waitSearcher);
+		try {
+			getSolrServer().commit(waitFlush, waitSearcher);
+		} catch (final Exception e) {
+			// TODO: exception handling
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public IDocument createDocument() {
+		return new TransientDocument();
 	}
 
 	@Override
@@ -98,14 +107,14 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 			query.setFields("*");
 
 			// execute
-			final QueryResponse response = getRepository().query(query);
+			final QueryResponse response = query(query);
 			final SolrDocumentList results = response.getResults();
 
 			// check for result
 			if (!results.isEmpty()) {
 				final Map<String, IDocument> map = new HashMap<String, IDocument>(results.size());
 				for (final Iterator<SolrDocument> stream = results.iterator(); stream.hasNext();) {
-					final SolrListing doc = new SolrListing(stream.next());
+					final StoredDocument doc = new StoredDocument(stream.next());
 					map.put(doc.getId(), doc);
 				}
 				retrievedByIdMetric.requestFinished(length, System.currentTimeMillis() - requestStarted);
@@ -141,13 +150,13 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 			query.setFields("*");
 
 			// query
-			final QueryResponse response = getRepository().query(query);
+			final QueryResponse response = query(query);
 			final SolrDocumentList results = response.getResults();
 
 			// check for result
 			if (!results.isEmpty()) {
 				retrievedByIdMetric.requestFinished(1, System.currentTimeMillis() - requestStarted);
-				return new SolrListing(results.iterator().next());
+				return new StoredDocument(results.iterator().next());
 			}
 
 			// nothing found
@@ -164,50 +173,44 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 
 	@Override
 	public final Object getAdapter(final Class adapter) {
-		if (ISolrListingManager.class.equals(adapter)) {
+		if (ISolrDocumentManager.class.equals(adapter)) {
 			return this;
 		}
 		if (ISolrQueryExecutor.class.equals(adapter)) {
-			return new SolrQueryExecutor(getRepository());
+			return this;
 		}
-		if (SolrRepository.class.equals(adapter)) {
+		if (SolrServerRepository.class.equals(adapter)) {
 			return getRepository();
 		}
 		return super.getAdapter(adapter);
 	}
 
-	//	public IListing findByFieldValue(final String path) {
-	//		try {
-	//			final SolrQuery query = new SolrQuery();
-	//			query.setStart(0).setRows(1);
-	//			query.setQuery(Document.URI_PATH + ":" + path);
-	//			final QueryResponse response = getRepository().getSolrServer().query(query);
-	//			final SolrDocumentList results = response.getResults();
-	//			if (!results.isEmpty()) {
-	//				return new SolrListing(results.iterator().next());
-	//			}
-	//		} catch (final SolrServerException e) {
-	//			throw new RuntimeException(e);
-	//		}
-	//		return null;
-	//	}
+	private SolrDocumentManagerMetrics getSolrListingsManagerMetrics() {
+		return (SolrDocumentManagerMetrics) getMetrics();
+	}
 
-	private SolrListingsManagerMetrics getSolrListingsManagerMetrics() {
-		return (SolrListingsManagerMetrics) getMetrics();
+	private SolrServer getSolrServer() {
+		return getRepository().getSolrServer();
 	}
 
 	@Override
 	public void optimize(final boolean waitFlush, final boolean waitSearcher) {
-		getRepository().optimize(waitFlush, waitSearcher);
+		try {
+			getSolrServer().optimize(waitFlush, waitSearcher);
+		} catch (final SolrServerException e) {
+			throw new RuntimeException(e);
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public void publish(final Iterable<Document> documents) {
+	public void publish(final Iterable<IDocument> documents) {
 		// create a copy of the list to avoid clearing the list by outsiders
-		final List<Document> docsToPublish = new ArrayList<Document>();
+		final List<IDocument> docsToPublish = new ArrayList<IDocument>();
 
 		// assign ids and copy docs into the list
-		for (final Document document : documents) {
+		for (final IDocument document : documents) {
 			if (null == document.getId()) {
 				document.setId(UUID.randomUUID().toString());
 			}
@@ -215,12 +218,37 @@ public class SolrListingsManager extends BaseModelManager<SolrRepository> implem
 		}
 
 		// publish
-		new PublishJob(docsToPublish, getRepository(), getSolrListingsManagerMetrics(), commitsAllowed.get()).schedule();
+		new PublishJob(docsToPublish, getSolrServer(), getSolrListingsManagerMetrics(), commitsAllowed.get()).schedule();
+	}
+
+	@Override
+	public QueryResponse query(final SolrQuery solrQuery) {
+		final String query = solrQuery.toString();
+		// TODO: limit should be configurable
+		try {
+			final int urlLengthLimit = 2000;
+			if (query.length() > urlLengthLimit) {
+				return getSolrServer().query(solrQuery, SolrRequest.METHOD.POST);
+			} else {
+				return getSolrServer().query(solrQuery, SolrRequest.METHOD.GET);
+			}
+		} catch (final Exception e) {
+			// TODO: exception handling
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.gyrex.cds.documents.IDocumentManager#remove(java.lang.Iterable)
+	 */
+	@Override
+	public void remove(final Iterable<String> documentIds) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public boolean setCommitsEnabled(final boolean enabled) {
 		return commitsAllowed.getAndSet(enabled);
 	}
-
 }

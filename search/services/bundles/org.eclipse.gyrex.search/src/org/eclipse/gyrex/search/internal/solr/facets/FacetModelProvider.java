@@ -1,34 +1,34 @@
 /*******************************************************************************
  * Copyright (c) 2008 Gunnar Wagenknecht and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal;
+package org.eclipse.gyrex.cds.solr.internal.facets;
 
-import org.eclipse.gyrex.cds.documents.IDocumentManager;
+import org.eclipse.gyrex.cds.facets.IFacetManager;
+import org.eclipse.gyrex.cds.solr.ISolrCdsConstants;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.model.common.provider.ModelProvider;
-import org.eclipse.gyrex.persistence.solr.internal.SolrRepository;
+import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
 import org.eclipse.gyrex.persistence.storage.Repository;
-import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 
 /**
- * 
+ * Facets model provider.
  */
-public class SolrListingsModelProvider extends ModelProvider {
+public class FacetModelProvider extends ModelProvider {
 
 	/**
 	 * Creates a new instance.
 	 */
-	/*package*/SolrListingsModelProvider() {
-		super(new RepositoryContentType("application", "x-cf-listings-solr", SolrRepository.class.getName(), ListingsSolrModelActivator.getInstance().getBundleVersion().toString()), IDocumentManager.class);
+	public FacetModelProvider() {
+		super(ISolrCdsConstants.FACET_CONTENT_TYPE, IFacetManager.class);
 	}
 
 	/* (non-Javadoc)
@@ -36,8 +36,8 @@ public class SolrListingsModelProvider extends ModelProvider {
 	 */
 	@Override
 	public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IRuntimeContext context) {
-		if (IDocumentManager.class.equals(modelManagerType) && (repository instanceof SolrRepository)) {
-			return new SolrListingsManager(context, (SolrRepository) repository);
+		if (IFacetManager.class.equals(modelManagerType) && (repository instanceof ContextPreferencesRepository)) {
+			return new FacetManager(context, (ContextPreferencesRepository) repository);
 		}
 		return null;
 	}
