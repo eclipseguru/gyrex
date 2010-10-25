@@ -86,8 +86,8 @@ public interface IFacetManager extends IModelManager {
 	/**
 	 * Saves a facet from the underlying repository.
 	 * <p>
-	 * If the facet is transient it will be inserted, otherwise it will be saved
-	 * overwriting any existing data.
+	 * If the facet does not exist it will be inserted, otherwise it will be
+	 * saved overwriting any existing data.
 	 * </p>
 	 * 
 	 * @param facet
