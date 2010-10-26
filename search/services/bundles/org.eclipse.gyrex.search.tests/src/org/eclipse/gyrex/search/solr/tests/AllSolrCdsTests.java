@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 AGETO and others.
+ * Copyright (c) 2010 AGETO Service GmbH and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,7 +18,7 @@ import org.junit.runners.Suite;
  * Context Test Suite.
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ FacetManagerTest.class, DocumentManagerTest.class })
+@Suite.SuiteClasses({ FacetManagerTest.class, DocumentManagerTest.class, SolrCdsServiceTest.class })
 public class AllSolrCdsTests {
 
 }
