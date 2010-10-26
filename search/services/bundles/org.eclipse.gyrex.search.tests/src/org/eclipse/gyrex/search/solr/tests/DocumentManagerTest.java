@@ -21,7 +21,7 @@ import java.util.Collections;
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.solr.ISolrCdsConstants;
-import org.eclipse.gyrex.cds.solr.documents.ISolrDocumentManager;
+import org.eclipse.gyrex.cds.solr.internal.documents.PublishJob;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.PersistenceUtil;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
@@ -34,6 +34,7 @@ import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
@@ -130,10 +131,7 @@ public class DocumentManagerTest extends BaseContextTest {
 		assertEquals("test", doc.getId());
 
 		manager.publish(Collections.singleton(doc));
-		Thread.sleep(500);
-		((ISolrDocumentManager) manager).commit(true, true);
-
-//		Thread.sleep(2000);
+		Job.getJobManager().join(PublishJob.FAMILY, null);
 
 		final IDocument doc2 = manager.findById("test");
 		assertNotNull(doc2);

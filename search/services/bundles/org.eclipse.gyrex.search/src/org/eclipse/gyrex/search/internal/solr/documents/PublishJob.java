@@ -14,7 +14,6 @@ package org.eclipse.gyrex.cds.solr.internal.documents;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
@@ -28,13 +27,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.common.SolrInputDocument;
 
 /**
  *
  */
 public class PublishJob extends Job {
+
+	public static final Object FAMILY = new Object();
 
 	private final Iterable<IDocument> documents;
 	private final SolrServer solrServer;
@@ -49,6 +49,11 @@ public class PublishJob extends Job {
 		this.commit = commit;
 		setSystem(true);
 		setPriority(LONG);
+	}
+
+	@Override
+	public boolean belongsTo(final Object family) {
+		return FAMILY == family;
 	}
 
 	private SolrInputDocument createSolrDoc(final IDocument document) {
@@ -84,10 +89,12 @@ public class PublishJob extends Job {
 		try {
 			// add to repository
 			if (commit) {
-				final UpdateRequest req = new UpdateRequest();
-				req.add(docs);
-				req.setCommitWithin((int) TimeUnit.MINUTES.toMillis(3)); // TODO: should be configurable
-				req.process(solrServer);
+//				final UpdateRequest req = new UpdateRequest();
+//				req.add(docs);
+//				req.setCommitWithin((int) TimeUnit.MINUTES.toMillis(3)); // TODO: should be configurable
+//				req.process(solrServer);
+				solrServer.add(docs);
+				solrServer.commit();
 			} else {
 				solrServer.add(docs);
 			}
