@@ -13,6 +13,7 @@ package org.eclipse.gyrex.cds.solr.internal.documents;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
@@ -25,7 +26,7 @@ import org.apache.solr.common.SolrDocument;
 public class StoredDocument extends BaseDocument {
 
 	private final SolrDocument doc;
-	private Map<String, IDocumentAttribute> attributes;
+	private final Map<String, IDocumentAttribute> attributes = new HashMap<String, IDocumentAttribute>();
 	private boolean dirty;
 	private boolean initializedFully;
 

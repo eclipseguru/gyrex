@@ -15,8 +15,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.gyrex.cds.facets.IFacet;
@@ -24,7 +26,9 @@ import org.eclipse.gyrex.cds.facets.IFacetManager;
 import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.cds.query.TermCombination;
 import org.eclipse.gyrex.cds.solr.ISolrCdsConstants;
+import org.eclipse.gyrex.cds.solr.internal.facets.Facet;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
+import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
 import org.eclipse.gyrex.persistence.context.preferences.internal.ContextPreferencesRepositoryType;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
@@ -55,7 +59,7 @@ public class FacetManagerTest extends BaseContextTest {
 		DefaultRepositoryLookupStrategy.setRepository(getContext(), ISolrCdsConstants.FACET_CONTENT_TYPE, REPOSITORY_ID);
 		IRepositoryPreferences preferences;
 		try {
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, ContextPreferencesRepositoryType.ID);
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, ContextPreferencesRepository.PROVIDER_ID);
 		} catch (final IllegalStateException e) {
 			// assume already exist
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryPreferences(REPOSITORY_ID);
@@ -134,5 +138,39 @@ public class FacetManagerTest extends BaseContextTest {
 		assertEquals(facet.getName(), saveFacet.getName());
 		assertEquals(facet.getSelectionStrategy(), saveFacet.getSelectionStrategy());
 		assertEquals(facet.getTermCombination(), saveFacet.getTermCombination());
+	}
+
+	@Test
+	public void test003_FacetPersistence2() throws Exception {
+		final Facet facet = new Facet("test", null);
+		facet.setName("Test");
+		facet.setName("Test de", Locale.GERMAN);
+		facet.setName("Test de_DE", Locale.GERMANY);
+
+		// check locale
+		assertEquals("Test de_DE", facet.getName(Locale.GERMANY));
+		assertEquals("Test de", facet.getName(Locale.GERMAN));
+		assertEquals("Test de_DE", facet.getName(Locale.GERMANY, Locale.GERMAN));
+		assertEquals("Test", facet.getName(Locale.UK, Locale.ROOT));
+		assertNull(facet.getName(Locale.UK));
+
+		// serialize
+		final byte[] bs = facet.toByteArray();
+
+		// re-construct
+		final Facet facet2 = new Facet("test", null, bs);
+
+		// check properties
+		assertEquals(facet.getName(), facet2.getName());
+		assertNull(facet2.getSelectionStrategy());
+		assertNull(facet2.getTermCombination());
+
+		// check locales
+		assertEquals(facet.getName(Locale.GERMANY), facet2.getName(Locale.GERMANY));
+		assertEquals(facet.getName(Locale.GERMAN), facet2.getName(Locale.GERMAN));
+		assertEquals(facet.getName(Locale.GERMANY, Locale.GERMAN), facet2.getName(Locale.GERMANY, Locale.GERMAN));
+		assertEquals(facet.getName(Locale.UK, Locale.ROOT), facet2.getName(Locale.UK, Locale.ROOT));
+		assertNull(facet2.getName(Locale.UK));
+
 	}
 }

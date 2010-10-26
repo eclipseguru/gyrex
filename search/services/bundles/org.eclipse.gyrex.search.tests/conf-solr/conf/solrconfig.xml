@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Copyright (c) 2009 AGETO Service GmbH and others.
+    All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v1.0 which accompanies this distribution,
+    and is available at http://www.eclipse.org/legal/epl-v10.html.
+
+    Contributors:
+        Gunnar Wagenknecht - initial API and implementation
+ -->
+
+<!--
+ This is the Gyrex Fanshop specific Solr configuration file.
+ -->
+<config>
+  <abortOnConfigurationError>${solr.abortOnConfigurationError:true}</abortOnConfigurationError>
+  <indexDefaults>
+    <useCompoundFile>false</useCompoundFile>
+    <mergeFactor>10</mergeFactor>
+    <ramBufferSizeMB>128</ramBufferSizeMB>
+    <maxMergeDocs>2147483647</maxMergeDocs>
+    <maxFieldLength>10000</maxFieldLength>
+    <writeLockTimeout>1000</writeLockTimeout>
+    <commitLockTimeout>10000</commitLockTimeout>
+    <lockType>native</lockType>
+    <unlockOnStartup>false</unlockOnStartup>
+  </indexDefaults>
+
+  <!-- the default high-performance update handler -->
+  <query>
+
+    <filterCache class="solr.LRUCache" size="262144" initialSize="65536" autowarmCount="65536"/>
+    <queryResultCache class="solr.LRUCache" size="16384" initialSize="4096" autowarmCount="1024"/>
+    <documentCache class="solr.LRUCache" size="262144" initialSize="16384" autowarmCount="0"/>
+
+    <enableLazyFieldLoading>true</enableLazyFieldLoading>
+    <useFilterForSortedQuery>true</useFilterForSortedQuery>
+    <queryResultWindowSize>50</queryResultWindowSize>
+    <queryResultMaxDocsCached>400000</queryResultMaxDocsCached>
+    <HashDocSet maxSize="3000" loadFactor="0.75"/>
+
+    <listener event="newSearcher" class="solr.QuerySenderListener">
+      <arr name="queries">
+        <!-- seed common sort fields -->
+        <lst> <str name="q">*:*</str> </lst>
+      </arr>
+    </listener>
+    <listener event="firstSearcher" class="solr.QuerySenderListener">
+      <arr name="queries">
+        <!-- seed common sort fields -->
+        <lst> <str name="q">*:*</str> </lst>
+        <!-- seed common facets and filter queries -->
+        <lst> <str name="q">*:*</str>
+              <str name="facet">true</str>
+              <str name="facet.field">classification_facet</str>
+              <str name="facet.field">product_facet</str>
+              <str name="facet.field">component_facet</str>
+              <str name="facet.field">keywords_facet</str>
+              <str name="facet.field">tags_facet</str>
+              <str name="facet.field">status_facet</str>
+              <str name="facet.field">resolution_facet</str>
+              <str name="facet.field">targetMilestone_facet</str>
+              <str name="facet.field">version_facet</str>
+              <str name="facet.field">statusWhiteboard_facet</str>
+              <str name="facet.field">priority_facet</str>
+              <str name="facet.field">severity_facet</str>
+              <str name="facet.field">hardware_facet</str>
+              <str name="facet.field">os_facet</str>
+              <str name="facet.field">assignee_facet</str>
+              <str name="facet.field">reporter_facet</str>
+              <str name="facet.field">cc_facet</str>
+              <str name="facet.field">commenter_facet</str>
+        </lst>
+      </arr>
+    </listener>
+
+    <useColdSearcher>false</useColdSearcher>
+    <maxWarmingSearchers>2</maxWarmingSearchers>
+
+  </query>
+
+  <requestDispatcher handleSelect="true" >
+    <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" />
+    <httpCaching lastModifiedFrom="openTime"
+                 etagSeed="BugSearch-Solr">
+       <!-- <cacheControl>max-age=30, public</cacheControl> -->
+    </httpCaching>
+  </requestDispatcher>
+
+
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+     </lst>
+  </requestHandler>
+
+
+  <requestHandler name="dismax" class="solr.SearchHandler" >
+    <lst name="defaults">
+     <str name="defType">dismax</str>
+     <str name="echoParams">explicit</str>
+     <float name="tie">0.01</float>
+     <str name="qf">
+        text^0.01 title^2.5 titleSubMatch^0.4 id^100.0 keyword^0.3 description^0.3 comment^0.1 product^4
+     </str>
+     <str name="pf">
+        text^0.01 title^2.5 description^0.3 comment^0.1 product^4
+     </str>
+     <str name="bf">
+        recip(rord(created),1,1000,1000)
+     </str>
+     <str name="fl">
+        id,uripath,title,reporter,keyword,product,component,score,status,resolution
+     </str>
+     <str name="mm">
+        2&lt;-1 5&lt;-2 6&lt;90%
+     </str>
+     <int name="ps">100</int>
+     <str name="q.alt">*:*</str>
+    </lst>
+  </requestHandler>
+
+  <!-- optimized handler for auto complete -->
+  <requestHandler name="autocomplete" class="solr.SearchHandler" >
+    <lst name="defaults">
+     <str name="defType">dismax</str>
+     <str name="echoParams">explicit</str>
+     <float name="tie">0.01</float>
+     <str name="qf">
+        titleAutocomplete^1 title^1.2
+     </str>
+     <str name="fl">
+        id,uripath,title,reporter,keyword,product,component,score,status,resolution
+     </str>
+     <str name="q.alt">*:*</str>
+     <str name="hl">true</str>
+     <str name="hl.fl">title</str>
+    </lst>
+  </requestHandler>
+
+  <requestHandler name="/update" class="solr.XmlUpdateRequestHandler" />
+  <requestHandler name="/analysis" class="solr.AnalysisRequestHandler" />
+  <requestHandler name="/admin/" class="org.apache.solr.handler.admin.AdminHandlers" />
+
+  <admin>
+    <defaultQuery>solr</defaultQuery>
+  </admin>
+</config>

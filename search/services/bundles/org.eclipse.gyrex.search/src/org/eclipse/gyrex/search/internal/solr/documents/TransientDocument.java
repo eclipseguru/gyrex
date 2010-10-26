@@ -12,6 +12,7 @@
 package org.eclipse.gyrex.cds.solr.internal.documents;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
@@ -22,7 +23,7 @@ import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
  */
 public class TransientDocument extends BaseDocument {
 
-	private Map<String, IDocumentAttribute> attributes;
+	private final Map<String, IDocumentAttribute> attributes = new LinkedHashMap<String, IDocumentAttribute>();
 
 	@Override
 	public boolean contains(final String attributeId) {
