@@ -18,6 +18,7 @@ import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.cds.query.TermCombination;
 import org.eclipse.gyrex.cds.solr.ISolrCdsConstants;
 import org.eclipse.gyrex.cds.solr.internal.facets.Facet;
+import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
 import org.eclipse.gyrex.persistence.context.preferences.internal.ContextPreferencesRepositoryType;
@@ -35,6 +37,8 @@ import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
+import org.osgi.service.prefs.BackingStoreException;
 
 import org.junit.Test;
 
@@ -47,16 +51,10 @@ public class FacetManagerTest extends BaseContextTest {
 	/** TEST_FACET */
 	private static final String TEST_FACET = "Test Facet";
 	/** NAME */
-	private static final String REPOSITORY_ID = FacetManagerTest.class.getName();
+	private static final String REPOSITORY_ID = FacetManagerTest.class.getSimpleName().toLowerCase();
 
-	@Override
-	protected IPath getPrimaryTestContextPath() {
-		return new Path("/__internal/org/eclipse/gyrex/cds/solr/tests");
-	}
-
-	@Override
-	protected void initContext() throws Exception {
-		DefaultRepositoryLookupStrategy.setRepository(getContext(), ISolrCdsConstants.FACET_CONTENT_TYPE, REPOSITORY_ID);
+	static void initFacetManager(final IRuntimeContext context) throws BackingStoreException, IOException {
+		DefaultRepositoryLookupStrategy.setRepository(context, ISolrCdsConstants.FACET_CONTENT_TYPE, REPOSITORY_ID);
 		IRepositoryPreferences preferences;
 		try {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, ContextPreferencesRepository.PROVIDER_ID);
@@ -65,8 +63,19 @@ public class FacetManagerTest extends BaseContextTest {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryPreferences(REPOSITORY_ID);
 		}
 		assertNotNull(preferences);
-		preferences.getPreferences().put(ContextPreferencesRepositoryType.PREF_KEY_CONTEXT_PATH, getContext().getContextPath().toString());
+		preferences.getPreferences().put(ContextPreferencesRepositoryType.PREF_KEY_CONTEXT_PATH, context.getContextPath().toString());
 		preferences.flush();
+	}
+
+	@Override
+	protected IPath getPrimaryTestContextPath() {
+		return new Path("/__internal/org/eclipse/gyrex/cds/solr/tests");
+	}
+
+	@Override
+	protected void initContext() throws Exception {
+		final IRuntimeContext context = getContext();
+		initFacetManager(context);
 	}
 
 	@Test

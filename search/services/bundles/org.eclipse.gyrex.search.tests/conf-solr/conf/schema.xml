@@ -195,4 +195,6 @@
  <defaultSearchField>text</defaultSearchField>
  <solrQueryParser defaultOperator="OR"/>
 
+ <copyField source="color" dest="color_facet" />
+
 </schema>

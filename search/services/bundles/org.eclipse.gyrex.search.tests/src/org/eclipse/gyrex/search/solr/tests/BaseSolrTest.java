@@ -14,8 +14,11 @@ package org.eclipse.gyrex.cds.solr.tests;
 import static junit.framework.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.gyrex.cds.solr.ISolrCdsConstants;
+import org.eclipse.gyrex.cds.solr.internal.documents.PublishJob;
+import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.PersistenceUtil;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
@@ -27,9 +30,14 @@ import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
+
+import org.osgi.service.prefs.BackingStoreException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.core.CoreContainer;
@@ -43,6 +51,27 @@ import org.junit.BeforeClass;
 public abstract class BaseSolrTest extends BaseContextTest {
 
 	protected static final String TEST_REPO_ID = BaseSolrTest.class.getSimpleName().toLowerCase();
+
+	static void initDocumentManager(final IRuntimeContext context) throws BackingStoreException, IOException, SolrServerException {
+		DefaultRepositoryLookupStrategy.setRepository(context, ISolrCdsConstants.DOCUMENT_CONTENT_TYPE, TEST_REPO_ID);
+		IRepositoryPreferences preferences;
+		try {
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID);
+		} catch (final IllegalStateException e) {
+			// assume already exist
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryPreferences(TEST_REPO_ID);
+		}
+		assertNotNull(preferences);
+		preferences.getPreferences().put(ISolrRepositoryConstants.PREF_KEY_SERVER_TYPE, SolrServerType.EMBEDDED.name());
+		preferences.flush();
+
+		// create Solr index
+
+		// empty repo
+		final SolrServerRepository repo = (SolrServerRepository) PersistenceUtil.getRepository(context, ISolrCdsConstants.DOCUMENT_CONTENT_TYPE);
+		repo.getSolrServer().deleteByQuery("*:*");
+		repo.getSolrServer().commit();
+	}
 
 	@BeforeClass
 	public static void setupSolrIndex() throws Exception {
@@ -80,6 +109,17 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		}
 	}
 
+	static void waitForPendingSolrPublishOps() {
+		try {
+			Job.getJobManager().join(PublishJob.FAMILY, null);
+		} catch (final OperationCanceledException e) {
+			// ignore
+		} catch (final InterruptedException e) {
+			// ok
+			Thread.currentThread().interrupt();
+		}
+	}
+
 	@Override
 	protected IPath getPrimaryTestContextPath() {
 		return new Path("/__internal/org/eclipse/gyrex/cds/solr/tests");
@@ -87,23 +127,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 
 	@Override
 	protected void initContext() throws Exception {
-		DefaultRepositoryLookupStrategy.setRepository(getContext(), ISolrCdsConstants.DOCUMENT_CONTENT_TYPE, TEST_REPO_ID);
-		IRepositoryPreferences preferences;
-		try {
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID);
-		} catch (final IllegalStateException e) {
-			// assume already exist
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryPreferences(TEST_REPO_ID);
-		}
-		assertNotNull(preferences);
-		preferences.getPreferences().put(ISolrRepositoryConstants.PREF_KEY_SERVER_TYPE, SolrServerType.EMBEDDED.name());
-		preferences.flush();
-
-		// create Solr index
-
-		// empty repo
-		final SolrServerRepository repo = (SolrServerRepository) PersistenceUtil.getRepository(getContext(), ISolrCdsConstants.DOCUMENT_CONTENT_TYPE);
-		repo.getSolrServer().deleteByQuery("*:*");
-		repo.getSolrServer().commit();
+		final IRuntimeContext context = getContext();
+		initDocumentManager(context);
 	}
 }

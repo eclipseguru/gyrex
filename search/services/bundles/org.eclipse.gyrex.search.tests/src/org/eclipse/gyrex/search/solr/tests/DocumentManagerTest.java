@@ -19,9 +19,6 @@ import java.util.Collections;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
-import org.eclipse.gyrex.cds.solr.internal.documents.PublishJob;
-
-import org.eclipse.core.runtime.jobs.Job;
 
 import org.junit.Test;
 
@@ -47,7 +44,7 @@ public class DocumentManagerTest extends BaseSolrTest {
 		assertEquals("test", doc.getId());
 
 		manager.publish(Collections.singleton(doc));
-		Job.getJobManager().join(PublishJob.FAMILY, null);
+		waitForPendingSolrPublishOps();
 
 		final IDocument doc2 = manager.findById("test");
 		assertNotNull(doc2);
