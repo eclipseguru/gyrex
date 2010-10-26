@@ -13,7 +13,6 @@ package org.eclipse.gyrex.cds.solr.internal.query;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +39,11 @@ public class QueryImpl extends PlatformObject implements IQuery {
 	private long startIndex = 0;
 	private int maxResults = 10;
 	private ResultProjection resultProjection = ResultProjection.COMPACT;
+	private Map<String, IFacet> facetsInUse;
 
 	private final List<String> filterQueries = new ArrayList<String>(4);
 	private final List<IAttributeFilter> attributeFilters = new ArrayList<IAttributeFilter>(4);
 	private final List<IFacetFilter> facetFilters = new ArrayList<IFacetFilter>(4);
-	private final Map<String, IFacet> facetsInUse = new HashMap<String, IFacet>(4);
 
 	private final LinkedHashMap<String, SortDirection> sortFields = new LinkedHashMap<String, SortDirection>(4);
 
@@ -59,7 +58,6 @@ public class QueryImpl extends PlatformObject implements IQuery {
 	public IFacetFilter addFacetFilter(final IFacet facet) {
 		final FacetFilter filter = new FacetFilter(facet);
 		facetFilters.add(filter);
-		facetsInUse.put(facet.getAttributeId(), facet);
 		return filter;
 	}
 
@@ -144,6 +142,16 @@ public class QueryImpl extends PlatformObject implements IQuery {
 		return this;
 	}
 
+	/**
+	 * Sets the facetsInUse.
+	 * 
+	 * @param facetsInUse
+	 *            the facetsInUse to set
+	 */
+	public void setFacetsInUse(final Map<String, IFacet> facetsInUse) {
+		this.facetsInUse = facetsInUse;
+	}
+
 	@Override
 	public QueryImpl setMaxResults(final int maxResults) {
 		if (maxResults < 0) {
@@ -196,4 +204,5 @@ public class QueryImpl extends PlatformObject implements IQuery {
 		toString.append(" ]");
 		return toString.toString();
 	}
+
 }

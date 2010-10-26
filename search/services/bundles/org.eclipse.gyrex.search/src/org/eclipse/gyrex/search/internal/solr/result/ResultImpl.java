@@ -61,8 +61,12 @@ public class ResultImpl extends PlatformObject implements IResult {
 	 * Creates a {@link ResultFacet} from a {@link FacetField}.
 	 */
 	private ResultFacet createFacet(final FacetField facetField) {
-		// look in the query if a facet has been used there
-		final IFacet facet = query.getFacetsInUse().get(SolrSchemaConventions.facetAttributeId(facetField.getName()));
+		// look in the query if a facet has been used there (facet fields)
+		final Map<String, IFacet> facetsInUse = query.getFacetsInUse();
+		if (facetsInUse == null) {
+			return null;
+		}
+		final IFacet facet = facetsInUse.get(SolrSchemaConventions.facetAttributeId(facetField.getName()));
 		if (facet == null) {
 			return null;
 		}

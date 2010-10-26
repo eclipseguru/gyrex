@@ -67,7 +67,7 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 		return new QueryImpl();
 	}
 
-	public SolrQuery createSolrQuery(final IQuery query) {
+	public SolrQuery createSolrQuery(final QueryImpl query) {
 		final SolrQuery solrQuery = new SolrQuery();
 
 		// advanced or user query
@@ -105,6 +105,9 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 		// facets
 		final Map<String, IFacet> facets = getFacets();
 		if (facets != null) {
+			// remember facets
+			query.setFacetsInUse(facets);
+
 			// enable facetting
 			for (final IFacet facet : facets.values()) {
 				final String facetField = SolrSchemaConventions.facetFieldName(facet.getAttributeId());
@@ -149,15 +152,18 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 
 	@Override
 	public IResult findByQuery(final IQuery query) {
-		final IDocumentManager manager = ModelUtil.getManager(IDocumentManager.class, getContext());
+		if ((query == null) || !(query instanceof QueryImpl)) {
+			throw new IllegalStateException("Invalid query. Must be created using #createQuery from this service instance.");
+		}
 
+		final IDocumentManager manager = ModelUtil.getManager(IDocumentManager.class, getContext());
 		final ISolrQueryExecutor queryExecutor = (ISolrQueryExecutor) manager.getAdapter(ISolrQueryExecutor.class);
 		if (null == queryExecutor) {
 			throw new IllegalStateException("The context document manager is not a Solr based listing manager.");
 		}
 
 		// create query
-		final SolrQuery solrQuery = createSolrQuery(query);
+		final SolrQuery solrQuery = createSolrQuery((QueryImpl) query);
 		final QueryResponse response = queryExecutor.query(solrQuery);
 		return new ResultImpl(getContext(), (QueryImpl) query, response);
 	}
