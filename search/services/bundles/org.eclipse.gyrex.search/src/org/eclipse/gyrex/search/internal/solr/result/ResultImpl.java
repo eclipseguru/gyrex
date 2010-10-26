@@ -108,7 +108,7 @@ public class ResultImpl extends PlatformObject implements IResult {
 			for (final FacetField facetField : facetFields) {
 				final ResultFacet facet = createFacet(facetField);
 				if (null != facet) {
-					facets.put(facetField.getName(), facet);
+					facets.put(facet.getFacet().getAttributeId(), facet);
 				}
 			}
 		}
