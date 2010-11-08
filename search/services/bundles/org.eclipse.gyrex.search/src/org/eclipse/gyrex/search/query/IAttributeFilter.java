@@ -30,10 +30,10 @@ package org.eclipse.gyrex.cds.query;
 public interface IAttributeFilter extends IFilter<IAttributeFilter> {
 
 	/**
-	 * Sets a single value to match
+	 * Sets a single, un-escaped value to match
 	 * 
 	 * @param value
-	 *            the value to match
+	 *            the (un-escaped) value to match
 	 */
 	void matchValue(String value);
 
