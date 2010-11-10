@@ -32,8 +32,10 @@ public class StoredDocumentAttribute<T> extends BaseDocumentAttribute<T> {
 	 */
 	public StoredDocumentAttribute(final String id, final Collection<T> fieldValues, final StoredDocument parent) {
 		super(id);
-		// set values before setting parent so that it will be null
-		set(fieldValues);
+		// set values before setting parent so that it will be null to avoid too early dirty trigger
+		if (fieldValues != null) {
+			set(fieldValues);
+		}
 		// set parent after setting values
 		this.parent = parent;
 	}

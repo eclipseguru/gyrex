@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.internal.documents;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,17 +43,11 @@ public class StoredDocument extends BaseDocument {
 		return doc.containsKey(attributeId);
 	}
 
-	private StoredDocumentAttribute createAttribute(final String attributeId, final Collection<Object> fieldValues) {
-		if (fieldValues == null) {
-			return null;
-		}
-		return new StoredDocumentAttribute<Object>(attributeId, fieldValues, this);
-	}
-
 	private void ensureInitialized(final String attributeId) {
 		// lazy populate attributes map until full initialization is complete
 		if (!initializedFully && !attributes.containsKey(attributeId)) {
-			attributes.put(attributeId, createAttribute(attributeId, doc.getFieldValues(attributeId)));
+			// initialize with non-null attribute
+			attributes.put(attributeId, new StoredDocumentAttribute<Object>(attributeId, doc.getFieldValues(attributeId), this));
 		}
 	}
 
