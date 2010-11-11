@@ -20,7 +20,7 @@ import org.eclipse.osgi.util.NLS;
 /**
  * {@link IAttributeFilter} implementation
  */
-class AttributeFilter extends BaseFilter implements IAttributeFilter {
+public class AttributeFilter extends BaseFilter implements IAttributeFilter {
 
 	private final String attributeId;
 	private String value;

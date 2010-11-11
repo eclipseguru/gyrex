@@ -21,10 +21,12 @@ import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
 import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
+import org.eclipse.gyrex.cds.query.IAttributeFilter;
 import org.eclipse.gyrex.cds.query.IFacetFilter;
 import org.eclipse.gyrex.cds.query.IQuery;
 import org.eclipse.gyrex.cds.query.SortDirection;
 import org.eclipse.gyrex.cds.result.IResult;
+import org.eclipse.gyrex.cds.solr.internal.query.AttributeFilter;
 import org.eclipse.gyrex.cds.solr.internal.query.FacetFilter;
 import org.eclipse.gyrex.cds.solr.internal.query.QueryImpl;
 import org.eclipse.gyrex.cds.solr.internal.result.ResultImpl;
@@ -67,7 +69,7 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 		return new QueryImpl();
 	}
 
-	public SolrQuery createSolrQuery(final QueryImpl query) {
+	SolrQuery createSolrQuery(final QueryImpl query) {
 		final SolrQuery solrQuery = new SolrQuery();
 
 		// advanced or user query
@@ -86,6 +88,11 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 		// filters
 		for (final String filterQuery : query.getFilterQueries()) {
 			solrQuery.addFilterQuery(filterQuery);
+		}
+
+		// attribute filters
+		for (final IAttributeFilter attributeFilter : query.getAttributeFilters()) {
+			solrQuery.addFilterQuery(((AttributeFilter) attributeFilter).toFilterQuery());
 		}
 
 		// sorting
