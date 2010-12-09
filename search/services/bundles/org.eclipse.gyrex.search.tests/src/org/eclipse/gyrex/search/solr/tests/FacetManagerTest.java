@@ -30,8 +30,7 @@ import org.eclipse.gyrex.cds.solr.ISolrCdsConstants;
 import org.eclipse.gyrex.cds.solr.internal.facets.Facet;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
-import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
-import org.eclipse.gyrex.persistence.context.preferences.internal.ContextPreferencesRepositoryType;
+import org.eclipse.gyrex.persistence.context.preferences.IContextPreferencesRepositoryConstants;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
@@ -57,13 +56,13 @@ public class FacetManagerTest extends BaseContextTest {
 		DefaultRepositoryLookupStrategy.setRepository(context, ISolrCdsConstants.FACET_CONTENT_TYPE, REPOSITORY_ID);
 		IRepositoryPreferences preferences;
 		try {
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, ContextPreferencesRepository.PROVIDER_ID);
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, IContextPreferencesRepositoryConstants.PROVIDER_ID);
 		} catch (final IllegalStateException e) {
 			// assume already exist
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryPreferences(REPOSITORY_ID);
 		}
 		assertNotNull(preferences);
-		preferences.getPreferences().put(ContextPreferencesRepositoryType.PREF_KEY_CONTEXT_PATH, context.getContextPath().toString());
+		preferences.getPreferences().put(IContextPreferencesRepositoryConstants.PREF_KEY_CONTEXT_PATH, context.getContextPath().toString());
 		preferences.flush();
 	}
 
