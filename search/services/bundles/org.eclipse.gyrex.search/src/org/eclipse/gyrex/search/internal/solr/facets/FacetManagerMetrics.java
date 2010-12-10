@@ -23,10 +23,11 @@ public class FacetManagerMetrics extends MetricSet {
 	 * Creates a new instance.
 	 * 
 	 * @param id
+	 * @param description
 	 * @param metrics
 	 */
-	FacetManagerMetrics(final String id) {
-		super(id, new ThroughputMetric(id + ".facets.write"), new ThroughputMetric(id + ".facets.read"));
+	FacetManagerMetrics(final String id, final String description) {
+		super(id, description, new ThroughputMetric(id + ".facets.write"), new ThroughputMetric(id + ".facets.read"));
 	}
 
 }

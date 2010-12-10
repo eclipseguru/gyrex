@@ -25,8 +25,8 @@ public class SolrContentDeliveryServiceMetrics extends MetricSet {
 	 * @param id
 	 * @param metrics
 	 */
-	protected SolrContentDeliveryServiceMetrics(final String id) {
-		super(id, new StatusMetric(id.concat(".status"), "ok", "created"));
+	protected SolrContentDeliveryServiceMetrics(final String id, final String description) {
+		super(id, description, new StatusMetric(id.concat(".status"), "ok", "created"));
 	}
 
 }

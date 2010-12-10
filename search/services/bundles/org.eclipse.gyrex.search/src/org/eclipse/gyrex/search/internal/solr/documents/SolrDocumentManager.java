@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.solr.documents.ISolrDocumentManager;
+import org.eclipse.gyrex.cds.solr.internal.SolrCdsActivator;
 import org.eclipse.gyrex.cds.solr.solrj.ISolrQueryExecutor;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
@@ -56,7 +57,7 @@ public class SolrDocumentManager extends BaseModelManager<org.eclipse.gyrex.pers
 	 *            the repository
 	 */
 	protected SolrDocumentManager(final IRuntimeContext context, final org.eclipse.gyrex.persistence.solr.SolrServerRepository repository) {
-		super(context, repository, new SolrDocumentManagerMetrics(createMetricsId("org.eclipse.gyrex.cds.solr.documents", context, repository)));
+		super(context, repository, new SolrDocumentManagerMetrics(createMetricsId(SolrCdsActivator.SYMBOLIC_NAME + ".model.documents", context, repository), createMetricsDescription("Solr based document manager", context, repository)));
 	}
 
 	@Override

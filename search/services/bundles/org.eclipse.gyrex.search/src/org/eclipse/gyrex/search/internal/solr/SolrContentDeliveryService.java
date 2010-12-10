@@ -61,7 +61,7 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 	 * @param metrics
 	 */
 	SolrContentDeliveryService(final IRuntimeContext context, final IStatusMonitor statusMonitor) {
-		super(context, statusMonitor, new SolrContentDeliveryServiceMetrics(createMetricsId("org.eclipse.gyrex.cds.solr.service", context)));
+		super(context, statusMonitor, new SolrContentDeliveryServiceMetrics(createMetricsId(SolrCdsActivator.SYMBOLIC_NAME + ".service.cds", context), createMetricsDescription("Solr based CDS", context)));
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class FacetManager extends BaseModelManager<ContextPreferencesRepository>
 	 * @param repository
 	 */
 	FacetManager(final IRuntimeContext context, final ContextPreferencesRepository repository) {
-		super(context, repository, new FacetManagerMetrics(createMetricsId("org.eclipse.gyrex.cds.solr.facets", context, repository)));
+		super(context, repository, new FacetManagerMetrics(createMetricsId(SolrCdsActivator.SYMBOLIC_NAME + ".model.facets", context, repository), createMetricsDescription("context preferences based facet manager", context, repository)));
 	}
 
 	private void checkFacet(final IFacet facet) {
