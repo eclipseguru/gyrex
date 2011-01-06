@@ -24,8 +24,9 @@ import org.eclipse.gyrex.persistence.PersistenceUtil;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.solr.ISolrRepositoryConstants;
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
-import org.eclipse.gyrex.persistence.solr.SolrServerType;
 import org.eclipse.gyrex.persistence.solr.internal.SolrActivator;
+import org.eclipse.gyrex.persistence.solr.internal.SolrRepositoryProvider;
+import org.eclipse.gyrex.persistence.solr.internal.SolrServerType;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -59,10 +60,10 @@ public abstract class BaseSolrTest extends BaseContextTest {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID);
 		} catch (final IllegalStateException e) {
 			// assume already exist
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryPreferences(TEST_REPO_ID);
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryDefinition(TEST_REPO_ID).getRepositoryPreferences();
 		}
 		assertNotNull(preferences);
-		preferences.getPreferences().put(ISolrRepositoryConstants.PREF_KEY_SERVER_TYPE, SolrServerType.EMBEDDED.name());
+		preferences.put("collections/" + SolrRepositoryProvider.DEFAULT_COLLECTION + "/" + SolrRepositoryProvider.PREF_KEY_SERVER_TYPE, SolrServerType.EMBEDDED.name(), false);
 		preferences.flush();
 
 		// create Solr index
@@ -78,8 +79,11 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		// the configuration template
 		final File configTemplate = new File(FileLocator.toFileURL(SolrCdsTestsActivator.getInstance().getBundle().getEntry("conf-solr")).getFile());
 
+		// the core name
+		final String coreName = SolrActivator.getEmbeddedSolrCoreName(TEST_REPO_ID, SolrRepositoryProvider.DEFAULT_COLLECTION);
+
 		// create Solr instance directory
-		final File indexDir = SolrActivator.getInstance().getEmbeddedSolrCoreBase(TEST_REPO_ID);
+		final File indexDir = SolrActivator.getInstance().getEmbeddedSolrCoreBase(coreName);
 		if (!indexDir.isDirectory()) {
 			// initialize dir
 			indexDir.mkdirs();
@@ -93,14 +97,14 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		if (null == coreContainer) {
 			throw new IllegalStateException("no coreContainer");
 		}
-		final SolrCore core = coreContainer.getCore(TEST_REPO_ID);
+		final SolrCore core = coreContainer.getCore(coreName);
 		try {
 			if (null == core) {
 				// there should be an "admin" core for such requests
 				final EmbeddedSolrServer adminServer = new EmbeddedSolrServer(coreContainer, "admin");
-				CoreAdminRequest.createCore(TEST_REPO_ID, TEST_REPO_ID, adminServer);
+				CoreAdminRequest.createCore(coreName, coreName, adminServer);
 			} else {
-				coreContainer.reload(TEST_REPO_ID);
+				coreContainer.reload(coreName);
 			}
 		} finally {
 			if (null != core) {

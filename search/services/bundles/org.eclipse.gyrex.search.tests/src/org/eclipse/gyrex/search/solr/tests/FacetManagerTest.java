@@ -59,10 +59,10 @@ public class FacetManagerTest extends BaseContextTest {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, IContextPreferencesRepositoryConstants.PROVIDER_ID);
 		} catch (final IllegalStateException e) {
 			// assume already exist
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryPreferences(REPOSITORY_ID);
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryDefinition(REPOSITORY_ID).getRepositoryPreferences();
 		}
 		assertNotNull(preferences);
-		preferences.getPreferences().put(IContextPreferencesRepositoryConstants.PREF_KEY_CONTEXT_PATH, context.getContextPath().toString());
+		preferences.put(IContextPreferencesRepositoryConstants.PREF_KEY_CONTEXT_PATH, context.getContextPath().toString(), false);
 		preferences.flush();
 	}
 
