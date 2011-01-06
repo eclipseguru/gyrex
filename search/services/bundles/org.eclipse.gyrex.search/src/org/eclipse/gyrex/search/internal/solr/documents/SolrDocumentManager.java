@@ -228,10 +228,11 @@ public class SolrDocumentManager extends BaseModelManager<org.eclipse.gyrex.pers
 		// TODO: limit should be configurable
 		try {
 			final int urlLengthLimit = 2000;
+			final SolrServer solrServer = getRepository().getSolrServerOptimizedForQuery();
 			if (query.length() > urlLengthLimit) {
-				return getSolrServer().query(solrQuery, SolrRequest.METHOD.POST);
+				return solrServer.query(solrQuery, SolrRequest.METHOD.POST);
 			} else {
-				return getSolrServer().query(solrQuery, SolrRequest.METHOD.GET);
+				return solrServer.query(solrQuery, SolrRequest.METHOD.GET);
 			}
 		} catch (final Exception e) {
 			// TODO: exception handling
