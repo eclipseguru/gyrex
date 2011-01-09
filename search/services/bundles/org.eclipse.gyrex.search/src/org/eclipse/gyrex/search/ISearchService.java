@@ -19,8 +19,8 @@ import org.eclipse.gyrex.services.common.IService;
  * The content delivery service.
  * <p>
  * Gyrex uses the concept of a content delivery service to deliver documents
- * (eg., products) to clients (eg., websites). The delivery service defines
- * methods for querying a document repository.
+ * (eg., product listings) to clients (eg., websites). The delivery service
+ * defines methods for querying a document repository.
  * </p>
  * <p>
  * This interface must be implemented by contributors of a document model

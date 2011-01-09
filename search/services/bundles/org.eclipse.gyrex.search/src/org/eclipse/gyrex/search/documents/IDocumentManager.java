@@ -55,7 +55,7 @@ public interface IDocumentManager extends IModelManager {
 	IDocument createDocument();
 
 	/**
-	 * Finds multiple listing by their {@link IDocument#getId() ids}.
+	 * Finds multiple documents by their {@link IDocument#getId() ids}.
 	 * 
 	 * @param ids
 	 *            the listing ids to find
@@ -66,7 +66,7 @@ public interface IDocumentManager extends IModelManager {
 	Map<String, IDocument> findById(Iterable<String> ids);
 
 	/**
-	 * Finds a listing by its {@link IDocument#getId()}.
+	 * Finds a document by its {@link IDocument#getId()}.
 	 * 
 	 * @param id
 	 *            the listing id
@@ -83,16 +83,16 @@ public interface IDocumentManager extends IModelManager {
 	 * specific.
 	 * </p>
 	 * <p>
-	 * If the repository already contains a listing for a document with the same
-	 * id, the listing will be updated, otherwise the document will be added.
+	 * If the repository already contains an entry for a document with the same
+	 * id, the entry will be <em>replaced</em>, otherwise the document will be
+	 * <em>added</em>.
 	 * </p>
 	 * <p>
-	 * Note, a publish operation is considered to finish asynchronously, i.e.
-	 * when this method returns the documents might not be accessible
-	 * immediately using the <code>find...</code> methods. Depending on the
-	 * repository and amount of input the process is allowed to take a few
-	 * minutes till several hours (or even days if you are feeding millions of
-	 * documents).
+	 * Note, a publish operation may finish asynchronously, i.e. when this
+	 * method returns the documents might not be accessible immediately using
+	 * the <code>find...</code> methods. Depending on the repository and amount
+	 * of input the process is allowed to take a few minutes till several hours
+	 * (or even days if you are feeding millions of documents).
 	 * </p>
 	 * 
 	 * @param documents
@@ -101,13 +101,13 @@ public interface IDocumentManager extends IModelManager {
 	void publish(Iterable<IDocument> documents);
 
 	/**
-	 * Removes a set of documents from the repository.
+	 * Removes a set of documents from a repository.
 	 * <p>
-	 * Note, a remove operation is considered to finish asynchronously, i.e.
-	 * when this method returns the documents might still be accessible using
-	 * the <code>find...</code> methods. Depending on the repository and amount
-	 * of input the process is allowed to take a few minutes till several hours
-	 * (or even days if you are removing millions of documents).
+	 * Note, a remove operation may finish asynchronously, i.e. when this method
+	 * returns the documents might still be accessible using the
+	 * <code>find...</code> methods. Depending on the repository and amount of
+	 * input the process is allowed to take a few minutes till several hours (or
+	 * even days if you are removing millions of documents).
 	 * </p>
 	 * 
 	 * @param documentIds
