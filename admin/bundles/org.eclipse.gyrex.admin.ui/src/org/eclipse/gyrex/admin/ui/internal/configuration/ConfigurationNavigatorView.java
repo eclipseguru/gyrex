@@ -36,8 +36,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
  * A View that displays all registered admin configuration elements in the
@@ -174,9 +172,9 @@ public class ConfigurationNavigatorView extends ViewPart {
 
 	@Override
 	public Object getAdapter(final Class adapter) {
-		if (adapter == IPropertySheetPage.class) {
-			return new TabbedPropertySheetPage(ConfigurationTabbedPropertySheetPageContributor.INSTANCE);
-		}
+//		if (adapter == IPropertySheetPage.class) {
+//			return new TabbedPropertySheetPage(ConfigurationTabbedPropertySheetPageContributor.INSTANCE);
+//		}
 		return super.getAdapter(adapter);
 	}
 

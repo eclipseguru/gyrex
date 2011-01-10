@@ -46,8 +46,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
 import org.eclipse.ui.internal.forms.widgets.FormUtil;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
  * RAP based View to display a specific {@link ConfigurationPage}. The trigger
@@ -186,9 +184,9 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 
 	@Override
 	public Object getAdapter(final Class adapter) {
-		if (adapter == IPropertySheetPage.class) {
-			return new TabbedPropertySheetPage(ConfigurationTabbedPropertySheetPageContributor.INSTANCE);
-		}
+//		if (adapter == IPropertySheetPage.class) {
+//			return new TabbedPropertySheetPage(ConfigurationTabbedPropertySheetPageContributor.INSTANCE);
+//		}
 		return super.getAdapter(adapter);
 	}
 
