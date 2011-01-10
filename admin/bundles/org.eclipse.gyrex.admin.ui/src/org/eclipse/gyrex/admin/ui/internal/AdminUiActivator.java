@@ -78,6 +78,8 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 	private AdminUiHttpServiceTracker adminUiHttpServiceTracker;
 
+	public static final String ID_TABBED_PROPERTIES_CONFIG = "org.eclipse.gyrex.admin.ui.content.properties";
+
 	/**
 	 * The constructor
 	 */

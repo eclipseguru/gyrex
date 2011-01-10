@@ -11,17 +11,20 @@
  */
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
+import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
+
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 
 public class ConfigurationTabbedPropertySheetPageContributor implements ITabbedPropertySheetPageContributor {
 
 	public static final ConfigurationTabbedPropertySheetPageContributor INSTANCE = new ConfigurationTabbedPropertySheetPageContributor();
 
-	private static final String ID = "org.eclipse.gyrex.admin.ui.content.properties";
-
 	@Override
 	public String getContributorId() {
-		return ID;
+		// the constant is defined in AdminUiActivator because the RAP tabbed properties support
+		// is optional and needs to be implemented
+		// (https://bugs.eclipse.org/bugs/show_bug.cgi?id=333886)
+		return AdminUiActivator.ID_TABBED_PROPERTIES_CONFIG;
 	}
 
 }
