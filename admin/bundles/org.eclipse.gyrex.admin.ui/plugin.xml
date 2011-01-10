@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="configurationPages" name="Configuration Pages Extension Point" schema="schema/configurationPages.exsd"/>
+   <extension
+         point="org.eclipse.ui.presentationFactories">
+      <factory
+            class="org.eclipse.gyrex.admin.ui.internal.design.business.BusinessPresentationFactory"
+            id="org.eclipse.gyrex.admin.ui.presentation.factory"
+            name="Gyrex Admin UI Presentation Factory">
+      </factory>
+   </extension>
+   <extension
+         point="org.eclipse.rap.ui.stackPresentations">
+      <stackPresentation
+            actionClass="org.eclipse.gyrex.admin.ui.internal.design.stacks.ConfigAction"
+            class="org.eclipse.gyrex.admin.ui.internal.design.stacks.ViewStackPresentation"
+            id="org.eclipse.gyrex.admin.ui.stack.view"
+            name="Gyrex Admin UI Stack Presentation"
+            type="view">
+      </stackPresentation>
+   </extension>
+   <extension
+         point="org.eclipse.rap.ui.themes">
+      <theme
+            file="theme/admin/admin.css"
+            id="org.eclipse.gyrex.admin.ui.theme"
+            name="Gyrex Admin Theme">
+      </theme>
+   </extension>
+   <extension
+         point="org.eclipse.rap.ui.layouts">
+      <layout
+            id="org.eclipse.gyrex.admin.ui.layout"
+            name="Gyrex Admin Layout">
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.LogoInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.logo"
+               name="Logo"
+               overridesId="org.eclipse.rap.design.example.layoutset.logo">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.HeaderInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.header"
+               name="Header">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.FooterInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.footer"
+               name="Footer">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.MenuBarInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.menubar"
+               name="MenuBar">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.PerspectiveSwitcherInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.perspective"
+               name="Perspective Switcher">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.StackInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.stack"
+               name="Business Stack">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.ConfigDialogInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.confdialog"
+               name="Config Dialog">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.CoolbarInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.coolbar"
+               name="Coolbar">
+         </layoutSet>
+         <layoutSet
+               class="org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets.CoolbarOverflowInitializer"
+               id="org.eclipse.gyrex.admin.ui.layoutset.coolbaroverflow"
+               name="Coolbar Overflow">
+         </layoutSet>
+      </layout>
+   </extension>
+
+   <extension
+         point="org.eclipse.rap.ui.entrypoint">
+      <entrypoint
+            class="org.eclipse.gyrex.admin.ui.internal.application.AdminApplication"
+            parameter="gyrex-admin-ui"
+            id="org.eclipse.gyrex.admin.ui.entrypoint">
+      </entrypoint>
+   </extension>
+   <extension
+         point="org.eclipse.rap.ui.branding">
+      <branding
+            defaultEntrypointId="org.eclipse.gyrex.admin.ui.entrypoint"
+            favicon="img/gyrex/eclipse.ico"
+            id="org.eclipse.gyrex.admin.ui.branding"
+            servletName="admin"
+            themeId="org.eclipse.gyrex.admin.ui.theme"
+            title="Gyrex Admin UI">
+         <presentationFactory
+               defaultLayoutId="org.eclipse.gyrex.admin.ui.layout"
+               id="org.eclipse.gyrex.admin.ui.presentation.factory"
+               name="Gyrex Admin UI Presentation Factory"
+               viewActionsVisible="false">
+            <defaultStackPresentation
+                  id="org.eclipse.gyrex.admin.ui.stack.view">
+            </defaultStackPresentation>
+         </presentationFactory>
+         <associatedEntrypoints>
+            <entrypoint
+                  id="org.eclipse.gyrex.admin.ui.entrypoint">
+            </entrypoint>
+         </associatedEntrypoints>
+      </branding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.eclipse.gyrex.admin.ui.internal.configuration.ConfigurationPerspective"
+            fixed="true"
+            id="org.eclipse.gyrex.admin.ui.perspective.configuration"
+            name="Configuration">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="false"
+            category="org.eclipse.gyrex.admin.ui.category.configuration"
+            class="org.eclipse.gyrex.admin.ui.internal.configuration.ConfigurationPanelView"
+            id="org.eclipse.gyrex.admin.ui.view.content"
+            name="Configuration Panel"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="org.eclipse.gyrex.admin.ui.category.configuration"
+            class="org.eclipse.gyrex.admin.ui.internal.configuration.ConfigurationNavigatorView"
+            id="org.eclipse.gyrex.admin.ui.view.navigation"
+            name="Configuration Explorer"
+            restorable="true">
+      </view>
+      <category
+            id="org.eclipse.gyrex.admin.ui.category.configuration"
+            name="Configuration">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro">
+      <intro
+            class="org.eclipse.gyrex.admin.ui.internal.intro.AdminIntro"
+            id="org.eclipse.gyrex.admin.ui.intro"
+            label="Gyrex Admin Introduction">
+      </intro>
+      <introBrandingBinding
+            brandingId="org.eclipse.gyrex.admin.ui.branding"
+            introId="org.eclipse.gyrex.admin.ui.intro">
+      </introBrandingBinding>
+   </extension>
+   <extension
+         point="org.eclipse.gyrex.server.roles">
+     
+      <defaultStart
+            mode="any"
+            roleId="org.eclipse.gyrex.admin.ui.role"
+            trigger="onBoot">
+      </defaultStart>
+      <role
+            id="org.eclipse.gyrex.admin.ui.role"
+            name="RAP Based Admin UI">
+         <requireBundle
+               symbolicName="org.eclipse.rap.ui">
+         </requireBundle>
+         <requireBundle
+               symbolicName="org.eclipse.gyrex.admin.ui">
+         </requireBundle>
+         <requireBundle
+               symbolicName="org.eclipse.equinox.http.registry">
+         </requireBundle>
+      </role>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor
+            contributorId="org.eclipse.gyrex.admin.ui.content.properties">
+         <propertyCategory
+               category="general"></propertyCategory>
+         <propertyCategory
+               category="specific">
+         </propertyCategory>
+         <propertyCategory
+               category="other">
+         </propertyCategory>
+      </propertyContributor>
+   </extension>
+
+</plugin>
