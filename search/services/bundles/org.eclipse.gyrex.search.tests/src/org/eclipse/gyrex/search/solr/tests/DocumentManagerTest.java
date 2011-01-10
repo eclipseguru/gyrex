@@ -18,6 +18,7 @@ import static junit.framework.Assert.assertNull;
 import java.util.Collections;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
+import org.eclipse.gyrex.cds.documents.IDocumentCollection;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 
 import org.junit.Test;
@@ -32,7 +33,10 @@ public class DocumentManagerTest extends BaseSolrTest {
 		final IDocumentManager manager = getContext().get(IDocumentManager.class);
 		assertNotNull(manager);
 
-		assertNull(manager.findById("test"));
+		final IDocumentCollection collection = manager.getCollection(TEST_COLLECTION);
+		assertNotNull(collection);
+
+		assertNull(collection.findById("test"));
 
 		final IDocument doc = manager.createDocument();
 		assertNotNull(doc);
@@ -43,10 +47,10 @@ public class DocumentManagerTest extends BaseSolrTest {
 		doc.setId("test");
 		assertEquals("test", doc.getId());
 
-		manager.publish(Collections.singleton(doc));
+		collection.publish(Collections.singleton(doc));
 		waitForPendingSolrPublishOps();
 
-		final IDocument doc2 = manager.findById("test");
+		final IDocument doc2 = collection.findById("test");
 		assertNotNull(doc2);
 		assertEquals("test", doc2.getId());
 	}

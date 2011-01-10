@@ -51,27 +51,28 @@ import org.junit.BeforeClass;
 @SuppressWarnings("restriction")
 public abstract class BaseSolrTest extends BaseContextTest {
 
+	protected static final String TEST_COLLECTION = "test";
 	protected static final String TEST_REPO_ID = BaseSolrTest.class.getSimpleName().toLowerCase();
 
 	static void initDocumentManager(final IRuntimeContext context) throws BackingStoreException, IOException, SolrServerException {
 		DefaultRepositoryLookupStrategy.setRepository(context, ISolrCdsConstants.DOCUMENT_CONTENT_TYPE, TEST_REPO_ID);
 		IRepositoryPreferences preferences;
 		try {
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID);
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID).getRepositoryPreferences();
 		} catch (final IllegalStateException e) {
 			// assume already exist
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryDefinition(TEST_REPO_ID).getRepositoryPreferences();
 		}
 		assertNotNull(preferences);
-		preferences.put("collections/" + SolrRepositoryProvider.DEFAULT_COLLECTION + "/" + SolrRepositoryProvider.PREF_KEY_SERVER_TYPE, SolrServerType.EMBEDDED.name(), false);
+		preferences.put("collections/" + TEST_COLLECTION + "/" + SolrRepositoryProvider.PREF_KEY_SERVER_TYPE, SolrServerType.EMBEDDED.name(), false);
 		preferences.flush();
 
 		// create Solr index
 
 		// empty repo
 		final SolrServerRepository repo = (SolrServerRepository) PersistenceUtil.getRepository(context, ISolrCdsConstants.DOCUMENT_CONTENT_TYPE);
-		repo.getSolrServer().deleteByQuery("*:*");
-		repo.getSolrServer().commit();
+		repo.getSolrServer(TEST_COLLECTION).deleteByQuery("*:*");
+		repo.getSolrServer(TEST_COLLECTION).commit();
 	}
 
 	@BeforeClass
@@ -80,7 +81,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		final File configTemplate = new File(FileLocator.toFileURL(SolrCdsTestsActivator.getInstance().getBundle().getEntry("conf-solr")).getFile());
 
 		// the core name
-		final String coreName = SolrActivator.getEmbeddedSolrCoreName(TEST_REPO_ID, SolrRepositoryProvider.DEFAULT_COLLECTION);
+		final String coreName = SolrActivator.getEmbeddedSolrCoreName(TEST_REPO_ID, TEST_COLLECTION);
 
 		// create Solr instance directory
 		final File indexDir = SolrActivator.getInstance().getEmbeddedSolrCoreBase(coreName);

@@ -56,7 +56,7 @@ public class FacetManagerTest extends BaseContextTest {
 		DefaultRepositoryLookupStrategy.setRepository(context, ISolrCdsConstants.FACET_CONTENT_TYPE, REPOSITORY_ID);
 		IRepositoryPreferences preferences;
 		try {
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, IContextPreferencesRepositoryConstants.PROVIDER_ID);
+			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, IContextPreferencesRepositoryConstants.PROVIDER_ID).getRepositoryPreferences();
 		} catch (final IllegalStateException e) {
 			// assume already exist
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryDefinition(REPOSITORY_ID).getRepositoryPreferences();

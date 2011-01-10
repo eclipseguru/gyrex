@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.cds.IContentDeliveryService;
+import org.eclipse.gyrex.cds.documents.IDocumentCollection;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
@@ -34,6 +35,7 @@ import org.eclipse.gyrex.cds.solr.solrj.ISolrQueryExecutor;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelException;
 import org.eclipse.gyrex.model.common.ModelUtil;
+import org.eclipse.gyrex.model.common.exceptions.ObjectNotFoundException;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.status.IStatusMonitor;
 
@@ -158,15 +160,21 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 	}
 
 	@Override
-	public IResult findByQuery(final IQuery query) {
+	public IResult findByQuery(final IQuery query, final String collection) {
 		if ((query == null) || !(query instanceof QueryImpl)) {
 			throw new IllegalStateException("Invalid query. Must be created using #createQuery from this service instance.");
 		}
 
-		final IDocumentManager manager = ModelUtil.getManager(IDocumentManager.class, getContext());
-		final ISolrQueryExecutor queryExecutor = (ISolrQueryExecutor) manager.getAdapter(ISolrQueryExecutor.class);
-		if (null == queryExecutor) {
-			throw new IllegalStateException("The context document manager is not a Solr based listing manager.");
+		ISolrQueryExecutor queryExecutor;
+		try {
+			final IDocumentManager manager = ModelUtil.getManager(IDocumentManager.class, getContext());
+			final IDocumentCollection documentCollection = manager.getCollection(collection);
+			queryExecutor = (ISolrQueryExecutor) documentCollection.getAdapter(ISolrQueryExecutor.class);
+			if (null == queryExecutor) {
+				throw new IllegalStateException("No query executor available.");
+			}
+		} catch (final ObjectNotFoundException e) {
+			throw new IllegalStateException("Invalid collection.");
 		}
 
 		// create query

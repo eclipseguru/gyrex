@@ -50,12 +50,15 @@ public interface IContentDeliveryService extends IService {
 	IQuery createQuery();
 
 	/**
-	 * Finds documents matching the specified query.
+	 * Finds documents matching the specified query within the specified
+	 * collections.
 	 * 
 	 * @param query
 	 *            the query object
+	 * @param collection
+	 *            the collection to search
 	 * @return the result
 	 */
-	IResult findByQuery(IQuery query);
+	IResult findByQuery(IQuery query, String collection);
 
 }
