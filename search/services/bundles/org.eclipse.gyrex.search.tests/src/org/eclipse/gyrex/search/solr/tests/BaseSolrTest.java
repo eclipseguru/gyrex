@@ -24,9 +24,9 @@ import org.eclipse.gyrex.persistence.PersistenceUtil;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.solr.ISolrRepositoryConstants;
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
+import org.eclipse.gyrex.persistence.solr.config.SolrServerType;
 import org.eclipse.gyrex.persistence.solr.internal.SolrActivator;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepositoryProvider;
-import org.eclipse.gyrex.persistence.solr.internal.SolrServerType;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
 import org.eclipse.core.runtime.FileLocator;
