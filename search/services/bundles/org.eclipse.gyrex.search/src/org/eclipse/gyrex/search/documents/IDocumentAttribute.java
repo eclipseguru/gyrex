@@ -24,7 +24,7 @@ import org.eclipse.gyrex.model.common.IModelObject;
  * </p>
  * <p>
  * Although the list of supported types might vary depending on the
- * implementation it is expected that each implementation shall supports at a
+ * implementation it is expected that each implementation shall support at a
  * minimum {@link String}, {@link Boolean}, {@link Double}, {@link Long} and
  * {@link Date}.
  * </p>
