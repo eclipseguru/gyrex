@@ -161,7 +161,7 @@
    </extension>
    <extension
          point="org.eclipse.gyrex.server.roles">
-     
+
       <defaultStart
             mode="any"
             roleId="org.eclipse.gyrex.admin.ui.role"
@@ -194,5 +194,14 @@
                category="other">
          </propertyCategory>
       </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.configurationPages">
+      <page
+            class="org.eclipse.gyrex.admin.ui.internal.configuration.GeneralPage"
+            id="org.eclipse.gyrex.admin.ui.general"
+            keywords="general"
+            name="General">
+      </page>
    </extension>
 </plugin>

@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.gyrex.admin.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.gyrex.admin.ui" id="configurationPages" name="Gyrex Configuration Pages Extension Point"/>
+         <meta.schema plugin="org.eclipse.gyrex.admin.ui" id="configurationPages" name="Configuration Pages"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -52,24 +52,24 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  page identifier
                </documentation>
             </annotation>
          </attribute>
          <attribute name="parentId" type="string">
             <annotation>
                <documentation>
-                  
+                  reference to a parent page
                </documentation>
                <appinfo>
-                  <meta.attribute kind="identifier" basedOn="org.eclipse.gyrex.admin.ui.configurationPages/@id"/>
+                  <meta.attribute kind="identifier" basedOn="org.eclipse.gyrex.admin.ui.configurationPages/page/@id"/>
                </appinfo>
             </annotation>
          </attribute>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  page name
                </documentation>
                <appinfo>
                   <meta.attribute translatable="true"/>
@@ -79,7 +79,7 @@
          <attribute name="keywords" type="string">
             <annotation>
                <documentation>
-                  Space separated list of keywords
+                  space separated list of keywords
                </documentation>
                <appinfo>
                   <meta.attribute translatable="true"/>

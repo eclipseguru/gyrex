@@ -46,7 +46,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	protected void fillCoolBar(final ICoolBarManager coolBar) {
 		final IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
 		coolBar.add(new ToolBarContributionItem(toolbar, "main")); //$NON-NLS-1$
-		toolbar.add(introAction);
+		if (null != introAction) {
+			toolbar.add(introAction);
+		}
 		toolbar.add(exitAction);
 	}
 
@@ -64,8 +66,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		exitAction = ActionFactory.QUIT.create(window);
 		register(exitAction);
 
-		introAction = ActionFactory.INTRO.create(window);
-		register(introAction);
+//		introAction = ActionFactory.INTRO.create(window);
+//		register(introAction);
 	}
 
 }

@@ -62,6 +62,9 @@ public abstract class ConfigurationPage extends EventManager {
 
 		@Override
 		public void staleStateChanged() {
+			if (getForm().isDisposed()) {
+				return;
+			}
 			if (getPage().isActive()) {
 				refresh();
 			}
@@ -126,9 +129,9 @@ public abstract class ConfigurationPage extends EventManager {
 	/**
 	 * Creates the page control.
 	 * <p>
-	 * Calls the abstract method
-	 * {@link ConfigurationPage#createPageForm(IManagedForm)} to fill the page
-	 * with specific content.
+	 * Calls the method
+	 * {@link ConfigurationPage#createFormContent(IManagedForm)} to fill the
+	 * page with specific content.
 	 * </p>
 	 * 
 	 * @param parent
@@ -205,21 +208,21 @@ public abstract class ConfigurationPage extends EventManager {
 	}
 
 	/**
+	 * Returns the page control.
+	 * 
+	 * @return managed form's control
+	 */
+	public Control getControl() {
+		return mform != null ? mform.getForm() : null;
+	}
+
+	/**
 	 * Returns the managed form owned by this page.
 	 * 
 	 * @return the managed form
 	 */
 	public IManagedForm getManagedForm() {
 		return mform;
-	}
-
-	/**
-	 * Returns the page control.
-	 * 
-	 * @return managed form's control
-	 */
-	public Control getPartControl() {
-		return mform != null ? mform.getForm() : null;
 	}
 
 	/**
@@ -233,7 +236,7 @@ public abstract class ConfigurationPage extends EventManager {
 	 * @return the configuration page title (not <code>null</code>)
 	 */
 	public String getTitle() {
-		return title != null ? title : "Configuration Page";
+		return title != null ? title : "";
 	}
 
 	/**
@@ -305,6 +308,7 @@ public abstract class ConfigurationPage extends EventManager {
 	public IStatus performSave(final IProgressMonitor monitor) {
 		if (mform != null) {
 			mform.commit(true);
+			firePropertyChange(PROP_DIRTY);
 		}
 		return Status.OK_STATUS;
 	}
@@ -321,19 +325,40 @@ public abstract class ConfigurationPage extends EventManager {
 	}
 
 	/**
-	 * Asks this page to take focus within the Admin UI.
+	 * Notifies this page that is has been activated within the Admin UI.
 	 * <p>
-	 * The default implementation sets focus on the managed form.
+	 * The default implementation refreshes the managed form if it is stale and
+	 * the page became active.
 	 * </p>
 	 * <p>
 	 * Clients should not call this method (the Admin UI calls this method at
 	 * appropriate times).
 	 * </p>
+	 * 
+	 * @param active
+	 *            <code>true</code> if the page has been activate,
+	 *            <code>false</code> otherwise
 	 */
-	public void setFocus() {
-		if (mform != null) {
-			mform.setFocus();
+	public void setActive(final boolean active) {
+		if (active) {
+			if ((mform != null) && mform.isStale()) {
+				mform.refresh();
+			}
 		}
+	}
+
+	/**
+	 * Sets the container which hosts the page.
+	 * <p>
+	 * Clients should not call this method (the Admin UI calls this method at
+	 * appropriate times).
+	 * </p>
+	 * 
+	 * @param container
+	 *            the container
+	 */
+	public void setContainer(final IConfigurationPageContainer container) {
+		this.container = container;
 	}
 
 	/**

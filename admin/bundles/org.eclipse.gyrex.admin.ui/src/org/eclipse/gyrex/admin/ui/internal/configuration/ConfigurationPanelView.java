@@ -14,13 +14,14 @@ package org.eclipse.gyrex.admin.ui.internal.configuration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.configuration.IConfigurationPageContainer;
-import org.eclipse.gyrex.admin.ui.internal.IContentProviderNode;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.action.ContributionItem;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -28,16 +29,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.ISaveablePart;
+import org.eclipse.ui.ISaveablesLifecycleListener;
+import org.eclipse.ui.ISaveablesSource;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.Saveable;
+import org.eclipse.ui.SaveablesLifecycleEvent;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.forms.ManagedForm;
@@ -47,27 +48,15 @@ import org.eclipse.ui.forms.widgets.ScrolledPageBook;
 import org.eclipse.ui.internal.forms.widgets.FormUtil;
 import org.eclipse.ui.part.ViewPart;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * RAP based View to display a specific {@link ConfigurationPage}. The trigger
  * to change the currently displayed page is an {@link SelectionEvent} from the
  * {@link ConfigurationNavigatorView}
  */
-public class ConfigurationPanelView extends ViewPart implements ISelectionListener, IConfigurationPageContainer {
-
-	private class ApplyContributionItem extends ContributionItem {
-		@Override
-		public void fill(final ToolBar parent, final int index) {
-			final ToolItem item = new ToolItem(parent, SWT.PUSH);
-			item.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ETOOL_SAVE_EDIT));
-			item.setDisabledImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED));
-			item.setToolTipText("Save");
-			item.addListener(SWT.Selection, new Listener() {
-				public void handleEvent(final Event event) {
-//					performSave(null);
-				}
-			});
-		}
-	}
+@SuppressWarnings("restriction")
+public class ConfigurationPanelView extends ViewPart implements ISelectionListener, IConfigurationPageContainer, ISaveablesSource, ISaveablePart {
 
 	private static class HeaderForm extends ManagedForm {
 		public HeaderForm(final ConfigurationPanelView configurationPanelView, final ScrolledForm form) {
@@ -90,9 +79,12 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		}
 	}
 
+	private static final Saveable[] NO_SAVEABLES = new Saveable[] {};
+
 	static final String EMPTY_STRING = "";
 
 	public static final String ID = "org.eclipse.gyrex.admin.ui.view.content";
+	private static final String REGISTRATION = "org.eclipse.gyrex.admin.ui.internal.configuration.page.registration";
 
 	private FormToolkit toolkit;
 	private ConfigurationPage currentPage;
@@ -102,12 +94,14 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	private final Map<String, ConfigurationPage> pagesById = new HashMap<String, ConfigurationPage>();
 
 	private final IPropertyListener pagePropertyListener = new IPropertyListener() {
-
 		@Override
 		public void propertyChanged(final Object source, final int propId) {
 			switch (propId) {
 				case IWorkbenchPartConstants.PROP_DIRTY:
-					updateSaveAction();
+					if (source instanceof ConfigurationPage) {
+						maybeDirty((ConfigurationPage) source);
+						updateSaveActions();
+					}
 					break;
 
 				case IWorkbenchPartConstants.PROP_TITLE:
@@ -116,11 +110,14 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 			}
 
 		}
+
 	};
 
 	private IWorkbenchAction saveAction;
+	private IWorkbenchAction saveAllAction;
+	private final ConcurrentMap<ConfigurationPage, ConfigurationPageSaveable> saveablesByPage = new ConcurrentHashMap<ConfigurationPage, ConfigurationPageSaveable>(4);
 
-	private synchronized void addPage(final String id, final IContentProviderNode provider) {
+	private synchronized void addPage(final String id, final ConfigurationPageRegistration provider) {
 		if (pagesById.containsKey(id)) {
 			return;
 		}
@@ -128,15 +125,16 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		try {
 			final ConfigurationPage page = provider.createPage();
 			pagesById.put(id, page);
+			page.setContainer(this);
 			final Composite pageParent = pageBook.createPage(id);
 			pageParent.setLayout(new FillLayout());
 			page.createPage(pageParent, getToolkit());
+			page.getControl().setData(REGISTRATION, provider);
 		} catch (final CoreException e) {
 			Policy.getStatusHandler().show(e.getStatus(), "Error");
 		}
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public void createPartControl(final Composite parent) {
 		toolkit = new FormToolkit(parent.getDisplay());
@@ -146,7 +144,9 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		scform.getForm().setData(FormUtil.IGNORE_BODY, Boolean.TRUE);
 
 		saveAction = ActionFactory.SAVE.create(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+		saveAllAction = ActionFactory.SAVE_ALL.create(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
 		scform.getToolBarManager().add(saveAction);
+		scform.getToolBarManager().add(saveAllAction);
 		scform.updateToolBar();
 
 		headerForm = new HeaderForm(this, scform);
@@ -156,15 +156,13 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		formBody.setLayout(new FillLayout());
 		pageBook = toolkit.createPageBook(formBody, SWT.NO_SCROLL);
 
-		getSite().getPage().addSelectionListener(ConfigurationNavigatorView.ID, this);
-		updateHeader();
-		updateSaveAction();
+		getSite().getPage().addSelectionListener(this);
 	}
 
 	@Override
 	public void dispose() {
 		// remove listener
-		getSite().getPage().removeSelectionListener(ConfigurationNavigatorView.ID, this);
+		getSite().getPage().removeSelectionListener(this);
 
 		// super
 		super.dispose();
@@ -178,8 +176,26 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	}
 
 	@Override
+	public void doSave(final IProgressMonitor monitor) {
+		throw new UnsupportedOperationException("no save on part");
+	}
+
+	@Override
+	public void doSaveAs() {
+		throw new UnsupportedOperationException("no save as on part");
+	}
+
+	@Override
 	public ConfigurationPage getActivePageInstance() {
 		return currentPage;
+	}
+
+	@Override
+	public Saveable[] getActiveSaveables() {
+		if ((currentPage != null) && currentPage.isDirty()) {
+			return new Saveable[] { new ConfigurationPageSaveable(currentPage) };
+		}
+		return NO_SAVEABLES;
 	}
 
 	@Override
@@ -188,6 +204,12 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 //			return new TabbedPropertySheetPage(ConfigurationTabbedPropertySheetPageContributor.INSTANCE);
 //		}
 		return super.getAdapter(adapter);
+	}
+
+	@Override
+	public Saveable[] getSaveables() {
+		final Collection<ConfigurationPageSaveable> saveables = saveablesByPage.values();
+		return saveables.toArray(new ConfigurationPageSaveable[saveables.size()]);
 	}
 
 	/**
@@ -200,14 +222,62 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	}
 
 	@Override
+	public boolean isDirty() {
+		return !saveablesByPage.isEmpty();
+	}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+
+	@Override
+	public boolean isSaveOnCloseNeeded() {
+		return isDirty();
+	}
+
+	void maybeDirty(final ConfigurationPage source) {
+		if (source.isDirty()) {
+			final ConfigurationPageSaveable newSaveable = new ConfigurationPageSaveable(source);
+			final ConfigurationPageSaveable existingSaveable = saveablesByPage.putIfAbsent(source, newSaveable);
+			// fire event
+			final ISaveablesLifecycleListener listener = (ISaveablesLifecycleListener) getSite().getAdapter(ISaveablesLifecycleListener.class);
+			if (listener != null) {
+				SaveablesLifecycleEvent event;
+				if (existingSaveable == null) {
+					// new savable
+					event = new SaveablesLifecycleEvent(this, SaveablesLifecycleEvent.POST_OPEN, new Saveable[] { newSaveable }, false);
+				} else {
+					// dirty changed for existing saveable
+					event = new SaveablesLifecycleEvent(this, SaveablesLifecycleEvent.DIRTY_CHANGED, new Saveable[] { existingSaveable }, false);
+				}
+				listener.handleLifecycleEvent(event);
+			}
+		} else {
+			final ConfigurationPageSaveable saveable = saveablesByPage.remove(source);
+			final ISaveablesLifecycleListener listener = (ISaveablesLifecycleListener) getSite().getAdapter(ISaveablesLifecycleListener.class);
+			if ((listener != null) && (saveable != null)) {
+				// removed savable
+				listener.handleLifecycleEvent(new SaveablesLifecycleEvent(this, SaveablesLifecycleEvent.POST_CLOSE, new Saveable[] { saveable }, false));
+			}
+
+		}
+	}
+
+	@Override
 	public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
+		// we only care about the navigator view
+		if (!(part instanceof ConfigurationNavigatorView)) {
+			return;
+		}
+
 		if (!(selection instanceof StructuredSelection)) {
 			return;
 		}
 
 		final Object firstElement = ((StructuredSelection) selection).getFirstElement();
-		if (firstElement instanceof IContentProviderNode) {
-			final IContentProviderNode provider = (IContentProviderNode) firstElement;
+		if (firstElement instanceof ConfigurationPageRegistration) {
+			final ConfigurationPageRegistration provider = (ConfigurationPageRegistration) firstElement;
 			final String id = provider.getId();
 
 			// create page if necessary
@@ -221,14 +291,13 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 
 	@Override
 	public void setFocus() {
-		if (currentPage != null) {
-			currentPage.setFocus();
-		}
+		pageBook.setFocus();
 	}
 
 	private void showPage(final String id) {
 		// deactivate current page
 		if (currentPage != null) {
+			currentPage.setActive(false);
 			currentPage.removePropertyListener(pagePropertyListener);
 			currentPage = null;
 		}
@@ -241,12 +310,12 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 
 		// update
 		updateHeader();
-		updateSaveAction();
+		updateSaveActions();
 
 		// activate
 		if (currentPage != null) {
 			currentPage.addPropertyListener(pagePropertyListener);
-			currentPage.setFocus();
+			currentPage.setActive(true);
 		}
 	}
 
@@ -254,20 +323,27 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		final ConfigurationPage page = getActivePageInstance();
 		if (page != null) {
 			headerForm.getForm().setImage(page.getTitleImage());
-			headerForm.getForm().setText(page.getTitle());
-			headerForm.getForm().setToolTipText(page.getTitleToolTip());
+			String title = page.getTitle();
+			if (StringUtils.isEmpty(title)) {
+				final ConfigurationPageRegistration registration = (ConfigurationPageRegistration) page.getControl().getData(REGISTRATION);
+				title = registration.getName();
+			}
+			headerForm.getForm().setText(title);
+			headerForm.getForm().getForm().getHead().setToolTipText(page.getTitleToolTip());
 			setTitleToolTip(page.getTitleToolTip());
-			setContentDescription(page.getTitle());
+			setContentDescription(title);
 		} else {
 			headerForm.getForm().setImage(null);
 			headerForm.getForm().setText(EMPTY_STRING);
-			headerForm.getForm().setToolTipText(EMPTY_STRING);
+			headerForm.getForm().getForm().getHead().setToolTipText(EMPTY_STRING);
 			setTitleToolTip(EMPTY_STRING);
 			setContentDescription(EMPTY_STRING);
 		}
 	}
 
-	void updateSaveAction() {
-		saveAction.setEnabled((currentPage != null) && currentPage.isDirty());
+	void updateSaveActions() {
+		final boolean dirty = isDirty();
+		saveAction.setEnabled(dirty);
+		saveAllAction.setEnabled(dirty);
 	}
 }
