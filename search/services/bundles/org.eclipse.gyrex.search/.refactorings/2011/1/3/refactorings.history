@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;package-info.java&apos; to &apos;org.eclipse.gyrex.cloud/src/org.eclipse.gyrex.cloud.admin&apos;&#x0D;&#x0A;- Original project: &apos;org.eclipse.gyrex.cds&apos;&#x0D;&#x0A;- Destination element: &apos;org.eclipse.gyrex.cloud/src/org.eclipse.gyrex.cloud.admin&apos;&#x0D;&#x0A;- Original element: &apos;org.eclipse.gyrex.cds.package-info.java&apos;" description="Copy compilation unit" destination="=org.eclipse.gyrex.cloud/src&lt;org.eclipse.gyrex.cloud.admin" element1="/src&lt;org.eclipse.gyrex.cds{package-info.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1295595133782" units="1" version="1.0"/>
+</session>

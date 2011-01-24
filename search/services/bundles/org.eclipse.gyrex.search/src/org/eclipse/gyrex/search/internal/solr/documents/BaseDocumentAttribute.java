@@ -13,7 +13,11 @@ package org.eclipse.gyrex.cds.solr.internal.documents;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
 
@@ -24,6 +28,17 @@ import org.eclipse.osgi.util.NLS;
  * {@link IDocumentAttribute} implementation.
  */
 public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumentAttribute<T> {
+
+	private static Set<Class> allowedTypes;
+	static {
+		final HashSet<Class> classes = new HashSet<Class>();
+		classes.add(String.class);
+		classes.add(Boolean.class);
+		classes.add(Double.class);
+		classes.add(Long.class);
+		classes.add(Date.class);
+		allowedTypes = Collections.unmodifiableSet(classes);
+	}
 
 	private final String id;
 	private final List<T> values = new ArrayList<T>(3);
@@ -63,6 +78,18 @@ public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumen
 		}
 	}
 
+	private <E> void checkType(final Class<E> type) {
+		if (!allowedTypes.contains(type)) {
+			throw new IllegalArgumentException(NLS.bind("value type {0} not supported", type.getName()));
+		}
+	}
+
+	private void checkValue(final T value) {
+		if (value != null) {
+			checkType(value.getClass());
+		}
+	}
+
 	private void clearIfNecessary() {
 		if (!this.values.isEmpty()) {
 			doClear();
@@ -75,6 +102,7 @@ public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumen
 	}
 
 	protected boolean doAdd(final T value) {
+		checkValue(value);
 		return this.values.add(value);
 	}
 
@@ -108,6 +136,10 @@ public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumen
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E> IDocumentAttribute<E> ofType(final Class<E> type) throws IllegalArgumentException {
+		// check type
+		checkType(type);
+
+		// check value
 		final T value = getValue();
 		if ((value != null) && !type.isAssignableFrom(value.getClass())) {
 			throw new IllegalArgumentException(NLS.bind("value type {0} not assignale to type {1}", value.getClass().getName(), type.getName()));
@@ -129,8 +161,11 @@ public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumen
 
 	@Override
 	public void set(final T value) {
+		checkValue(value);
 		clearIfNecessary();
-		add(value);
+		if (value != null) {
+			add(value);
+		}
 	}
 
 	@Override
