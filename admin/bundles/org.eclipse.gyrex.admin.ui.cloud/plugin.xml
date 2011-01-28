@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.configurationPages">
+      <page
+            class="org.eclipse.gyrex.admin.ui.cloud.internal.CloudConfigurationPage"
+            id="org.eclipse.gyrex.admin.ui.cloud.page"
+            keywords="cloud node system server tasks role leader"
+            name="Cloud"
+            parentId="org.eclipse.gyrex.admin.ui.general">
+      </page>
+   </extension>
+
+
+</plugin>
