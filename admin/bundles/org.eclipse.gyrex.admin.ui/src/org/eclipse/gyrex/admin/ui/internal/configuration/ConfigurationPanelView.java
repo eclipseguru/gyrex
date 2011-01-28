@@ -19,9 +19,12 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.configuration.IConfigurationPageContainer;
+import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -132,6 +135,9 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 			page.getControl().setData(REGISTRATION, provider);
 		} catch (final CoreException e) {
 			Policy.getStatusHandler().show(e.getStatus(), "Error");
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Policy.getStatusHandler().show(new Status(IStatus.ERROR, AdminUiActivator.SYMBOLIC_NAME, "Error loading page " + id, e), "Error");
 		}
 	}
 
@@ -193,7 +199,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	@Override
 	public Saveable[] getActiveSaveables() {
 		if ((currentPage != null) && currentPage.isDirty()) {
-			return new Saveable[] { new ConfigurationPageSaveable(currentPage) };
+			return new Saveable[] { new ConfigurationPageSaveable(this, currentPage) };
 		}
 		return NO_SAVEABLES;
 	}
@@ -238,7 +244,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 
 	void maybeDirty(final ConfigurationPage source) {
 		if (source.isDirty()) {
-			final ConfigurationPageSaveable newSaveable = new ConfigurationPageSaveable(source);
+			final ConfigurationPageSaveable newSaveable = new ConfigurationPageSaveable(this, source);
 			final ConfigurationPageSaveable existingSaveable = saveablesByPage.putIfAbsent(source, newSaveable);
 			// fire event
 			final ISaveablesLifecycleListener listener = (ISaveablesLifecycleListener) getSite().getAdapter(ISaveablesLifecycleListener.class);
@@ -287,6 +293,10 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 
 			showPage(id);
 		}
+	}
+
+	void setBusy(final boolean busy) {
+		headerForm.getForm().setBusy(busy);
 	}
 
 	@Override
@@ -342,8 +352,9 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	}
 
 	void updateSaveActions() {
-		final boolean dirty = isDirty();
-		saveAction.setEnabled(dirty);
-		saveAllAction.setEnabled(dirty);
+		// if current is dirty
+		saveAction.setEnabled((null != currentPage) && currentPage.isDirty());
+		// if any is dirty
+		saveAllAction.setEnabled(isDirty());
 	}
 }

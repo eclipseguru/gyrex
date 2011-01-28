@@ -25,15 +25,22 @@ import org.eclipse.ui.Saveable;
 public class ConfigurationPageSaveable extends Saveable {
 
 	private final ConfigurationPage page;
+	private final ConfigurationPanelView view;
 
-	public ConfigurationPageSaveable(final ConfigurationPage page) {
+	public ConfigurationPageSaveable(final ConfigurationPanelView view, final ConfigurationPage page) {
+		this.view = view;
 		this.page = page;
 
 	}
 
 	@Override
 	public void doSave(final IProgressMonitor monitor) throws CoreException {
-		page.performSave(monitor);
+		view.setBusy(true);
+		try {
+			page.performSave(monitor);
+		} finally {
+			view.setBusy(false);
+		}
 	}
 
 	@Override

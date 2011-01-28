@@ -154,10 +154,6 @@
             id="org.eclipse.gyrex.admin.ui.intro"
             label="Gyrex Admin Introduction">
       </intro>
-      <introBrandingBinding
-            brandingId="org.eclipse.gyrex.admin.ui.branding"
-            introId="org.eclipse.gyrex.admin.ui.intro">
-      </introBrandingBinding>
    </extension>
    <extension
          point="org.eclipse.gyrex.server.roles">

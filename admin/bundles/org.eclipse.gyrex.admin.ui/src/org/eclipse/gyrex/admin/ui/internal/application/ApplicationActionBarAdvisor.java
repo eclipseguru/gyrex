@@ -20,7 +20,6 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -30,11 +29,6 @@ import org.eclipse.ui.application.IActionBarConfigurer;
  * workbench window.
  */
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
-
-	// Actions - important to allocate these only in makeActions, and then use
-	// them in the fill methods. This ensures that the actions aren't recreated
-	// in the fill methods.
-	private IWorkbenchAction exitAction;
 
 	private IWorkbenchAction introAction;
 
@@ -49,22 +43,18 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		if (null != introAction) {
 			toolbar.add(introAction);
 		}
-		toolbar.add(exitAction);
 	}
 
 	@Override
 	protected void fillMenuBar(final IMenuManager menuBar) {
 		final MenuManager fileMenu = new MenuManager("&File", IWorkbenchActionConstants.M_FILE);
 		menuBar.add(fileMenu);
-		fileMenu.add(exitAction);
 	}
 
 	@Override
 	protected void makeActions(final IWorkbenchWindow window) {
 		// Creates the actions and registers them. Registering also
 		// provides automatic disposal of the actions when the window is closed.
-		exitAction = ActionFactory.QUIT.create(window);
-		register(exitAction);
 
 //		introAction = ActionFactory.INTRO.create(window);
 //		register(introAction);
