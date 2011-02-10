@@ -113,6 +113,9 @@
                   id="org.eclipse.gyrex.admin.ui.entrypoint">
             </entrypoint>
          </associatedEntrypoints>
+         <httpServiceSelector
+               filter="(other.info=org.eclipse.gyrex.admin.ui.http)">
+         </httpServiceSelector>
       </branding>
    </extension>
    <extension
@@ -166,6 +169,9 @@
       <role
             id="org.eclipse.gyrex.admin.ui.role"
             name="RAP Based Admin UI">
+         <requireBundle
+               symbolicName="org.eclipse.core.runtime">
+         </requireBundle>
          <requireBundle
                symbolicName="org.eclipse.rap.ui">
          </requireBundle>
