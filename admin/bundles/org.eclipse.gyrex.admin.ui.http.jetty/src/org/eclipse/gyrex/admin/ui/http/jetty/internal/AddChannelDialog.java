@@ -167,11 +167,9 @@ public class AddChannelDialog extends StatusDialog {
 			channelDescriptor.setId(idField.getText());
 			channelDescriptor.setPort(NumberUtils.toInt(portField.getText()));
 			channelDescriptor.setSecure(secureField.isSelected());
-			channelDescriptor.setCertificateId(certificateIdField.getText());
-			String secureChannelId = secureChannelIdField.getText();
-			if(StringUtils.isNotBlank(secureChannelId))
-				channelDescriptor.setSecureChannelId(secureChannelId);
-			channelDescriptor.setNodeFilter(nodeFilterField.getText());
+			channelDescriptor.setCertificateId(StringUtils.trimToNull(certificateIdField.getText()));
+			channelDescriptor.setSecureChannelId(StringUtils.trimToNull( secureChannelIdField.getText()));
+			channelDescriptor.setNodeFilter((StringUtils.trimToNull(nodeFilterField.getText())));
 			jettyManager.saveChannel(channelDescriptor);
 		} catch (final Exception e) {
 			setError(e.getMessage());
