@@ -18,6 +18,7 @@ import java.util.Hashtable;
 import org.eclipse.equinox.http.jetty.JettyConfigurator;
 import org.eclipse.equinox.http.jetty.JettyConstants;
 
+import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -114,7 +115,8 @@ public class AdminUiActivator extends BaseBundleActivator {
 					JettyConfigurator.startServer("admin", createAdminSettings(context));
 				} catch (final Exception e) {
 					LOG.error("Failed to start Jetty Admin server.", e);
-					return getStatusUtil().createError(0, "Failed to start Jetty Admin server.", e);
+					ServerApplication.signalShutdown(new IllegalStateException("Unable to start Jetty admin server.", e));
+					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
 			}
