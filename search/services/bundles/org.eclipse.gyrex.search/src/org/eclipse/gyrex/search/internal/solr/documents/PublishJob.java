@@ -18,7 +18,6 @@ import java.util.List;
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
 import org.eclipse.gyrex.cds.solr.internal.SolrCdsActivator;
-import org.eclipse.gyrex.common.status.BundleStatusUtil;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -71,9 +70,8 @@ public class PublishJob extends Job {
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 		// check if we are active
-		BundleStatusUtil statusUtil;
 		try {
-			statusUtil = SolrCdsActivator.getInstance().getStatusUtil();
+			SolrCdsActivator.getInstance();
 		} catch (final IllegalStateException e) {
 			return Status.CANCEL_STATUS;
 		}
@@ -101,7 +99,7 @@ public class PublishJob extends Job {
 			publishedMetric.requestFinished(docs.size(), System.currentTimeMillis() - requestStarted);
 		} catch (final Exception e) {
 			publishedMetric.requestFailed();
-			return statusUtil.createError(1, "error while submitting documents to Solr", e);
+			return new Status(IStatus.ERROR, SolrCdsActivator.SYMBOLIC_NAME, "error while submitting documents to Solr", e);
 		}
 		return Status.OK_STATUS;
 	}
