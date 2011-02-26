@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal.documents;
+package org.eclipse.gyrex.cds.internal.solr.documents;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
-import org.eclipse.gyrex.cds.solr.internal.SolrCdsActivator;
+import org.eclipse.gyrex.cds.internal.solr.SolrCdsActivator;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 
 import org.eclipse.core.runtime.IProgressMonitor;

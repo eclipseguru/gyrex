@@ -12,10 +12,10 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.tests;
 
+import org.eclipse.gyrex.cds.BaseFacetManager;
+import org.eclipse.gyrex.cds.BaseSolrDocumentManager;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
-import org.eclipse.gyrex.cds.solr.BaseFacetManager;
-import org.eclipse.gyrex.cds.solr.BaseSolrDocumentManager;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.common.services.IServiceProxy;
 import org.eclipse.gyrex.context.IRuntimeContext;

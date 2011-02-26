@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal;
+package org.eclipse.gyrex.cds.internal.solr;
 
 import java.util.concurrent.atomic.AtomicReference;
 

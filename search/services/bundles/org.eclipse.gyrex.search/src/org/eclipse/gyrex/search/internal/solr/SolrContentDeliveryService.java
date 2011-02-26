@@ -10,7 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal;
+package org.eclipse.gyrex.cds.internal.solr;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,16 +21,16 @@ import org.eclipse.gyrex.cds.IContentDeliveryService;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
+import org.eclipse.gyrex.cds.internal.solr.query.AttributeFilter;
+import org.eclipse.gyrex.cds.internal.solr.query.FacetFilter;
+import org.eclipse.gyrex.cds.internal.solr.query.QueryImpl;
+import org.eclipse.gyrex.cds.internal.solr.result.ResultImpl;
 import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.cds.query.IAttributeFilter;
 import org.eclipse.gyrex.cds.query.IFacetFilter;
 import org.eclipse.gyrex.cds.query.IQuery;
 import org.eclipse.gyrex.cds.query.SortDirection;
 import org.eclipse.gyrex.cds.result.IResult;
-import org.eclipse.gyrex.cds.solr.internal.query.AttributeFilter;
-import org.eclipse.gyrex.cds.solr.internal.query.FacetFilter;
-import org.eclipse.gyrex.cds.solr.internal.query.QueryImpl;
-import org.eclipse.gyrex.cds.solr.internal.result.ResultImpl;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelException;
 import org.eclipse.gyrex.services.common.provider.BaseService;

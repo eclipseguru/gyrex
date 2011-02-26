@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal.result;
+package org.eclipse.gyrex.cds.internal.solr.result;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,12 +18,12 @@ import java.util.Map;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
 import org.eclipse.gyrex.cds.facets.IFacet;
+import org.eclipse.gyrex.cds.internal.solr.SolrSchemaConventions;
+import org.eclipse.gyrex.cds.internal.solr.documents.StoredDocument;
+import org.eclipse.gyrex.cds.internal.solr.query.QueryImpl;
 import org.eclipse.gyrex.cds.query.IQuery;
 import org.eclipse.gyrex.cds.result.IResult;
 import org.eclipse.gyrex.cds.result.IResultFacet;
-import org.eclipse.gyrex.cds.solr.internal.SolrSchemaConventions;
-import org.eclipse.gyrex.cds.solr.internal.documents.StoredDocument;
-import org.eclipse.gyrex.cds.solr.internal.query.QueryImpl;
 import org.eclipse.gyrex.context.IRuntimeContext;
 
 import org.eclipse.core.runtime.PlatformObject;

@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal.facets;
+package org.eclipse.gyrex.cds.internal.solr.facets;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,11 +22,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.gyrex.cds.BaseFacetManager;
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
 import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.cds.query.TermCombination;
-import org.eclipse.gyrex.cds.solr.BaseFacetManager;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.osgi.util.NLS;

@@ -28,7 +28,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.gyrex.cds.solr.internal.documents.PublishJob;
+
+import org.eclipse.gyrex.cds.internal.solr.documents.PublishJob;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.PersistenceUtil;

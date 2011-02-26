@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal.result;
+package org.eclipse.gyrex.cds.internal.solr.result;
 
 import org.eclipse.gyrex.cds.result.IResultFacetValue;
 

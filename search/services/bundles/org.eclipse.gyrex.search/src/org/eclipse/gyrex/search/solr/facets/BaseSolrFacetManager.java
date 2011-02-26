@@ -10,7 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr;
+package org.eclipse.gyrex.cds;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,9 +19,9 @@ import java.util.Map;
 
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
-import org.eclipse.gyrex.cds.solr.internal.SolrCdsActivator;
-import org.eclipse.gyrex.cds.solr.internal.facets.Facet;
-import org.eclipse.gyrex.cds.solr.internal.facets.FacetManagerMetrics;
+import org.eclipse.gyrex.cds.internal.solr.SolrCdsActivator;
+import org.eclipse.gyrex.cds.internal.solr.facets.Facet;
+import org.eclipse.gyrex.cds.internal.solr.facets.FacetManagerMetrics;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelException;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
