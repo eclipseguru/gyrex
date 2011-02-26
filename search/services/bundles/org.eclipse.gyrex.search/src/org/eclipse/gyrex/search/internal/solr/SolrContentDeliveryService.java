@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.internal;
 
@@ -17,7 +18,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.cds.IContentDeliveryService;
-import org.eclipse.gyrex.cds.documents.IDocumentCollection;
 import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
@@ -31,11 +31,8 @@ import org.eclipse.gyrex.cds.solr.internal.query.AttributeFilter;
 import org.eclipse.gyrex.cds.solr.internal.query.FacetFilter;
 import org.eclipse.gyrex.cds.solr.internal.query.QueryImpl;
 import org.eclipse.gyrex.cds.solr.internal.result.ResultImpl;
-import org.eclipse.gyrex.cds.solr.solrj.ISolrQueryExecutor;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelException;
-import org.eclipse.gyrex.model.common.ModelUtil;
-import org.eclipse.gyrex.model.common.exceptions.ObjectNotFoundException;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.status.IStatusMonitor;
 
@@ -160,26 +157,14 @@ public class SolrContentDeliveryService extends BaseService implements IContentD
 	}
 
 	@Override
-	public IResult findByQuery(final IQuery query, final String collection) {
+	public IResult findByQuery(final IQuery query, final IDocumentManager documentManager) {
 		if ((query == null) || !(query instanceof QueryImpl)) {
 			throw new IllegalStateException("Invalid query. Must be created using #createQuery from this service instance.");
 		}
 
-		ISolrQueryExecutor queryExecutor;
-		try {
-			final IDocumentManager manager = ModelUtil.getManager(IDocumentManager.class, getContext());
-			final IDocumentCollection documentCollection = manager.getCollection(collection);
-			queryExecutor = (ISolrQueryExecutor) documentCollection.getAdapter(ISolrQueryExecutor.class);
-			if (null == queryExecutor) {
-				throw new IllegalStateException("No query executor available.");
-			}
-		} catch (final ObjectNotFoundException e) {
-			throw new IllegalStateException("Invalid collection.");
-		}
-
 		// create query
 		final SolrQuery solrQuery = createSolrQuery((QueryImpl) query);
-		final QueryResponse response = queryExecutor.query(solrQuery);
+		final QueryResponse response = documentManager.query(solrQuery);
 		return new ResultImpl(getContext(), (QueryImpl) query, response);
 	}
 

@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.internal.documents;
 
@@ -29,13 +30,15 @@ import org.eclipse.osgi.util.NLS;
  */
 public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumentAttribute<T> {
 
-	private static Set<Class> allowedTypes;
+	private static Set<Class<?>> allowedTypes;
 	static {
-		final HashSet<Class> classes = new HashSet<Class>();
+		final HashSet<Class<?>> classes = new HashSet<Class<?>>();
 		classes.add(String.class);
 		classes.add(Boolean.class);
 		classes.add(Double.class);
+		classes.add(Float.class);
 		classes.add(Long.class);
+		classes.add(Integer.class);
 		classes.add(Date.class);
 		allowedTypes = Collections.unmodifiableSet(classes);
 	}
@@ -78,10 +81,16 @@ public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumen
 		}
 	}
 
-	private <E> void checkType(final Class<E> type) {
-		if (!allowedTypes.contains(type)) {
-			throw new IllegalArgumentException(NLS.bind("value type {0} not supported", type.getName()));
-		}
+	private void checkType(Class<?> type) {
+		do {
+			if (allowedTypes.contains(type)) {
+				return;
+			}
+			if (type.getSuperclass() == null) {
+				throw new IllegalArgumentException(NLS.bind("value type {0} not supported", type.getName()));
+			}
+			type = type.getSuperclass();
+		} while (Boolean.TRUE);
 	}
 
 	private void checkValue(final T value) {

@@ -11,11 +11,12 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.internal.facets;
 
+import org.eclipse.gyrex.cds.solr.BaseFacetManager;
 import org.eclipse.gyrex.monitoring.metrics.MetricSet;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 
 /**
- * {@link MetricSet} for {@link FacetManager}
+ * {@link MetricSet} for {@link BaseFacetManager}
  */
 public class FacetManagerMetrics extends MetricSet {
 
@@ -26,7 +27,7 @@ public class FacetManagerMetrics extends MetricSet {
 	 * @param description
 	 * @param metrics
 	 */
-	FacetManagerMetrics(final String id, final String description) {
+	public FacetManagerMetrics(final String id, final String description) {
 		super(id, description, new ThroughputMetric(id + ".facets.write"), new ThroughputMetric(id + ".facets.read"));
 	}
 

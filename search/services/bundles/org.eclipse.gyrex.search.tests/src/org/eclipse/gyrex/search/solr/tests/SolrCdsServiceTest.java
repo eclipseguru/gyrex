@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  */
 package org.eclipse.gyrex.cds.solr.tests;
 
@@ -60,13 +61,13 @@ public class SolrCdsServiceTest extends BaseSolrTest {
 		final IDocument doc2 = docManager.createDocument();
 		doc1.getOrCreate("color").ofType(String.class).add("blue");
 		doc2.getOrCreate("color").ofType(String.class).add("red");
-		docManager.getCollection(TEST_COLLECTION).publish(Arrays.asList(doc1, doc2));
+		docManager.publish(Arrays.asList(doc1, doc2));
 		waitForPendingSolrPublishOps();
 
 		// query for all
 		final IQuery query = service.createQuery();
 		assertNotNull(query);
-		final IResult result = service.findByQuery(query, TEST_COLLECTION);
+		final IResult result = service.findByQuery(query, docManager);
 		assertNotNull(result);
 
 		// check facets

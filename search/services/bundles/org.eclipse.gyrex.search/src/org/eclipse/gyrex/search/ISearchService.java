@@ -8,9 +8,11 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
 package org.eclipse.gyrex.cds;
 
+import org.eclipse.gyrex.cds.documents.IDocumentManager;
 import org.eclipse.gyrex.cds.query.IQuery;
 import org.eclipse.gyrex.cds.result.IResult;
 import org.eclipse.gyrex.services.common.IService;
@@ -51,14 +53,14 @@ public interface IContentDeliveryService extends IService {
 
 	/**
 	 * Finds documents matching the specified query within the specified
-	 * collections.
+	 * manager.
 	 * 
 	 * @param query
 	 *            the query object
-	 * @param collection
-	 *            the collection to search
+	 * @param documentManager
+	 *            the documentManager
 	 * @return the result
 	 */
-	IResult findByQuery(IQuery query, String collection);
+	IResult findByQuery(IQuery query, IDocumentManager documentManager);
 
 }

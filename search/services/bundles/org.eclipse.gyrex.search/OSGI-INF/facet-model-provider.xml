@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.eclipse.gyrex.cds.solr.facet.model.provider">
-   <implementation class="org.eclipse.gyrex.cds.solr.internal.facets.FacetModelProvider"/>
-   <service>
-      <provide interface="org.eclipse.gyrex.context.provider.RuntimeContextObjectProvider"/>
-   </service>
-   <property name="service.vendor" type="String" value="Eclipse Gyrex"/>
-   <property name="service.description" type="String" value="Context preferences based facet model provider."/>
-</scr:component>

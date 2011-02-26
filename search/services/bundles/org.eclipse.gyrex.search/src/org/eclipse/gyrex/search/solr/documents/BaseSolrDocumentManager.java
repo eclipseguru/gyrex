@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 AGETO Service GmbH and others.
+ * Copyright (c) 2008, 2011 Gunnar Wagenknecht and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -8,8 +8,9 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal.documents;
+package org.eclipse.gyrex.cds.solr;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,13 +22,18 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.gyrex.cds.documents.IDocument;
-import org.eclipse.gyrex.cds.documents.IDocumentCollection;
-import org.eclipse.gyrex.cds.solr.documents.ISolrDocumentCollection;
-import org.eclipse.gyrex.cds.solr.solrj.ISolrQueryExecutor;
+import org.eclipse.gyrex.cds.documents.IDocumentManager;
+import org.eclipse.gyrex.cds.solr.internal.documents.PublishJob;
+import org.eclipse.gyrex.cds.solr.internal.documents.SolrDocumentManagerMetrics;
+import org.eclipse.gyrex.cds.solr.internal.documents.StoredDocument;
+import org.eclipse.gyrex.cds.solr.internal.documents.TransientDocument;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.model.common.provider.BaseModelManager;
+import org.eclipse.gyrex.model.common.provider.ModelProvider;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
+import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.storage.exceptions.ResourceFailureException;
 
-import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.osgi.util.NLS;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,28 +46,44 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 /**
- *
+ * {@link IDocumentManager} base implementation based on Apache Solr.
+ * <p>
+ * Usually there's no need to override any method in an implementation. This
+ * already contains each required functionality to access solr repositories.
+ * <p>
+ * The cause to make it abstract lays in the concept of {@link ModelProvider}
+ * and {@link IRuntimeContext}. For each repository access we have to ask the
+ * context for a {@link BaseModelManager} implementation which is registered as
+ * unique class via model provider.
+ * <p>
+ * So each solr repository needs an own implementation of a model manager
  */
-public class SolrDocumentCollection extends PlatformObject implements IDocumentCollection, ISolrDocumentCollection, ISolrQueryExecutor {
+public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclipse.gyrex.persistence.solr.SolrServerRepository> implements IDocumentManager {
 
 	private final AtomicBoolean commitsAllowed = new AtomicBoolean(true);
-	private final SolrDocumentManager manager;
 	private final SolrServer writeServer;
 	private final SolrServer queryServer;
-	private final String collection;
 
 	/**
 	 * Creates a new instance.
 	 * 
-	 * @param manager
-	 * @param queryServer
-	 * @param writeServer
+	 * @param context
+	 *            the context
+	 * @param repository
+	 *            the repository
+	 * @param modelManagerImplementaionId
+	 *            must be unique for each context. See
+	 *            {@link BaseModelManager#createMetricsId(String, IRuntimeContext, org.eclipse.gyrex.persistence.storage.Repository)}
 	 */
-	SolrDocumentCollection(final String collection, final SolrDocumentManager manager, final SolrServer writeServer, final SolrServer queryServer) {
-		this.collection = collection;
-		this.manager = manager;
-		this.writeServer = writeServer;
-		this.queryServer = queryServer;
+	protected BaseSolrDocumentManager(final IRuntimeContext context, final SolrServerRepository repository, final String modelManagerImplementationId) {
+		super(context, repository, new SolrDocumentManagerMetrics(createMetricsId(modelManagerImplementationId, context, repository), createMetricsDescription("Solr based document manager", context, repository)));
+
+		writeServer = getRepository().getSolrServer();
+		queryServer = getRepository().getSolrServerOptimizedForQuery();
+
+		if ((null == writeServer) || (null == queryServer)) {
+			throw new IllegalStateException("Solr servers to write and query must not be null.");
+		}
 	}
 
 	@Override
@@ -69,8 +91,13 @@ public class SolrDocumentCollection extends PlatformObject implements IDocumentC
 		try {
 			writeServer.commit(waitFlush, waitSearcher);
 		} catch (final Exception e) {
-			throw new ResourceFailureException(NLS.bind("Error committing to collection {0} in repository {1}. {2}", new Object[] { collection, manager.getRepositoryId(), e.getMessage() }), e);
+			throw new ResourceFailureException(NLS.bind("Error committing to collection in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
 		}
+	}
+
+	@Override
+	public IDocument createDocument() {
+		return new TransientDocument();
 	}
 
 	@Override
@@ -170,19 +197,12 @@ public class SolrDocumentCollection extends PlatformObject implements IDocumentC
 		}
 	}
 
-	@Override
-	public final Object getAdapter(final Class adapter) {
-		if (ISolrDocumentCollection.class.equals(adapter)) {
-			return this;
-		}
-		if (ISolrQueryExecutor.class.equals(adapter)) {
-			return this;
-		}
-		return super.getAdapter(adapter);
+	public String getRepositoryId() {
+		return getRepository().getRepositoryId();
 	}
 
 	private SolrDocumentManagerMetrics getSolrListingsManagerMetrics() {
-		return manager.getSolrListingsManagerMetrics();
+		return (SolrDocumentManagerMetrics) getMetrics();
 	}
 
 	@Override
@@ -190,7 +210,7 @@ public class SolrDocumentCollection extends PlatformObject implements IDocumentC
 		try {
 			writeServer.optimize(waitFlush, waitSearcher);
 		} catch (final Exception e) {
-			throw new ResourceFailureException(NLS.bind("Error optimizing collection {0} in repository {1}. {2}", new Object[] { collection, manager.getRepositoryId(), e.getMessage() }), e);
+			throw new ResourceFailureException(NLS.bind("Error optimizing collection in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
 		}
 	}
 
@@ -223,7 +243,7 @@ public class SolrDocumentCollection extends PlatformObject implements IDocumentC
 				return queryServer.query(solrQuery, SolrRequest.METHOD.GET);
 			}
 		} catch (final Exception e) {
-			throw new ResourceFailureException(NLS.bind("Error querying collection {0} in repository {1}. {2}", new Object[] { collection, manager.getRepositoryId(), e.getMessage() }), e);
+			throw new ResourceFailureException(NLS.bind("Error querying collection in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
 		}
 	}
 
@@ -240,4 +260,5 @@ public class SolrDocumentCollection extends PlatformObject implements IDocumentC
 	public boolean setCommitsEnabled(final boolean enabled) {
 		return commitsAllowed.getAndSet(enabled);
 	}
+
 }

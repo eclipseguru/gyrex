@@ -8,13 +8,24 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
 package org.eclipse.gyrex.cds.solr.tests;
 
+import org.eclipse.gyrex.cds.documents.IDocumentManager;
+import org.eclipse.gyrex.cds.facets.IFacetManager;
+import org.eclipse.gyrex.cds.solr.BaseFacetManager;
+import org.eclipse.gyrex.cds.solr.BaseSolrDocumentManager;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.common.services.IServiceProxy;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.context.provider.RuntimeContextObjectProvider;
+import org.eclipse.gyrex.model.common.provider.BaseModelManager;
+import org.eclipse.gyrex.model.common.provider.ModelProvider;
+import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
+import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
+import org.eclipse.gyrex.persistence.storage.Repository;
 import org.eclipse.gyrex.persistence.storage.registry.IRepositoryRegistry;
-
 import org.osgi.framework.BundleContext;
 
 public class SolrCdsTestsActivator extends BaseBundleActivator {
@@ -42,6 +53,10 @@ public class SolrCdsTestsActivator extends BaseBundleActivator {
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
 		repositoryRegistryProxy = getServiceHelper().trackService(IRepositoryRegistry.class);
+		
+		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new FacetModelProvider(), "Eclipse Gyrex", "Gyrex Test Facet Model Implementation", null, null);
+		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DocumentModelProvider(), "Eclipse Gyrex", "Gyrex Test Document Model Implementation", null, null);
+		
 	}
 
 	@Override
@@ -55,6 +70,32 @@ public class SolrCdsTestsActivator extends BaseBundleActivator {
 			throw createBundleInactiveException();
 		}
 		return proxy.getService();
+	}
+	
+	private class FacetModelProvider extends ModelProvider {
+		
+		public FacetModelProvider() {
+			super(FacetManagerTest.FACET_CONTENT_TYPE, IFacetManager.class);
+		}
+		
+		@Override
+		public BaseModelManager createModelManagerInstance(Class modelManagerType, Repository repository,
+				IRuntimeContext context) {
+			return new BaseFacetManager(context, (ContextPreferencesRepository) repository, SYMBOLIC_NAME + ".facets"){};
+		}
+	}
+	
+	private class DocumentModelProvider extends ModelProvider {
+		
+		public DocumentModelProvider() {
+			super(DocumentManagerTest.DOCUMENT_CONTENT_TYPE, IDocumentManager.class);
+		}
+		
+		@Override
+		public BaseModelManager createModelManagerInstance(Class modelManagerType, Repository repository,
+				IRuntimeContext context) {
+			return new BaseSolrDocumentManager(context, (SolrServerRepository) repository, SYMBOLIC_NAME + ".documents"){};
+		}
 	}
 
 }

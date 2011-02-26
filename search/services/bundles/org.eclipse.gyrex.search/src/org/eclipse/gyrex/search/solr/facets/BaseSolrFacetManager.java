@@ -8,8 +8,9 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds.solr.internal.facets;
+package org.eclipse.gyrex.cds.solr;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,9 +20,12 @@ import java.util.Map;
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
 import org.eclipse.gyrex.cds.solr.internal.SolrCdsActivator;
+import org.eclipse.gyrex.cds.solr.internal.facets.Facet;
+import org.eclipse.gyrex.cds.solr.internal.facets.FacetManagerMetrics;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelException;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
+import org.eclipse.gyrex.model.common.provider.ModelProvider;
 import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
 
 import org.eclipse.core.runtime.IStatus;
@@ -31,18 +35,32 @@ import org.eclipse.osgi.util.NLS;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
- * Model manager implementation for {@link IFacet facets}.
+ * Base Model manager implementation for {@link IFacet facets}.
+ * <p>
+ * Usually there's no need to override any method in an implementation. This
+ * already contains each required functionality to access solr facet
+ * repositories.
+ * <p>
+ * The cause to make it abstract lays in the concept of {@link ModelProvider}
+ * and {@link IRuntimeContext}. For each repository access we have to ask the
+ * context for a {@link BaseModelManager} implementation which is registered as
+ * unique class via model provider.
+ * <p>
+ * So each solr facet repository needs an own implementation of a model manager
  */
-public class FacetManager extends BaseModelManager<ContextPreferencesRepository> implements IFacetManager {
+public abstract class BaseFacetManager extends BaseModelManager<ContextPreferencesRepository> implements IFacetManager {
 
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param context
 	 * @param repository
+	 * @param modelManagerImplementaionId
+	 *            must be unique for each context. See
+	 *            {@link BaseModelManager#createMetricsId(String, IRuntimeContext, org.eclipse.gyrex.persistence.storage.Repository)}
 	 */
-	FacetManager(final IRuntimeContext context, final ContextPreferencesRepository repository) {
-		super(context, repository, new FacetManagerMetrics(createMetricsId(SolrCdsActivator.SYMBOLIC_NAME + ".model.facets", context, repository), createMetricsDescription("context preferences based facet manager", context, repository)));
+	public BaseFacetManager(final IRuntimeContext context, final ContextPreferencesRepository repository, final String modelManagerImplementaionId) {
+		super(context, repository, new FacetManagerMetrics(createMetricsId(modelManagerImplementaionId, context, repository), createMetricsDescription("context preferences based facet manager", context, repository)));
 	}
 
 	private void checkFacet(final IFacet facet) {

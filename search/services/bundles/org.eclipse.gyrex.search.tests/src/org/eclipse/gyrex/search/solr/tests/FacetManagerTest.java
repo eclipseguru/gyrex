@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  */
 package org.eclipse.gyrex.cds.solr.tests;
 
@@ -22,24 +23,22 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.gyrex.cds.facets.IFacet;
 import org.eclipse.gyrex.cds.facets.IFacetManager;
 import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.cds.query.TermCombination;
-import org.eclipse.gyrex.cds.solr.ISolrCdsConstants;
 import org.eclipse.gyrex.cds.solr.internal.facets.Facet;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
+import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
 import org.eclipse.gyrex.persistence.context.preferences.IContextPreferencesRepositoryConstants;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
+import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
-
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-
-import org.osgi.service.prefs.BackingStoreException;
-
 import org.junit.Test;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  *
@@ -47,13 +46,15 @@ import org.junit.Test;
 @SuppressWarnings("restriction")
 public class FacetManagerTest extends BaseContextTest {
 
+	public static final RepositoryContentType FACET_CONTENT_TYPE = new RepositoryContentType("application", "solr-test-facet", ContextPreferencesRepository.TYPE_NAME, "1.0");
+	
 	/** TEST_FACET */
 	private static final String TEST_FACET = "Test Facet";
 	/** NAME */
 	private static final String REPOSITORY_ID = FacetManagerTest.class.getSimpleName().toLowerCase();
 
 	static void initFacetManager(final IRuntimeContext context) throws BackingStoreException, IOException {
-		DefaultRepositoryLookupStrategy.setRepository(context, ISolrCdsConstants.FACET_CONTENT_TYPE, REPOSITORY_ID);
+		DefaultRepositoryLookupStrategy.setRepository(context, FACET_CONTENT_TYPE, REPOSITORY_ID);
 		IRepositoryPreferences preferences;
 		try {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, IContextPreferencesRepositoryConstants.PROVIDER_ID).getRepositoryPreferences();
