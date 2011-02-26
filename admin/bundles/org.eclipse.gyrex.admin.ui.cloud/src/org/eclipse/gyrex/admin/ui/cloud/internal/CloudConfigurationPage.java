@@ -33,12 +33,12 @@ public class CloudConfigurationPage extends ConfigurationPage {
 
 	final IConnectionMonitor connectionMonitor = new IConnectionMonitor() {
 		@Override
-		public void connected() {
+		public void connected(ZooKeeperGate gate) {
 			getManagedForm().setInput(CloudUiActivator.getInstance().getCloudManager());
 		}
 
 		@Override
-		public void disconnected() {
+		public void disconnected(ZooKeeperGate gate) {
 			getManagedForm().setInput(null);
 		}
 	};
