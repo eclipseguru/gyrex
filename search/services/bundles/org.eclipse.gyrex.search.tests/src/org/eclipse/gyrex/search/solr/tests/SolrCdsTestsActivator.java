@@ -26,12 +26,39 @@ import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepos
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.storage.Repository;
 import org.eclipse.gyrex.persistence.storage.registry.IRepositoryRegistry;
+
 import org.osgi.framework.BundleContext;
 
 public class SolrCdsTestsActivator extends BaseBundleActivator {
 
+	private class DocumentModelProvider extends ModelProvider {
+
+		public DocumentModelProvider() {
+			super(BaseSolrTest.DOCUMENT_CONTENT_TYPE, IDocumentManager.class);
+		}
+
+		@Override
+		public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IRuntimeContext context) {
+			return new BaseSolrDocumentManager(context, (SolrServerRepository) repository, SYMBOLIC_NAME + ".documents") {
+			};
+		}
+	}
+
+	private class FacetModelProvider extends ModelProvider {
+
+		public FacetModelProvider() {
+			super(FacetManagerTest.FACET_CONTENT_TYPE, IFacetManager.class);
+		}
+
+		@Override
+		public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IRuntimeContext context) {
+			return new BaseFacetManager(context, (ContextPreferencesRepository) repository, SYMBOLIC_NAME + ".facets") {
+			};
+		}
+	}
+
 	/** BSN */
-	private static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.solr.tests";
+	private static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.tests";
 
 	private static SolrCdsTestsActivator instance;
 
@@ -53,10 +80,10 @@ public class SolrCdsTestsActivator extends BaseBundleActivator {
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
 		repositoryRegistryProxy = getServiceHelper().trackService(IRepositoryRegistry.class);
-		
+
 		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new FacetModelProvider(), "Eclipse Gyrex", "Gyrex Test Facet Model Implementation", null, null);
 		getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DocumentModelProvider(), "Eclipse Gyrex", "Gyrex Test Document Model Implementation", null, null);
-		
+
 	}
 
 	@Override
@@ -70,32 +97,6 @@ public class SolrCdsTestsActivator extends BaseBundleActivator {
 			throw createBundleInactiveException();
 		}
 		return proxy.getService();
-	}
-	
-	private class FacetModelProvider extends ModelProvider {
-		
-		public FacetModelProvider() {
-			super(FacetManagerTest.FACET_CONTENT_TYPE, IFacetManager.class);
-		}
-		
-		@Override
-		public BaseModelManager createModelManagerInstance(Class modelManagerType, Repository repository,
-				IRuntimeContext context) {
-			return new BaseFacetManager(context, (ContextPreferencesRepository) repository, SYMBOLIC_NAME + ".facets"){};
-		}
-	}
-	
-	private class DocumentModelProvider extends ModelProvider {
-		
-		public DocumentModelProvider() {
-			super(DocumentManagerTest.DOCUMENT_CONTENT_TYPE, IDocumentManager.class);
-		}
-		
-		@Override
-		public BaseModelManager createModelManagerInstance(Class modelManagerType, Repository repository,
-				IRuntimeContext context) {
-			return new BaseSolrDocumentManager(context, (SolrServerRepository) repository, SYMBOLIC_NAME + ".documents"){};
-		}
 	}
 
 }
