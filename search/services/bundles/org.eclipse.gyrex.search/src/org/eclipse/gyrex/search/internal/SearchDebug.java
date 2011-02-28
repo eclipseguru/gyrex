@@ -9,16 +9,15 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.search.solr.tests;
+package org.eclipse.gyrex.search.internal;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.eclipse.gyrex.common.debug.BundleDebugOptions;
 
 /**
- * Context Test Suite.
+ * Debug Options
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ FacetManagerTest.class, DocumentManagerTest.class, SolrCdsServiceTest.class })
-public class AllSolrCdsTests {
+public class SearchDebug extends BundleDebugOptions {
+
+	public static boolean debug;
 
 }

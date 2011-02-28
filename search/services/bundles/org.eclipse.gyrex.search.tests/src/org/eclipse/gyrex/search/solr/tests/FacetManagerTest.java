@@ -10,7 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  */
-package org.eclipse.gyrex.cds.solr.tests;
+package org.eclipse.gyrex.search.solr.tests;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -25,11 +25,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.facets.IFacetManager;
-import org.eclipse.gyrex.cds.internal.solr.facets.Facet;
-import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
-import org.eclipse.gyrex.cds.query.TermCombination;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
@@ -37,6 +32,12 @@ import org.eclipse.gyrex.persistence.context.preferences.IContextPreferencesRepo
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.facets.IFacetManager;
+import org.eclipse.gyrex.search.internal.solr.facets.Facet;
+import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
+import org.eclipse.gyrex.search.query.TermCombination;
+
 import org.junit.Test;
 import org.osgi.service.prefs.BackingStoreException;
 

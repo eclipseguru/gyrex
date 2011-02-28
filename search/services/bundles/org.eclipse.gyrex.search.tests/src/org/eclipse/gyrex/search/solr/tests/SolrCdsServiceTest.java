@@ -10,7 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  */
-package org.eclipse.gyrex.cds.solr.tests;
+package org.eclipse.gyrex.search.solr.tests;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
@@ -18,15 +18,15 @@ import static junit.framework.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.IContentDeliveryService;
-import org.eclipse.gyrex.cds.documents.IDocument;
-import org.eclipse.gyrex.cds.documents.IDocumentManager;
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.facets.IFacetManager;
-import org.eclipse.gyrex.cds.query.IQuery;
-import org.eclipse.gyrex.cds.result.IResult;
-import org.eclipse.gyrex.cds.result.IResultFacet;
 import org.eclipse.gyrex.model.common.ModelUtil;
+import org.eclipse.gyrex.search.ISearchService;
+import org.eclipse.gyrex.search.documents.IDocument;
+import org.eclipse.gyrex.search.documents.IDocumentManager;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.facets.IFacetManager;
+import org.eclipse.gyrex.search.query.IQuery;
+import org.eclipse.gyrex.search.result.IResult;
+import org.eclipse.gyrex.search.result.IResultFacet;
 
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public class SolrCdsServiceTest extends BaseSolrTest {
 
 	@Test
 	public void test001_CdsBasics() throws Exception {
-		final IContentDeliveryService service = getContext().get(IContentDeliveryService.class);
+		final ISearchService service = getContext().get(ISearchService.class);
 		assertNotNull(service);
 
 		// init facets (note, requires copyField support in schema)

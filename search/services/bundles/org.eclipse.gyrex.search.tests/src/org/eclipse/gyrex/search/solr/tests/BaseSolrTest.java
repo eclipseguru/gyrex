@@ -10,7 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  */
-package org.eclipse.gyrex.cds.solr.tests;
+package org.eclipse.gyrex.search.solr.tests;
 
 import static junit.framework.Assert.assertNotNull;
 
@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
 
-import org.eclipse.gyrex.cds.internal.solr.documents.PublishJob;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.PersistenceUtil;
@@ -41,6 +40,8 @@ import org.eclipse.gyrex.persistence.solr.internal.SolrActivator;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepositoryProvider;
 import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
+import org.eclipse.gyrex.search.internal.solr.documents.PublishJob;
+
 import org.junit.BeforeClass;
 import org.osgi.service.prefs.BackingStoreException;
 
