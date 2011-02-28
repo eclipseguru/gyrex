@@ -21,7 +21,7 @@ import org.osgi.framework.BundleContext;
 public class SolrCdsTestsActivator extends BaseBundleActivator {
 
 	/** BSN */
-	private static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cds.tests";
+	private static final String SYMBOLIC_NAME = "org.eclipse.gyrex.search.tests";
 
 	private static SolrCdsTestsActivator instance;
 

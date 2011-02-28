@@ -10,23 +10,24 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds;
+package org.eclipse.gyrex.search.solr.facets;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.facets.IFacetManager;
-import org.eclipse.gyrex.cds.internal.solr.SolrCdsActivator;
-import org.eclipse.gyrex.cds.internal.solr.facets.Facet;
-import org.eclipse.gyrex.cds.internal.solr.facets.FacetManagerMetrics;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelException;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
-import org.eclipse.gyrex.model.common.provider.ModelProvider;
-import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
+import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
+import org.eclipse.gyrex.persistence.storage.RepositoryMetadata;
+import org.eclipse.gyrex.search.documents.IDocumentManager;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.facets.IFacetManager;
+import org.eclipse.gyrex.search.internal.SearchActivator;
+import org.eclipse.gyrex.search.internal.solr.facets.Facet;
+import org.eclipse.gyrex.search.internal.solr.facets.FacetManagerMetrics;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -35,31 +36,32 @@ import org.eclipse.osgi.util.NLS;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
- * Base Model manager implementation for {@link IFacet facets}.
+ * Base class for {@link IFacetManager facet managers} based on Apache Solr.
  * <p>
- * Usually there's no need to override any method in an implementation. This
- * already contains each required functionality to access solr facet
- * repositories.
+ * This implementation uses a {@link SolrServerRepository Solr repository} for
+ * accessing Solr. Any custom content type definitions need to be bound to such
+ * a repository. Typically, the same repository is used that the document
+ * manager uses. The facet configuration will be stored as metadata within the
+ * repository.
+ * </p>
  * <p>
- * The cause to make it abstract lays in the concept of {@link ModelProvider}
- * and {@link IRuntimeContext}. For each repository access we have to ask the
- * context for a {@link BaseModelManager} implementation which is registered as
- * unique class via model provider.
- * <p>
- * So each solr facet repository needs an own implementation of a model manager
+ * Clients that want to contribute a specialize document model backed by Solr
+ * may subclass this class. This class implements {@link IDocumentManager} and
+ * shields subclasses from API evolutions.
+ * </p>
  */
-public abstract class BaseFacetManager extends BaseModelManager<ContextPreferencesRepository> implements IFacetManager {
+public abstract class BaseSolrFacetManager extends BaseModelManager<SolrServerRepository> implements IFacetManager {
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param context
 	 * @param repository
 	 * @param modelManagerImplementaionId
 	 *            must be unique for each context. See
 	 *            {@link BaseModelManager#createMetricsId(String, IRuntimeContext, org.eclipse.gyrex.persistence.storage.Repository)}
 	 */
-	public BaseFacetManager(final IRuntimeContext context, final ContextPreferencesRepository repository, final String modelManagerImplementaionId) {
+	public BaseSolrFacetManager(final IRuntimeContext context, final SolrServerRepository repository, final String modelManagerImplementaionId) {
 		super(context, repository, new FacetManagerMetrics(createMetricsId(modelManagerImplementaionId, context, repository), createMetricsDescription("context preferences based facet manager", context, repository)));
 	}
 
@@ -81,26 +83,33 @@ public abstract class BaseFacetManager extends BaseModelManager<ContextPreferenc
 	public void delete(final IFacet facet) throws IllegalArgumentException, ModelException {
 		checkFacet(facet);
 		try {
-			getRepository().remove(facet.getAttributeId());
+			RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			facetsMetadata.remove(facet.getAttributeId());
+			facetsMetadata.flush();
 		} catch (final BackingStoreException e) {
-			throw new ModelException(new Status(IStatus.ERROR, SolrCdsActivator.SYMBOLIC_NAME, "Unable to remove facet. " + e.getMessage(), e));
+			throw new ModelException(new Status(IStatus.ERROR, SearchActivator.SYMBOLIC_NAME, "Unable to remove facet. " + e.getMessage(), e));
 		}
+	}
+
+	private RepositoryMetadata getFacetsMetadata() {
+		return getRepository().getMetadata("facets");
 	}
 
 	@Override
 	public Map<String, IFacet> getFacets() throws ModelException {
 		try {
-			final Collection<String> keys = getRepository().getKeys();
+			RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			final Collection<String> keys = facetsMetadata.getKeys();
 			final Map<String, IFacet> map = new HashMap<String, IFacet>(keys.size());
 			for (final String key : keys) {
-				final byte[] bytes = getRepository().get(key);
+				final byte[] bytes = facetsMetadata.get(key);
 				if (bytes != null) {
 					map.put(key, new Facet(key, this, bytes));
 				}
 			}
 			return Collections.unmodifiableMap(map);
 		} catch (final BackingStoreException e) {
-			throw new ModelException(new Status(IStatus.ERROR, SolrCdsActivator.SYMBOLIC_NAME, "Unable to load facets. " + e.getMessage(), e));
+			throw new ModelException(new Status(IStatus.ERROR, SearchActivator.SYMBOLIC_NAME, "Unable to load facets. " + e.getMessage(), e));
 		}
 	}
 
@@ -108,9 +117,11 @@ public abstract class BaseFacetManager extends BaseModelManager<ContextPreferenc
 	public void save(final IFacet facet) throws IllegalArgumentException, ModelException {
 		checkFacet(facet);
 		try {
-			getRepository().store(facet.getAttributeId(), ((Facet) facet).toByteArray());
+			RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			facetsMetadata.put(facet.getAttributeId(), ((Facet) facet).toByteArray());
+			facetsMetadata.flush();
 		} catch (final BackingStoreException e) {
-			throw new ModelException(new Status(IStatus.ERROR, SolrCdsActivator.SYMBOLIC_NAME, "Unable to remove facet. " + e.getMessage(), e));
+			throw new ModelException(new Status(IStatus.ERROR, SearchActivator.SYMBOLIC_NAME, "Unable to remove facet. " + e.getMessage(), e));
 		}
 	}
 

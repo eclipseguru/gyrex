@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.documents;
+package org.eclipse.gyrex.search.documents;
 
 import java.util.Collection;
 import java.util.List;

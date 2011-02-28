@@ -10,18 +10,18 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds;
+package org.eclipse.gyrex.search;
 
-import org.eclipse.gyrex.cds.documents.IDocumentManager;
-import org.eclipse.gyrex.cds.query.IQuery;
-import org.eclipse.gyrex.cds.result.IResult;
+import org.eclipse.gyrex.search.documents.IDocumentManager;
+import org.eclipse.gyrex.search.query.IQuery;
+import org.eclipse.gyrex.search.result.IResult;
 import org.eclipse.gyrex.services.common.IService;
 
 /**
- * The content delivery service.
+ * The search service.
  * <p>
- * Gyrex uses the concept of a content delivery service to deliver documents
- * (eg., product listings) to clients (eg., websites). The delivery service
+ * Gyrex uses the concept of a search to deliver documents
+ * (eg., product listings) to clients (eg., websites). The search service
  * defines methods for querying a document repository.
  * </p>
  * <p>
@@ -37,8 +37,9 @@ import org.eclipse.gyrex.services.common.IService;
  * specialization is desired they should look at the options provided by the
  * model implementation.
  * </p>
+ * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IContentDeliveryService extends IService {
+public interface ISearchService extends IService {
 
 	/**
 	 * Creates a new query object.
@@ -46,7 +47,7 @@ public interface IContentDeliveryService extends IService {
 	 * This is the primary way of creating {@link IQuery query} object
 	 * instances.
 	 * </p>
-	 * 
+	 *
 	 * @return a model implementation of {@link IQuery}.
 	 */
 	IQuery createQuery();
@@ -54,7 +55,7 @@ public interface IContentDeliveryService extends IService {
 	/**
 	 * Finds documents matching the specified query within the specified
 	 * manager.
-	 * 
+	 *
 	 * @param query
 	 *            the query object
 	 * @param documentManager

@@ -10,9 +10,10 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds;
+package org.eclipse.gyrex.search.solr.documents;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,87 +22,103 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.gyrex.cds.documents.IDocument;
-import org.eclipse.gyrex.cds.documents.IDocumentManager;
-import org.eclipse.gyrex.cds.internal.solr.documents.PublishJob;
-import org.eclipse.gyrex.cds.internal.solr.documents.SolrDocumentManagerMetrics;
-import org.eclipse.gyrex.cds.internal.solr.documents.StoredDocument;
-import org.eclipse.gyrex.cds.internal.solr.documents.TransientDocument;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
-import org.eclipse.gyrex.model.common.provider.ModelProvider;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.storage.exceptions.ResourceFailureException;
+import org.eclipse.gyrex.search.documents.IDocument;
+import org.eclipse.gyrex.search.documents.IDocumentManager;
+import org.eclipse.gyrex.search.internal.solr.documents.PublishJob;
+import org.eclipse.gyrex.search.internal.solr.documents.SolrDocumentManagerMetrics;
+import org.eclipse.gyrex.search.internal.solr.documents.StoredDocument;
+import org.eclipse.gyrex.search.internal.solr.documents.TransientDocument;
 
 import org.eclipse.osgi.util.NLS;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 /**
- * {@link IDocumentManager} base implementation based on Apache Solr.
+ * Base class for {@link IDocumentManager document managers} based on Apache
+ * Solr.
  * <p>
- * Usually there's no need to override any method in an implementation. This
- * already contains each required functionality to access solr repositories.
+ * This implementation uses a {@link SolrServerRepository Solr repository} for
+ * accessing Solr. Any custom content type definitions need to be bound to such a repository.
+ * </p>
  * <p>
- * The cause to make it abstract lays in the concept of {@link ModelProvider}
- * and {@link IRuntimeContext}. For each repository access we have to ask the
- * context for a {@link BaseModelManager} implementation which is registered as
- * unique class via model provider.
- * <p>
- * So each solr repository needs an own implementation of a model manager
+ * Clients that want to contribute a specialize document model backed by Solr
+ * may subclass this class. This class implements {@link IDocumentManager} and
+ * shields subclasses from API evolutions.
+ * </p>
  */
 public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclipse.gyrex.persistence.solr.SolrServerRepository> implements IDocumentManager {
 
 	private final AtomicBoolean commitsAllowed = new AtomicBoolean(true);
-	private final SolrServer writeServer;
-	private final SolrServer queryServer;
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param context
 	 *            the context
 	 * @param repository
 	 *            the repository
-	 * @param modelManagerImplementaionId
-	 *            must be unique for each context. See
+	 * @param metricsIdPrefix
+	 *            prefix for the manager metrics (will be passed to
 	 *            {@link BaseModelManager#createMetricsId(String, IRuntimeContext, org.eclipse.gyrex.persistence.storage.Repository)}
+	 *            )
 	 */
-	protected BaseSolrDocumentManager(final IRuntimeContext context, final SolrServerRepository repository, final String modelManagerImplementationId) {
-		super(context, repository, new SolrDocumentManagerMetrics(createMetricsId(modelManagerImplementationId, context, repository), createMetricsDescription("Solr based document manager", context, repository)));
-
-		writeServer = getRepository().getSolrServer();
-		queryServer = getRepository().getSolrServerOptimizedForQuery();
-
-		if ((null == writeServer) || (null == queryServer)) {
-			throw new IllegalStateException("Solr servers to write and query must not be null.");
-		}
+	protected BaseSolrDocumentManager(final IRuntimeContext context, final SolrServerRepository repository, final String metricsIdPrefix) {
+		super(context, repository, new SolrDocumentManagerMetrics(createMetricsId(metricsIdPrefix, context, repository), createMetricsDescription("Solr based document manager", context, repository)));
 	}
 
-	@Override
-	public void commit(final boolean waitFlush, final boolean waitSearcher) {
+	/**
+	 * Commits everything to the underlying Solr repository.
+	 *
+	 * @param collection
+	 *            the collection (maybe <code>null</code> for the default
+	 *            collection)
+	 * @param waitFlush
+	 *            <code>true</code> if the method should block till all changes
+	 *            have been committed, <code>false</code> otherwise
+	 * @param waitSearcher
+	 *            <code>true</code> if the method should block till new
+	 *            searchers have been opened after committing,
+	 *            <code>false</code> otherwise
+	 */
+	public final void commit(final boolean waitFlush, final boolean waitSearcher) {
 		try {
-			writeServer.commit(waitFlush, waitSearcher);
+			getRepository().getSolrServer().commit(waitFlush, waitSearcher);
 		} catch (final Exception e) {
-			throw new ResourceFailureException(NLS.bind("Error committing to collection in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
+			throw new ResourceFailureException(NLS.bind("Error committing in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
 		}
 	}
 
 	@Override
-	public IDocument createDocument() {
+	public final IDocument createDocument() {
 		return new TransientDocument();
 	}
 
+	/**
+	 * Called by the platform when a model manager is no longer needed and all
+	 * held resources should be released.
+	 * <p>
+	 * Subclasses which override <strong>must</strong> call super at appropriate
+	 * times.
+	 * </p>
+	 */
 	@Override
-	public Map<String, IDocument> findById(final Iterable<String> ids) {
+	protected void doClose() {
+		// empty
+	}
+
+	@Override
+	public final Map<String, IDocument> findById(final Collection<String> ids) {
 		if (null == ids) {
 			throw new IllegalArgumentException("ids must not be null");
 		}
@@ -160,7 +177,7 @@ public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclip
 	}
 
 	@Override
-	public IDocument findById(final String id) {
+	public final IDocument findById(final String id) {
 		if (null == id) {
 			throw new IllegalArgumentException("id must not be null");
 		}
@@ -197,25 +214,38 @@ public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclip
 		}
 	}
 
-	public String getRepositoryId() {
+	protected final String getRepositoryId() {
 		return getRepository().getRepositoryId();
 	}
 
-	private SolrDocumentManagerMetrics getSolrListingsManagerMetrics() {
+	private final SolrDocumentManagerMetrics getSolrListingsManagerMetrics() {
 		return (SolrDocumentManagerMetrics) getMetrics();
 	}
 
-	@Override
-	public void optimize(final boolean waitFlush, final boolean waitSearcher) {
+	/**
+	 * Optimizes and commits everything to the underlying Solr repository.
+	 *
+	 * @param collection
+	 *            the collection (maybe <code>null</code> for the default
+	 *            collection)
+	 * @param waitFlush
+	 *            <code>true</code> if the method should block till all changes
+	 *            have been committed, <code>false</code> otherwise
+	 * @param waitSearcher
+	 *            <code>true</code> if the method should block till new
+	 *            searchers have been opened after committing,
+	 *            <code>false</code> otherwise
+	 */
+	public final void optimize(final boolean waitFlush, final boolean waitSearcher) {
 		try {
-			writeServer.optimize(waitFlush, waitSearcher);
+			getRepository().getSolrServer().optimize(waitFlush, waitSearcher);
 		} catch (final Exception e) {
-			throw new ResourceFailureException(NLS.bind("Error optimizing collection in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
+			throw new ResourceFailureException(NLS.bind("Error optimizing repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
 		}
 	}
 
 	@Override
-	public void publish(final Iterable<IDocument> documents) {
+	public final void publish(final Collection<IDocument> documents) {
 		// create a copy of the list to avoid clearing the list by outsiders
 		final List<IDocument> docsToPublish = new ArrayList<IDocument>();
 
@@ -228,36 +258,67 @@ public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclip
 		}
 
 		// publish
-		new PublishJob(docsToPublish, writeServer, getSolrListingsManagerMetrics(), commitsAllowed.get()).schedule();
+		new PublishJob(docsToPublish, getRepository().getSolrServer(), getSolrListingsManagerMetrics(), commitsAllowed.get()).schedule();
 	}
 
-	@Override
-	public QueryResponse query(final SolrQuery solrQuery) {
+	/**
+	 * Executes a SolrJ query.
+	 * <p>
+	 * Note, this API depends on the SolrJ and Solr API. Thus, it is bound to
+	 * the evolution of external API which might not follow the Gyrex <a
+	 * href="http://wiki.eclipse.org/Evolving_Java-based_APIs"
+	 * target="_blank">API evolution</a> and <a
+	 * href="http://wiki.eclipse.org/Version_Numbering"
+	 * target="_blank">versioning</a> guidelines.
+	 * </p>
+	 *
+	 * @param query
+	 *            the <code>SolrQuery</code> object
+	 * @return the <code>QueryResponse</code> object
+	 */
+	public final QueryResponse query(final SolrQuery solrQuery) {
 		final String query = solrQuery.toString();
 		// TODO: limit should be configurable
 		try {
 			final int urlLengthLimit = 2000;
 			if (query.length() > urlLengthLimit) {
-				return queryServer.query(solrQuery, SolrRequest.METHOD.POST);
+				return getRepository().getSolrServerOptimizedForQuery().query(solrQuery, SolrRequest.METHOD.POST);
 			} else {
-				return queryServer.query(solrQuery, SolrRequest.METHOD.GET);
+				return getRepository().getSolrServerOptimizedForQuery().query(solrQuery, SolrRequest.METHOD.GET);
 			}
 		} catch (final Exception e) {
-			throw new ResourceFailureException(NLS.bind("Error querying collection in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
+			throw new ResourceFailureException(NLS.bind("Error querying documents in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.cds.documents.IDocumentCollection#remove(java.lang.Iterable)
-	 */
 	@Override
-	public void remove(final Iterable<String> documentIds) {
-		// TODO Auto-generated method stub
-
+	public final void remove(final Collection<String> documentIds) {
+		try {
+			getRepository().getSolrServer().deleteById(documentIds instanceof List ? (List<String>) documentIds : new ArrayList<String>(documentIds));
+		} catch (final Exception e) {
+			throw new ResourceFailureException(NLS.bind("Error removing documents in repository {0}. {1}", new Object[] { getRepositoryId(), e.getMessage() }), e);
+		}
 	}
 
-	@Override
-	public boolean setCommitsEnabled(final boolean enabled) {
+	/**
+	 * Allows to temporarily disabled commits from the manager.
+	 * <p>
+	 * When disabled, the manager will never commit any changes
+	 * {@link IDocumentManager#publish(Iterable) submitted} to the underlying
+	 * Solr repository. Instead, {@link #commit(boolean, boolean)} must be
+	 * called manually in order to apply changes to the Solr repository.
+	 * </p>
+	 *
+	 * @param collection
+	 *            the collection (maybe <code>null</code> for the default
+	 *            collection)
+	 * @param enabled
+	 *            <code>true</code> if the manager is allowed to commit changes,
+	 *            <code>false</code> otherwise
+	 * @return <code>true</code> if commit was previously enabled,
+	 *         <code>false</code> otherwise
+	 */
+	public final boolean setCommitsEnabled(final boolean enabled) {
 		return commitsAllowed.getAndSet(enabled);
 	}
 

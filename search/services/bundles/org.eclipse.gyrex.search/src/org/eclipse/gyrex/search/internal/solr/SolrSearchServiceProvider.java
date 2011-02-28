@@ -9,27 +9,27 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr;
+package org.eclipse.gyrex.search.internal.solr;
 
-import org.eclipse.gyrex.cds.IContentDeliveryService;
 import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.search.ISearchService;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.provider.ServiceProvider;
 import org.eclipse.gyrex.services.common.status.IStatusMonitor;
 
-public class SolrCdsServiceProvider extends ServiceProvider {
+public class SolrSearchServiceProvider extends ServiceProvider {
 
 	/**
 	 * Creates a new instance.
 	 */
-	public SolrCdsServiceProvider() {
-		super(IContentDeliveryService.class);
+	public SolrSearchServiceProvider() {
+		super(ISearchService.class);
 	}
 
 	@Override
 	public BaseService createServiceInstance(final Class serviceType, final IRuntimeContext context, final IStatusMonitor statusMonitor) {
-		if (IContentDeliveryService.class.equals(serviceType)) {
-			return new SolrContentDeliveryService(context, statusMonitor);
+		if (ISearchService.class.equals(serviceType)) {
+			return new SolrSearchService(context, statusMonitor);
 		}
 		return null;
 	}

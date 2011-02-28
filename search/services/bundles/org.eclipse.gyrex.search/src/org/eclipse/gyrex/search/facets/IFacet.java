@@ -9,16 +9,16 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.facets;
+package org.eclipse.gyrex.search.facets;
 
 import java.util.Locale;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
-import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
-import org.eclipse.gyrex.cds.query.TermCombination;
 import org.eclipse.gyrex.model.common.IModelObject;
 import org.eclipse.gyrex.model.common.contracts.IModelManagerAware;
+import org.eclipse.gyrex.search.documents.IDocumentAttribute;
+import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
+import org.eclipse.gyrex.search.query.TermCombination;
 
 /**
  * A facet is used to implement <a

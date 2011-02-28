@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.query;
+package org.eclipse.gyrex.search.query;
 
 /**
  * The result dimension indicates what amount of fields the result should

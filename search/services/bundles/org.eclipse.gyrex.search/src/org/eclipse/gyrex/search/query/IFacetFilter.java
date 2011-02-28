@@ -9,9 +9,9 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.query;
+package org.eclipse.gyrex.search.query;
 
-import org.eclipse.gyrex.cds.facets.IFacet;
+import org.eclipse.gyrex.search.facets.IFacet;
 
 /**
  * A filter that operates using {@link IFacet facets}.

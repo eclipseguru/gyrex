@@ -9,13 +9,13 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.query;
+package org.eclipse.gyrex.search.query;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.facets.IFacet;
+import org.eclipse.gyrex.search.facets.IFacet;
 
 import org.eclipse.core.runtime.IAdaptable;
 

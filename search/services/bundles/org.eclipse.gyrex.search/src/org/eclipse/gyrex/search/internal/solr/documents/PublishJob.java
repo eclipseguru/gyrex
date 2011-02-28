@@ -9,16 +9,16 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.documents;
+package org.eclipse.gyrex.search.internal.solr.documents;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.gyrex.cds.documents.IDocument;
-import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
-import org.eclipse.gyrex.cds.internal.solr.SolrCdsActivator;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
+import org.eclipse.gyrex.search.documents.IDocument;
+import org.eclipse.gyrex.search.documents.IDocumentAttribute;
+import org.eclipse.gyrex.search.internal.SearchActivator;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -71,7 +71,7 @@ public class PublishJob extends Job {
 	protected IStatus run(final IProgressMonitor monitor) {
 		// check if we are active
 		try {
-			SolrCdsActivator.getInstance();
+			SearchActivator.getInstance();
 		} catch (final IllegalStateException e) {
 			return Status.CANCEL_STATUS;
 		}
@@ -99,7 +99,7 @@ public class PublishJob extends Job {
 			publishedMetric.requestFinished(docs.size(), System.currentTimeMillis() - requestStarted);
 		} catch (final Exception e) {
 			publishedMetric.requestFailed();
-			return new Status(IStatus.ERROR, SolrCdsActivator.SYMBOLIC_NAME, "error while submitting documents to Solr", e);
+			return new Status(IStatus.ERROR, SearchActivator.SYMBOLIC_NAME, "error while submitting documents to Solr", e);
 		}
 		return Status.OK_STATUS;
 	}

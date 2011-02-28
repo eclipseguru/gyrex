@@ -9,11 +9,11 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.result;
+package org.eclipse.gyrex.search.result;
 
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.facets.IFacet;
+import org.eclipse.gyrex.search.facets.IFacet;
 
 /**
  * A facet available in a listing result.

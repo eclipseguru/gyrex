@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.query;
+package org.eclipse.gyrex.search.internal.solr.query;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,12 +17,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.query.IAttributeFilter;
-import org.eclipse.gyrex.cds.query.IFacetFilter;
-import org.eclipse.gyrex.cds.query.IQuery;
-import org.eclipse.gyrex.cds.query.ResultProjection;
-import org.eclipse.gyrex.cds.query.SortDirection;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.query.IAttributeFilter;
+import org.eclipse.gyrex.search.query.IFacetFilter;
+import org.eclipse.gyrex.search.query.IQuery;
+import org.eclipse.gyrex.search.query.ResultProjection;
+import org.eclipse.gyrex.search.query.SortDirection;
 
 import org.eclipse.core.runtime.PlatformObject;
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.eclipse.gyrex.cds.solr.service.provider">
-   <implementation class="org.eclipse.gyrex.search.internal.solr.SolrSearchService"/>
+   <implementation class="org.eclipse.gyrex.search.internal.solr.SolrSearchServiceProvider"/>
    <service>
       <provide interface="org.eclipse.gyrex.context.provider.RuntimeContextObjectProvider"/>
    </service>

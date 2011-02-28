@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.facets;
+package org.eclipse.gyrex.search.internal.solr.facets;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,11 +22,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.gyrex.cds.BaseFacetManager;
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.facets.IFacetManager;
-import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
-import org.eclipse.gyrex.cds.query.TermCombination;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.facets.IFacetManager;
+import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
+import org.eclipse.gyrex.search.query.TermCombination;
+import org.eclipse.gyrex.search.solr.facets.BaseSolrFacetManager;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.osgi.util.NLS;
@@ -37,7 +37,7 @@ import org.eclipse.osgi.util.NLS;
 public class Facet extends PlatformObject implements IFacet {
 
 	private final String attributeId;
-	private final BaseFacetManager manager;
+	private final BaseSolrFacetManager manager;
 	private final Map<Locale, String> names;
 	private TermCombination termCombination;
 	private FacetSelectionStrategy selectionStrategy;
@@ -49,7 +49,7 @@ public class Facet extends PlatformObject implements IFacet {
 	 * @param attributeId
 	 * @param manager
 	 */
-	public Facet(final String attributeId, final BaseFacetManager manager) {
+	public Facet(final String attributeId, final BaseSolrFacetManager manager) {
 		this(attributeId, manager, null);
 	}
 
@@ -60,7 +60,7 @@ public class Facet extends PlatformObject implements IFacet {
 	 * @param manager
 	 * @param bytes
 	 */
-	public Facet(final String attributeId, final BaseFacetManager manager, final byte[] bytes) {
+	public Facet(final String attributeId, final BaseSolrFacetManager manager, final byte[] bytes) {
 		this.attributeId = attributeId;
 		this.manager = manager;
 		names = new HashMap<Locale, String>(1);

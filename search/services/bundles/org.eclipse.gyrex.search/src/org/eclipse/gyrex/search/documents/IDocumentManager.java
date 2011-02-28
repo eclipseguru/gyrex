@@ -10,14 +10,12 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds.documents;
+package org.eclipse.gyrex.search.documents;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.gyrex.model.common.IModelManager;
-
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
 
 /**
  * The manager for working with {@link IDocument documents} and
@@ -42,28 +40,11 @@ import org.apache.solr.client.solrj.response.QueryResponse;
  * @noextend This interface is not intended to be extended by clients.
  */
 public interface IDocumentManager extends IModelManager {
-
-	/**
-	 * Commits everything to the underlying Solr repository.
-	 * 
-	 * @param collection
-	 *            the collection (maybe <code>null</code> for the default
-	 *            collection)
-	 * @param waitFlush
-	 *            <code>true</code> if the method should block till all changes
-	 *            have been committed, <code>false</code> otherwise
-	 * @param waitSearcher
-	 *            <code>true</code> if the method should block till new
-	 *            searchers have been opened after committing,
-	 *            <code>false</code> otherwise
-	 */
-	void commit(boolean waitFlush, boolean waitSearcher);
-
 	/**
 	 * Creates and returns a new transient document.
 	 * <p>
 	 * The document will not be contained in the repository until it has been
-	 * {@link #publish(Iterable) published}.
+	 * {@link #publish(Collection) published}.
 	 * </p>
 	 * 
 	 * @param attributeId
@@ -82,7 +63,7 @@ public interface IDocumentManager extends IModelManager {
 	 *         {@link IDocument#getId() the listing id} as map key and the
 	 *         {@link IDocument} as map value
 	 */
-	Map<String, IDocument> findById(Iterable<String> ids);
+	Map<String, IDocument> findById(Collection<String> ids);
 
 	/**
 	 * Finds a document by its {@link IDocument#getId()}.
@@ -92,22 +73,6 @@ public interface IDocumentManager extends IModelManager {
 	 * @return the found {@link IDocument} or <code>null</code> if not found
 	 */
 	IDocument findById(String id);
-
-	/**
-	 * Optimizes and commits everything to the underlying Solr repository.
-	 * 
-	 * @param collection
-	 *            the collection (maybe <code>null</code> for the default
-	 *            collection)
-	 * @param waitFlush
-	 *            <code>true</code> if the method should block till all changes
-	 *            have been committed, <code>false</code> otherwise
-	 * @param waitSearcher
-	 *            <code>true</code> if the method should block till new
-	 *            searchers have been opened after committing,
-	 *            <code>false</code> otherwise
-	 */
-	void optimize(boolean waitFlush, boolean waitSearcher);
 
 	/**
 	 * Publishes a set of documents to the repository.
@@ -133,24 +98,7 @@ public interface IDocumentManager extends IModelManager {
 	 * @param documents
 	 *            the documents to publish
 	 */
-	void publish(Iterable<IDocument> documents);
-
-	/**
-	 * Executes a SolrJ query.
-	 * <p>
-	 * Note, this API depends on the SolrJ and Solr API. Thus, it is bound to
-	 * the evolution of external API which might not follow the Gyrex <a
-	 * href="http://wiki.eclipse.org/Evolving_Java-based_APIs"
-	 * target="_blank">API evolution</a> and <a
-	 * href="http://wiki.eclipse.org/Version_Numbering"
-	 * target="_blank">versioning</a> guidelines.
-	 * </p>
-	 * 
-	 * @param query
-	 *            the <code>SolrQuery</code> object
-	 * @return the <code>QueryResponse</code> object
-	 */
-	QueryResponse query(SolrQuery query);
+	void publish(Collection<IDocument> documents);
 
 	/**
 	 * Removes a set of documents from a repository.
@@ -165,26 +113,6 @@ public interface IDocumentManager extends IModelManager {
 	 * @param documentIds
 	 *            the document ids to remove
 	 */
-	void remove(Iterable<String> documentIds);
-
-	/**
-	 * Allows to temporarily disabled commits from the manager.
-	 * <p>
-	 * When disabled, the manager will never commit any changes
-	 * {@link IDocumentManager#publish(Iterable) submitted} to the underlying
-	 * Solr repository. Instead, {@link #commit(boolean, boolean)} must be
-	 * called manually in order to apply changes to the Solr repository.
-	 * </p>
-	 * 
-	 * @param collection
-	 *            the collection (maybe <code>null</code> for the default
-	 *            collection)
-	 * @param enabled
-	 *            <code>true</code> if the manager is allowed to commit changes,
-	 *            <code>false</code> otherwise
-	 * @return <code>true</code> if commit was previously enabled,
-	 *         <code>false</code> otherwise
-	 */
-	boolean setCommitsEnabled(boolean enabled);
+	void remove(Collection<String> documentIds);
 
 }

@@ -9,10 +9,10 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.result;
+package org.eclipse.gyrex.search.result;
 
-import org.eclipse.gyrex.cds.query.IFacetFilter;
-import org.eclipse.gyrex.cds.query.IQuery;
+import org.eclipse.gyrex.search.query.IFacetFilter;
+import org.eclipse.gyrex.search.query.IQuery;
 
 /**
  * A {@link IResultFacet facet} value.

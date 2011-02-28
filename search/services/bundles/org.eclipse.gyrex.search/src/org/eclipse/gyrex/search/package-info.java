@@ -45,5 +45,5 @@
  * model implementation.
  * </p>
  */
-package org.eclipse.gyrex.cds;
+package org.eclipse.gyrex.search;
 

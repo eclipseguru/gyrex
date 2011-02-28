@@ -10,7 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.documents;
+package org.eclipse.gyrex.search.internal.solr.documents;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
+import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.osgi.util.NLS;

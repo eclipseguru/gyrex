@@ -9,11 +9,11 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.documents;
+package org.eclipse.gyrex.search.internal.solr.documents;
 
 import java.util.Collection;
 
-import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
+import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 
 /**
  * {@link IDocumentAttribute} implementation that marks a parent dirty when

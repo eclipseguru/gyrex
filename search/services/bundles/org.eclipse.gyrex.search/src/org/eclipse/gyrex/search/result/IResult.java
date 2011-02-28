@@ -9,14 +9,14 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.result;
+package org.eclipse.gyrex.search.result;
 
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.documents.IDocument;
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.query.IQuery;
 import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.search.documents.IDocument;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.query.IQuery;
 
 import org.eclipse.core.runtime.IAdaptable;
 

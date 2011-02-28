@@ -9,15 +9,15 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.result;
+package org.eclipse.gyrex.search.internal.solr.result;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.result.IResultFacet;
-import org.eclipse.gyrex.cds.result.IResultFacetValue;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.result.IResultFacet;
+import org.eclipse.gyrex.search.result.IResultFacetValue;
 
 public class ResultFacet implements IResultFacet {
 

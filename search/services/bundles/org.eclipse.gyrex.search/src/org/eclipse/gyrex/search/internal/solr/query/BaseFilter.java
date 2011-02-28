@@ -9,10 +9,10 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.query;
+package org.eclipse.gyrex.search.internal.solr.query;
 
-import org.eclipse.gyrex.cds.query.FilterType;
-import org.eclipse.gyrex.cds.query.IFilter;
+import org.eclipse.gyrex.search.query.FilterType;
+import org.eclipse.gyrex.search.query.IFilter;
 
 /**
  * Base {@link IFilter} implementation

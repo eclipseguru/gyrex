@@ -9,18 +9,18 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.query;
+package org.eclipse.gyrex.search.internal.solr.query;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.gyrex.cds.facets.IFacet;
-import org.eclipse.gyrex.cds.internal.solr.SolrSchemaConventions;
-import org.eclipse.gyrex.cds.query.FacetSelectionStrategy;
-import org.eclipse.gyrex.cds.query.FilterType;
-import org.eclipse.gyrex.cds.query.IFacetFilter;
-import org.eclipse.gyrex.cds.query.QueryUtil;
-import org.eclipse.gyrex.cds.query.TermCombination;
+import org.eclipse.gyrex.search.facets.IFacet;
+import org.eclipse.gyrex.search.internal.solr.SolrSchemaConventions;
+import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
+import org.eclipse.gyrex.search.query.FilterType;
+import org.eclipse.gyrex.search.query.IFacetFilter;
+import org.eclipse.gyrex.search.query.QueryUtil;
+import org.eclipse.gyrex.search.query.TermCombination;
 
 /**
  *

@@ -9,7 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.query;
+package org.eclipse.gyrex.search.query;
 
 /**
  * This class provides static helper methods when working with queries.

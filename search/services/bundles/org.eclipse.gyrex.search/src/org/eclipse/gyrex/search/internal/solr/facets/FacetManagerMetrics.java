@@ -9,9 +9,8 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.facets;
+package org.eclipse.gyrex.search.internal.solr.facets;
 
-import org.eclipse.gyrex.cds.BaseFacetManager;
 import org.eclipse.gyrex.monitoring.metrics.MetricSet;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 

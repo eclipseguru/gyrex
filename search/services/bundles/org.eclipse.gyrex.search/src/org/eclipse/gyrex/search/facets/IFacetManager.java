@@ -9,13 +9,13 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.facets;
+package org.eclipse.gyrex.search.facets;
 
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
 import org.eclipse.gyrex.model.common.IModelManager;
 import org.eclipse.gyrex.model.common.ModelException;
+import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 
 /**
  * Model manager for managing {@link IFacet facets}.

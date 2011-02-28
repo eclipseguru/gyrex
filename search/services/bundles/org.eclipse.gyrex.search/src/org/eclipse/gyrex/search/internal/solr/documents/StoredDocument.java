@@ -9,13 +9,13 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cds.internal.solr.documents;
+package org.eclipse.gyrex.search.internal.solr.documents;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.gyrex.cds.documents.IDocumentAttribute;
+import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 
 import org.apache.solr.common.SolrDocument;
 
