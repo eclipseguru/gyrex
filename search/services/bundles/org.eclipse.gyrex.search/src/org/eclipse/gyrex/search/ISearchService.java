@@ -13,6 +13,7 @@
 package org.eclipse.gyrex.search;
 
 import org.eclipse.gyrex.search.documents.IDocumentManager;
+import org.eclipse.gyrex.search.facets.IFacetManager;
 import org.eclipse.gyrex.search.query.IQuery;
 import org.eclipse.gyrex.search.result.IResult;
 import org.eclipse.gyrex.services.common.IService;
@@ -20,9 +21,9 @@ import org.eclipse.gyrex.services.common.IService;
 /**
  * The search service.
  * <p>
- * Gyrex uses the concept of a search to deliver documents
- * (eg., product listings) to clients (eg., websites). The search service
- * defines methods for querying a document repository.
+ * Gyrex uses the concept of a search to deliver documents (eg., product
+ * listings) to clients (eg., websites). The search service defines methods for
+ * querying a document repository.
  * </p>
  * <p>
  * This interface must be implemented by contributors of a document model
@@ -37,6 +38,7 @@ import org.eclipse.gyrex.services.common.IService;
  * specialization is desired they should look at the options provided by the
  * model implementation.
  * </p>
+ * 
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface ISearchService extends IService {
@@ -47,21 +49,23 @@ public interface ISearchService extends IService {
 	 * This is the primary way of creating {@link IQuery query} object
 	 * instances.
 	 * </p>
-	 *
+	 * 
 	 * @return a model implementation of {@link IQuery}.
 	 */
 	IQuery createQuery();
 
 	/**
 	 * Finds documents matching the specified query within the specified
-	 * manager.
-	 *
+	 * managers.
+	 * 
 	 * @param query
 	 *            the query object
 	 * @param documentManager
 	 *            the documentManager
+	 * @param facetManager
+	 *            the facet manager
 	 * @return the result
 	 */
-	IResult findByQuery(IQuery query, IDocumentManager documentManager);
+	IResult findByQuery(IQuery query, IDocumentManager documentManager, IFacetManager facetManager);
 
 }

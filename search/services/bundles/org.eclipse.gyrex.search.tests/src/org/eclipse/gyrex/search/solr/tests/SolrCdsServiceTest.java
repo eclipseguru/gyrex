@@ -67,7 +67,7 @@ public class SolrCdsServiceTest extends BaseSolrTest {
 		// query for all
 		final IQuery query = service.createQuery();
 		assertNotNull(query);
-		final IResult result = service.findByQuery(query, docManager);
+		final IResult result = service.findByQuery(query, docManager, facetManager);
 		assertNotNull(result);
 
 		// check facets

@@ -25,7 +25,6 @@ import org.eclipse.gyrex.search.facets.IFacet;
 import org.eclipse.gyrex.search.facets.IFacetManager;
 import org.eclipse.gyrex.search.internal.SearchActivator;
 import org.eclipse.gyrex.search.internal.SearchDebug;
-import org.eclipse.gyrex.search.internal.solr.documents.SolrDocumentManager;
 import org.eclipse.gyrex.search.internal.solr.query.AttributeFilter;
 import org.eclipse.gyrex.search.internal.solr.query.FacetFilter;
 import org.eclipse.gyrex.search.internal.solr.query.QueryImpl;
@@ -36,6 +35,8 @@ import org.eclipse.gyrex.search.query.IFacetFilter;
 import org.eclipse.gyrex.search.query.IQuery;
 import org.eclipse.gyrex.search.query.SortDirection;
 import org.eclipse.gyrex.search.result.IResult;
+import org.eclipse.gyrex.search.solr.documents.BaseSolrDocumentManager;
+import org.eclipse.gyrex.search.solr.facets.BaseSolrFacetManager;
 import org.eclipse.gyrex.services.common.provider.BaseService;
 import org.eclipse.gyrex.services.common.status.IStatusMonitor;
 
@@ -71,7 +72,7 @@ public class SolrSearchService extends BaseService implements ISearchService {
 		return new QueryImpl();
 	}
 
-	SolrQuery createSolrQuery(final QueryImpl query) {
+	SolrQuery createSolrQuery(final QueryImpl query, final IFacetManager facetManager) {
 		final SolrQuery solrQuery = new SolrQuery();
 
 		// advanced or user query
@@ -112,7 +113,7 @@ public class SolrSearchService extends BaseService implements ISearchService {
 		}
 
 		// facets
-		final Map<String, IFacet> facets = getFacets();
+		final Map<String, IFacet> facets = getFacets(facetManager);
 		if (facets != null) {
 			// remember facets
 			query.setFacetsInUse(facets);
@@ -160,33 +161,36 @@ public class SolrSearchService extends BaseService implements ISearchService {
 	}
 
 	@Override
-	public IResult findByQuery(final IQuery query, final IDocumentManager documentManager) {
+	public IResult findByQuery(final IQuery query, final IDocumentManager documentManager, final IFacetManager facetManager) {
 		if ((query == null) || !(query instanceof QueryImpl)) {
 			throw new IllegalArgumentException("Invalid query. Must be created using #createQuery from this service instance.");
 		}
 
-		if (!(documentManager instanceof SolrDocumentManager)) {
+		if (!(documentManager instanceof BaseSolrDocumentManager)) {
 			throw new IllegalArgumentException("Invalid document manager. Does not match the service implementaion.");
 		}
 
+		if (!(facetManager instanceof BaseSolrFacetManager)) {
+			throw new IllegalArgumentException("Invalid facet manager. Does not match the service implementaion.");
+		}
+
 		// create query
-		final SolrQuery solrQuery = createSolrQuery((QueryImpl) query);
-		final QueryResponse response = ((SolrDocumentManager) documentManager).query(solrQuery);
+		final SolrQuery solrQuery = createSolrQuery((QueryImpl) query, facetManager);
+		final QueryResponse response = ((BaseSolrDocumentManager) documentManager).query(solrQuery);
 		return new ResultImpl(getContext(), (QueryImpl) query, response);
 	}
 
-	private Map<String, IFacet> getFacets() {
-		refreshFacetsCache();
+	private Map<String, IFacet> getFacets(final IFacetManager facetManager) {
+		refreshFacetsCache(facetManager);
 		return facetsMapRef.get();
 	}
 
-	private void refreshFacetsCache() {
+	private void refreshFacetsCache(final IFacetManager facetManager) {
 		final long time = facetsMapRefTime.get();
 		if (System.currentTimeMillis() - time > 60000) {
 			if (SearchDebug.debug) {
 				LOG.debug("Refreshing facets configuration in context. {}", getContext().getContextPath());
 			}
-			final IFacetManager facetManager = getContext().get(IFacetManager.class);
 			if (facetManager != null) {
 				try {
 					facetsMapRef.set(facetManager.getFacets());
