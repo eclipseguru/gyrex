@@ -40,4 +40,4 @@ Require-Bundle: org.eclipse.gyrex.common;bundle-version="1.0.0",
  org.eclipse.gyrex.model.common;bundle-version="1.0.0",
  org.eclipse.gyrex.services.common;bundle-version="1.0.0",
  org.eclipse.core.jobs;bundle-version="[3.5.100,4.0.0)"
-Service-Component: OSGI-INF/cds-service-provider.xml
+Service-Component: OSGI-INF/document-model-provider.xml, OSGI-INF/facet-model-provider.xml, OSGI-INF/search-service-provider.xml
