@@ -25,7 +25,7 @@ import org.apache.solr.common.SolrDocument;
 public class StoredDocument extends BaseDocument {
 
 	private final SolrDocument doc;
-	private final Map<String, IDocumentAttribute> attributes = new HashMap<String, IDocumentAttribute>();
+	private final Map<String, IDocumentAttribute<?>> attributes = new HashMap<String, IDocumentAttribute<?>>();
 	private boolean dirty;
 	private boolean initializedFully;
 
@@ -67,7 +67,7 @@ public class StoredDocument extends BaseDocument {
 	}
 
 	@Override
-	public Map<String, IDocumentAttribute> getAttributes() {
+	public Map<String, IDocumentAttribute<?>> getAttributes() {
 		ensureInitializedFully();
 		return Collections.unmodifiableMap(attributes);
 	}

@@ -57,7 +57,7 @@ public class PublishJob extends Job {
 
 	private SolrInputDocument createSolrDoc(final IDocument document) {
 		final SolrInputDocument solrDoc = new SolrInputDocument();
-		final Collection<IDocumentAttribute> attributes = document.getAttributes().values();
+		final Collection<IDocumentAttribute<?>> attributes = document.getAttributes().values();
 		for (final IDocumentAttribute attr : attributes) {
 			final Collection<?> values = attr.getValues();
 			for (final Object value : values) {

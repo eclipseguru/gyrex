@@ -153,7 +153,7 @@ public interface IDocument extends IModelObject, IModifiableInMemory, IModificat
 	 * 
 	 * @return an unmodifiable map of all document attributes
 	 */
-	Map<String, IDocumentAttribute> getAttributes();
+	Map<String, IDocumentAttribute<?>> getAttributes();
 
 	/**
 	 * Returns a human-readable description.

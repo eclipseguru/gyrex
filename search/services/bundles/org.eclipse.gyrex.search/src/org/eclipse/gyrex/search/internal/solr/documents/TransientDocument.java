@@ -23,7 +23,7 @@ import org.eclipse.gyrex.search.documents.IDocumentAttribute;
  */
 public class TransientDocument extends BaseDocument {
 
-	private final Map<String, IDocumentAttribute> attributes = new LinkedHashMap<String, IDocumentAttribute>();
+	private final Map<String, IDocumentAttribute<?>> attributes = new LinkedHashMap<String, IDocumentAttribute<?>>();
 
 	@Override
 	public boolean contains(final String attributeId) {
@@ -36,7 +36,7 @@ public class TransientDocument extends BaseDocument {
 	}
 
 	@Override
-	public Map<String, IDocumentAttribute> getAttributes() {
+	public Map<String, IDocumentAttribute<?>> getAttributes() {
 		return Collections.unmodifiableMap(attributes);
 	}
 
