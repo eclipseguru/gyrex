@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.ModelException;
+import org.eclipse.gyrex.model.common.ModelUtil;
 import org.eclipse.gyrex.search.ISearchService;
 import org.eclipse.gyrex.search.documents.IDocumentManager;
 import org.eclipse.gyrex.search.facets.IFacet;
@@ -158,6 +159,14 @@ public class SolrSearchService extends BaseService implements ISearchService {
 		}
 
 		return solrQuery;
+	}
+
+	@Override
+	public IResult findByQuery(final IQuery query) {
+		final IRuntimeContext context = getContext();
+		final IDocumentManager documentManager = ModelUtil.getManager(IDocumentManager.class, context);
+		final IFacetManager facetManager = ModelUtil.getManager(IFacetManager.class, context);
+		return findByQuery(query, documentManager, facetManager);
 	}
 
 	@Override

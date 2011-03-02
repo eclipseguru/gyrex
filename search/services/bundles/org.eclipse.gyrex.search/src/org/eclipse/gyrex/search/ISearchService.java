@@ -55,8 +55,22 @@ public interface ISearchService extends IService {
 	IQuery createQuery();
 
 	/**
+	 * Finds documents matching the specified query using default managers
+	 * available in the context the service operates in.
+	 * 
+	 * @param query
+	 *            the query object
+	 * @return the result
+	 */
+	IResult findByQuery(IQuery query);
+
+	/**
 	 * Finds documents matching the specified query within the specified
 	 * managers.
+	 * <p>
+	 * This method may be called if the default managers aren't used but more
+	 * specialized ones.
+	 * </p>
 	 * 
 	 * @param query
 	 *            the query object
