@@ -30,6 +30,6 @@ public class SolrDocumentManager extends BaseSolrDocumentManager {
 	 *            the repository
 	 */
 	SolrDocumentManager(final IRuntimeContext context, final SolrServerRepository repository) {
-		super(context, repository, SearchActivator.SYMBOLIC_NAME + ".solr.model.documents");
+		super(context, repository, SearchActivator.SYMBOLIC_NAME + ".solr.model.documents.metrics");
 	}
 }

@@ -54,15 +54,14 @@ public abstract class BaseSolrFacetManager extends BaseModelManager<SolrServerRe
 
 	/**
 	 * Creates a new instance.
-	 *
+	 * 
 	 * @param context
 	 * @param repository
-	 * @param modelManagerImplementaionId
-	 *            must be unique for each context. See
-	 *            {@link BaseModelManager#createMetricsId(String, IRuntimeContext, org.eclipse.gyrex.persistence.storage.Repository)}
+	 * @param metricsId
+	 *            the metrics id
 	 */
-	public BaseSolrFacetManager(final IRuntimeContext context, final SolrServerRepository repository, final String modelManagerImplementaionId) {
-		super(context, repository, new FacetManagerMetrics(createMetricsId(modelManagerImplementaionId, context, repository), createMetricsDescription("context preferences based facet manager", context, repository)));
+	public BaseSolrFacetManager(final IRuntimeContext context, final SolrServerRepository repository, final String metricsId) {
+		super(context, repository, new FacetManagerMetrics(metricsId, context, repository));
 	}
 
 	private void checkFacet(final IFacet facet) {
@@ -83,7 +82,7 @@ public abstract class BaseSolrFacetManager extends BaseModelManager<SolrServerRe
 	public void delete(final IFacet facet) throws IllegalArgumentException, ModelException {
 		checkFacet(facet);
 		try {
-			RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			final RepositoryMetadata facetsMetadata = getFacetsMetadata();
 			facetsMetadata.remove(facet.getAttributeId());
 			facetsMetadata.flush();
 		} catch (final BackingStoreException e) {
@@ -91,14 +90,10 @@ public abstract class BaseSolrFacetManager extends BaseModelManager<SolrServerRe
 		}
 	}
 
-	private RepositoryMetadata getFacetsMetadata() {
-		return getRepository().getMetadata("facets");
-	}
-
 	@Override
 	public Map<String, IFacet> getFacets() throws ModelException {
 		try {
-			RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			final RepositoryMetadata facetsMetadata = getFacetsMetadata();
 			final Collection<String> keys = facetsMetadata.getKeys();
 			final Map<String, IFacet> map = new HashMap<String, IFacet>(keys.size());
 			for (final String key : keys) {
@@ -113,11 +108,15 @@ public abstract class BaseSolrFacetManager extends BaseModelManager<SolrServerRe
 		}
 	}
 
+	private RepositoryMetadata getFacetsMetadata() {
+		return getRepository().getMetadata("facets");
+	}
+
 	@Override
 	public void save(final IFacet facet) throws IllegalArgumentException, ModelException {
 		checkFacet(facet);
 		try {
-			RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			final RepositoryMetadata facetsMetadata = getFacetsMetadata();
 			facetsMetadata.put(facet.getAttributeId(), ((Facet) facet).toByteArray());
 			facetsMetadata.flush();
 		} catch (final BackingStoreException e) {

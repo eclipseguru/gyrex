@@ -11,16 +11,19 @@
  *******************************************************************************/
 package org.eclipse.gyrex.search.internal.solr.documents;
 
-import org.eclipse.gyrex.monitoring.metrics.MetricSet;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.model.common.provider.BaseModelManagerMetrics;
 import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
+import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
+import org.eclipse.gyrex.search.solr.documents.BaseSolrDocumentManager;
 
-public class SolrDocumentManagerMetrics extends MetricSet {
+public class SolrDocumentManagerMetrics extends BaseModelManagerMetrics {
 
 	private final ThroughputMetric docsPublishedMetric;
 	private final ThroughputMetric docsRetrievedByIdMetric;
 
-	public SolrDocumentManagerMetrics(final String id, final String description) {
-		super(id, description, new ThroughputMetric(id + ".docs.published"), new ThroughputMetric(id + ".docs.retrieved.byId"));
+	public SolrDocumentManagerMetrics(final String id, final IRuntimeContext context, final SolrServerRepository repository) {
+		super(id, BaseSolrDocumentManager.class, context, repository, new ThroughputMetric(id + ".docs.published"), new ThroughputMetric(id + ".docs.retrieved.byId"));
 		docsPublishedMetric = getMetric(0, ThroughputMetric.class);
 		docsRetrievedByIdMetric = getMetric(1, ThroughputMetric.class);
 	}

@@ -49,7 +49,8 @@ import org.apache.solr.common.SolrDocumentList;
  * Solr.
  * <p>
  * This implementation uses a {@link SolrServerRepository Solr repository} for
- * accessing Solr. Any custom content type definitions need to be bound to such a repository.
+ * accessing Solr. Any custom content type definitions need to be bound to such
+ * a repository.
  * </p>
  * <p>
  * Clients that want to contribute a specialize document model backed by Solr
@@ -63,23 +64,21 @@ public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclip
 
 	/**
 	 * Creates a new instance.
-	 *
+	 * 
 	 * @param context
 	 *            the context
 	 * @param repository
 	 *            the repository
-	 * @param metricsIdPrefix
-	 *            prefix for the manager metrics (will be passed to
-	 *            {@link BaseModelManager#createMetricsId(String, IRuntimeContext, org.eclipse.gyrex.persistence.storage.Repository)}
-	 *            )
+	 * @param metricsId
+	 *            the metrics id
 	 */
-	protected BaseSolrDocumentManager(final IRuntimeContext context, final SolrServerRepository repository, final String metricsIdPrefix) {
-		super(context, repository, new SolrDocumentManagerMetrics(createMetricsId(metricsIdPrefix, context, repository), createMetricsDescription("Solr based document manager", context, repository)));
+	protected BaseSolrDocumentManager(final IRuntimeContext context, final SolrServerRepository repository, final String metricsId) {
+		super(context, repository, new SolrDocumentManagerMetrics(metricsId, context, repository));
 	}
 
 	/**
 	 * Commits everything to the underlying Solr repository.
-	 *
+	 * 
 	 * @param collection
 	 *            the collection (maybe <code>null</code> for the default
 	 *            collection)
@@ -224,7 +223,7 @@ public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclip
 
 	/**
 	 * Optimizes and commits everything to the underlying Solr repository.
-	 *
+	 * 
 	 * @param collection
 	 *            the collection (maybe <code>null</code> for the default
 	 *            collection)
@@ -271,7 +270,7 @@ public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclip
 	 * href="http://wiki.eclipse.org/Version_Numbering"
 	 * target="_blank">versioning</a> guidelines.
 	 * </p>
-	 *
+	 * 
 	 * @param query
 	 *            the <code>SolrQuery</code> object
 	 * @return the <code>QueryResponse</code> object
@@ -308,7 +307,7 @@ public abstract class BaseSolrDocumentManager extends BaseModelManager<org.eclip
 	 * Solr repository. Instead, {@link #commit(boolean, boolean)} must be
 	 * called manually in order to apply changes to the Solr repository.
 	 * </p>
-	 *
+	 * 
 	 * @param collection
 	 *            the collection (maybe <code>null</code> for the default
 	 *            collection)

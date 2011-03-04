@@ -28,6 +28,6 @@ public class FacetManager extends BaseSolrFacetManager {
 	 * @param repository
 	 */
 	FacetManager(final IRuntimeContext context, final SolrServerRepository repository) {
-		super(context, repository, SearchActivator.SYMBOLIC_NAME + ".solr.model.facets");
+		super(context, repository, SearchActivator.SYMBOLIC_NAME + ".solr.model.facets.metrics");
 	}
 }
