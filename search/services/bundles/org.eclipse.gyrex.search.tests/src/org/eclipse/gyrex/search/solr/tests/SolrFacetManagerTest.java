@@ -23,64 +23,75 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.gyrex.context.IRuntimeContext;
-import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
-import org.eclipse.gyrex.persistence.context.preferences.ContextPreferencesRepository;
-import org.eclipse.gyrex.persistence.context.preferences.IContextPreferencesRepositoryConstants;
 import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
-import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
-import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 import org.eclipse.gyrex.search.facets.IFacet;
 import org.eclipse.gyrex.search.facets.IFacetManager;
 import org.eclipse.gyrex.search.internal.solr.facets.Facet;
 import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.search.query.TermCombination;
+import org.eclipse.gyrex.search.solr.ISolrSearchConstants;
+
+import org.osgi.service.prefs.BackingStoreException;
 
 import org.junit.Test;
-import org.osgi.service.prefs.BackingStoreException;
 
 /**
  *
  */
 @SuppressWarnings("restriction")
-public class FacetManagerTest extends BaseContextTest {
+public class SolrFacetManagerTest extends BaseSolrTest {
 
-	public static final RepositoryContentType FACET_CONTENT_TYPE = new RepositoryContentType("application", "solr-test-facet", ContextPreferencesRepository.TYPE_NAME, "1.0");
-	
 	/** TEST_FACET */
 	private static final String TEST_FACET = "Test Facet";
-	/** NAME */
-	private static final String REPOSITORY_ID = FacetManagerTest.class.getSimpleName().toLowerCase();
 
 	static void initFacetManager(final IRuntimeContext context) throws BackingStoreException, IOException {
-		DefaultRepositoryLookupStrategy.setRepository(context, FACET_CONTENT_TYPE, REPOSITORY_ID);
-		IRepositoryPreferences preferences;
-		try {
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(REPOSITORY_ID, IContextPreferencesRepositoryConstants.PROVIDER_ID).getRepositoryPreferences();
-		} catch (final IllegalStateException e) {
-			// assume already exist
-			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().getRepositoryDefinition(REPOSITORY_ID).getRepositoryPreferences();
-		}
-		assertNotNull(preferences);
-		preferences.put(IContextPreferencesRepositoryConstants.PREF_KEY_CONTEXT_PATH, context.getContextPath().toString(), false);
-		preferences.flush();
-	}
-
-	@Override
-	protected IPath getPrimaryTestContextPath() {
-		return new Path("/__internal/org/eclipse/gyrex/cds/solr/tests");
+		DefaultRepositoryLookupStrategy.setRepository(context, ISolrSearchConstants.FACET_CONTENT_TYPE, TEST_REPO_ID);
 	}
 
 	@Override
 	protected void initContext() throws Exception {
+		super.initContext();
 		final IRuntimeContext context = getContext();
 		initFacetManager(context);
 	}
 
 	@Test
-	public void test001_ManagerBasics() throws Exception {
+	public void test001_FacetSerialization() throws Exception {
+		final Facet facet = new Facet("test", null);
+		facet.setName("Test");
+		facet.setName("Test de", Locale.GERMAN);
+		facet.setName("Test de_DE", Locale.GERMANY);
+
+		// check locale
+		assertEquals("Test de_DE", facet.getName(Locale.GERMANY));
+		assertEquals("Test de", facet.getName(Locale.GERMAN));
+		assertEquals("Test de_DE", facet.getName(Locale.GERMANY, Locale.GERMAN));
+		assertEquals("Test", facet.getName(Locale.UK, Locale.ROOT));
+		assertNull(facet.getName(Locale.UK));
+
+		// serialize
+		final byte[] bs = facet.toByteArray();
+
+		// re-construct
+		final Facet facet2 = new Facet("test", null, bs);
+
+		// check properties
+		assertEquals(facet.getName(), facet2.getName());
+		assertNull(facet2.getSelectionStrategy());
+		assertNull(facet2.getTermCombination());
+
+		// check locales
+		assertEquals(facet.getName(Locale.GERMANY), facet2.getName(Locale.GERMANY));
+		assertEquals(facet.getName(Locale.GERMAN), facet2.getName(Locale.GERMAN));
+		assertEquals(facet.getName(Locale.GERMANY, Locale.GERMAN), facet2.getName(Locale.GERMANY, Locale.GERMAN));
+		assertEquals(facet.getName(Locale.UK, Locale.ROOT), facet2.getName(Locale.UK, Locale.ROOT));
+		assertNull(facet2.getName(Locale.UK));
+
+	}
+
+	@Test
+	public void test002_ManagerBasics() throws Exception {
 		final IFacetManager manager = getContext().get(IFacetManager.class);
 		assertNotNull(manager);
 
@@ -117,7 +128,7 @@ public class FacetManagerTest extends BaseContextTest {
 	}
 
 	@Test
-	public void test002_FacetPersistence() throws Exception {
+	public void test003_FacetPersistence() throws Exception {
 		final IFacetManager manager = getContext().get(IFacetManager.class);
 		assertNotNull(manager);
 
@@ -148,39 +159,5 @@ public class FacetManagerTest extends BaseContextTest {
 		assertEquals(facet.getName(), saveFacet.getName());
 		assertEquals(facet.getSelectionStrategy(), saveFacet.getSelectionStrategy());
 		assertEquals(facet.getTermCombination(), saveFacet.getTermCombination());
-	}
-
-	@Test
-	public void test003_FacetPersistence2() throws Exception {
-		final Facet facet = new Facet("test", null);
-		facet.setName("Test");
-		facet.setName("Test de", Locale.GERMAN);
-		facet.setName("Test de_DE", Locale.GERMANY);
-
-		// check locale
-		assertEquals("Test de_DE", facet.getName(Locale.GERMANY));
-		assertEquals("Test de", facet.getName(Locale.GERMAN));
-		assertEquals("Test de_DE", facet.getName(Locale.GERMANY, Locale.GERMAN));
-		assertEquals("Test", facet.getName(Locale.UK, Locale.ROOT));
-		assertNull(facet.getName(Locale.UK));
-
-		// serialize
-		final byte[] bs = facet.toByteArray();
-
-		// re-construct
-		final Facet facet2 = new Facet("test", null, bs);
-
-		// check properties
-		assertEquals(facet.getName(), facet2.getName());
-		assertNull(facet2.getSelectionStrategy());
-		assertNull(facet2.getTermCombination());
-
-		// check locales
-		assertEquals(facet.getName(Locale.GERMANY), facet2.getName(Locale.GERMANY));
-		assertEquals(facet.getName(Locale.GERMAN), facet2.getName(Locale.GERMAN));
-		assertEquals(facet.getName(Locale.GERMANY, Locale.GERMAN), facet2.getName(Locale.GERMANY, Locale.GERMAN));
-		assertEquals(facet.getName(Locale.UK, Locale.ROOT), facet2.getName(Locale.UK, Locale.ROOT));
-		assertNull(facet2.getName(Locale.UK));
-
 	}
 }

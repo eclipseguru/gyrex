@@ -41,7 +41,7 @@ public class SolrCdsServiceTest extends BaseSolrTest {
 		super.initContext();
 
 		// facet manager as well
-		FacetManagerTest.initFacetManager(getContext());
+		SolrFacetManagerTest.initFacetManager(getContext());
 	}
 
 	@Test

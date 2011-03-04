@@ -18,7 +18,7 @@ import org.junit.runners.Suite;
  * Context Test Suite.
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ FacetManagerTest.class, DocumentManagerTest.class, SolrCdsServiceTest.class })
+@Suite.SuiteClasses({ SolrFacetManagerTest.class, DocumentManagerTest.class, SolrCdsServiceTest.class })
 public class AllSolrCdsTests {
 
 }

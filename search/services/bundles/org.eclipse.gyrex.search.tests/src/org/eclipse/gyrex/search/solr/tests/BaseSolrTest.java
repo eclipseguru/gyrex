@@ -17,18 +17,6 @@ import static junit.framework.Assert.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.request.CoreAdminRequest;
-import org.apache.solr.core.CoreContainer;
-import org.apache.solr.core.SolrCore;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.jobs.Job;
-
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.PersistenceUtil;
@@ -38,12 +26,25 @@ import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.solr.config.SolrServerType;
 import org.eclipse.gyrex.persistence.solr.internal.SolrActivator;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepositoryProvider;
-import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 import org.eclipse.gyrex.search.internal.solr.documents.PublishJob;
+import org.eclipse.gyrex.search.solr.ISolrSearchConstants;
 
-import org.junit.BeforeClass;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
+
 import org.osgi.service.prefs.BackingStoreException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.client.solrj.request.CoreAdminRequest;
+import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.SolrCore;
+import org.junit.BeforeClass;
 
 /**
  * Base class for Solr tests.
@@ -52,11 +53,9 @@ import org.osgi.service.prefs.BackingStoreException;
 public abstract class BaseSolrTest extends BaseContextTest {
 
 	protected static final String TEST_REPO_ID = BaseSolrTest.class.getSimpleName().toLowerCase();
-	
-	public static final RepositoryContentType DOCUMENT_CONTENT_TYPE = new RepositoryContentType("application", "solr-test-document", SolrServerRepository.TYPE_NAME, "1.0");
 
 	static void initDocumentManager(final IRuntimeContext context) throws BackingStoreException, IOException, SolrServerException {
-		DefaultRepositoryLookupStrategy.setRepository(context, DOCUMENT_CONTENT_TYPE, TEST_REPO_ID);
+		DefaultRepositoryLookupStrategy.setRepository(context, ISolrSearchConstants.DOCUMENT_CONTENT_TYPE, TEST_REPO_ID);
 		IRepositoryPreferences preferences;
 		try {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID).getRepositoryPreferences();
@@ -71,7 +70,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		// create Solr index
 
 		// empty repo
-		final SolrServerRepository repo = (SolrServerRepository) PersistenceUtil.getRepository(context, DOCUMENT_CONTENT_TYPE);
+		final SolrServerRepository repo = (SolrServerRepository) PersistenceUtil.getRepository(context, ISolrSearchConstants.DOCUMENT_CONTENT_TYPE);
 		repo.getSolrServer().deleteByQuery("*:*");
 		repo.getSolrServer().commit();
 	}
