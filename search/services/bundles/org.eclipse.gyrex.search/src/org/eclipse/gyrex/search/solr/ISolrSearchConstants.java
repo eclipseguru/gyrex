@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.eclipse.gyrex.search.solr;
 
-import org.eclipse.gyrex.persistence.context.preferences.IContextPreferencesRepositoryConstants;
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 import org.eclipse.gyrex.search.documents.IDocumentManager;
@@ -32,5 +31,5 @@ public interface ISolrSearchConstants {
 	 * The {@link RepositoryContentType content type} required for
 	 * {@link IFacetManager facet model implementation}.
 	 */
-	RepositoryContentType FACET_CONTENT_TYPE = new RepositoryContentType("application", "x-gyrex-cds-solr-facets", IContextPreferencesRepositoryConstants.TYPE_NAME, "1.0");
+	RepositoryContentType FACET_CONTENT_TYPE = new RepositoryContentType("application", "x-gyrex-cds-solr-facets", SolrServerRepository.TYPE_NAME, "1.0");
 }
