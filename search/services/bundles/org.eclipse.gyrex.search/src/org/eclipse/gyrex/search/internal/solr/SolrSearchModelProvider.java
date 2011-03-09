@@ -8,33 +8,34 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  *******************************************************************************/
-package org.eclipse.gyrex.search.internal.solr.facets;
+package org.eclipse.gyrex.search.internal.solr;
 
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.model.common.provider.BaseModelManager;
 import org.eclipse.gyrex.model.common.provider.ModelProvider;
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.storage.Repository;
-import org.eclipse.gyrex.search.facets.IFacetManager;
+import org.eclipse.gyrex.search.ISearchManager;
 import org.eclipse.gyrex.search.solr.ISolrSearchConstants;
 
 /**
- * Facets model provider.
+ * Solr based CDS model provider.
  */
-public class FacetModelProvider extends ModelProvider {
+public class SolrSearchModelProvider extends ModelProvider {
 
 	/**
 	 * Creates a new instance.
 	 */
-	public FacetModelProvider() {
-		super(ISolrSearchConstants.FACET_CONTENT_TYPE, IFacetManager.class);
+	public SolrSearchModelProvider() {
+		super(ISolrSearchConstants.SEARCH_CONTENT_TYPE, ISearchManager.class);
 	}
 
 	@Override
-	public BaseModelManager createModelManagerInstance(final Class modelManagerType, final Repository repository, final IRuntimeContext context) {
-		if (IFacetManager.class.equals(modelManagerType) && (repository instanceof SolrServerRepository)) {
-			return new FacetManager(context, (SolrServerRepository) repository);
+	public BaseModelManager<? extends SolrServerRepository> createModelManagerInstance(final Class modelManagerType, final Repository repository, final IRuntimeContext context) {
+		if (ISearchManager.class.equals(modelManagerType) && (repository instanceof SolrServerRepository)) {
+			return new SolrSearchManager(context, (SolrServerRepository) repository);
 		}
 		return null;
 	}

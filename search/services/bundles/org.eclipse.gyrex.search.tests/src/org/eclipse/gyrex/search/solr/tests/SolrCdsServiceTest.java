@@ -9,6 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  */
 package org.eclipse.gyrex.search.solr.tests;
 
@@ -19,15 +20,12 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.eclipse.gyrex.model.common.ModelUtil;
-import org.eclipse.gyrex.search.ISearchService;
+import org.eclipse.gyrex.search.ISearchManager;
 import org.eclipse.gyrex.search.documents.IDocument;
-import org.eclipse.gyrex.search.documents.IDocumentManager;
 import org.eclipse.gyrex.search.facets.IFacet;
-import org.eclipse.gyrex.search.facets.IFacetManager;
 import org.eclipse.gyrex.search.query.IQuery;
 import org.eclipse.gyrex.search.result.IResult;
 import org.eclipse.gyrex.search.result.IResultFacet;
-
 import org.junit.Test;
 
 /**
@@ -35,39 +33,29 @@ import org.junit.Test;
  */
 public class SolrCdsServiceTest extends BaseSolrTest {
 
-	@Override
-	protected void initContext() throws Exception {
-		// super
-		super.initContext();
-
-		// facet manager as well
-		SolrFacetManagerTest.initFacetManager(getContext());
-	}
-
 	@Test
 	public void test001_CdsBasics() throws Exception {
-		final ISearchService service = getContext().get(ISearchService.class);
-		assertNotNull(service);
-
+		
+		@SuppressWarnings("restriction")
+		final ISearchManager docManager = ModelUtil.getManager(ISearchManager.class, getContext());
+		
 		// init facets (note, requires copyField support in schema)
-		final IFacetManager facetManager = ModelUtil.getManager(IFacetManager.class, getContext());
-		final IFacet colorFacet = facetManager.create("color");
+		final IFacet colorFacet = docManager.createFacet("color");
 		colorFacet.setName("Color");
-		facetManager.save(colorFacet);
+		docManager.saveFacet(colorFacet);
 
 		// publish dummy docs
-		final IDocumentManager docManager = ModelUtil.getManager(IDocumentManager.class, getContext());
 		final IDocument doc1 = docManager.createDocument();
 		final IDocument doc2 = docManager.createDocument();
 		doc1.getOrCreate("color").ofType(String.class).add("blue");
 		doc2.getOrCreate("color").ofType(String.class).add("red");
-		docManager.publish(Arrays.asList(doc1, doc2));
+		docManager.publishDocuments(Arrays.asList(doc1, doc2));
 		waitForPendingSolrPublishOps();
 
 		// query for all
-		final IQuery query = service.createQuery();
+		final IQuery query = docManager.createQuery();
 		assertNotNull(query);
-		final IResult result = service.findByQuery(query, docManager, facetManager);
+		final IResult result = docManager.findByQuery(query);
 		assertNotNull(result);
 
 		// check facets

@@ -9,6 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  */
 package org.eclipse.gyrex.search.solr.tests;
 
@@ -18,8 +19,8 @@ import static junit.framework.Assert.assertNull;
 
 import java.util.Collections;
 
+import org.eclipse.gyrex.search.ISearchManager;
 import org.eclipse.gyrex.search.documents.IDocument;
-import org.eclipse.gyrex.search.documents.IDocumentManager;
 
 import org.junit.Test;
 
@@ -30,10 +31,10 @@ public class DocumentManagerTest extends BaseSolrTest {
 
 	@Test
 	public void test001_ManagerBasics() throws Exception {
-		final IDocumentManager manager = getContext().get(IDocumentManager.class);
+		final ISearchManager manager = getContext().get(ISearchManager.class);
 		assertNotNull(manager);
 
-		assertNull(manager.findById("test"));
+		assertNull(manager.findDocumentById("test"));
 
 		final IDocument doc = manager.createDocument();
 		assertNotNull(doc);
@@ -44,10 +45,10 @@ public class DocumentManagerTest extends BaseSolrTest {
 		doc.setId("test");
 		assertEquals("test", doc.getId());
 
-		manager.publish(Collections.singleton(doc));
+		manager.publishDocuments(Collections.singleton(doc));
 		waitForPendingSolrPublishOps();
 
-		final IDocument doc2 = manager.findById("test");
+		final IDocument doc2 = manager.findDocumentById("test");
 		assertNotNull(doc2);
 		assertEquals("test", doc2.getId());
 	}

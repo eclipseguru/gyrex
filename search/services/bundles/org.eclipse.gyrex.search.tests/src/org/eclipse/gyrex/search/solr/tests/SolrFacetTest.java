@@ -9,6 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  */
 package org.eclipse.gyrex.search.solr.tests;
 
@@ -19,42 +20,24 @@ import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-import org.eclipse.gyrex.context.IRuntimeContext;
-import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
+import org.eclipse.gyrex.search.ISearchManager;
 import org.eclipse.gyrex.search.facets.IFacet;
-import org.eclipse.gyrex.search.facets.IFacetManager;
 import org.eclipse.gyrex.search.internal.solr.facets.Facet;
 import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.search.query.TermCombination;
-import org.eclipse.gyrex.search.solr.ISolrSearchConstants;
-
-import org.osgi.service.prefs.BackingStoreException;
-
 import org.junit.Test;
 
 /**
  *
  */
 @SuppressWarnings("restriction")
-public class SolrFacetManagerTest extends BaseSolrTest {
+public class SolrFacetTest extends BaseSolrTest {
 
 	/** TEST_FACET */
 	private static final String TEST_FACET = "Test Facet";
-
-	static void initFacetManager(final IRuntimeContext context) throws BackingStoreException, IOException {
-		DefaultRepositoryLookupStrategy.setRepository(context, ISolrSearchConstants.FACET_CONTENT_TYPE, TEST_REPO_ID);
-	}
-
-	@Override
-	protected void initContext() throws Exception {
-		super.initContext();
-		final IRuntimeContext context = getContext();
-		initFacetManager(context);
-	}
 
 	@Test
 	public void test001_FacetSerialization() throws Exception {
@@ -92,7 +75,7 @@ public class SolrFacetManagerTest extends BaseSolrTest {
 
 	@Test
 	public void test002_ManagerBasics() throws Exception {
-		final IFacetManager manager = getContext().get(IFacetManager.class);
+		final ISearchManager manager = getContext().get(ISearchManager.class);
 		assertNotNull(manager);
 
 		// try to remove any existing facets
@@ -100,7 +83,7 @@ public class SolrFacetManagerTest extends BaseSolrTest {
 		assertNotNull(existingFacets);
 		if (!existingFacets.isEmpty()) {
 			for (final IFacet facet : existingFacets.values()) {
-				manager.delete(facet);
+				manager.deleteFacet(facet);
 				assertNotNull(manager.getFacets());
 				assertFalse(manager.getFacets().containsKey(facet.getAttributeId()));
 			}
@@ -111,7 +94,7 @@ public class SolrFacetManagerTest extends BaseSolrTest {
 		assertTrue(manager.getFacets().isEmpty());
 
 		// create transient facet
-		final IFacet facet = manager.create("test");
+		final IFacet facet = manager.createFacet("test");
 		assertNotNull(facet);
 
 		// must still be empty
@@ -119,7 +102,7 @@ public class SolrFacetManagerTest extends BaseSolrTest {
 		assertFalse(manager.getFacets().containsKey(facet.getAttributeId()));
 
 		// now save facet
-		manager.save(facet);
+		manager.saveFacet(facet);
 
 		// must not be empty anymore
 		assertNotNull(manager.getFacets());
@@ -129,11 +112,11 @@ public class SolrFacetManagerTest extends BaseSolrTest {
 
 	@Test
 	public void test003_FacetPersistence() throws Exception {
-		final IFacetManager manager = getContext().get(IFacetManager.class);
+		final ISearchManager manager = getContext().get(ISearchManager.class);
 		assertNotNull(manager);
 
 		// create facet
-		final IFacet facet = manager.create("test");
+		final IFacet facet = manager.createFacet("test");
 		assertNotNull(facet);
 
 		facet.setName(TEST_FACET);
@@ -146,7 +129,7 @@ public class SolrFacetManagerTest extends BaseSolrTest {
 		assertEquals(facet.getTermCombination(), TermCombination.AND);
 
 		// now save facet
-		manager.save(facet);
+		manager.saveFacet(facet);
 
 		// re-load
 		final IFacet saveFacet = manager.getFacets().get(facet.getAttributeId());

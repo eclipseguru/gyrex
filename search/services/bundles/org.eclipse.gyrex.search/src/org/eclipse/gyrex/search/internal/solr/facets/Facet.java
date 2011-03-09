@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  *******************************************************************************/
 package org.eclipse.gyrex.search.internal.solr.facets;
 
@@ -22,11 +23,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.gyrex.search.ISearchManager;
 import org.eclipse.gyrex.search.facets.IFacet;
-import org.eclipse.gyrex.search.facets.IFacetManager;
 import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.search.query.TermCombination;
-import org.eclipse.gyrex.search.solr.facets.BaseSolrFacetManager;
+import org.eclipse.gyrex.search.solr.BaseSolrSearchManager;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.osgi.util.NLS;
@@ -37,7 +38,7 @@ import org.eclipse.osgi.util.NLS;
 public class Facet extends PlatformObject implements IFacet {
 
 	private final String attributeId;
-	private final BaseSolrFacetManager manager;
+	private final BaseSolrSearchManager manager;
 	private final Map<Locale, String> names;
 	private TermCombination termCombination;
 	private FacetSelectionStrategy selectionStrategy;
@@ -49,7 +50,7 @@ public class Facet extends PlatformObject implements IFacet {
 	 * @param attributeId
 	 * @param manager
 	 */
-	public Facet(final String attributeId, final BaseSolrFacetManager manager) {
+	public Facet(final String attributeId, final BaseSolrSearchManager manager) {
 		this(attributeId, manager, null);
 	}
 
@@ -60,7 +61,7 @@ public class Facet extends PlatformObject implements IFacet {
 	 * @param manager
 	 * @param bytes
 	 */
-	public Facet(final String attributeId, final BaseSolrFacetManager manager, final byte[] bytes) {
+	public Facet(final String attributeId, final BaseSolrSearchManager manager, final byte[] bytes) {
 		this.attributeId = attributeId;
 		this.manager = manager;
 		names = new HashMap<Locale, String>(1);
@@ -75,7 +76,7 @@ public class Facet extends PlatformObject implements IFacet {
 	}
 
 	@Override
-	public IFacetManager getManager() throws IllegalStateException {
+	public ISearchManager getManager() throws IllegalStateException {
 		return manager;
 	}
 

@@ -10,7 +10,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.gyrex.search;version="1.0.0",
  org.eclipse.gyrex.search.documents;version="1.0.0",
- org.eclipse.gyrex.search.facets;version="1.0.0",
+ org.eclipse.gyrex.search.facets,
  org.eclipse.gyrex.search.internal;x-friends:="org.eclipse.gyrex.search.tests",
  org.eclipse.gyrex.search.internal.solr;x-friends:="org.eclipse.gyrex.search.tests",
  org.eclipse.gyrex.search.internal.solr.documents;x-friends:="org.eclipse.gyrex.search.tests",
@@ -19,9 +19,7 @@ Export-Package: org.eclipse.gyrex.search;version="1.0.0",
  org.eclipse.gyrex.search.internal.solr.result;x-friends:="org.eclipse.gyrex.search.tests",
  org.eclipse.gyrex.search.query;version="1.0.0",
  org.eclipse.gyrex.search.result;version="1.0.0",
- org.eclipse.gyrex.search.solr;version="1.0.0",
- org.eclipse.gyrex.search.solr.documents;version="1.0.0",
- org.eclipse.gyrex.search.solr.facets;version="1.0.0"
+ org.eclipse.gyrex.search.solr;version="1.0.0"
 Import-Package: org.apache.commons.lang;version="[2.4.0,3.0.0)",
  org.apache.solr.client.solrj;version="[1.4.0,2.0.0)",
  org.apache.solr.client.solrj.response;version="[1.4.0,2.0.0)",
@@ -41,4 +39,4 @@ Require-Bundle: org.eclipse.gyrex.common;bundle-version="1.0.0",
  org.eclipse.gyrex.model.common;bundle-version="1.0.0",
  org.eclipse.gyrex.services.common;bundle-version="1.0.0",
  org.eclipse.core.jobs;bundle-version="[3.5.100,4.0.0)"
-Service-Component: OSGI-INF/document-model-provider.xml, OSGI-INF/facet-model-provider.xml, OSGI-INF/search-service-provider.xml
+Service-Component: OSGI-INF/search-model-provider.xml

@@ -8,18 +8,19 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  *******************************************************************************/
-package org.eclipse.gyrex.search.internal.solr.documents;
+package org.eclipse.gyrex.search.internal.solr;
 
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.search.internal.SearchActivator;
-import org.eclipse.gyrex.search.solr.documents.BaseSolrDocumentManager;
+import org.eclipse.gyrex.search.solr.BaseSolrSearchManager;
 
 /**
- * A default {@link BaseSolrDocumentManager} that can be used out of the box.
+ * A default {@link BaseSolrSearchManager} that can be used out of the box.
  */
-public class SolrDocumentManager extends BaseSolrDocumentManager {
+public class SolrSearchManager extends BaseSolrSearchManager {
 
 	/**
 	 * Creates a new instance.
@@ -29,7 +30,7 @@ public class SolrDocumentManager extends BaseSolrDocumentManager {
 	 * @param repository
 	 *            the repository
 	 */
-	SolrDocumentManager(final IRuntimeContext context, final SolrServerRepository repository) {
+	SolrSearchManager(final IRuntimeContext context, final SolrServerRepository repository) {
 		super(context, repository, SearchActivator.SYMBOLIC_NAME + ".solr.model.documents.metrics");
 	}
 }

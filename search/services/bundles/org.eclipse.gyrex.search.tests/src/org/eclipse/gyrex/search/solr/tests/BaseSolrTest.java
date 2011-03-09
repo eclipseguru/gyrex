@@ -9,6 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  */
 package org.eclipse.gyrex.search.solr.tests;
 
@@ -55,7 +56,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 	protected static final String TEST_REPO_ID = BaseSolrTest.class.getSimpleName().toLowerCase();
 
 	static void initDocumentManager(final IRuntimeContext context) throws BackingStoreException, IOException, SolrServerException {
-		DefaultRepositoryLookupStrategy.setRepository(context, ISolrSearchConstants.DOCUMENT_CONTENT_TYPE, TEST_REPO_ID);
+		DefaultRepositoryLookupStrategy.setRepository(context, ISolrSearchConstants.SEARCH_CONTENT_TYPE, TEST_REPO_ID);
 		IRepositoryPreferences preferences;
 		try {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID).getRepositoryPreferences();
@@ -70,7 +71,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		// create Solr index
 
 		// empty repo
-		final SolrServerRepository repo = (SolrServerRepository) PersistenceUtil.getRepository(context, ISolrSearchConstants.DOCUMENT_CONTENT_TYPE);
+		final SolrServerRepository repo = (SolrServerRepository) PersistenceUtil.getRepository(context, ISolrSearchConstants.SEARCH_CONTENT_TYPE);
 		repo.getSolrServer().deleteByQuery("*:*");
 		repo.getSolrServer().commit();
 	}

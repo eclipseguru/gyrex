@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  *******************************************************************************/
 package org.eclipse.gyrex.search.solr.tests;
 
@@ -18,7 +19,7 @@ import org.junit.runners.Suite;
  * Context Test Suite.
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ SolrFacetManagerTest.class, DocumentManagerTest.class, SolrCdsServiceTest.class })
+@Suite.SuiteClasses({ SolrFacetTest.class, DocumentManagerTest.class, SolrCdsServiceTest.class })
 public class AllSolrCdsTests {
 
 }

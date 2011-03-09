@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  *******************************************************************************/
 package org.eclipse.gyrex.search.internal.solr.documents;
 
@@ -19,6 +20,7 @@ import org.eclipse.gyrex.monitoring.metrics.ThroughputMetric;
 import org.eclipse.gyrex.search.documents.IDocument;
 import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 import org.eclipse.gyrex.search.internal.SearchActivator;
+import org.eclipse.gyrex.search.internal.solr.SolrSearchManagerMetrics;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -37,10 +39,10 @@ public class PublishJob extends Job {
 
 	private final Iterable<IDocument> documents;
 	private final SolrServer solrServer;
-	private final SolrDocumentManagerMetrics solrListingsManagerMetrics;
+	private final SolrSearchManagerMetrics solrListingsManagerMetrics;
 	private final boolean commit;
 
-	public PublishJob(final Iterable<IDocument> documents, final SolrServer solrServer, final SolrDocumentManagerMetrics solrListingsManagerMetrics, final boolean commit) {
+	public PublishJob(final Iterable<IDocument> documents, final SolrServer solrServer, final SolrSearchManagerMetrics solrListingsManagerMetrics, final boolean commit) {
 		super("Solr Document Publish");
 		this.documents = documents;
 		this.solrServer = solrServer;

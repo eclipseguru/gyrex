@@ -8,13 +8,13 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  *******************************************************************************/
 package org.eclipse.gyrex.search.solr;
 
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
-import org.eclipse.gyrex.search.documents.IDocumentManager;
-import org.eclipse.gyrex.search.facets.IFacetManager;
+import org.eclipse.gyrex.search.ISearchManager;
 
 /**
  * Interface with shared constants of the Solr based search implementation.
@@ -23,13 +23,7 @@ public interface ISolrSearchConstants {
 
 	/**
 	 * The {@link RepositoryContentType content type} required for
-	 * {@link IDocumentManager document model implementation}.
+	 * {@link ISearchManager document model implementation}.
 	 */
-	RepositoryContentType DOCUMENT_CONTENT_TYPE = new RepositoryContentType("application", "x-gyrex-cds-solr-documents", SolrServerRepository.TYPE_NAME, "1.0");
-
-	/**
-	 * The {@link RepositoryContentType content type} required for
-	 * {@link IFacetManager facet model implementation}.
-	 */
-	RepositoryContentType FACET_CONTENT_TYPE = new RepositoryContentType("application", "x-gyrex-cds-solr-facets", SolrServerRepository.TYPE_NAME, "1.0");
+	RepositoryContentType SEARCH_CONTENT_TYPE = new RepositoryContentType("application", "x-gyrex-search-solr", SolrServerRepository.TYPE_NAME, "1.0");
 }

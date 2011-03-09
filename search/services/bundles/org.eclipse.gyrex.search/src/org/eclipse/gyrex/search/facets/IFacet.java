@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
  *******************************************************************************/
 package org.eclipse.gyrex.search.facets;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.gyrex.model.common.IModelObject;
 import org.eclipse.gyrex.model.common.contracts.IModelManagerAware;
+import org.eclipse.gyrex.search.ISearchManager;
 import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.search.query.TermCombination;
@@ -24,7 +26,7 @@ import org.eclipse.gyrex.search.query.TermCombination;
  * A facet is used to implement <a
  * href="http://en.wikipedia.org/wiki/Faceted_search">faceted search</a>.
  * <p>
- * This interface must be implemented by contributors of a document model
+ * This interface must be implemented by contributors of a search model
  * implementation. As such it is considered part of a service provider API which
  * may evolve faster than the general API. Please get in touch with the
  * development team through the prefered channels listed on <a
@@ -37,7 +39,7 @@ import org.eclipse.gyrex.search.query.TermCombination;
  * model implementation.
  * </p>
  */
-public interface IFacet extends IModelObject, IModelManagerAware<IFacetManager> {
+public interface IFacet extends IModelObject, IModelManagerAware<ISearchManager> {
 
 	/**
 	 * Returns the id of the {@link IDocumentAttribute attribute} used to
