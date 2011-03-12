@@ -62,7 +62,7 @@ public class AdminUiHttpServiceTracker extends ServiceTracker<HttpService, HttpS
 	 * <code>(&(objectClass=org.osgi.service.http.HttpService)(other.info=org.eclipse.gyrex.http.admin))</code>
 	 * )
 	 */
-	private static final String FILTER_ADMIN_HTTP_SERVICE = "(&(objectClass=" + HttpService.class.getName() + ")(other.info=" + AdminUiActivator.TYPE_ADMIN + "))";
+	static final String FILTER_ADMIN_HTTP_SERVICE = "(&(objectClass=" + HttpService.class.getName() + ")(other.info=" + AdminUiActivator.TYPE_ADMIN + "))";
 
 	private static Filter createFilter(final BundleContext context) {
 		try {

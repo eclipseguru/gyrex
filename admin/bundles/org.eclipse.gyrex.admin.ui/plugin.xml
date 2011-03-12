@@ -113,9 +113,9 @@
                   id="org.eclipse.gyrex.admin.ui.entrypoint">
             </entrypoint>
          </associatedEntrypoints>
-         <httpServiceSelector
-               filter="(other.info=org.eclipse.gyrex.admin.ui.http)">
-         </httpServiceSelector>
+         <httpServiceFilter
+               class="org.eclipse.gyrex.admin.ui.internal.AdminUiServiceFilterFactory">
+         </httpServiceFilter>
       </branding>
    </extension>
    <extension
