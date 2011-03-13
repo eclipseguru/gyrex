@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.configurationPages">
+      <page
+            class="org.eclipse.gyrex.admin.ui.p2.internal.SoftwareLandingPage"
+            id="org.eclipse.gyrex.admin.ui.p2.pages.software"
+            keywords="software updates p2 install remove uninstall"
+            name="Software"
+            parentId="org.eclipse.gyrex.admin.ui.general">
+      </page>
+   </extension>
+
+</plugin>
