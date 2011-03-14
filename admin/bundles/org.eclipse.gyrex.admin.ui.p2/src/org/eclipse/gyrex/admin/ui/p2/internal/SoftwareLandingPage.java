@@ -14,14 +14,10 @@ package org.eclipse.gyrex.admin.ui.p2.internal;
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
 
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -29,9 +25,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Configuration page for Jobs.
  */
 public class SoftwareLandingPage extends ConfigurationPage {
-
-	private DataBindingContext bindingContext;
-	boolean disposed;
 
 	/**
 	 * Creates a new instance.
@@ -43,9 +36,6 @@ public class SoftwareLandingPage extends ConfigurationPage {
 
 	@Override
 	protected void createFormContent(final IManagedForm managedForm) {
-		final Realm realm = SWTObservables.getRealm(Display.getCurrent());
-		bindingContext = new DataBindingContext(realm);
-
 		final Composite body = managedForm.getForm().getBody();
 		body.setLayout(FormLayoutFactory.createFormGridLayout(true, 2));
 		body.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
@@ -75,25 +65,5 @@ public class SoftwareLandingPage extends ConfigurationPage {
 //		FormLayoutFactory.visualizeLayoutArea(body, SWT.COLOR_CYAN);
 //		FormLayoutFactory.visualizeLayoutArea(left, SWT.COLOR_DARK_GREEN);
 //		FormLayoutFactory.visualizeLayoutArea(right, SWT.COLOR_DARK_GREEN);
-	}
-
-	@Override
-	public void dispose() {
-		disposed = true;
-		bindingContext.dispose();
-		bindingContext = null;
-		super.dispose();
-	}
-
-	/**
-	 * Returns the binding context.
-	 * 
-	 * @return the bindingContext
-	 */
-	public DataBindingContext getBindingContext() {
-		if (disposed) {
-			throw new IllegalStateException("disposed");
-		}
-		return bindingContext;
 	}
 }

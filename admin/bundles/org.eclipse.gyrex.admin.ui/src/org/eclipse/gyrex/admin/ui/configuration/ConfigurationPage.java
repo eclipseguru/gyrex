@@ -12,15 +12,19 @@
 package org.eclipse.gyrex.admin.ui.configuration;
 
 import org.eclipse.core.commands.common.EventManager;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbenchPartConstants;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.ManagedForm;
 import org.eclipse.ui.forms.widgets.Form;
@@ -86,6 +90,7 @@ public abstract class ConfigurationPage extends EventManager {
 
 	private IConfigurationPageContainer container;
 	private PageForm mform;
+	private DataBindingContext bindingContext;
 
 	private String title;
 	private String titleToolTip;
@@ -177,6 +182,11 @@ public abstract class ConfigurationPage extends EventManager {
 		if (mform != null) {
 			mform.dispose();
 		}
+		if (bindingContext != null) {
+			// dispose but don't set to null
+			// (otherwise the getter might create a new one)
+			bindingContext.dispose();
+		}
 		clearListeners();
 	}
 
@@ -196,6 +206,19 @@ public abstract class ConfigurationPage extends EventManager {
 				LOG.error("Error notifying listener {}. {}", new Object[] { l, e.getMessage(), e });
 			}
 		}
+	}
+
+	/**
+	 * Returns the {@link DataBindingContext} for the page.
+	 * 
+	 * @return the bindingContext
+	 */
+	public DataBindingContext getBindingContext() {
+		if (null == bindingContext) {
+			final Realm realm = SWTObservables.getRealm(PlatformUI.getWorkbench().getDisplay());
+			bindingContext = new DataBindingContext(realm);
+		}
+		return bindingContext;
 	}
 
 	/**
