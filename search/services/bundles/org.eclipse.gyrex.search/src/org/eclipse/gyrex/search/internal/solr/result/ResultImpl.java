@@ -19,7 +19,6 @@ import java.util.Map;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.search.documents.IDocument;
 import org.eclipse.gyrex.search.facets.IFacet;
-import org.eclipse.gyrex.search.internal.solr.SolrSchemaConventions;
 import org.eclipse.gyrex.search.internal.solr.documents.StoredDocument;
 import org.eclipse.gyrex.search.internal.solr.query.QueryImpl;
 import org.eclipse.gyrex.search.query.IQuery;
@@ -66,7 +65,7 @@ public class ResultImpl extends PlatformObject implements IResult {
 		if (facetsInUse == null) {
 			return null;
 		}
-		final IFacet facet = facetsInUse.get(SolrSchemaConventions.facetAttributeId(facetField.getName()));
+		final IFacet facet = facetsInUse.get(facetField.getName());
 		if (facet == null) {
 			return null;
 		}

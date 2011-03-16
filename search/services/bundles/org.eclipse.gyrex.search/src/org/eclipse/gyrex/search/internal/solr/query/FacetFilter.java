@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gyrex.search.facets.IFacet;
-import org.eclipse.gyrex.search.internal.solr.SolrSchemaConventions;
 import org.eclipse.gyrex.search.query.FacetSelectionStrategy;
 import org.eclipse.gyrex.search.query.FilterType;
 import org.eclipse.gyrex.search.query.IFacetFilter;
@@ -94,7 +93,7 @@ public class FacetFilter extends BaseFilter implements IFacetFilter {
 		if (getSelectionStrategy() == FacetSelectionStrategy.MULTI) {
 			q.append("{!tag=").append(facet.getAttributeId()).append('}');
 		}
-		q.append(SolrSchemaConventions.facetFieldName(facet.getAttributeId())).append(':');
+		q.append(facet.getAttributeId()).append(':');
 		if (values.size() > 1) {
 			q.append('(');
 			String separator = null;

@@ -36,7 +36,6 @@ import org.eclipse.gyrex.search.documents.IDocument;
 import org.eclipse.gyrex.search.facets.IFacet;
 import org.eclipse.gyrex.search.internal.SearchActivator;
 import org.eclipse.gyrex.search.internal.SearchDebug;
-import org.eclipse.gyrex.search.internal.solr.SolrSchemaConventions;
 import org.eclipse.gyrex.search.internal.solr.SolrSearchManagerMetrics;
 import org.eclipse.gyrex.search.internal.solr.documents.PublishJob;
 import org.eclipse.gyrex.search.internal.solr.documents.StoredDocument;
@@ -197,7 +196,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 
 			// enable facetting
 			for (final IFacet facet : facets.values()) {
-				final String facetField = SolrSchemaConventions.facetFieldName(facet.getAttributeId());
+				final String facetField = facet.getAttributeId();
 				final FacetSelectionStrategy selectionStrategy = facet.getSelectionStrategy();
 				if ((null != selectionStrategy) && (selectionStrategy == FacetSelectionStrategy.MULTI)) {
 					solrQuery.addFacetField("{!ex=" + facet.getAttributeId() + "}" + facetField);
