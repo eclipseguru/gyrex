@@ -26,10 +26,9 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.ListDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
-import org.eclipse.gyrex.p2.internal.packages.IComponent;
 import org.eclipse.gyrex.p2.internal.packages.IPackageManager;
+import org.eclipse.gyrex.p2.internal.packages.InstallableUnitReference;
 import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
-import org.eclipse.gyrex.p2.internal.packages.components.InstallableUnit;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -105,7 +104,7 @@ public class AddPackageDialog extends StatusDialog {
 				for (int i = 0; i < result.length; i++) {
 					if (result[i] instanceof IInstallableUnit) {
 						final IInstallableUnit iu = (IInstallableUnit) result[i];
-						final InstallableUnit unit = new InstallableUnit();
+						final InstallableUnitReference unit = new InstallableUnitReference();
 						unit.setId(iu.getId());
 						unit.setVersion(iu.getVersion());
 						componentsField.addElement(unit);
@@ -167,7 +166,7 @@ public class AddPackageDialog extends StatusDialog {
 			packageDefinition.setNodeFilter((StringUtils.trimToNull(nodeFilterField.getText())));
 			final List components = componentsField.getElements();
 			for (final Object component : components) {
-				packageDefinition.addComponentToInstall((IComponent) component);
+				packageDefinition.addComponentToInstall((InstallableUnitReference) component);
 			}
 			packageManager.savePackage(packageDefinition);
 		} catch (final Exception e) {

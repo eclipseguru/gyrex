@@ -25,10 +25,9 @@ import org.eclipse.equinox.p2.repository.artifact.IProcessingStepDescriptor;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 
 import org.eclipse.gyrex.p2.internal.P2Activator;
-import org.eclipse.gyrex.p2.internal.packages.IComponent;
 import org.eclipse.gyrex.p2.internal.packages.IPackageManager;
+import org.eclipse.gyrex.p2.internal.packages.InstallableUnitReference;
 import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
-import org.eclipse.gyrex.p2.internal.packages.components.InstallableUnit;
 import org.eclipse.gyrex.p2.internal.repositories.RepositoryDefinition;
 
 import org.eclipse.core.runtime.URIUtil;
@@ -59,19 +58,6 @@ public class P2UiLabelProvider extends LabelProvider {
 		super.dispose();
 	}
 
-	private String getElementText(final IComponent component) {
-		final StringBuilder label = new StringBuilder();
-		label.append(component.getId());
-		if (component instanceof InstallableUnit) {
-			final InstallableUnit unit = (InstallableUnit) component;
-			final Version version = unit.getVersion();
-			if (version != null) {
-				label.append(" (").append(version.toString()).append(")");
-			}
-		}
-		return label.toString();
-	}
-
 	private String getElementText(final IInstallableUnit iu) {
 		final StringBuilder label = new StringBuilder();
 		final String name = iu.getProperty(IInstallableUnit.PROP_NAME, Locale.getDefault().toString());
@@ -79,6 +65,16 @@ public class P2UiLabelProvider extends LabelProvider {
 			label.append(name).append(" - ");
 		}
 		label.append(iu.getId());
+		return label.toString();
+	}
+
+	private String getElementText(final InstallableUnitReference unit) {
+		final StringBuilder label = new StringBuilder();
+		label.append(unit.getId());
+		final Version version = unit.getVersion();
+		if (version != null) {
+			label.append(" (").append(version.toString()).append(")");
+		}
 		return label.toString();
 	}
 
@@ -171,8 +167,8 @@ public class P2UiLabelProvider extends LabelProvider {
 		if (element instanceof RepositoryDefinition) {
 			return getElementText((RepositoryDefinition) element);
 		}
-		if (element instanceof IComponent) {
-			return getElementText((IComponent) element);
+		if (element instanceof InstallableUnitReference) {
+			return getElementText((InstallableUnitReference) element);
 		}
 		if (element instanceof IProfile) {
 			return getElementText((IProfile) element);
