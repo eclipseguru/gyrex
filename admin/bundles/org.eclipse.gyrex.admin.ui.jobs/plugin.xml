@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.configurationPages">
+      <page
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.JobsConfigurationPage"
+            id="org.eclipse.gyrex.admin.ui.jobs.page"
+            keywords="jobs schedule plan queue"
+            name="Jobs"
+            parentId="org.eclipse.gyrex.admin.ui.general">
+      </page>
+   </extension>
+
+</plugin>
