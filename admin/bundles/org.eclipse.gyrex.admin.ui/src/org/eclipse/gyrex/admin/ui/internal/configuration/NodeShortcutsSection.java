@@ -62,7 +62,7 @@ public class NodeShortcutsSection extends SectionPart {
 			@Override
 			public void linkActivated(final HyperlinkEvent e) {
 				if (MessageDialog.openConfirm(SwtUtil.getShell(restartLink), "Restart Node", "The node will be restarted. Please confirm!")) {
-					ServerApplication.signalRelaunch();
+					ServerApplication.restart();
 				}
 			}
 		});
