@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Change method &apos;TermCombination org.eclipse.gyrex.cds.facets.IFacet.getTermCombination(TermCombination combination)&apos; to &apos;public TermCombination getTermCombination()&apos;&#x0D;&#x0A;- Original project: &apos;org.eclipse.gyrex.cds&apos;&#x0D;&#x0A;- Original element: &apos;org.eclipse.gyrex.cds.facets.IFacet.getTermCombination(...)&apos;&#x0D;&#x0A;- Removed parameters:&#x0D;&#x0A;     TermCombination combination" delegate="false" deprecate="true" description="Change method &apos;getTermCombination&apos;" flags="589830" id="org.eclipse.jdt.ui.change.method.signature" input="/src&lt;org.eclipse.gyrex.cds.facets{IFacet.java[IFacet~getTermCombination~QTermCombination;" name="getTermCombination" parameter1="TermCombination combination 0 {deleted} {deleted} true" stamp="1287567595293" version="1.0"/>
-</session>
