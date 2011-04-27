@@ -15,6 +15,7 @@
  This is the Gyrex Fanshop specific Solr configuration file.
  -->
 <config>
+  <luceneMatchVersion>LUCENE_40</luceneMatchVersion>
   <abortOnConfigurationError>${solr.abortOnConfigurationError:true}</abortOnConfigurationError>
   <indexDefaults>
     <useCompoundFile>false</useCompoundFile>

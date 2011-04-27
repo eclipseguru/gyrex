@@ -21,12 +21,12 @@ import java.io.IOException;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 import org.eclipse.gyrex.persistence.PersistenceUtil;
-import org.eclipse.gyrex.persistence.internal.storage.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.solr.ISolrRepositoryConstants;
 import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
 import org.eclipse.gyrex.persistence.solr.config.SolrServerType;
 import org.eclipse.gyrex.persistence.solr.internal.SolrActivator;
 import org.eclipse.gyrex.persistence.solr.internal.SolrRepositoryProvider;
+import org.eclipse.gyrex.persistence.storage.lookup.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 import org.eclipse.gyrex.search.internal.solr.documents.PublishJob;
 import org.eclipse.gyrex.search.solr.ISolrSearchConstants;
@@ -56,7 +56,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 	protected static final String TEST_REPO_ID = BaseSolrTest.class.getSimpleName().toLowerCase();
 
 	static void initDocumentManager(final IRuntimeContext context) throws BackingStoreException, IOException, SolrServerException {
-		DefaultRepositoryLookupStrategy.setRepository(context, ISolrSearchConstants.SEARCH_CONTENT_TYPE, TEST_REPO_ID);
+		DefaultRepositoryLookupStrategy.getDefault().setRepository(context, ISolrSearchConstants.SEARCH_CONTENT_TYPE, TEST_REPO_ID);
 		IRepositoryPreferences preferences;
 		try {
 			preferences = SolrCdsTestsActivator.getInstance().getRepositoryRegistry().createRepository(TEST_REPO_ID, ISolrRepositoryConstants.PROVIDER_ID).getRepositoryPreferences();
@@ -103,7 +103,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		try {
 			if (null == core) {
 				// there should be an "admin" core for such requests
-				final EmbeddedSolrServer adminServer = new EmbeddedSolrServer(coreContainer, "admin");
+				final EmbeddedSolrServer adminServer = new EmbeddedSolrServer(coreContainer, null);
 				CoreAdminRequest.createCore(coreName, coreName, adminServer);
 			} else {
 				coreContainer.reload(coreName);
