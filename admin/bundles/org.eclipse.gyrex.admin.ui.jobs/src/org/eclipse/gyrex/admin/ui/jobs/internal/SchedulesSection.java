@@ -17,7 +17,6 @@ import java.util.Collection;
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
-import org.eclipse.gyrex.jobs.internal.JobsActivator;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 
@@ -113,7 +112,9 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 	}
 
 	ScheduleManagerImpl getRepoManager() {
-		return JobsActivator.getInstance().getScheduleManager();
+		// TODO: need to use job manager for global contexts....
+		throw new IllegalStateException("TODO");
+//		return JobsActivator.getInstance().getScheduleManager();
 	}
 
 	private ISchedule getSelectedValue() {

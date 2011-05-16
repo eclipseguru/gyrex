@@ -70,7 +70,7 @@ public class JobsLabelProvider extends LabelProvider {
 	}
 
 	private String getElementText(final IScheduleEntry element) {
-		return String.format("%s (%s, %s)", element.getId(), element.getCronExpression(), element.getJobProviderId());
+		return String.format("%s (%s, %s)", element.getId(), element.getCronExpression(), element.getJobTypeId());
 	}
 
 	private String getElementText(final JobLog element) {
