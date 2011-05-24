@@ -12,12 +12,13 @@
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
+import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -38,6 +39,8 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
+
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  *
@@ -111,12 +114,6 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 		return bindingContext;
 	}
 
-	ScheduleManagerImpl getRepoManager() {
-		// TODO: need to use job manager for global contexts....
-		throw new IllegalStateException("TODO");
-//		return JobsActivator.getInstance().getScheduleManager();
-	}
-
 	private ISchedule getSelectedValue() {
 		return (ISchedule) (null != selectedValue ? selectedValue.getValue() : null);
 	}
@@ -132,22 +129,26 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 
 	@Override
 	public void refresh() {
-		final ScheduleManagerImpl manager = getRepoManager();
-		final Collection<String> scheduleIds = manager.getSchedules();
-		final ArrayList<ISchedule> schedules = new ArrayList<ISchedule>(scheduleIds.size());
-		for (final String id : scheduleIds) {
-			final ISchedule schedule = manager.getSchedule(id);
-			if (null != schedule) {
-				schedules.add(schedule);
+		try {
+			final String[] schedulesStorageKeys = ScheduleStore.getSchedules();
+			final ArrayList<ISchedule> schedules = new ArrayList<ISchedule>(schedulesStorageKeys.length);
+			for (final String key : schedulesStorageKeys) {
+				final ScheduleImpl schedule = ScheduleStore.load(key, ScheduleManagerImpl.getExternalId(key), false);
+				if (null != schedule) {
+					schedules.add(schedule);
+				}
 			}
+			dataList.setInput(schedules);
+		} catch (final BackingStoreException e) {
+			e.printStackTrace();
+			dataList.setInput(new ISchedule[0]);
 		}
-		dataList.setInput(schedules);
 		super.refresh();
 	}
 
 	void removeButtonPressed() {
-		final ISchedule repo = getSelectedValue();
-		if (repo == null) {
+		final ScheduleImpl schedule = (ScheduleImpl) getSelectedValue();
+		if (schedule == null) {
 			return;
 		}
 
@@ -155,7 +156,11 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 			return;
 		}
 
-		getRepoManager().removeSchedule(repo.getId());
+		try {
+			ScheduleStore.remove(schedule.getStorageKey(), schedule.getId());
+		} catch (final BackingStoreException e) {
+			e.printStackTrace();
+		}
 		markStale();
 	}
 
