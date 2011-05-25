@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -246,6 +247,19 @@ public abstract class ConfigurationPage extends EventManager {
 	 */
 	public IManagedForm getManagedForm() {
 		return mform;
+	}
+
+	/**
+	 * Returns the selection provider of this page.
+	 * <p>
+	 * The default implementation returns <code>null</code>. Subclasses may
+	 * override.
+	 * </p>
+	 * 
+	 * @return the selection provider (may be <code>null</code>)
+	 */
+	public ISelectionProvider getSelectionProvider() {
+		return null;
 	}
 
 	/**
