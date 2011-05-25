@@ -11,8 +11,6 @@
  */
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
-import java.util.Arrays;
-
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 
@@ -103,7 +101,7 @@ public class WaitingJobsSection extends ViewerWithButtonsSectionPart {
 
 	@Override
 	public void refresh() {
-		dataList.setInput(Arrays.asList("S'Oliver Database Backup"));
+//		dataList.setInput(Arrays.asList("Database Backup"));
 		super.refresh();
 	}
 
