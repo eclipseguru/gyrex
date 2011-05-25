@@ -11,10 +11,11 @@
  */
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
+import org.eclipse.gyrex.jobs.internal.monitoring.IJobMonitor;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -39,7 +40,7 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 
-	private Button cancelButton;
+	private Button cancelButton, refreshButton;
 	private ListViewer dataList;
 	private final DataBindingContext bindingContext;
 	private IObservableValue selectedValue;
@@ -54,8 +55,8 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 		super(parent, page.getManagedForm().getToolkit(), ExpandableComposite.SHORT_TITLE_BAR);
 		bindingContext = page.getBindingContext();
 		final Section section = getSection();
-		section.setText("Waiting");
-		section.setDescription("Jobs waiting for execution.");
+		section.setText("Running");
+		section.setDescription("Currently running jobs.");
 		createContent(section);
 	}
 
@@ -65,6 +66,13 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				removeButtonPressed();
+			}
+		});
+
+		refreshButton = createButton(buttonsPanel, "Refresh", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				refresh();
 			}
 		});
 	}
@@ -81,6 +89,8 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 		dataList.setLabelProvider(new JobsLabelProvider());
 
 		selectedValue = ViewersObservables.observeSingleSelection(dataList);
+
+		setDataInput();
 	}
 
 	/**
@@ -103,7 +113,8 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 
 	@Override
 	public void refresh() {
-		dataList.setInput(Arrays.asList("S'Oliver Product Import", "Some other job"));
+		setDataInput();
+
 		super.refresh();
 	}
 
@@ -119,6 +130,17 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 //
 //		getRepoManager().removeSchedule(repo.getId());
 //		markStale();
+	}
+
+	private void setDataInput() {
+		//		dataList.setInput(Arrays.asList("S'Oliver Product Import", "Some other job"));
+
+		// TODO
+		final java.util.List<String> input = new ArrayList<String>();
+		for (final IJobMonitor jobMonitor : JobsUiActivator.getInstance().getJobMonitor().getJobs()) {
+			input.add(String.format("Job '%s' worked %s/%s (current state is %s)", jobMonitor.getJobId(), Integer.toString(jobMonitor.getWorked()), Integer.toString(jobMonitor.getTotalWork()), jobMonitor.getCurrentTask()));
+		}
+		dataList.setInput(input);
 	}
 
 }

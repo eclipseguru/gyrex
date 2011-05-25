@@ -62,9 +62,9 @@ public class JobsConfigurationPage extends ConfigurationPage {
 		runningSection.getSection().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		managedForm.addPart(runningSection);
 
-		final JobsLogSection logSection = new JobsLogSection(right, this);
-		logSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
-		managedForm.addPart(logSection);
+		final JobsHistorySection historySection = new JobsHistorySection(right, this);
+		historySection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
+		managedForm.addPart(historySection);
 
 	}
 }

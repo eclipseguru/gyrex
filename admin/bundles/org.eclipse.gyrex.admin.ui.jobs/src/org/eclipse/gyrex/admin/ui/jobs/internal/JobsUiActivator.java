@@ -35,6 +35,8 @@ public class JobsUiActivator extends BaseBundleActivator {
 		return activator;
 	}
 
+	private JobMonitor jobMonitor;
+
 	/**
 	 * Creates a new instance.
 	 */
@@ -45,10 +47,28 @@ public class JobsUiActivator extends BaseBundleActivator {
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
+
+		jobMonitor = new JobMonitor(context);
+		jobMonitor.open();
 	}
 
 	@Override
 	protected void doStop(final BundleContext context) throws Exception {
 		instance = null;
+
+		jobMonitor.close();
+		jobMonitor = null;
+	}
+
+	/**
+	 * Returns the jobMonitor.
+	 * 
+	 * @return the jobMonitor
+	 */
+	public JobMonitor getJobMonitor() {
+		if (null == jobMonitor) {
+			throw new IllegalStateException("inactive");
+		}
+		return jobMonitor;
 	}
 }

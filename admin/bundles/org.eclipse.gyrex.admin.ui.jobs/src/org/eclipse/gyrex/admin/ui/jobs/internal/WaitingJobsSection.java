@@ -54,8 +54,8 @@ public class WaitingJobsSection extends ViewerWithButtonsSectionPart {
 		super(parent, page.getManagedForm().getToolkit(), ExpandableComposite.SHORT_TITLE_BAR);
 		bindingContext = page.getBindingContext();
 		final Section section = getSection();
-		section.setText("Currently Running");
-		section.setDescription("All currently running jobs.");
+		section.setText("Waiting");
+		section.setDescription("All currently waiting jobs.");
 		createContent(section);
 	}
 
