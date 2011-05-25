@@ -23,6 +23,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -99,6 +100,7 @@ public class ContextsSection extends ViewerWithButtonsSectionPart {
 		contextsList.setContentProvider(new ArrayContentProvider());
 		contextsList.setLabelProvider(new ContextUiLabelProvider());
 
+		selectedValue = ViewersObservables.observeSingleSelection(contextsList);
 	}
 
 	private DataBindingContext getBindingContext() {
