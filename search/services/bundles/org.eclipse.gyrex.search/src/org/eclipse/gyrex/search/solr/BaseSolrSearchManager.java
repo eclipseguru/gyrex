@@ -33,11 +33,11 @@ import org.eclipse.gyrex.persistence.storage.RepositoryMetadata;
 import org.eclipse.gyrex.persistence.storage.exceptions.ResourceFailureException;
 import org.eclipse.gyrex.search.ISearchManager;
 import org.eclipse.gyrex.search.documents.IDocument;
+import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 import org.eclipse.gyrex.search.facets.IFacet;
 import org.eclipse.gyrex.search.internal.SearchActivator;
 import org.eclipse.gyrex.search.internal.SearchDebug;
 import org.eclipse.gyrex.search.internal.solr.SolrSearchManagerMetrics;
-import org.eclipse.gyrex.search.internal.solr.documents.PublishJob;
 import org.eclipse.gyrex.search.internal.solr.documents.StoredDocument;
 import org.eclipse.gyrex.search.internal.solr.documents.TransientDocument;
 import org.eclipse.gyrex.search.internal.solr.facets.Facet;
@@ -59,13 +59,16 @@ import org.eclipse.osgi.util.NLS;
 import org.osgi.service.prefs.BackingStoreException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 
 /**
  * Base class for {@link ISearchManager search managers} based on Apache Solr.
@@ -148,16 +151,30 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		return new QueryImpl();
 	}
 
+	private SolrInputDocument createSolrDoc(final IDocument document) {
+		final SolrInputDocument solrDoc = new SolrInputDocument();
+		final Collection<IDocumentAttribute<?>> attributes = document.getAttributes().values();
+		for (final IDocumentAttribute attr : attributes) {
+			final Collection<?> values = attr.getValues();
+			for (final Object value : values) {
+				solrDoc.addField(attr.getId(), value);
+			}
+		}
+		return solrDoc;
+	}
+
 	final SolrQuery createSolrQuery(final QueryImpl query) {
 		final SolrQuery solrQuery = new SolrQuery();
 
 		// advanced or user query
 		if (null != query.getAdvancedQuery()) {
-			solrQuery.setQueryType("standard");
+//			solrQuery.setQueryType("standard");
 			solrQuery.setQuery(query.getAdvancedQuery());
-		} else {
-			solrQuery.setQueryType("dismax");
+		} else if (null != query.getQuery()) {
+//			solrQuery.setQueryType("edismax");
 			solrQuery.setQuery(query.getQuery());
+		} else {
+			solrQuery.setQuery("*:*");
 		}
 
 		// paging
@@ -444,7 +461,35 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		}
 
 		// publish
-		new PublishJob(docsToPublish, getRepository().getSolrServer(), getSolrSearchManagerMetrics(), commitsAllowed.get()).schedule();
+//		new PublishJob(docsToPublish, getRepository().getSolrServer(), getSolrSearchManagerMetrics(), commitsAllowed.get()).schedule();
+
+		// collect stats
+		final ThroughputMetric publishedMetric = getSolrSearchManagerMetrics().getDocsPublishedMetric();
+		final long requestStarted = publishedMetric.requestStarted();
+
+		// create solr docs
+		final List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
+		for (final IDocument document : documents) {
+			docs.add(createSolrDoc(document));
+		}
+		try {
+			// add to repository
+			final SolrServer solrServer = getRepository().getSolrServer();
+			if (commitsAllowed.get()) {
+//				final UpdateRequest req = new UpdateRequest();
+//				req.add(docs);
+//				req.setCommitWithin((int) TimeUnit.MINUTES.toMillis(3)); // TODO: should be configurable
+//				req.process(solrServer);
+				solrServer.add(docs);
+				solrServer.commit();
+			} else {
+				solrServer.add(docs);
+			}
+			publishedMetric.requestFinished(docs.size(), System.currentTimeMillis() - requestStarted);
+		} catch (final Exception e) {
+			publishedMetric.requestFailed();
+			throw new ResourceFailureException(String.format("Error publishing documents. %s", ExceptionUtils.getRootCauseMessage(e)), e);
+		}
 	}
 
 	/**
