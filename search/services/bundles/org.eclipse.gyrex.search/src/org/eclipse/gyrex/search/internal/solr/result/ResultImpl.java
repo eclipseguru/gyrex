@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.search.internal.solr.result;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.eclipse.core.runtime.PlatformObject;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 /**
@@ -38,7 +40,7 @@ import org.apache.solr.common.SolrDocumentList;
 public class ResultImpl extends PlatformObject implements IResult {
 
 	private final QueryResponse response;
-	private IDocument[] listings;
+	private List<IDocument> documents;
 	private Map<String, IResultFacet> facets;
 	private final IRuntimeContext context;
 	private final QueryImpl query;
@@ -91,6 +93,23 @@ public class ResultImpl extends PlatformObject implements IResult {
 	}
 
 	@Override
+	public List<IDocument> getDocuments() {
+		if (null != documents) {
+			return documents;
+		}
+		final SolrDocumentList results = response.getResults();
+		if (results.isEmpty()) {
+			return documents = Collections.emptyList();
+		}
+
+		final List<IDocument> docs = new ArrayList<IDocument>(results.size());
+		for (final SolrDocument result : results) {
+			docs.add(new StoredDocument(result));
+		}
+		return documents = Collections.unmodifiableList(docs);
+	}
+
+	@Override
 	public Map<String, IResultFacet> getFacets() {
 		if (null != facets) {
 			return facets;
@@ -113,19 +132,6 @@ public class ResultImpl extends PlatformObject implements IResult {
 		}
 
 		return this.facets = Collections.unmodifiableMap(facets);
-	}
-
-	@Override
-	public IDocument[] getListings() {
-		if (null != listings) {
-			return listings;
-		}
-		final SolrDocumentList results = response.getResults();
-		final IDocument[] listings = new IDocument[results.size()];
-		for (int i = 0; i < listings.length; i++) {
-			listings[i] = new StoredDocument(results.get(i));
-		}
-		return this.listings = listings;
 	}
 
 	@Override

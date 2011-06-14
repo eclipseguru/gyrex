@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.search.result;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gyrex.context.IRuntimeContext;
@@ -56,6 +57,13 @@ public interface IResult extends IAdaptable {
 	IRuntimeContext getContext();
 
 	/**
+	 * Returns the list of documents that match the query.
+	 * 
+	 * @return an unmodifiable list of documents
+	 */
+	List<IDocument> getDocuments();
+
+	/**
 	 * Returns a map of facets available in the result.
 	 * 
 	 * @return an unmodifiable map of all facets in the result with
@@ -63,13 +71,6 @@ public interface IResult extends IAdaptable {
 	 *         and the {@link IFacet facet} as the value
 	 */
 	Map<String, IResultFacet> getFacets();
-
-	/**
-	 * Returns the list of documents that match the query.
-	 * 
-	 * @return the list of documents
-	 */
-	IDocument[] getListings();
 
 	/**
 	 * Returns the total number of documents found.
