@@ -163,10 +163,25 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		return solrDoc;
 	}
 
-	final SolrQuery createSolrQuery(final QueryImpl query) {
+	/**
+	 * Creates a {@link SolrQuery} based on the specified {@link IQuery query}.
+	 * <p>
+	 * Subclasses may override if the default implementation is not sufficient.
+	 * </p>
+	 * 
+	 * @param query
+	 *            the query
+	 * @return a {@link SolrQuery}
+	 */
+	protected final SolrQuery createSolrQuery(final IQuery query) {
+		if (!(query instanceof QueryImpl)) {
+			throw new IllegalArgumentException("invalid query object; not created by this manager");
+		}
+		final QueryImpl queryImpl = (QueryImpl) query;
 		final SolrQuery solrQuery = new SolrQuery();
 
 		// advanced or user query
+		// TODO we need to better understand query types and user requirements
 		if (null != query.getAdvancedQuery()) {
 //			solrQuery.setQueryType("standard");
 			solrQuery.setQuery(query.getAdvancedQuery());
@@ -209,7 +224,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		final Map<String, IFacet> facets = getFacets();
 		if (facets != null) {
 			// remember facets
-			query.setFacetsInUse(facets);
+			queryImpl.setFacetsInUse(facets);
 
 			// enable facetting
 			for (final IFacet facet : facets.values()) {
@@ -287,7 +302,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		// create query
 		final ThroughputMetric queryMetric = getSolrSearchManagerMetrics().getQueryMetric();
 		final long requestStarted = queryMetric.requestStarted();
-		final SolrQuery solrQuery = createSolrQuery((QueryImpl) query);
+		final SolrQuery solrQuery = createSolrQuery(query);
 		final QueryResponse response = query(solrQuery);
 		queryMetric.requestFinished(1, System.currentTimeMillis() - requestStarted);
 		return new ResultImpl(getContext(), (QueryImpl) query, response);
@@ -448,19 +463,18 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 
 	@Override
 	public final void publishDocuments(final Collection<IDocument> documents) {
-
-		// create a copy of the list to avoid clearing the list by outsiders
-		final List<IDocument> docsToPublish = new ArrayList<IDocument>();
-
-		// assign ids and copy docs into the list
-		for (final IDocument document : documents) {
-			if (null == document.getId()) {
-				document.setId(UUID.randomUUID().toString());
-			}
-			docsToPublish.add(document);
-		}
-
-		// publish
+//		// create a copy of the list to avoid clearing the list by outsiders
+//		final List<IDocument> docsToPublish = new ArrayList<IDocument>();
+//
+//		// assign ids and copy docs into the list
+//		for (final IDocument document : documents) {
+//			if (null == document.getId()) {
+//				document.setId(UUID.randomUUID().toString());
+//			}
+//			docsToPublish.add(document);
+//		}
+//
+//		// publish
 //		new PublishJob(docsToPublish, getRepository().getSolrServer(), getSolrSearchManagerMetrics(), commitsAllowed.get()).schedule();
 
 		// collect stats
@@ -470,6 +484,11 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		// create solr docs
 		final List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
 		for (final IDocument document : documents) {
+			// generate id
+			if (null == document.getId()) {
+				document.setId(UUID.randomUUID().toString());
+			}
+			// convert to solr doc
 			docs.add(createSolrDoc(document));
 		}
 		try {
