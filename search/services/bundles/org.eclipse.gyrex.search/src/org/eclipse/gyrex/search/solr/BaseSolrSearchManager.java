@@ -173,7 +173,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 	 *            the query
 	 * @return a {@link SolrQuery}
 	 */
-	protected final SolrQuery createSolrQuery(final IQuery query) {
+	protected SolrQuery createSolrQuery(final IQuery query) {
 		if (!(query instanceof QueryImpl)) {
 			throw new IllegalArgumentException("invalid query object; not created by this manager");
 		}
