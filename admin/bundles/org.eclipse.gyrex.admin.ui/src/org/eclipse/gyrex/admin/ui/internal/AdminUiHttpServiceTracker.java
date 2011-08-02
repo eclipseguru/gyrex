@@ -41,14 +41,14 @@ public class AdminUiHttpServiceTracker extends ServiceTracker<HttpService, HttpS
 		protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 			// check if the 'homepage' is requested
 			final String pathInfo = req.getPathInfo();
-			if ((null != pathInfo) && !pathInfo.equals("/")) {
+			if ((null != pathInfo) && !pathInfo.equals("") && !pathInfo.equals("/")) {
 				// another page is requested, fail with not found
 				resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Page Not Found");
 				return;
 			}
 
 			// redirect
-			resp.sendRedirect(req.getContextPath() + "/admin");
+			resp.sendRedirect(req.getContextPath() + AdminUiActivator.ADMIN_ALIAS);
 		}
 	}
 
