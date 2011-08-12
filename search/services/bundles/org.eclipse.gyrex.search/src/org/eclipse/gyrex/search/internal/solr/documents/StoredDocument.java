@@ -121,7 +121,7 @@ public class StoredDocument extends BaseDocument {
 	@Override
 	public String toString() {
 		ensureInitializedFully();
-		return (dirty ? "StoredDocument[DIRTY]{" : "StoredDocument{") + attributes.toString().replace('\n', '|').replace('\r', ' ') + "}";
+		return (dirty ? "StoredDocument[DIRTY]{" : "StoredDocument{") + attributes.values().toString().replace('\n', '|').replace('\r', ' ') + "}";
 	}
 
 }
