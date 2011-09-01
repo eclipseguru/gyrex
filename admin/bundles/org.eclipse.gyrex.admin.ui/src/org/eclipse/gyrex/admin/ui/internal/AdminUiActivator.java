@@ -34,6 +34,7 @@ import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
@@ -115,6 +116,20 @@ public class AdminUiActivator extends BaseBundleActivator {
 	 */
 	public AdminUiActivator() {
 		super(SYMBOLIC_NAME);
+	}
+
+	private void addNonSslConnector(final Server server) {
+		final SelectChannelConnector connector = new SelectChannelConnector();
+
+		connector.setPort(DEFAULT_ADMIN_PORT);
+		connector.setMaxIdleTime(200000);
+		connector.setAcceptors(2);
+		connector.setStatsOn(false);
+		connector.setLowResourcesConnections(20000);
+		connector.setLowResourcesMaxIdleTime(5000);
+		connector.setForwarded(true);
+
+		server.addConnector(connector);
 	}
 
 	private void addSslConnector(final Server server) {
@@ -217,7 +232,12 @@ public class AdminUiActivator extends BaseBundleActivator {
 	private void startServer() {
 		try {
 			server = new Server();
-			addSslConnector(server);
+
+			if (Boolean.getBoolean(PROPERTY_ADMIN_SECURE)) {
+				addSslConnector(server);
+			} else {
+				addNonSslConnector(server);
+			}
 
 			// tweak server
 			server.setSendServerVersion(true);
