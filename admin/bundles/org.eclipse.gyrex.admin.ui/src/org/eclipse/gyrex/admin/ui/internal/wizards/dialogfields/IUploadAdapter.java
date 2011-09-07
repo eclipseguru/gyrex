@@ -11,16 +11,9 @@
  */
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
-import org.eclipse.rwt.widgets.UploadItem;
 
-/**
- *
- */
 public interface IUploadAdapter {
 
-	/**
-	 * @param uploadItem
-	 */
-	void uploadFinished(UploadItem uploadItem);
+	void uploadFinished(String[] fileNames);
 
 }

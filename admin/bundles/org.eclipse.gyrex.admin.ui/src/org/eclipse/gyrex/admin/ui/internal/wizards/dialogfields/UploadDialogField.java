@@ -13,16 +13,14 @@ package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.rwt.widgets.Upload;
-import org.eclipse.rwt.widgets.UploadAdapter;
-import org.eclipse.rwt.widgets.UploadEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 
 /**
@@ -38,19 +36,14 @@ public class UploadDialogField extends DialogField {
 		return gd;
 	}
 
-	private String uploadPath;
-	private String browseButtonLabel;
 	private String uploadButtonLabel;
-	private Upload uploadControl;
-	private ModifyListener modifyListener;
+	private Button uploadControl;
 	private final IUploadAdapter uploadAdapter;
 
 	public UploadDialogField(final IUploadAdapter uploadAdapter) {
 		super();
 		this.uploadAdapter = uploadAdapter;
-		browseButtonLabel = "Browse..."; //$NON-NLS-1$
-		uploadButtonLabel = "Upload";
-		uploadPath = "";
+		uploadButtonLabel = "Upload..."; //$NON-NLS-1$
 	}
 
 	@Override
@@ -59,17 +52,18 @@ public class UploadDialogField extends DialogField {
 
 		final Label label = getLabelControl(parent);
 		label.setLayoutData(gridDataForLabel(1));
-		final Upload upload = getUploadControl(parent);
+		final Button upload = getUploadControl(parent);
 		upload.setLayoutData(gridDataForUpload(nColumns - 1));
 
 		return new Control[] { label, upload };
 	}
 
-	private void doModifyUploadPath() {
-		if (isOkToUse(uploadControl)) {
-			uploadPath = uploadControl.getPath();
-		}
-		dialogFieldChanged();
+	void doOpenUploadDialog() {
+		final FileDialog fileDialog = new FileDialog(SwtUtil.getShell(uploadControl), SWT.TITLE | SWT.MULTI);
+		fileDialog.setText("Upload Files");
+		fileDialog.setAutoUpload(true);
+		fileDialog.open();
+		uploadAdapter.uploadFinished(fileDialog.getFileNames());
 	}
 
 	@Override
@@ -85,66 +79,27 @@ public class UploadDialogField extends DialogField {
 	 *            already been created.
 	 * @return the text control
 	 */
-	public Upload getUploadControl(final Composite parent) {
+	public Button getUploadControl(final Composite parent) {
 		if (uploadControl == null) {
 			assertCompositeNotNull(parent);
-			modifyListener = new ModifyListener() {
-				public void modifyText(final ModifyEvent e) {
-					doModifyUploadPath();
-				}
-			};
 
-			uploadControl = new Upload(parent, SWT.BORDER, Upload.SHOW_PROGRESS | Upload.SHOW_UPLOAD_BUTTON);
-			uploadControl.setBrowseButtonText(browseButtonLabel);
-			uploadControl.setUploadButtonText(uploadButtonLabel);
+			uploadControl = new Button(parent, SWT.PUSH);
+			uploadControl.setText(uploadButtonLabel);
 			uploadControl.setFont(parent.getFont());
-			uploadControl.addModifyListener(modifyListener);
-			uploadControl.addUploadListener(new UploadAdapter() {
+			uploadControl.addSelectionListener(new SelectionAdapter() {
 				@Override
-				public void uploadException(final UploadEvent uploadEvent) {
-					final Exception exc = uploadEvent.getUploadException();
-					if (exc != null) {
-						MessageDialog.openError(SwtUtil.getShell(parent), "Upload Error", exc.getMessage());
-					}
-				}
-
-				@Override
-				public void uploadFinished(final UploadEvent uploadEvent) {
-					uploadAdapter.uploadFinished(uploadControl.getUploadItem());
+				public void widgetSelected(final SelectionEvent e) {
+					doOpenUploadDialog();
 				}
 			});
-
-			uploadControl.setEnabled(isEnabled());
 		}
 		return uploadControl;
-	}
-
-	/**
-	 * Returns the uploadPath.
-	 * 
-	 * @return the uploadPath
-	 */
-	public String getUploadPath() {
-		return uploadPath;
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
 		if (isOkToUse(uploadControl)) {
-		}
-	}
-
-	/**
-	 * Sets the browseButtonLabel.
-	 * 
-	 * @param browseButtonLabel
-	 *            the browseButtonLabel to set
-	 */
-	public void setBrowseButtonLabel(final String browseButtonLabel) {
-		this.browseButtonLabel = browseButtonLabel;
-		if (isOkToUse(uploadControl)) {
-			uploadControl.setBrowseButtonText(browseButtonLabel);
 		}
 	}
 
@@ -165,13 +120,10 @@ public class UploadDialogField extends DialogField {
 	public void setUploadButtonLabel(final String uploadButtonLabel) {
 		this.uploadButtonLabel = uploadButtonLabel;
 		if (isOkToUse(uploadControl)) {
-			uploadControl.setUploadButtonText(uploadButtonLabel);
+			uploadControl.setText(uploadButtonLabel);
 		}
 	}
 
-	/*
-	 * @see DialogField#updateEnableState
-	 */
 	@Override
 	protected void updateEnableState() {
 		super.updateEnableState();

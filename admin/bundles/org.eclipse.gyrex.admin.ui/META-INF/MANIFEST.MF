@@ -24,7 +24,9 @@ Require-Bundle: org.eclipse.gyrex.boot;bundle-version="1.0.0",
  org.eclipse.jetty.servlet;bundle-version="7.4.2",
  org.eclipse.jetty.servlets;bundle-version="7.4.2",
  org.eclipse.equinox.http.servlet;bundle-version="1.1.200",
- org.eclipse.jetty.security;bundle-version="7.4.2"
+ org.eclipse.jetty.security;bundle-version="7.4.2",
+ org.eclipse.rap.rwt.supplemental.filedialog;bundle-version="1.4.0",
+ org.eclipse.rap.rwt.supplemental.fileupload;bundle-version="1.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.servlet;version="[2.5.0,3.0.0)",

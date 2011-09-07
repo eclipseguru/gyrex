@@ -13,6 +13,7 @@ package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
@@ -34,7 +35,6 @@ import org.eclipse.gyrex.http.jetty.admin.IJettyManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.StatusDialog;
-import org.eclipse.rwt.widgets.UploadItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -59,20 +60,25 @@ public class ImportCertificateDialog extends StatusDialog {
 	private final UploadDialogField keystoreUploadField = new UploadDialogField(new IUploadAdapter() {
 
 		@Override
-		public void uploadFinished(final UploadItem uploadItem) {
-			InputStream in = null;
-			try {
-				in = uploadItem.getFileInputStream();
-				importKeystore(in);
-				importError = null;
-			} catch (final Exception e) {
-				final Throwable rootCause = ExceptionUtils.getRootCause(e);
-				importError = rootCause != null ? rootCause : e;
-				keystoreBytes = null;
-				generatedKeyPassword = null;
-				generatedKeystorePassword = null;
-			} finally {
-				IOUtils.closeQuietly(in);
+		public void uploadFinished(final String[] uploadedFileNames) {
+			for (final String uploadItem : uploadedFileNames) {
+				InputStream in = null;
+				try {
+					in = FileUtils.openInputStream(new File(uploadItem));
+					importKeystore(in);
+					importError = null;
+				} catch (final Exception e) {
+					final Throwable rootCause = ExceptionUtils.getRootCause(e);
+					importError = rootCause != null ? rootCause : e;
+					keystoreBytes = null;
+					generatedKeyPassword = null;
+					generatedKeystorePassword = null;
+				} finally {
+					IOUtils.closeQuietly(in);
+				}
+
+				// stop after the first one
+				break;
 			}
 			validate();
 		}
@@ -235,18 +241,13 @@ public class ImportCertificateDialog extends StatusDialog {
 			return;
 		}
 
-		if (StringUtils.isBlank(keystoreUploadField.getUploadPath())) {
-			setInfo("Please select a keystore.");
-			return;
-		}
-
 		if (!keystoreTypeField.isSelected(0) && !keystoreTypeField.isSelected(1)) {
 			setInfo("Please select a keystore type.");
 			return;
 		}
 
 		if (keystoreBytes == null) {
-			setInfo("Please upload the selected keystore.");
+			setInfo("Please upload a keystore.");
 			return;
 		}
 
