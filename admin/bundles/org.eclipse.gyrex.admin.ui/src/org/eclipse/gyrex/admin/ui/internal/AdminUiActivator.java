@@ -67,7 +67,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui"; //$NON-NLS-1$
 
 	/** the default port for the admin server */
-	public static final int DEFAULT_ADMIN_PORT = 3110;
+	private static final int DEFAULT_ADMIN_PORT = 3110;
 
 	/** server type for the admin server */
 	public static final String TYPE_ADMIN = SYMBOLIC_NAME + ".http";
@@ -122,12 +122,13 @@ public class AdminUiActivator extends BaseBundleActivator {
 		final SelectChannelConnector connector = new SelectChannelConnector();
 
 		connector.setPort(DEFAULT_ADMIN_PORT);
-		connector.setMaxIdleTime(200000);
-		connector.setAcceptors(2);
-		connector.setStatsOn(false);
+		connector.setMaxIdleTime(30000);
 		connector.setLowResourcesConnections(20000);
 		connector.setLowResourcesMaxIdleTime(5000);
 		connector.setForwarded(true);
+
+		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=356988 for an issue
+		// with configuring the connector
 
 		server.addConnector(connector);
 	}
@@ -147,12 +148,14 @@ public class AdminUiActivator extends BaseBundleActivator {
 				IOUtils.closeQuietly(stream);
 			}
 
-			final SslSelectChannelConnector connector = new SslSelectChannelConnector(new SslContextFactory(keystoreFile.getCanonicalPath()));
+			final SslContextFactory sslContextFactory = new SslContextFactory(keystoreFile.getCanonicalPath());
+			sslContextFactory.setKeyStorePassword("changeit");
+			sslContextFactory.setKeyManagerPassword("changeit");
+
+			final SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
 
 			connector.setPort(DEFAULT_ADMIN_PORT);
-			connector.setMaxIdleTime(200000);
-			connector.setAcceptors(2);
-			connector.setStatsOn(false);
+			connector.setMaxIdleTime(30000);
 			connector.setLowResourcesConnections(20000);
 			connector.setLowResourcesMaxIdleTime(5000);
 			connector.setForwarded(true);
@@ -161,10 +164,6 @@ public class AdminUiActivator extends BaseBundleActivator {
 			connector.setConfidentialScheme(HttpSchemes.HTTPS);
 			connector.setIntegralPort(DEFAULT_ADMIN_PORT);
 			connector.setIntegralScheme(HttpSchemes.HTTPS);
-
-			// Poorly documented api. How to set it in another way?
-			connector.setPassword("changeit");
-			connector.setKeyPassword("changeit");
 
 			server.addConnector(connector);
 		} catch (final Exception e) {
@@ -240,7 +239,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 			}
 
 			// tweak server
-			server.setSendServerVersion(true);
+			server.setSendServerVersion(false);
 			server.setSendDateHeader(true); // required by some (older) browsers to support caching
 			server.setGracefulShutdown(5000);
 
