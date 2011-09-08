@@ -13,6 +13,7 @@ package org.eclipse.gyrex.admin.ui.internal;
 
 import java.io.IOException;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -83,9 +84,6 @@ public class AdminUiHttpServiceTracker extends ServiceTracker<HttpService, HttpS
 		super(context, createFilter(context), null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.util.tracker.ServiceTracker#addingService(org.osgi.framework.ServiceReference)
-	 */
 	@Override
 	public HttpService addingService(final ServiceReference<HttpService> reference) {
 		final HttpService httpService = super.addingService(reference); // calls context.getService(reference);
@@ -102,12 +100,18 @@ public class AdminUiHttpServiceTracker extends ServiceTracker<HttpService, HttpS
 		} catch (final Exception e) {
 			LOG.error("An error occurred while registering the root servlet. {}", e.getMessage(), e);
 		}
+
+		// register Logback status servlet
+		try {
+			// note, we don't reference the class directly because the package import is optional
+			httpService.registerServlet("/logbackstatus", (Servlet) AdminUiActivator.getInstance().getBundle().loadClass("ch.qos.logback.classic.ViewStatusMessagesServlet").newInstance(), null, null);
+		} catch (final Exception e) {
+			LOG.error("An error occurred while registering the Logback status servlet. {}", e.getMessage(), e);
+		}
+
 		return httpService;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.util.tracker.ServiceTracker#removedService(org.osgi.framework.ServiceReference, java.lang.Object)
-	 */
 	@Override
 	public void removedService(final ServiceReference<HttpService> reference, final HttpService service) {
 		final HttpService httpService = service;
