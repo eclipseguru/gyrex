@@ -14,7 +14,7 @@ package org.eclipse.gyrex.admin.ui.cloud.internal;
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
-import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate.IConnectionMonitor;
+import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Realm;
@@ -31,15 +31,21 @@ import org.eclipse.ui.forms.IManagedForm;
  */
 public class CloudConfigurationPage extends ConfigurationPage {
 
-	final IConnectionMonitor connectionMonitor = new IConnectionMonitor() {
+	final ZooKeeperGateListener connectionMonitor = new ZooKeeperGateListener() {
 		@Override
-		public void connected(ZooKeeperGate gate) {
-			getManagedForm().setInput(CloudUiActivator.getInstance().getCloudManager());
+		public void gateDown(final ZooKeeperGate gate) {
+			getManagedForm().setInput(null);
 		}
 
 		@Override
-		public void disconnected(ZooKeeperGate gate) {
-			getManagedForm().setInput(null);
+		public void gateRecovering(final ZooKeeperGate gate) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void gateUp(final ZooKeeperGate gate) {
+			getManagedForm().setInput(CloudUiActivator.getInstance().getCloudManager());
 		}
 	};
 
@@ -95,6 +101,7 @@ public class CloudConfigurationPage extends ConfigurationPage {
 	 * 
 	 * @return the bindingContext
 	 */
+	@Override
 	public DataBindingContext getBindingContext() {
 		if (disposed) {
 			throw new IllegalStateException("disposed");
