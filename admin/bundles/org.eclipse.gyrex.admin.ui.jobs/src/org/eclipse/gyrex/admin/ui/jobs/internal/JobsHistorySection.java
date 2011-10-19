@@ -187,7 +187,8 @@ public class JobsHistorySection extends ViewerWithButtonsSectionPart {
 			final IJobHistory history = manager.getHistory(jobId);
 			for (final IJobHistoryEntry historyItem : history.getEntries()) {
 				final String msg = String.format("[%s] %s : %s", DateFormatUtils.format(historyItem.getTimeStamp(), "yyyy-MM-dd hh:mm:ssss"), jobId, historyItem.getResult());
-				result.add(new JobLog(msg, historyItem.getSeverity() == IStatus.ERROR, historyItem.getSeverity() == IStatus.CANCEL));
+				final int severity = historyItem.getResult().getSeverity();
+				result.add(new JobLog(msg, severity == IStatus.ERROR, severity == IStatus.CANCEL));
 			}
 		}
 
