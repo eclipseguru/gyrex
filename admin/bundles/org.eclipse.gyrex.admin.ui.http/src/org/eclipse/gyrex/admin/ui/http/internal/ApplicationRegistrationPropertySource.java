@@ -24,9 +24,11 @@ public class ApplicationRegistrationPropertySource implements IPropertySource {
 	private static final String PROP_PROVIDER = "provider";
 	private static final String PROP_ID = "id";
 	private static final String PROP_MOUNTS = "urls";
+	private static final String PROP_PROPS = "initProperties";
 
 	private final ApplicationRegistration applicationRegistration;
 	private final ApplicationMountsPropertySource mounts;
+	private final ApplicationPropertiesPropertySource properties;
 
 	/**
 	 * Creates a new instance.
@@ -34,6 +36,7 @@ public class ApplicationRegistrationPropertySource implements IPropertySource {
 	public ApplicationRegistrationPropertySource(final ApplicationRegistration applicationRegistration) {
 		this.applicationRegistration = applicationRegistration;
 		mounts = new ApplicationMountsPropertySource(applicationRegistration);
+		properties = new ApplicationPropertiesPropertySource(applicationRegistration);
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class ApplicationRegistrationPropertySource implements IPropertySource {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return new IPropertyDescriptor[] { new PropertyDescriptor(PROP_ID, "ID"), new PropertyDescriptor(PROP_PROVIDER, "Provider"), new PropertyDescriptor(PROP_CONTEXT_PATH, "Context"), new PropertyDescriptor(PROP_MOUNTS, "URLs") };
+		return new IPropertyDescriptor[] { new PropertyDescriptor(PROP_ID, "ID"), new PropertyDescriptor(PROP_PROVIDER, "Provider"), new PropertyDescriptor(PROP_CONTEXT_PATH, "Context"), new PropertyDescriptor(PROP_MOUNTS, "URLs"), new PropertyDescriptor(PROP_PROPS, "Properties") };
 	}
 
 	@Override
@@ -56,6 +59,8 @@ public class ApplicationRegistrationPropertySource implements IPropertySource {
 			return applicationRegistration.getContext().getContextPath().toString();
 		} else if (PROP_MOUNTS == id) {
 			return mounts;
+		} else if (PROP_PROPS == id) {
+			return properties;
 		}
 
 		return null;

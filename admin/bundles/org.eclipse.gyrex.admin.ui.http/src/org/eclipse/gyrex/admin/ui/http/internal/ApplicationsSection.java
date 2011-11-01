@@ -59,6 +59,7 @@ public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 	private final ConfigurationPage page;
 
 	private Button addButton;
+	private Button editButton;
 	private Button removeButton;
 
 	private Button activateButton;
@@ -93,7 +94,7 @@ public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 	}
 
 	void addButtonPressed() {
-		final AddApplicationDialog dialog = new AddApplicationDialog(SwtUtil.getShell(addButton), getApplicationManager());
+		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(addButton), getApplicationManager(), null);
 		if (dialog.open() == Window.OK) {
 			markStale();
 		}
@@ -107,6 +108,12 @@ public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 				addButtonPressed();
 			}
 		});
+		editButton = createButton(buttonsPanel, "Edit...", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				editButtonPressed();
+			}
+		});
 		removeButton = createButton(buttonsPanel, "Remove...", new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
@@ -114,7 +121,10 @@ public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 			}
 		});
 
-		final Label separator = getToolkit().createLabel(buttonsPanel, "");
+		Label separator = getToolkit().createLabel(buttonsPanel, "");
+		FormLayoutDataFactory.applyDefaults(separator, 1);
+
+		separator = getToolkit().createLabel(buttonsPanel, "");
 		FormLayoutDataFactory.applyDefaults(separator, 1);
 
 		activateButton = createButton(buttonsPanel, "Activate", new SelectionAdapter() {
@@ -155,6 +165,18 @@ public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 		markStale();
 	}
 
+	void editButtonPressed() {
+		final ApplicationRegistration app = getSelectedValue();
+		if (app == null) {
+			return;
+		}
+
+		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(editButton), getApplicationManager(), app);
+		if (dialog.open() == Window.OK) {
+			markStale();
+		}
+	}
+
 	private ApplicationManager getApplicationManager() {
 		return (ApplicationManager) HttpUiActivator.getInstance().getService(IApplicationManager.class);
 	}
@@ -179,6 +201,7 @@ public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 		final UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
 		modelToTarget.setConverter(new TrueWhenListSelectionNotEmptyConverter());
 		final UpdateValueStrategy targetToModel = new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER);
+		getBindingContext().bindValue(SWTObservables.observeEnabled(editButton), listSelection, targetToModel, modelToTarget);
 		getBindingContext().bindValue(SWTObservables.observeEnabled(removeButton), listSelection, targetToModel, modelToTarget);
 		getBindingContext().bindValue(SWTObservables.observeEnabled(activateButton), listSelection, targetToModel, modelToTarget);
 		getBindingContext().bindValue(SWTObservables.observeEnabled(deactivateButton), listSelection, targetToModel, modelToTarget);
