@@ -1,8 +1,8 @@
 /*******************************************************************************
  * Copyright (c) 2011 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
@@ -78,10 +78,10 @@ public class CloudUiActivator extends BaseBundleActivator {
 	}
 
 	public ICloudManager getCloudManager() {
-		return cloudManagerProxy.getService();
+		return cloudManagerProxy.getProxy();
 	}
 
 	public INodeEnvironment getNodeEnvironment() {
-		return nodeEnvironmentProxy.getService();
+		return nodeEnvironmentProxy.getProxy();
 	}
 }

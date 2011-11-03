@@ -13,8 +13,6 @@ package org.eclipse.gyrex.admin.ui.cloud.internal;
 
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
-import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
-import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Realm;
@@ -30,24 +28,6 @@ import org.eclipse.ui.forms.IManagedForm;
  * Gyrex Cloud Configuration Page.
  */
 public class CloudConfigurationPage extends ConfigurationPage {
-
-	final ZooKeeperGateListener connectionMonitor = new ZooKeeperGateListener() {
-		@Override
-		public void gateDown(final ZooKeeperGate gate) {
-			getManagedForm().setInput(null);
-		}
-
-		@Override
-		public void gateRecovering(final ZooKeeperGate gate) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void gateUp(final ZooKeeperGate gate) {
-			getManagedForm().setInput(CloudUiActivator.getInstance().getCloudManager());
-		}
-	};
 
 	boolean disposed;
 	private DataBindingContext bindingContext;
@@ -84,7 +64,8 @@ public class CloudConfigurationPage extends ConfigurationPage {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(pendingNodesSection.getSection());
 		managedForm.addPart(pendingNodesSection);
 
-		ZooKeeperGate.addConnectionMonitor(connectionMonitor);
+		// set input
+		getManagedForm().setInput(CloudUiActivator.getInstance().getCloudManager());
 	}
 
 	@Override
@@ -93,7 +74,7 @@ public class CloudConfigurationPage extends ConfigurationPage {
 		bindingContext.dispose();
 		bindingContext = null;
 		super.dispose();
-		ZooKeeperGate.removeConnectionMonitor(connectionMonitor);
+		getManagedForm().setInput(null);
 	}
 
 	/**
