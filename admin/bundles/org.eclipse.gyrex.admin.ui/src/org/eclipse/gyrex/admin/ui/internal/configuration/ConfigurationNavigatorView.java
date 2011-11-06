@@ -96,7 +96,7 @@ public class ConfigurationNavigatorView extends ViewPart {
 	@Override
 	public void createPartControl(final Composite parent) {
 		parent.setLayout(new GridLayout());
-		filteredTree = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL, new ConfigurationPagePatternFilter());
+		filteredTree = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL, new ConfigurationPagePatternFilter(), true);
 
 		final TreeViewer viewer = filteredTree.getViewer();
 		viewer.setContentProvider(new ViewContentProvider());

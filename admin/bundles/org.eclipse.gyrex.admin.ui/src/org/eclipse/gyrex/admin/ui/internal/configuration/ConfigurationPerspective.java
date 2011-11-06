@@ -22,8 +22,9 @@ import org.eclipse.ui.IPerspectiveFactory;
  * applications.
  * <p>
  * The tree to choose configuration pages is represented by the
- * {@link ConfigurationNavigatorView}, the matching configuration pages to the tree elements
- * are displayed as {@link ConfigurationPage} in the {@link ConfigurationPanelView}
+ * {@link ConfigurationNavigatorView}, the matching configuration pages to the
+ * tree elements are displayed as {@link ConfigurationPage} in the
+ * {@link ConfigurationPanelView}
  */
 public class ConfigurationPerspective implements IPerspectiveFactory {
 
