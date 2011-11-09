@@ -11,31 +11,29 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
-import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutDataFactory;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
+import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.FormTextDialogField;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.cloud.admin.ICloudManager;
 import org.eclipse.gyrex.cloud.admin.INodeConfigurer;
 import org.eclipse.gyrex.cloud.environment.INodeEnvironment;
 
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.util.Policy;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.SectionPart;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -44,10 +42,8 @@ import org.apache.commons.lang.StringUtils;
 public class NodeConnectionSection extends SectionPart {
 
 	private final CloudConfigurationPage page;
-	private Text connectStringText;
-	private Button cloudMemberButton;
-	private Text nodeIdText;
-	private Button connectButton;
+	private StringDialogField nodeIdField;
+	private FormTextDialogField membershipStatusField;
 
 	/**
 	 * Creates a new instance.
@@ -67,20 +63,6 @@ public class NodeConnectionSection extends SectionPart {
 		super.commit(onSave);
 	}
 
-	void connectButtonPressed() {
-		final ICloudManager cloudManager = getCloudManager();
-		final INodeConfigurer nodeConfigurer = cloudManager.getNodeConfigurer(cloudManager.getLocalInfo().getNodeId());
-		IStatus status;
-		if (cloudMemberButton.getSelection()) {
-			status = nodeConfigurer.configureConnection(connectStringText.getText());
-		} else {
-			status = nodeConfigurer.configureConnection(null);
-		}
-		if (!status.isOK()) {
-			Policy.getStatusHandler().show(status, "Error Configuring Node");
-		}
-	}
-
 	private void createContent(final Section section, final FormToolkit toolkit) {
 		section.setLayout(FormLayoutFactory.createClearGridLayout(false, 1));
 
@@ -89,36 +71,34 @@ public class NodeConnectionSection extends SectionPart {
 
 		final Composite client = toolkit.createComposite(section);
 		section.setClient(client);
-		client.setLayout(FormLayoutFactory.createSectionClientGridLayout(false, 3));
-		FormLayoutDataFactory.applyDefaults(client, 1);
+//		client.setLayout(FormLayoutFactory.createSectionClientGridLayout(false, 3));
+//		FormLayoutDataFactory.applyDefaults(client, 1);
 
-		final Label idLabel = toolkit.createLabel(client, "Node Id");
-		nodeIdText = toolkit.createText(client, StringUtils.EMPTY, SWT.SINGLE | SWT.READ_ONLY);
-		FormLayoutDataFactory.applyDefaults(idLabel, 1);
-		FormLayoutDataFactory.applyDefaults(nodeIdText, 2);
-
-		final Label modeLabel = toolkit.createLabel(client, "Membership");
-		cloudMemberButton = toolkit.createButton(client, "The local node is a member of a cloud.", SWT.CHECK);
-		FormLayoutDataFactory.applyDefaults(modeLabel, 1);
-		FormLayoutDataFactory.applyDefaults(cloudMemberButton, 2);
-
-		final Label cloudLabel = toolkit.createLabel(client, "Connection String:");
-		connectStringText = toolkit.createText(client, StringUtils.EMPTY);
-		connectButton = toolkit.createButton(client, "Connect", SWT.PUSH);
-		FormLayoutDataFactory.applyDefaults(cloudLabel, 1);
-		FormLayoutDataFactory.applyDefaults(connectStringText, 1);
-
-		connectButton.addSelectionListener(new SelectionAdapter() {
+		nodeIdField = new StringDialogField() {
 			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				connectButtonPressed();
-			};
-		});
+			protected Text createTextControl(final Composite parent) {
+				return new Text(parent, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+			}
+		};
+		nodeIdField.setLabelText("Node Id");
 
-		final DataBindingContext bindingContext = page.getBindingContext();
-		final ISWTObservableValue cloudMemberSelectionValue = SWTObservables.observeSelection(cloudMemberButton);
-		bindingContext.bindValue(SWTObservables.observeEnabled(connectStringText), cloudMemberSelectionValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
-		bindingContext.bindValue(SWTObservables.observeEnabled(connectButton), cloudMemberSelectionValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		membershipStatusField = new FormTextDialogField();
+		membershipStatusField.setLabelText("Membership");
+
+		LayoutUtil.doDefaultLayout(client, new DialogField[] { nodeIdField, membershipStatusField }, false);
+		LayoutUtil.setHorizontalGrabbing(nodeIdField.getTextControl(null));
+		LayoutUtil.setHorizontalGrabbing(membershipStatusField.getTextControl(null));
+
+		membershipStatusField.adaptToForm(toolkit);
+		membershipStatusField.getTextControl(null).addHyperlinkListener(new HyperlinkAdapter() {
+
+			@Override
+			public void linkActivated(final HyperlinkEvent e) {
+				if ("#connect".equals(e.getHref())) {
+					showConnectDialog();
+				}
+			}
+		});
 	}
 
 	protected ICloudManager getCloudManager() {
@@ -134,12 +114,14 @@ public class NodeConnectionSection extends SectionPart {
 	public void refresh() {
 		final ICloudManager cloudManager = getCloudManager();
 		final INodeEnvironment localInfo = cloudManager.getLocalInfo();
-
-		nodeIdText.setText(localInfo.getNodeId());
-		cloudMemberButton.setSelection(!localInfo.inStandaloneMode());
-
 		final INodeConfigurer nodeConfigurer = cloudManager.getNodeConfigurer(localInfo.getNodeId());
-		connectStringText.setText(StringUtils.trimToEmpty(nodeConfigurer.getConnectionString()));
+
+		nodeIdField.setText(localInfo.getNodeId());
+		if (localInfo.inStandaloneMode()) {
+			membershipStatusField.setText("<form><p>The node operates standalone. <a href=\"#connect\">Connect to a cloud...</a></p></form>", true, false);
+		} else {
+			membershipStatusField.setText(String.format("<form><p>The node is connected to '%s'. <a href=\"#disconnect\">Disconnect from cloud...</a></p></form>", StringEscapeUtils.escapeXml(StringUtils.trimToEmpty(nodeConfigurer.getConnectionString()))), true, false);
+		}
 
 		// call super
 		super.refresh();
@@ -152,5 +134,12 @@ public class NodeConnectionSection extends SectionPart {
 			return true;
 		}
 		return super.setFormInput(input);
+	}
+
+	void showConnectDialog() {
+		final ConnectToCloudDialog connectToCloudDialog = new ConnectToCloudDialog(getCloudManager(), SwtUtil.getShell(membershipStatusField.getTextControl(null)));
+		if (connectToCloudDialog.open() == Window.OK) {
+			markStale();
+		}
 	}
 }

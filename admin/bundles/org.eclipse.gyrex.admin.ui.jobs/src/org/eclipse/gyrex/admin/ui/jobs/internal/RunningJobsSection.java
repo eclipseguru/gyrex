@@ -12,16 +12,23 @@
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
-import org.eclipse.gyrex.jobs.internal.monitoring.IJobMonitor;
+import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperMonitor;
+import org.eclipse.gyrex.jobs.internal.manager.JobHungDetectionHelper;
+import org.eclipse.gyrex.jobs.internal.manager.JobImpl;
+import org.eclipse.gyrex.jobs.internal.manager.JobManagerImpl;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
@@ -30,20 +37,78 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.data.Stat;
 
 /**
  *
  */
 public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 
-	private Button cancelButton, refreshButton;
+	public static class RunningJob {
+
+		private final String storageKey;
+		private final String id;
+		private final String nodeId;
+		private final Stat stat;
+
+		/**
+		 * Creates a new instance.
+		 * 
+		 * @param storageKey
+		 * @param id
+		 * @param nodeId
+		 * @param stat
+		 */
+		public RunningJob(final String storageKey, final String id, final String nodeId, final Stat stat) {
+			this.storageKey = storageKey;
+			// TODO Auto-generated constructor stub
+			this.id = id;
+			this.nodeId = nodeId;
+			this.stat = stat;
+		}
+
+		public String getLabel() {
+			final long started = System.currentTimeMillis() - stat.getCtime();
+			if (started < TimeUnit.HOURS.toMillis(1)) {
+				return String.format("%s (%s, started %d minutes ago)", id, nodeId, TimeUnit.MILLISECONDS.toMinutes(started));
+			} else if (started < TimeUnit.DAYS.toMillis(1)) {
+				return String.format("%s (%s, started %d hours ago)", id, nodeId, TimeUnit.MILLISECONDS.toHours(started));
+			} else {
+				return String.format("%s (%s, started %d days ago)", id, nodeId, TimeUnit.MILLISECONDS.toDays(started));
+			}
+
+		}
+
+	}
+
+	private Button cancelButton;
 	private ListViewer dataList;
 	private final DataBindingContext bindingContext;
+
 	private IObservableValue selectedValue;
+
+	// FIXME: need a better way to post updates to a RAP application
+	Display display = PlatformUI.getWorkbench().getDisplay();
+	private final ZooKeeperMonitor monitor = new ZooKeeperMonitor() {
+		@Override
+		public void process(final WatchedEvent event) {
+			display.asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					markStale();
+				}
+			});
+		};
+	};
 
 	/**
 	 * Creates a new instance.
@@ -60,19 +125,27 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 		createContent(section);
 	}
 
+	void cancelButtonPressed() {
+		final RunningJob job = getSelectedValue();
+		if (job == null) {
+			return;
+		}
+
+		if (!MessageDialog.openQuestion(SwtUtil.getShell(getSection()), "Cancel Jobe", String.format("Do you really want to cancel job '%s'?", job.id))) {
+			return;
+		}
+
+		final JobImpl jobImpl = JobManagerImpl.getJob(job.id, job.storageKey);
+		JobManagerImpl.cancel(jobImpl, "Cancelled manually from Gyrex Admin");
+		markStale();
+	}
+
 	@Override
 	protected void createButtons(final Composite buttonsPanel) {
 		cancelButton = createButton(buttonsPanel, "Cancel...", new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				removeButtonPressed();
-			}
-		});
-
-		refreshButton = createButton(buttonsPanel, "Refresh", new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				refresh();
+				cancelButtonPressed();
 			}
 		});
 	}
@@ -102,6 +175,14 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 		return bindingContext;
 	}
 
+	private RunningJob getSelectedValue() {
+		final Object value = null != selectedValue ? selectedValue.getValue() : null;
+		if (value instanceof RunningJob) {
+			return (RunningJob) value;
+		}
+		return null;
+	}
+
 	@Override
 	public void initialize(final IManagedForm form) {
 		super.initialize(form);
@@ -118,29 +199,19 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 		super.refresh();
 	}
 
-	void removeButtonPressed() {
-//		final ISchedule repo = getSelectedValue();
-//		if (repo == null) {
-//			return;
-//		}
-//
-//		if (!MessageDialog.openQuestion(SwtUtil.getShell(getSection()), "Remove Schedule", "Do you really want to delete the schedule?")) {
-//			return;
-//		}
-//
-//		getRepoManager().removeSchedule(repo.getId());
-//		markStale();
-	}
-
 	private void setDataInput() {
-		//		dataList.setInput(Arrays.asList("S'Oliver Product Import", "Some other job"));
-
-		// TODO
-		final java.util.List<String> input = new ArrayList<String>();
-		for (final IJobMonitor jobMonitor : JobsUiActivator.getInstance().getJobMonitor().getJobs()) {
-			input.add(String.format("Job '%s' worked %s/%s (current state is %s)", jobMonitor.getJobId(), Integer.toString(jobMonitor.getWorked()), Integer.toString(jobMonitor.getTotalWork()), jobMonitor.getCurrentTask()));
+		try {
+			final java.util.List<RunningJob> input = new ArrayList<RunningJob>();
+			final java.util.List<String> storageKeys = JobHungDetectionHelper.getActiveJobs(monitor);
+			for (final String storageKey : storageKeys) {
+				final Stat stat = new Stat();
+				final String nodeId = JobHungDetectionHelper.getProcessingNodeId(storageKey, stat);
+				final String id = JobManagerImpl.getExternalId(storageKey);
+				input.add(new RunningJob(storageKey, id, nodeId, stat));
+			}
+			dataList.setInput(input);
+		} catch (final IllegalStateException e) {
+			dataList.setInput(Arrays.asList(ExceptionUtils.getRootCauseMessage(e)));
 		}
-		dataList.setInput(input);
 	}
-
 }
