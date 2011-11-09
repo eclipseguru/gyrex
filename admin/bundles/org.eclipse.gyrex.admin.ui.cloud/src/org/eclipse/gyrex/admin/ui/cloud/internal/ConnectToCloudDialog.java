@@ -11,9 +11,6 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
@@ -25,6 +22,7 @@ import org.eclipse.gyrex.cloud.admin.INodeConfigurer;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.StatusDialog;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -35,8 +33,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class ConnectToCloudDialog extends StatusDialog {
 
-	private final StringDialogField urlField = new StringDialogField();
-	private URL url;
+	private final StringDialogField connectStringField = new StringDialogField();
 	private final ICloudManager cloudManager;
 
 	/**
@@ -48,7 +45,7 @@ public class ConnectToCloudDialog extends StatusDialog {
 	public ConnectToCloudDialog(final ICloudManager cloudManager, final Shell parent) {
 		super(parent);
 		this.cloudManager = cloudManager;
-		setTitle("New Mount");
+		setTitle("Connect Node");
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	}
 
@@ -59,7 +56,7 @@ public class ConnectToCloudDialog extends StatusDialog {
 		gd.minimumHeight = convertVerticalDLUsToPixels(60);
 		gd.minimumWidth = convertHorizontalDLUsToPixels(400);
 
-		urlField.setLabelText("URL");
+		connectStringField.setLabelText("Connect String");
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
@@ -68,23 +65,14 @@ public class ConnectToCloudDialog extends StatusDialog {
 			}
 		};
 
-		urlField.setDialogFieldListener(validateListener);
+		connectStringField.setDialogFieldListener(validateListener);
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), urlField }, false);
-		LayoutUtil.setHorizontalGrabbing(urlField.getTextControl(null));
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), connectStringField }, false);
+		LayoutUtil.setHorizontalGrabbing(connectStringField.getTextControl(null));
 
-		urlField.setFocus();
+		connectStringField.setFocus();
 
 		return composite;
-	}
-
-	/**
-	 * Returns the url.
-	 * 
-	 * @return the url
-	 */
-	public URL getUrl() {
-		return url;
 	}
 
 	@Override
@@ -96,15 +84,11 @@ public class ConnectToCloudDialog extends StatusDialog {
 
 		final INodeConfigurer nodeConfigurer = cloudManager.getNodeConfigurer(cloudManager.getLocalInfo().getNodeId());
 
-//		IStatus status;
-//		if (cloudMemberButton.getSelection()) {
-//			status = nodeConfigurer.configureConnection(connectStringText.getText());
-//		} else {
-//			status = nodeConfigurer.configureConnection(null);
-//		}
-//		if (!status.isOK()) {
-//			Policy.getStatusHandler().show(status, "Error Configuring Node");
-//		}
+		final IStatus status = nodeConfigurer.configureConnection(connectStringField.getText());
+		if (!status.isOK()) {
+			Policy.getStatusHandler().show(status, "Error Connecting Node");
+			return;
+		}
 
 		super.okPressed();
 	}
@@ -123,17 +107,9 @@ public class ConnectToCloudDialog extends StatusDialog {
 	}
 
 	void validate() {
-		url = null;
-		final String urlStr = urlField.getText();
-		if (StringUtils.isBlank(urlStr)) {
-			setInfo("Please enter an url.");
-			return;
-		}
-
-		try {
-			url = new URL(urlStr);
-		} catch (final MalformedURLException e) {
-			setError(String.format("The entered url is invalid. %s", e.getMessage()));
+		final String connectStr = connectStringField.getText();
+		if (StringUtils.isBlank(connectStr)) {
+			setInfo("Please enter a connect string.");
 			return;
 		}
 

@@ -21,6 +21,8 @@ import org.eclipse.gyrex.cloud.admin.ICloudManager;
 import org.eclipse.gyrex.cloud.admin.INodeConfigurer;
 import org.eclipse.gyrex.cloud.environment.INodeEnvironment;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -41,7 +43,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public class NodeConnectionSection extends SectionPart {
 
-	private final CloudConfigurationPage page;
 	private StringDialogField nodeIdField;
 	private FormTextDialogField membershipStatusField;
 
@@ -53,7 +54,6 @@ public class NodeConnectionSection extends SectionPart {
 	 */
 	public NodeConnectionSection(final CloudConfigurationPage page, final Composite parent) {
 		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		this.page = page;
 		createContent(getSection(), page.getManagedForm().getToolkit());
 	}
 
@@ -96,9 +96,24 @@ public class NodeConnectionSection extends SectionPart {
 			public void linkActivated(final HyperlinkEvent e) {
 				if ("#connect".equals(e.getHref())) {
 					showConnectDialog();
+				} else if ("#disconnect".equals(e.getHref())) {
+					disconnectNode();
 				}
 			}
 		});
+	}
+
+	void disconnectNode() {
+		final ICloudManager cloudManager = getCloudManager();
+		final INodeConfigurer nodeConfigurer = cloudManager.getNodeConfigurer(cloudManager.getLocalInfo().getNodeId());
+
+		final IStatus status = nodeConfigurer.configureConnection(null);
+		if (!status.isOK()) {
+			Policy.getStatusHandler().show(status, "Error Disconnecting Node");
+			return;
+		}
+
+		markStale();
 	}
 
 	protected ICloudManager getCloudManager() {
@@ -118,9 +133,9 @@ public class NodeConnectionSection extends SectionPart {
 
 		nodeIdField.setText(localInfo.getNodeId());
 		if (localInfo.inStandaloneMode()) {
-			membershipStatusField.setText("<form><p>The node operates standalone. <a href=\"#connect\">Connect to a cloud...</a></p></form>", true, false);
+			membershipStatusField.setText("<form><p>The node operates standalone. <a href=\"#connect\">Connect</a> it now.</p></form>", true, false);
 		} else {
-			membershipStatusField.setText(String.format("<form><p>The node is connected to '%s'. <a href=\"#disconnect\">Disconnect from cloud...</a></p></form>", StringEscapeUtils.escapeXml(StringUtils.trimToEmpty(nodeConfigurer.getConnectionString()))), true, false);
+			membershipStatusField.setText(String.format("<form><p>The node is connected to '%s'. <a href=\"#disconnect\">Disconnect it.</a></p></form>", StringEscapeUtils.escapeXml(StringUtils.trimToEmpty(nodeConfigurer.getConnectionString()))), true, false);
 		}
 
 		// call super
