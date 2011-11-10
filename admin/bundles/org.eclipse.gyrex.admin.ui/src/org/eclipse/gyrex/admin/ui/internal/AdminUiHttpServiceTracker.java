@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.gyrex.admin.ui.internal.servlets.PreferencesServlet;
+
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
@@ -109,13 +111,35 @@ public class AdminUiHttpServiceTracker extends ServiceTracker<HttpService, HttpS
 			LOG.error("An error occurred while registering the Logback status servlet. {}", e.getMessage(), e);
 		}
 
+		// register Preferences status servlet
+		try {
+			// note, we don't reference the class directly because the package import is optional
+			httpService.registerServlet("/preferences", new PreferencesServlet(), null, null);
+		} catch (final Exception e) {
+			LOG.error("An error occurred while registering the Preferences servlet. {}", e.getMessage(), e);
+		}
+
 		return httpService;
 	}
 
 	@Override
 	public void removedService(final ServiceReference<HttpService> reference, final HttpService service) {
 		final HttpService httpService = service;
-		httpService.unregister(ROOT_ALIAS);
+		try {
+			httpService.unregister(ROOT_ALIAS);
+		} catch (final Exception ignored) {
+			// may not have been registered
+		}
+		try {
+			httpService.unregister("/preferences");
+		} catch (final Exception ignored) {
+			// may not have been registered
+		}
+		try {
+			httpService.unregister("/logbackstatus");
+		} catch (final Exception ignored) {
+			// may not have been registered
+		}
 
 		super.removedService(reference, service); // calls context.ungetService(reference);
 	}
