@@ -20,6 +20,8 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogFiel
 import org.eclipse.gyrex.cloud.admin.ICloudManager;
 import org.eclipse.gyrex.cloud.admin.INodeConfigurer;
 import org.eclipse.gyrex.cloud.environment.INodeEnvironment;
+import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
+import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.util.Policy;
@@ -45,6 +47,23 @@ public class NodeConnectionSection extends SectionPart {
 
 	private StringDialogField nodeIdField;
 	private FormTextDialogField membershipStatusField;
+	private final ZooKeeperGateListener listener = new ZooKeeperGateListener() {
+
+		@Override
+		public void gateDown(final ZooKeeperGate gate) {
+			markStale();
+		}
+
+		@Override
+		public void gateRecovering(final ZooKeeperGate gate) {
+			markStale();
+		}
+
+		@Override
+		public void gateUp(final ZooKeeperGate gate) {
+			markStale();
+		}
+	};
 
 	/**
 	 * Creates a new instance.
@@ -116,6 +135,12 @@ public class NodeConnectionSection extends SectionPart {
 		markStale();
 	}
 
+	@Override
+	public void dispose() {
+		ZooKeeperGate.removeConnectionMonitor(listener);
+		super.dispose();
+	}
+
 	protected ICloudManager getCloudManager() {
 		return (ICloudManager) getManagedForm().getInput();
 	}
@@ -123,6 +148,8 @@ public class NodeConnectionSection extends SectionPart {
 	@Override
 	public void initialize(final IManagedForm form) {
 		super.initialize(form);
+
+		ZooKeeperGate.addConnectionMonitor(listener);
 	}
 
 	@Override
@@ -135,8 +162,21 @@ public class NodeConnectionSection extends SectionPart {
 		if (localInfo.inStandaloneMode()) {
 			membershipStatusField.setText("<form><p>The node operates standalone. <a href=\"#connect\">Connect</a> it now.</p></form>", true, false);
 		} else {
-			membershipStatusField.setText(String.format("<form><p>The node is connected to '%s'. <a href=\"#disconnect\">Disconnect it.</a></p></form>", StringEscapeUtils.escapeXml(StringUtils.trimToEmpty(nodeConfigurer.getConnectionString()))), true, false);
+			String serverInfo;
+			try {
+				serverInfo = ZooKeeperGate.get().getConnectedServerInfo();
+			} catch (final Exception ignored) {
+				serverInfo = null;
+			}
+			final String connectString = StringUtils.trimToEmpty(nodeConfigurer.getConnectionString());
+			if (null != serverInfo) {
+				membershipStatusField.setText(String.format("<form><p>The node is connected to %s (using connect string '%s'). <a href=\"#disconnect\">Disconnect it.</a></p></form>", serverInfo, StringEscapeUtils.escapeXml(connectString)), true, false);
+			} else {
+				membershipStatusField.setText(String.format("<form><p>The node is currently not connected (using connect string '%s'). <a href=\"#disconnect\">Disconnect it.</a></p></form>", StringEscapeUtils.escapeXml(connectString)), true, false);
+			}
 		}
+
+		// monitor cloud events
 
 		// call super
 		super.refresh();

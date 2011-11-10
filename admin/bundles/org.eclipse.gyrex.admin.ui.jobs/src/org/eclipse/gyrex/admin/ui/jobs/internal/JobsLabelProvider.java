@@ -13,7 +13,6 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.Locale;
 
-import org.eclipse.gyrex.admin.ui.jobs.internal.RunningJobsSection.RunningJob;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 import org.eclipse.gyrex.jobs.schedules.IScheduleEntry;
 

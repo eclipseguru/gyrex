@@ -61,7 +61,7 @@ public class FormTextDialogField extends DialogField {
 	 * @since 3.6
 	 */
 	protected FormText createTextControl(final Composite parent) {
-		return new FormText(parent, SWT.NONE);
+		return new FormText(parent, SWT.WRAP);
 	}
 
 	// ------- layout helpers

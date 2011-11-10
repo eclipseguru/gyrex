@@ -13,7 +13,6 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
@@ -52,43 +51,6 @@ import org.apache.zookeeper.data.Stat;
  *
  */
 public class RunningJobsSection extends ViewerWithButtonsSectionPart {
-
-	public static class RunningJob {
-
-		private final String storageKey;
-		private final String id;
-		private final String nodeId;
-		private final Stat stat;
-
-		/**
-		 * Creates a new instance.
-		 * 
-		 * @param storageKey
-		 * @param id
-		 * @param nodeId
-		 * @param stat
-		 */
-		public RunningJob(final String storageKey, final String id, final String nodeId, final Stat stat) {
-			this.storageKey = storageKey;
-			// TODO Auto-generated constructor stub
-			this.id = id;
-			this.nodeId = nodeId;
-			this.stat = stat;
-		}
-
-		public String getLabel() {
-			final long started = System.currentTimeMillis() - stat.getCtime();
-			if (started < TimeUnit.HOURS.toMillis(1)) {
-				return String.format("%s (%s, started %d minutes ago)", id, nodeId, TimeUnit.MILLISECONDS.toMinutes(started));
-			} else if (started < TimeUnit.DAYS.toMillis(1)) {
-				return String.format("%s (%s, started %d hours ago)", id, nodeId, TimeUnit.MILLISECONDS.toHours(started));
-			} else {
-				return String.format("%s (%s, started %d days ago)", id, nodeId, TimeUnit.MILLISECONDS.toDays(started));
-			}
-
-		}
-
-	}
 
 	private Button cancelButton;
 	private ListViewer dataList;
@@ -137,6 +99,8 @@ public class RunningJobsSection extends ViewerWithButtonsSectionPart {
 
 		final JobImpl jobImpl = JobManagerImpl.getJob(job.id, job.storageKey);
 		JobManagerImpl.cancel(jobImpl, "Cancelled manually from Gyrex Admin");
+
+		job.aborting = true;
 		markStale();
 	}
 
