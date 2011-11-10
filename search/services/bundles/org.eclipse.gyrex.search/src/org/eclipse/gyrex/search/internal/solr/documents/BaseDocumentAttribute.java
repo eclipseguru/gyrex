@@ -23,7 +23,6 @@ import java.util.Set;
 import org.eclipse.gyrex.search.documents.IDocumentAttribute;
 
 import org.eclipse.core.runtime.PlatformObject;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * {@link IDocumentAttribute} implementation.
@@ -87,7 +86,7 @@ public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumen
 				return;
 			}
 			if (type.getSuperclass() == null) {
-				throw new IllegalArgumentException(NLS.bind("value type {0} not supported", type.getName()));
+				throw new IllegalArgumentException(String.format("value type %s not supported", type.getName()));
 			}
 			type = type.getSuperclass();
 		} while (Boolean.TRUE);
@@ -151,7 +150,7 @@ public class BaseDocumentAttribute<T> extends PlatformObject implements IDocumen
 		// check value
 		final T value = getValue();
 		if ((value != null) && !type.isAssignableFrom(value.getClass())) {
-			throw new IllegalArgumentException(NLS.bind("value type {0} not assignale to type {1}", value.getClass().getName(), type.getName()));
+			throw new IllegalArgumentException(String.format("property '%s' uses value type %s which is not assignable to %s", getId(), value.getClass().getName(), type.getName()));
 		}
 		// this might be unsafe, callers are responsible
 		return (IDocumentAttribute<E>) (this);
