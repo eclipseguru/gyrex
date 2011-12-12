@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ageto Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Mike Tschierschke - initial API and implementation
  *******************************************************************************/
@@ -13,10 +13,10 @@ package org.eclipse.gyrex.admin.ui.internal;
 
 import java.io.IOException;
 
-import org.eclipse.jetty.http.security.Credential;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.MappedLoginService;
 import org.eclipse.jetty.server.UserIdentity;
+import org.eclipse.jetty.util.security.Credential;
 
 import org.apache.commons.lang.StringUtils;
 
