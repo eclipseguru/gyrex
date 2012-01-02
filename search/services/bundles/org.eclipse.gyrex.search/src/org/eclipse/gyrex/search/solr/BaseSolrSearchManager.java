@@ -265,6 +265,11 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 			solrQuery.setShowDebugInfo(true);
 		}
 
+		//additional parameters
+		for (final Entry<String, String> entry : query.getQueryOptions().entrySet()) {
+			solrQuery.add(entry.getKey(), entry.getValue());
+		}
+
 		return solrQuery;
 	}
 

@@ -45,7 +45,8 @@ public class QueryImpl extends PlatformObject implements IQuery {
 	private final List<IAttributeFilter> attributeFilters = new ArrayList<IAttributeFilter>(4);
 	private final List<IFacetFilter> facetFilters = new ArrayList<IFacetFilter>(4);
 
-	private final LinkedHashMap<String, SortDirection> sortFields = new LinkedHashMap<String, SortDirection>(4);
+	private final LinkedHashMap<String, SortDirection> sortFields = new LinkedHashMap<String, SortDirection>(2);
+	private final LinkedHashMap<String, String> queryOptions = new LinkedHashMap<String, String>(2);
 
 	@Override
 	public IAttributeFilter addAttributeFilter(final String attributeId) {
@@ -118,6 +119,11 @@ public class QueryImpl extends PlatformObject implements IQuery {
 	}
 
 	@Override
+	public Map<String, String> getQueryOptions() {
+		return Collections.unmodifiableMap(queryOptions);
+	}
+
+	@Override
 	public ResultProjection getResultProjection() {
 		return resultProjection;
 	}
@@ -168,6 +174,23 @@ public class QueryImpl extends PlatformObject implements IQuery {
 	}
 
 	@Override
+	public IQuery setQueryOption(final String name, final String value) {
+		if (null == name) {
+			throw new IllegalArgumentException("name must not be null");
+		}
+
+		if (null != value) {
+			// set value
+			queryOptions.put(name, value);
+		} else {
+			// null value means unset
+			queryOptions.remove(name);
+		}
+
+		return this;
+	}
+
+	@Override
 	public void setResultProjection(final ResultProjection resultProjection) {
 		this.resultProjection = resultProjection;
 	}
@@ -201,6 +224,7 @@ public class QueryImpl extends PlatformObject implements IQuery {
 		toString.append(" sortFields(").append(sortFields).append(')');
 		toString.append(" startIndex(").append(startIndex).append(')');
 		toString.append(" maxResults(").append(maxResults).append(')');
+		toString.append(" queryOptions(").append(queryOptions).append(')');
 		toString.append(" ]");
 		return toString.toString();
 	}

@@ -145,6 +145,14 @@ public interface IQuery extends IAdaptable {
 	public String getQuery();
 
 	/**
+	 * Returns all specified query options.
+	 * 
+	 * @see IQuery#setQueryOption(String, String)
+	 * @return an unmodifiable map of query options
+	 */
+	public Map<String, String> getQueryOptions();
+
+	/**
 	 * Returns the result projection.
 	 * 
 	 * @return the result projection
@@ -277,6 +285,30 @@ public interface IQuery extends IAdaptable {
 	 * @see #setAdvancedQuery(String)
 	 */
 	public IQuery setQuery(final String query);
+
+	/**
+	 * Sets a query option.
+	 * <p>
+	 * Query options provide a capability to influence the query in an
+	 * implementation specific way. It's completely up to the underlying search
+	 * implementation which options are supported. Thus, any query option must
+	 * be considered implementation specific which tightly couples clients to a
+	 * specific implementation. However, using this API method should help with
+	 * an easier discovery and management of such tight couplings.
+	 * </p>
+	 * <p>
+	 * Warning, query options may influence (eg., override or disable) any of
+	 * the other query features configured via calls to any of the other methods
+	 * specified by this interface.
+	 * </p>
+	 * 
+	 * @param name
+	 *            the option name (must not be <code>null</code>)
+	 * @param value
+	 *            the option value (maybe <code>null</code> to unset an option)
+	 * @return this query object for convenience
+	 */
+	public IQuery setQueryOption(final String name, final String value);
 
 	/**
 	 * Sets the result data projection.
