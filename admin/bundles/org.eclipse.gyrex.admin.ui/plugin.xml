@@ -184,20 +184,6 @@
       </role>
    </extension>
    <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
-      <propertyContributor
-            contributorId="org.eclipse.gyrex.admin.ui.content.properties">
-         <propertyCategory
-               category="general"></propertyCategory>
-         <propertyCategory
-               category="specific">
-         </propertyCategory>
-         <propertyCategory
-               category="other">
-         </propertyCategory>
-      </propertyContributor>
-   </extension>
-   <extension
          point="org.eclipse.gyrex.admin.ui.configurationPages">
       <page
             class="org.eclipse.gyrex.admin.ui.internal.configuration.GeneralPage"
