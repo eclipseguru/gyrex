@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Gunnar Wagenknecht and others.
+ * Copyright (c) 2011, 2012 Gunnar Wagenknecht and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the terms of the
@@ -19,7 +19,7 @@ import org.kohsuke.args4j.Argument;
 import com.mongodb.Mongo;
 import com.mongodb.MongoURI;
 
-public class ConfiguredPool extends Command {
+public class ConfigurePool extends Command {
 
 	@Argument(index = 0, usage = "specifies the pool identifier", metaVar = "POOLID", required = true)
 	private String poolId;
@@ -30,7 +30,7 @@ public class ConfiguredPool extends Command {
 	/**
 	 * Creates a new instance.
 	 */
-	public ConfiguredPool() {
+	public ConfigurePool() {
 		super("<poolId> <uri> - creates/configures a pool");
 	}
 

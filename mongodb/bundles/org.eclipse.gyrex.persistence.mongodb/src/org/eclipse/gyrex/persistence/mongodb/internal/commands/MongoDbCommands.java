@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Gunnar Wagenknecht and others.
+ * Copyright (c) 2011, 2012 Gunnar Wagenknecht and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the terms of the
@@ -12,9 +12,12 @@
 package org.eclipse.gyrex.persistence.mongodb.internal.commands;
 
 import org.eclipse.gyrex.common.console.BaseCommandProvider;
+import org.eclipse.gyrex.persistence.mongodb.internal.MongoDbDebug;
+
+import org.eclipse.osgi.framework.console.CommandInterpreter;
 
 /**
- *
+ * All MongoDB commands
  */
 public class MongoDbCommands extends BaseCommandProvider {
 
@@ -25,9 +28,18 @@ public class MongoDbCommands extends BaseCommandProvider {
 		registerCommand(PoolCommands.class);
 	}
 
+	public void _mongo(final CommandInterpreter ci) {
+		printStackTraces = MongoDbDebug.debug;
+		execute(ci);
+	}
+
+	public void _mongodb(final CommandInterpreter ci) {
+		_mongo(ci);
+	}
+
 	@Override
 	protected String getCommandName() {
-		return "mongodb";
+		return "mongo";
 	}
 
 }

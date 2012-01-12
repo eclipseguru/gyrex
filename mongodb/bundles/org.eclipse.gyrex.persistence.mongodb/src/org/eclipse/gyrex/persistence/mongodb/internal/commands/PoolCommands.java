@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Gunnar Wagenknecht and others.
+ * Copyright (c) 2011, 2012 Gunnar Wagenknecht and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the terms of the
@@ -14,7 +14,7 @@ package org.eclipse.gyrex.persistence.mongodb.internal.commands;
 import org.eclipse.gyrex.common.console.SubCommand;
 
 /**
- *
+ * Sub command for managing MongoDB pools.
  */
 public class PoolCommands extends SubCommand {
 
@@ -26,7 +26,12 @@ public class PoolCommands extends SubCommand {
 	public PoolCommands() {
 		super("pool");
 
-		registerCommand("ls", null);
+		registerCommand("ls", LsPool.class);
+
+		registerCommand("create", ConfigurePool.class);
+
+		registerCommand("rm", RemovePool.class);
+		registerCommand("remove", RemovePool.class);
 	}
 
 }
