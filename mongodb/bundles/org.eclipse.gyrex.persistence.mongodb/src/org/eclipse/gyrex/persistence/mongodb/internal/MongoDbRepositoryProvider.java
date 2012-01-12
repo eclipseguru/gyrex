@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Gunnar Wagenknecht and others.
+ * Copyright (c) 2011, 2012 Gunnar Wagenknecht and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the terms of the
@@ -27,7 +27,6 @@ public class MongoDbRepositoryProvider extends RepositoryProvider {
 	 */
 	public MongoDbRepositoryProvider() {
 		super(IMondoDbRepositoryConstants.PROVIDER_ID, MongoDbRepository.class);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
