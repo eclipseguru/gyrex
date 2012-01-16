@@ -15,6 +15,7 @@ import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -23,6 +24,8 @@ import org.eclipse.ui.forms.IManagedForm;
  *
  */
 public class ContextApplicationPage extends ConfigurationPage {
+
+	private ContextsSection contextSection;
 
 	/**
 	 * Creates a new instance.
@@ -38,13 +41,21 @@ public class ContextApplicationPage extends ConfigurationPage {
 		body.setLayout(FormLayoutFactory.createFormGridLayout(true, 1));
 		body.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
-		final ContextsSection repoSection = new ContextsSection(body, this);
-		repoSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
-		managedForm.addPart(repoSection);
+		contextSection = new ContextsSection(body, this);
+		contextSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
+		managedForm.addPart(contextSection);
 
 //		FormLayoutFactory.visualizeLayoutArea(body, SWT.COLOR_CYAN);
 //		FormLayoutFactory.visualizeLayoutArea(left, SWT.COLOR_DARK_GREEN);
 //		FormLayoutFactory.visualizeLayoutArea(right, SWT.COLOR_DARK_GREEN);
+	}
+
+	@Override
+	public ISelectionProvider getSelectionProvider() {
+		if (null != contextSection) {
+			return contextSection.getSelectionProvider();
+		}
+		return null;
 	}
 
 }

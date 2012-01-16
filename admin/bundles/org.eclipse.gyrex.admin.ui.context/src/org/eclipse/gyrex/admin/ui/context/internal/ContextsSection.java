@@ -27,6 +27,7 @@ import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -113,6 +114,10 @@ public class ContextsSection extends ViewerWithButtonsSectionPart {
 
 	private ContextDefinition getSelectedContext() {
 		return (ContextDefinition) (null != selectedValue ? selectedValue.getValue() : null);
+	}
+
+	public ISelectionProvider getSelectionProvider() {
+		return contextsList;
 	}
 
 	@Override

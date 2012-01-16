@@ -27,6 +27,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ContextUiLabelProvider extends LabelProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	private ResourceManager manager;
 
 	@Override
