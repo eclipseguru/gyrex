@@ -16,14 +16,19 @@ import java.util.Collection;
 
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
+import org.eclipse.gyrex.jobs.schedules.IScheduleEntry;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -96,12 +101,14 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 		}
 	}
 
-	private Button addButton;
-	private Button removeButton;
 	private TreeViewer dataTree;
 	private final DataBindingContext bindingContext;
-
 	private Object selectedValue;
+
+	private Button addButton;
+	private Button removeButton;
+	private Button enableButton;
+	private Button disableButton;
 
 	/**
 	 * Creates a new instance.
@@ -139,6 +146,19 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 				removeButtonPressed();
 			}
 		});
+
+		enableButton = createButton(buttonsPanel, "Enable", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				enableButtonPressed();
+			}
+		});
+		disableButton = createButton(buttonsPanel, "Disable", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				disableButtonPressed();
+			}
+		});
 	}
 
 	@Override
@@ -161,6 +181,50 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 				}
 			}
 		});
+	}
+
+	void disableButtonPressed() {
+		if (selectedValue instanceof ScheduleImpl) {
+			final ScheduleImpl schedule = (ScheduleImpl) selectedValue;
+			schedule.setEnabled(false);
+			try {
+				schedule.save();
+			} catch (final BackingStoreException e) {
+				Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, e.getMessage(), e), "Error Disabling Schedule");
+			}
+			markStale();
+		} else if (selectedValue instanceof ScheduleEntryImpl) {
+			final ScheduleEntryImpl entry = (ScheduleEntryImpl) selectedValue;
+			entry.setEnabled(false);
+			try {
+				entry.getSchedule().save();
+			} catch (final BackingStoreException e) {
+				Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, e.getMessage(), e), "Error Disabling Schedule Entry");
+			}
+			markStale();
+		}
+	}
+
+	void enableButtonPressed() {
+		if (selectedValue instanceof ScheduleImpl) {
+			final ScheduleImpl schedule = (ScheduleImpl) selectedValue;
+			schedule.setEnabled(true);
+			try {
+				schedule.save();
+			} catch (final BackingStoreException e) {
+				Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, e.getMessage(), e), "Error Enabling Schedule");
+			}
+			markStale();
+		} else if (selectedValue instanceof ScheduleEntryImpl) {
+			final ScheduleEntryImpl entry = (ScheduleEntryImpl) selectedValue;
+			entry.setEnabled(true);
+			try {
+				entry.getSchedule().save();
+			} catch (final BackingStoreException e) {
+				Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, e.getMessage(), e), "Error Enabling Schedule Entry");
+			}
+			markStale();
+		}
 	}
 
 	/**
@@ -197,6 +261,9 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 				}
 			}
 			dataTree.setInput(schedules);
+
+			// update selection
+			dataTree.setSelection(dataTree.getSelection());
 		} catch (final BackingStoreException e) {
 			e.printStackTrace();
 			dataTree.setInput(new ISchedule[0]);
@@ -229,7 +296,11 @@ public class SchedulesSection extends ViewerWithButtonsSectionPart {
 			selectedValue = null;
 		}
 
+		addButton.setEnabled(false);
 		removeButton.setEnabled(selectedValue != null);
+
+		enableButton.setEnabled(((selectedValue instanceof ISchedule) && !((ISchedule) selectedValue).isEnabled()) || ((selectedValue instanceof IScheduleEntry) && !((IScheduleEntry) selectedValue).isEnabled()));
+		disableButton.setEnabled(((selectedValue instanceof ISchedule) && ((ISchedule) selectedValue).isEnabled()) || ((selectedValue instanceof IScheduleEntry) && ((IScheduleEntry) selectedValue).isEnabled()));
 	}
 
 }
