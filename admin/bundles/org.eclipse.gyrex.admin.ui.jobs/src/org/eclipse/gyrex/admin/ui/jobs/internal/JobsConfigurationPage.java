@@ -16,6 +16,7 @@ import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -25,6 +26,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Configuration page for Jobs.
  */
 public class JobsConfigurationPage extends ConfigurationPage {
+
+	private SchedulesSection schedulesSection;
 
 	/**
 	 * Creates a new instance.
@@ -46,7 +49,7 @@ public class JobsConfigurationPage extends ConfigurationPage {
 		left.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 		left.setLayout(GridLayoutFactory.fillDefaults().create());
 
-		final SchedulesSection schedulesSection = new SchedulesSection(left, this);
+		schedulesSection = new SchedulesSection(left, this);
 		schedulesSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
 		managedForm.addPart(schedulesSection);
 
@@ -61,5 +64,13 @@ public class JobsConfigurationPage extends ConfigurationPage {
 		final RunningJobsSection runningSection = new RunningJobsSection(right, this);
 		runningSection.getSection().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		managedForm.addPart(runningSection);
+	}
+
+	@Override
+	public ISelectionProvider getSelectionProvider() {
+		if (null != schedulesSection) {
+			return schedulesSection.getSelectionProvider();
+		}
+		return null;
 	}
 }
