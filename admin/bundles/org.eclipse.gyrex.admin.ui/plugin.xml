@@ -176,6 +176,9 @@
                symbolicName="org.eclipse.rap.ui">
          </requireBundle>
          <requireBundle
+               symbolicName="org.eclipse.rap.rwt.osgi">
+         </requireBundle>
+         <requireBundle
                symbolicName="org.eclipse.gyrex.admin.ui">
          </requireBundle>
          <requireBundle
