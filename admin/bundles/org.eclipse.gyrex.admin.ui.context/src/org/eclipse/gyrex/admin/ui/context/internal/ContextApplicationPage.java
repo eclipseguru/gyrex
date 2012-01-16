@@ -28,8 +28,8 @@ public class ContextApplicationPage extends ConfigurationPage {
 	 * Creates a new instance.
 	 */
 	public ContextApplicationPage() {
-		setTitle("Web Applications");
-		setTitleToolTip("Define, configure and mount applications.");
+		setTitle("Runtime Contexts");
+		setTitleToolTip("Define runtime contexts for web applications and background processing.");
 	}
 
 	@Override
