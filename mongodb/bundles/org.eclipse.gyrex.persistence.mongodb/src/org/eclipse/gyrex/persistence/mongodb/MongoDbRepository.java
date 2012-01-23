@@ -59,7 +59,7 @@ public abstract class MongoDbRepository extends Repository {
 	 * perform all operations on the MongoDB.
 	 * </p>
 	 * 
-	 * @return
+	 * @return the Mongo {@link DB} object represented by the repository
 	 */
 	public abstract DB getDb();
 }

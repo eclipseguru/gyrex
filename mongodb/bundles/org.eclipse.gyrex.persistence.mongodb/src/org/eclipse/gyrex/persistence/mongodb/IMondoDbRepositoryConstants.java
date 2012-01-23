@@ -16,7 +16,16 @@ package org.eclipse.gyrex.persistence.mongodb;
  */
 public interface IMondoDbRepositoryConstants {
 
-	/** the repository provider id */
+	/**
+	 * the repository provider id for the default {@link MongoDbRepository}
+	 * implementation
+	 */
 	public static final String PROVIDER_ID = "org.eclipse.gyrex.persistence.mongodb";
 
+	/**
+	 * the repository provider id for an
+	 * <code>org.eclipse.gyrex.persistence.eclipselink.EclipseLinkRepository</code>
+	 * implementation backed by MongoDb
+	 */
+	public static final String PROVIDER_ID_JPA = "org.eclipse.gyrex.persistence.mongodb.jpa";
 }
