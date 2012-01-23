@@ -38,6 +38,8 @@ import org.apache.solr.client.solrj.SolrServer;
  * This class must not be subclassed or instantiated by clients. The platform
  * provides an implementation which will be injected.
  * </p>
+ * 
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class SolrServerRepository extends Repository {
 
