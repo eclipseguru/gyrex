@@ -162,6 +162,9 @@ public class MongoDbJpaRepositoryImpl extends EclipseLinkRepository {
 			props.put(PersistenceUnitProperties.NOSQL_CONNECTION_SPEC, "org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec");
 			props.put(PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.db", db);
 
+			// disable Gemini JPA/EclipseLink data source handling
+			props.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, "");
+
 			// EclipseLink multi-tenancy support
 			props.put(PersistenceUnitProperties.SESSION_NAME, getRepositoryId());
 
