@@ -43,7 +43,7 @@ public class LsPool extends Command {
 			return;
 		}
 		for (final String poolId : poolIds) {
-			printf("%s (%s)", node.node(poolId).get(MongoDbRegistry.PREF_KEY_URI, StringUtils.EMPTY));
+			printf("%s (%s)", poolId, node.node(poolId).get(MongoDbRegistry.PREF_KEY_URI, StringUtils.EMPTY));
 		}
 	}
 
