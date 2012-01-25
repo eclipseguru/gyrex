@@ -156,11 +156,15 @@ public class MongoDbJpaRepositoryImpl extends EclipseLinkRepository {
 			// get db
 			final DB db = mongo.getDB(databaseName);
 
-			// use external managed Mongo connectivity
+			// configure EclipseLink to use MongoDB/NoSQL
 			props.put(PersistenceUnitProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
 			props.put(PersistenceUnitProperties.TARGET_DATABASE, "org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform");
 			props.put(PersistenceUnitProperties.NOSQL_CONNECTION_SPEC, "org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec");
-			props.put(PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.db", db);
+
+			// configure Mongo connection
+			// FIXME: we have to wait for EclipseLink proving the proper property
+			// thus, we just set the database name (for now)
+			props.put(PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.db", databaseName);
 
 			// disable Gemini JPA/EclipseLink data source handling
 			props.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, "");
