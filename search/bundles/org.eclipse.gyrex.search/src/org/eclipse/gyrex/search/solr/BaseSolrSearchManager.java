@@ -280,6 +280,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		checkFacet(facet);
 		try {
 			final RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			facetsMetadata.sync();
 			facetsMetadata.remove(facet.getAttributeId());
 			facetsMetadata.flush();
 		} catch (final BackingStoreException e) {
@@ -571,6 +572,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 		checkFacet(facet);
 		try {
 			final RepositoryMetadata facetsMetadata = getFacetsMetadata();
+			facetsMetadata.sync();
 			facetsMetadata.put(facet.getAttributeId(), ((Facet) facet).toByteArray());
 			facetsMetadata.flush();
 			writeFacetMetric.requestFinished(1, System.currentTimeMillis() - start);
