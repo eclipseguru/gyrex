@@ -38,6 +38,10 @@ public class LsPool extends Command {
 	protected void doExecute() throws Exception {
 		final Preferences node = MongoDbRegistry.getPoolsNode();
 		final SortedSet<String> poolIds = new TreeSet<String>(Arrays.asList(node.childrenNames()));
+		if (poolIds.isEmpty()) {
+			printf("No pools available!");
+			return;
+		}
 		for (final String poolId : poolIds) {
 			printf("%s (%s)", node.node(poolId).get(MongoDbRegistry.PREF_KEY_URI, StringUtils.EMPTY));
 		}
