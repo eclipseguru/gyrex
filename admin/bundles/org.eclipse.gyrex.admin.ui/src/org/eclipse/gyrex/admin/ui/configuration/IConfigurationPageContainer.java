@@ -11,6 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.configuration;
 
+import org.eclipse.ui.ISelectionService;
+
 /**
  * A container that hosts {@link ConfigurationPage configuration pages}.
  */
@@ -24,5 +26,12 @@ public interface IConfigurationPageContainer {
 	 *         is currently active.
 	 */
 	ConfigurationPage getActivePageInstance();
+
+	/**
+	 * Returns the selection service.
+	 * 
+	 * @return the selection service
+	 */
+	ISelectionService getSelectionService();
 
 }
