@@ -25,7 +25,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
@@ -79,10 +78,7 @@ public class ContextData implements IPropertySource {
 	}
 
 	public String getLabel() {
-		if (StringUtils.isBlank(context.getName())) {
-			return context.getPath().toString();
-		}
-		return context.getName();
+		return WorkbenchAdapterImpl.getElementText(context);
 	}
 
 	/**
