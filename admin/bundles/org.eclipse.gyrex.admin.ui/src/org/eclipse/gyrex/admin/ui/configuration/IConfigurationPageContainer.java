@@ -11,7 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.configuration;
 
-import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
 
 /**
  * A container that hosts {@link ConfigurationPage configuration pages}.
@@ -28,10 +29,11 @@ public interface IConfigurationPageContainer {
 	ConfigurationPage getActivePageInstance();
 
 	/**
-	 * Returns the selection service.
+	 * Returns the workbench part site the container is hosted in.
 	 * 
-	 * @return the selection service
+	 * @return the workbench part site (may be <code>null</code>)
+	 * @see IWorkbenchPart#getSite()
 	 */
-	ISelectionService getSelectionService();
+	public IWorkbenchPartSite getSite();
 
 }

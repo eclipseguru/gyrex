@@ -37,9 +37,9 @@ import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.ISaveablesLifecycleListener;
 import org.eclipse.ui.ISaveablesSource;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartConstants;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.Saveable;
 import org.eclipse.ui.SaveablesLifecycleEvent;
@@ -220,8 +220,8 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	}
 
 	@Override
-	public ISelectionService getSelectionService() {
-		return getSite().getPage();
+	public IWorkbenchPartSite getSite() {
+		return super.getSite();
 	}
 
 	/**
