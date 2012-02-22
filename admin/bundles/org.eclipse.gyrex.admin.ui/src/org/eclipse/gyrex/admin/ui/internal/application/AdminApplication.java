@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2010, 2012 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- *  
+ *
  * Contributors:
  *      Mike Tschierschke - initial API and implementation
  *******************************************************************************/
@@ -17,14 +17,18 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 
 /**
- * This class controls all aspects of the application's execution
- * and is contributed through the plugin.xml.
+ * This class controls all aspects of the application's execution and is
+ * contributed through the plugin.xml.
  */
 public class AdminApplication implements IEntryPoint {
 
-  public int createUI() {
-    Display display = PlatformUI.createDisplay();
-    WorkbenchAdvisor advisor = new ApplicationWorkbenchAdvisor();
-    return PlatformUI.createAndRunWorkbench( display, advisor );
-  }
+	public int createUI() {
+		final Display display = PlatformUI.createDisplay();
+		try {
+			final WorkbenchAdvisor advisor = new ApplicationWorkbenchAdvisor();
+			return PlatformUI.createAndRunWorkbench(display, advisor);
+		} finally {
+			display.dispose();
+		}
+	}
 }

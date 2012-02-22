@@ -11,6 +11,12 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.application;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -32,6 +38,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 
 	@Override
+	public void postWindowOpen() {
+		final IWorkbenchWindow window = getWindowConfigurer().getWindow();
+		final Shell shell = window.getShell();
+		shell.setMaximized(true);
+	}
+
+	@Override
 	public void preWindowOpen() {
 		final IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setShowMenuBar(false);
@@ -39,5 +52,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		configurer.setShowStatusLine(true);
 		configurer.setShowPerspectiveBar(true);
 		configurer.setShowFastViewBars(true);
+		configurer.setShellStyle(SWT.NONE);
+		final Rectangle bounds = Display.getDefault().getBounds();
+		configurer.setInitialSize(new Point(bounds.width, bounds.height));
 	}
+
 }
