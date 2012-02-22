@@ -9,7 +9,7 @@
  * Contributors:
  *     Mike Tschierschke - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.internal;
+package org.eclipse.gyrex.admin.ui.internal.jetty;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * This class represents a simple {@link LoginService}, that only knows one user
  * with the given name, that only can have the role
- * {@link AdminUiActivator#ADMIN_DEFAULT_ROLE}
+ * {@link AdminServletHolder#ADMIN_DEFAULT_ROLE}
  */
 public class SimpleAdminLoginService extends MappedLoginService {
 
@@ -31,12 +31,12 @@ public class SimpleAdminLoginService extends MappedLoginService {
 	private final String password;
 
 	/**
-	 * Creates a new instance with a giben password. It's highly recommended to
+	 * Creates a new instance with a given password. It's highly recommended to
 	 * save only hashed passwords.
 	 * 
 	 * @see Credential#getCredential(String)
 	 */
-	protected SimpleAdminLoginService(final String username, final String password) {
+	public SimpleAdminLoginService(final String username, final String password) {
 
 		if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
 			throw new IllegalArgumentException("Username and password must not be blank");
@@ -59,7 +59,7 @@ public class SimpleAdminLoginService extends MappedLoginService {
 
 	private void loadUsersInternal() {
 		_users.clear();
-		putUser(username, Credential.getCredential(password), new String[] { AdminUiActivator.ADMIN_DEFAULT_ROLE });
+		putUser(username, Credential.getCredential(password), new String[] { AdminServletHolder.ADMIN_ROLE });
 	}
 
 }

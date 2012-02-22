@@ -12,17 +12,30 @@
 package org.eclipse.gyrex.admin.ui.internal;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.eclipse.equinox.http.servlet.HttpServiceServlet;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.gyrex.admin.ui.internal.application.AdminApplicationConfigurator;
+import org.eclipse.gyrex.admin.ui.internal.jetty.AdminServletHolder;
+import org.eclipse.gyrex.admin.ui.internal.jetty.SimpleAdminLoginService;
+import org.eclipse.gyrex.admin.ui.internal.servlets.PreferencesServlet;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.server.Platform;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jetty.http.HttpSchemes;
@@ -36,15 +49,18 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.rwt.application.Application;
+import org.eclipse.rwt.engine.RWTServlet;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,30 +73,15 @@ import org.slf4j.LoggerFactory;
  */
 public class AdminUiActivator extends BaseBundleActivator {
 
-	/** ADMIN */
-	protected static final String ADMIN_DEFAULT_ROLE = "admin";
-
-	/** ADMIN */
-	public static final String ADMIN_ALIAS = "admin";
-
-	/** the plug-in id */
 	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui"; //$NON-NLS-1$
-
-	/** the default port for the admin server */
 	private static final int DEFAULT_ADMIN_PORT = 3110;
-
-	/** server type for the admin server */
-	public static final String TYPE_ADMIN = SYMBOLIC_NAME + ".http";
 	private static final Logger LOG = LoggerFactory.getLogger(AdminUiActivator.class);
 
 	private static volatile AdminUiActivator instance;
-
 	private static volatile Server server;
 
-	public static final String ID_TABBED_PROPERTIES_CONFIG = "org.eclipse.gyrex.admin.ui.content.properties";
-
-	protected static final String PROPERTY_ADMIN_SECURE = "gyrex.admin.secure";
-	protected static final String PROPERTY_ADMIN_AUTH = "gyrex.admin.auth";
+	private static final String PROPERTY_ADMIN_SECURE = "gyrex.admin.secure";
+	private static final String PROPERTY_ADMIN_AUTH = "gyrex.admin.auth";
 
 	/**
 	 * Returns an image descriptor for the image file at the given plug-in
@@ -108,8 +109,6 @@ public class AdminUiActivator extends BaseBundleActivator {
 		}
 		return activator;
 	}
-
-	private AdminUiHttpServiceTracker adminUiHttpServiceTracker;
 
 	/**
 	 * The constructor
@@ -172,6 +171,69 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 	}
 
+	private void configureContextWithServletsAndResources(final ServletContextHandler contextHandler) throws MalformedURLException, IOException {
+		// configure context base directory (required for RAP/RWT resources)
+		final IPath contextBase = Platform.getStateLocation(getBundle()).append("context");
+		contextHandler.setBaseResource(Resource.newResource(contextBase.toFile()));
+
+		// initialize RWT application
+		final Application application = new Application(new AdminApplicationConfigurator(), contextHandler.getServletContext());
+		application.start();
+
+		// serve admin application directly
+		contextHandler.addServlet(new AdminServletHolder(new RWTServlet()), "/admin");
+
+		// register additional static resources references in body html
+		final ServletHolder staticResources = createDefaultServlet();
+		staticResources.setInitParameter("resourceBase", FileLocator.resolve(FileLocator.find(getBundle(), new Path("html"), null)).toExternalForm());
+		contextHandler.addServlet(staticResources, "/static/*");
+
+		// redirect to admin
+		contextHandler.addServlet(new AdminServletHolder(new HttpServlet() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+				resp.sendRedirect("/admin");
+			}
+		}), "");
+
+		// server context resources (required for RAP/RWT resources)
+		contextHandler.addServlet(createDefaultServlet(), "/*");
+
+		// register Logback status servlet
+		try {
+			// note, we don't reference the class directly because the package import is optional
+			final Class<?> servletClass = AdminUiActivator.getInstance().getBundle().loadClass("ch.qos.logback.classic.ViewStatusMessagesServlet");
+			contextHandler.addServlet(new AdminServletHolder((Servlet) servletClass.newInstance()), "/logbackstatus");
+		} catch (final ClassNotFoundException e) {
+			LOG.warn("Logback status servlet not available. {}", e.getMessage(), e);
+		} catch (final Exception e) {
+			LOG.error("An error occurred while registering the Logback status servlet. {}", e.getMessage(), e);
+		}
+
+		// register Preferences status servlet
+		contextHandler.addServlet(new AdminServletHolder(new PreferencesServlet()), "/preferences");
+	}
+
+	private ServletHolder createDefaultServlet() {
+		final ServletHolder defaultServlet = new AdminServletHolder(new DefaultServlet());
+		if (Platform.inDevelopmentMode()) {
+			defaultServlet.setInitParameter("dirAllowed", "true");
+			defaultServlet.setInitParameter("useFileMappedBuffer", "false");
+			defaultServlet.setInitParameter("maxCachedFiles", "0");
+		} else {
+			defaultServlet.setInitParameter("dirAllowed", "false");
+			defaultServlet.setInitParameter("maxCacheSize", "2000000");
+			defaultServlet.setInitParameter("maxCachedFileSize", "254000");
+			defaultServlet.setInitParameter("maxCachedFiles", "1000");
+			defaultServlet.setInitParameter("useFileMappedBuffer", "true");
+		}
+		return defaultServlet;
+	}
+
 	/**
 	 * @param password
 	 * @param contextHandler
@@ -181,7 +243,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 	private SecurityHandler createSecurityHandler(final Handler baseHandler, final String username, final String password) {
 		final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
 		final ConstraintMapping authenticationContraintMapping = new ConstraintMapping();
-		final Constraint constraint = new Constraint(Constraint.__BASIC_AUTH, ADMIN_DEFAULT_ROLE);
+		final Constraint constraint = new Constraint(Constraint.__BASIC_AUTH, AdminServletHolder.ADMIN_ROLE);
 		constraint.setAuthenticate(true);
 		authenticationContraintMapping.setConstraint(constraint);
 		authenticationContraintMapping.setPathSpec("/*");
@@ -192,16 +254,18 @@ public class AdminUiActivator extends BaseBundleActivator {
 		return securityHandler;
 	}
 
+	private HashSessionManager createSessionManager() {
+		final HashSessionManager sessionManager = new HashSessionManager();
+		sessionManager.setMaxInactiveInterval(600);
+		return sessionManager;
+	}
+
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
 
-		// activate default servlet redirect
-		adminUiHttpServiceTracker = new AdminUiHttpServiceTracker(context);
-		adminUiHttpServiceTracker.open();
-
-		// start the admin server
-		new Job("Start Jetty Admin Server") {
+		// start the admin server asynchronously
+		final Job jettyStartJob = new Job("Start Jetty Admin Server") {
 
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
@@ -214,8 +278,10 @@ public class AdminUiActivator extends BaseBundleActivator {
 				}
 				return Status.OK_STATUS;
 			}
-		}.schedule(100l);
-
+		};
+		jettyStartJob.setSystem(true);
+		jettyStartJob.setPriority(Job.LONG);
+		jettyStartJob.schedule();
 	}
 
 	@Override
@@ -223,9 +289,6 @@ public class AdminUiActivator extends BaseBundleActivator {
 		instance = null;
 
 		stopServer();
-
-		adminUiHttpServiceTracker.close();
-		adminUiHttpServiceTracker = null;
 	}
 
 	private void startServer() {
@@ -248,20 +311,13 @@ public class AdminUiActivator extends BaseBundleActivator {
 			threadPool.setName("jetty-server-admin");
 			server.setThreadPool(threadPool);
 
+			// create context
 			final ServletContextHandler contextHandler = new ServletContextHandler();
-			contextHandler.setSessionHandler(new SessionHandler(new HashSessionManager()));
+			contextHandler.setSessionHandler(new SessionHandler(createSessionManager()));
+			configureContextWithServletsAndResources(contextHandler);
 
-			final ServletHolder sh = new ServletHolder(new HttpServiceServlet());
-			// The field other.info is required to link the servlet to the rap application
-			sh.getInitParameters().put("other.info", TYPE_ADMIN);
-			sh.getInitParameters().put(Constants.SERVICE_VENDOR, "Eclipse Gyrex");
-			sh.getInitParameters().put(Constants.SERVICE_DESCRIPTION, "HTTP Service for administrative purposes only!");
-			sh.setRunAsRole(ADMIN_DEFAULT_ROLE);
-
-			contextHandler.addServlet(sh, "/*");
-
+			// enable security if configured
 			if (Boolean.getBoolean(PROPERTY_ADMIN_SECURE)) {
-				// do authentication?
 				final String authenticationPhrase = System.getProperty(PROPERTY_ADMIN_AUTH);
 				final String[] segments = authenticationPhrase.split("/");
 				if (segments.length != 3) {

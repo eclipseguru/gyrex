@@ -11,6 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.internal;
 
+import org.eclipse.gyrex.admin.ui.internal.application.AdminApplicationConfigurator;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
 import org.eclipse.core.runtime.IStatus;
@@ -24,7 +26,7 @@ public class AdminUiServiceFilterFactory implements IExecutableExtensionFactory 
 	@Override
 	public Object create() throws CoreException {
 		try {
-			return FrameworkUtil.createFilter(AdminUiHttpServiceTracker.FILTER_ADMIN_HTTP_SERVICE);
+			return FrameworkUtil.createFilter(AdminApplicationConfigurator.FILTER);
 		} catch (final InvalidSyntaxException e) {
 			throw new CoreException(new Status(IStatus.ERROR, AdminUiActivator.SYMBOLIC_NAME, e.getMessage(), e));
 		}

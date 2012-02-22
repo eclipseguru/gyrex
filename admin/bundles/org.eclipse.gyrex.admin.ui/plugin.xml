@@ -86,19 +86,20 @@
          point="org.eclipse.rap.ui.entrypoint">
       <entrypoint
             class="org.eclipse.gyrex.admin.ui.internal.application.AdminApplication"
-            parameter="gyrex-admin-ui"
+            parameter="gyrex-admin-console"
             id="org.eclipse.gyrex.admin.ui.entrypoint">
       </entrypoint>
    </extension>
    <extension
          point="org.eclipse.rap.ui.branding">
       <branding
+            body="html/body.html"
             defaultEntrypointId="org.eclipse.gyrex.admin.ui.entrypoint"
             favicon="img/gyrex/eclipse.ico"
             id="org.eclipse.gyrex.admin.ui.branding"
             servletName="admin"
             themeId="org.eclipse.gyrex.admin.ui.theme"
-            title="Gyrex Admin UI">
+            title="Gyrex Admin">
          <presentationFactory
                defaultLayoutId="org.eclipse.gyrex.admin.ui.layout"
                id="org.eclipse.gyrex.admin.ui.presentation.factory"
