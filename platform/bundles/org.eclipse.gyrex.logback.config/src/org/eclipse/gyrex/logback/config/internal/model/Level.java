@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Gunnar Wagenknecht and others.
+ * Copyright (c) 2012 Gunnar Wagenknecht and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the terms of the
@@ -9,14 +9,8 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  */
-package org.eclipse.gyrex.logback.config.internal.xml;
+package org.eclipse.gyrex.logback.config.internal.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-/**
- *
- */
-@XmlRootElement(name = "root")
-public class RootLogger extends Logger {
-
+public enum Level {
+	ALL, TRACE, DEBUG, INFO, WARN, ERROR;
 }
