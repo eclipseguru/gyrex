@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.configurationPages">
+      <page
+            class="org.eclipse.gyrex.admin.ui.logback.internal.LogbackConfigurationPage"
+            id="org.eclipse.gyrex.admin.ui.logback.page"
+            name="Logging"
+            parentId="org.eclipse.gyrex.admin.ui.general">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.gyrex.logback.config.internal.model.LogbackConfig"
+            class="org.eclipse.gyrex.admin.ui.logback.internal.adapters.AdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.gyrex.logback.config.internal.model.Appender"
+            class="org.eclipse.gyrex.admin.ui.logback.internal.adapters.AdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.gyrex.logback.config.internal.model.Logger"
+            class="org.eclipse.gyrex.admin.ui.logback.internal.adapters.AdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+   </extension>
+
+</plugin>
