@@ -100,6 +100,7 @@ public class AddAppenderDialog extends StatusDialog {
 		maxHistoryField.setDialogFieldListener(validateListener);
 		siftingPropertyNameField.setDialogFieldListener(validateListener);
 
+		compressField.setSelection(true);
 		updateEnabledFields();
 
 		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
