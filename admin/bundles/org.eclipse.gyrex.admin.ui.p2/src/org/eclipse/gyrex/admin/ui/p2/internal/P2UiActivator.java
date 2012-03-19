@@ -1,8 +1,8 @@
 /*******************************************************************************
  * Copyright (c) 2011 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
@@ -12,7 +12,6 @@
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 
@@ -20,6 +19,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.rwt.RWT;
 import org.eclipse.ui.PlatformUI;
 
 import org.osgi.framework.BundleContext;
@@ -27,6 +27,7 @@ import org.osgi.framework.BundleContext;
 public class P2UiActivator extends BaseBundleActivator {
 
 	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui.p2";
+	private static final String IMAGE_REGISTRY = P2UiActivator.class.getName() + "#imageRegistry";
 	private static volatile P2UiActivator instance;
 
 	/**
@@ -41,8 +42,6 @@ public class P2UiActivator extends BaseBundleActivator {
 		}
 		return activator;
 	}
-
-	private final AtomicReference<ImageRegistry> imageRegistryRef = new AtomicReference<ImageRegistry>();
 
 	/**
 	 * Creates a new instance.
@@ -68,11 +67,6 @@ public class P2UiActivator extends BaseBundleActivator {
 	@Override
 	protected void doStop(final BundleContext context) throws Exception {
 		instance = null;
-
-		final ImageRegistry imageRegistry = imageRegistryRef.getAndSet(null);
-		if (null != imageRegistry) {
-			imageRegistry.dispose();
-		}
 	}
 
 	@Override
@@ -81,15 +75,14 @@ public class P2UiActivator extends BaseBundleActivator {
 	}
 
 	public ImageRegistry getImageRegistry() {
-		final ImageRegistry imageRegistry = imageRegistryRef.get();
-		if (null != imageRegistry) {
-			return imageRegistry;
+		// ImageRegistry must be session scoped in RAP
+		ImageRegistry imageRegistry = (ImageRegistry) RWT.getSessionStore().getAttribute(IMAGE_REGISTRY);
+		if (imageRegistry == null) {
+			imageRegistry = new ImageRegistry(PlatformUI.getWorkbench().getDisplay());
+			initializeImageRegistry(imageRegistry);
+			RWT.getSessionStore().setAttribute(IMAGE_REGISTRY, imageRegistry);
 		}
-		final ImageRegistry newRegistry = new ImageRegistry(PlatformUI.getWorkbench().getDisplay());
-		if (imageRegistryRef.compareAndSet(null, newRegistry)) {
-			initializeImageRegistry(newRegistry);
-		}
-		return imageRegistryRef.get();
+		return imageRegistry;
 	}
 
 	private void initializeImageRegistry(final ImageRegistry reg) {
