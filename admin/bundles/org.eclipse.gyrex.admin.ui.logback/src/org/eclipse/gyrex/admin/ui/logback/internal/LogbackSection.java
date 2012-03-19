@@ -98,6 +98,13 @@ public class LogbackSection extends ViewerWithButtonsSectionPart {
 	@Override
 	public void commit(final boolean onSave) {
 		if (onSave) {
+			final IEclipsePreferences node = CloudScope.INSTANCE.getNode(LogbackConfigActivator.SYMBOLIC_NAME);
+			try {
+				new PreferenceBasedLogbackConfigStore().saveConfig(currentInput, node.node("config"));
+			} catch (final BackingStoreException e) {
+				LOG.error("Error saving config!", e);
+				return;
+			}
 
 			// no longer dirty
 			super.commit(onSave);
