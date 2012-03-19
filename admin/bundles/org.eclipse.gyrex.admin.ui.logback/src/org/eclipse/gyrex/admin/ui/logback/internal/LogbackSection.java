@@ -213,6 +213,8 @@ public class LogbackSection extends ViewerWithButtonsSectionPart {
 
 		if (selectedElement instanceof Logger) {
 			editLoggerButtonPressed();
+		} else if (selectedElement instanceof DefaultLogger) {
+			editDefaultLoggerButtonPressed();
 		} else if (selectedElement instanceof Appender) {
 			// TODO
 		}
