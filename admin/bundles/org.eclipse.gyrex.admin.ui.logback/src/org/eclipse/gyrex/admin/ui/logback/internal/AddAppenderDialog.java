@@ -48,8 +48,10 @@ public class AddAppenderDialog extends StatusDialog {
 	private final SelectionButtonDialogFieldGroup rotationTypeField = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "never", "daily", "weekly", "monthly", "based on size" }, 5);
 	private final StringDialogField maxFileSizeField = new StringDialogField();
 	private final StringDialogField maxHistoryField = new StringDialogField();
-	private final StringDialogField siftingPropertyNameField = new StringDialogField();
 	private final SelectionButtonDialogFieldGroup thresholdField = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "No filter", "DEBUG", "INFO", "WARN", "ERROR" }, 5);
+	private final StringDialogField siftingPropertyNameField = new StringDialogField();
+	private final StringDialogField siftingPropertyDefaultField = new StringDialogField();
+
 	private Appender appender;
 
 	/**
@@ -75,10 +77,12 @@ public class AddAppenderDialog extends StatusDialog {
 		fileNameField.setLabelText("File Name");
 		rotationTypeField.setLabelText("Rotate log files");
 		compressField.setLabelText("Compress rotated logs");
-		siftingPropertyNameField.setLabelText("Separate log files based on MDC property:");
 		maxHistoryField.setLabelText("Number of rotated logs to keep");
 		maxFileSizeField.setLabelText("Rotate when log file is greater then");
 		thresholdField.setLabelText("Filter log event below");
+
+		siftingPropertyNameField.setLabelText("Separate log files based on MDC property:");
+		siftingPropertyDefaultField.setLabelText("Default value if MDC property is not set:");
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
@@ -102,7 +106,7 @@ public class AddAppenderDialog extends StatusDialog {
 		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
 		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), typeField, nameField, thresholdField, new Separator(), fileNameField, siftingPropertyNameField, new Separator(), rotationTypeField, compressField, maxHistoryField, maxFileSizeField }, false);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), typeField, nameField, thresholdField, new Separator(), fileNameField, new Separator(), rotationTypeField, compressField, maxHistoryField, maxFileSizeField, new Separator(), siftingPropertyNameField, siftingPropertyDefaultField }, true);
 		LayoutUtil.setHorizontalGrabbing(fileNameField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(nameField.getTextControl(null));
 
@@ -152,6 +156,11 @@ public class AddAppenderDialog extends StatusDialog {
 					fileAppender.setMaxFileSize(StringUtils.trimToNull(maxFileSizeField.getText()));
 				}
 				fileAppender.setCompressRotatedLogs(compressField.isSelected());
+				final String siftingMdcPropertyName = StringUtils.trimToNull(siftingPropertyNameField.getText());
+				if (null != siftingMdcPropertyName) {
+					fileAppender.setSiftingMdcPropertyName(siftingMdcPropertyName);
+					fileAppender.setSiftingMdcPropertyDefaultValue(StringUtils.trimToNull(siftingPropertyDefaultField.getText()));
+				}
 			}
 			if (thresholdField.isSelected(1)) {
 				appender.setThreshold(Level.DEBUG);
@@ -189,6 +198,7 @@ public class AddAppenderDialog extends StatusDialog {
 		if (typeField.isSelected(1)) {
 			fileNameField.setEnabled(true);
 			siftingPropertyNameField.setEnabled(true);
+			siftingPropertyDefaultField.setEnabled(StringUtils.isNotBlank(siftingPropertyNameField.getText()));
 			rotationTypeField.setEnabled(true);
 			if (rotationTypeField.isSelected(1) || rotationTypeField.isSelected(2) || rotationTypeField.isSelected(3)) {
 				maxFileSizeField.setEnabled(false);
@@ -208,8 +218,9 @@ public class AddAppenderDialog extends StatusDialog {
 			rotationTypeField.setEnabled(false);
 			maxFileSizeField.setEnabled(false);
 			maxHistoryField.setEnabled(false);
-			siftingPropertyNameField.setEnabled(false);
 			compressField.setEnabled(false);
+			siftingPropertyNameField.setEnabled(false);
+			siftingPropertyDefaultField.setEnabled(false);
 		}
 	}
 
