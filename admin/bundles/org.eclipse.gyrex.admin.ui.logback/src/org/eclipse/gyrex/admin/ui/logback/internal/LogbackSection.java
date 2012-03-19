@@ -45,6 +45,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +101,8 @@ public class LogbackSection extends ViewerWithButtonsSectionPart {
 		if (onSave) {
 			final IEclipsePreferences node = CloudScope.INSTANCE.getNode(LogbackConfigActivator.SYMBOLIC_NAME);
 			try {
-				new PreferenceBasedLogbackConfigStore().saveConfig(currentInput, node.node("config"));
+				final Preferences configNode = node.node("config");
+				new PreferenceBasedLogbackConfigStore().saveConfig(currentInput, configNode);
 			} catch (final BackingStoreException e) {
 				LOG.error("Error saving config!", e);
 				return;
@@ -230,7 +232,9 @@ public class LogbackSection extends ViewerWithButtonsSectionPart {
 			final IEclipsePreferences node = CloudScope.INSTANCE.getNode(LogbackConfigActivator.SYMBOLIC_NAME);
 			try {
 				if (node.nodeExists("config")) {
-					new PreferenceBasedLogbackConfigStore().loadConfig(node.node("config"));
+					final Preferences configNode = node.node("config");
+					configNode.sync();
+					currentInput = new PreferenceBasedLogbackConfigStore().loadConfig(configNode);
 				} else {
 					currentInput = new LogbackConfig();
 				}
