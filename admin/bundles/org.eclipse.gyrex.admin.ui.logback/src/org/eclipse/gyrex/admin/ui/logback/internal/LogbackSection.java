@@ -103,6 +103,10 @@ public class LogbackSection extends ViewerWithButtonsSectionPart {
 			try {
 				final Preferences configNode = node.node("config");
 				new PreferenceBasedLogbackConfigStore().saveConfig(currentInput, configNode);
+
+				// also touch last modified
+				node.putLong("lastModified", System.currentTimeMillis());
+				node.flush();
 			} catch (final BackingStoreException e) {
 				LOG.error("Error saving config!", e);
 				return;
