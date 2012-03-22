@@ -30,7 +30,6 @@ import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 import org.eclipse.gyrex.persistence.storage.provider.RepositoryProvider;
 import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
-import org.eclipse.persistence.config.LoggerType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
@@ -174,7 +173,7 @@ public class MongoDbJpaRepositoryImpl extends EclipseLinkRepository {
 
 			// enable logging using JUL
 			// TODO: may write/contribute a SLF4J logger
-			props.put(PersistenceUnitProperties.LOGGING_LOGGER, LoggerType.JavaLogger);
+//			props.put(PersistenceUnitProperties.LOGGING_LOGGER, LoggerType.JavaLogger);
 
 			// create EMF
 			final EntityManagerFactory entityManagerFactory = builder.createEntityManagerFactory(props);
