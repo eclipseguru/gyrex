@@ -316,7 +316,7 @@ public class EditApplicationDialog extends StatusDialog {
 
 			// update mounts
 			final List applicationMounts = mountsField.getElements();
-			final Collection<String> existingMounts = applicationManager.getMounts(applicationRegistration.getApplicationId());
+			final Collection<String> existingMounts = null != applicationRegistration ? applicationManager.getMounts(applicationRegistration.getApplicationId()) : new ArrayList<String>(1);
 			for (final String url : existingMounts) {
 				if (!applicationMounts.contains(url)) {
 					applicationManager.unmount(url);
