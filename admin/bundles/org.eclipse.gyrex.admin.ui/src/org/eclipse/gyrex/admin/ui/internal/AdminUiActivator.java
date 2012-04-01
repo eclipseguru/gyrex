@@ -93,8 +93,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 	 */
 	public static ImageDescriptor getImageDescriptor(final String path) {
 		final URL entry = instance.getBundle().getEntry(path);
-		final ImageDescriptor descriptor = ImageDescriptor.createFromURL(entry);
-		return descriptor;
+		return ImageDescriptor.createFromURL(entry);
 	}
 
 	/**

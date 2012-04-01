@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.configuration.IConfigurationPageContainer;
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
+import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -121,7 +122,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	private IWorkbenchAction saveAllAction;
 	private final ConcurrentMap<ConfigurationPage, ConfigurationPageSaveable> saveablesByPage = new ConcurrentHashMap<ConfigurationPage, ConfigurationPageSaveable>(4);
 
-	private synchronized void addPage(final String id, final ConfigurationPageRegistration provider) {
+	private synchronized void addPage(final String id, final PageContribution provider) {
 		if (pagesById.containsKey(id)) {
 			return;
 		}
@@ -288,8 +289,8 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		}
 
 		final Object firstElement = ((StructuredSelection) selection).getFirstElement();
-		if (firstElement instanceof ConfigurationPageRegistration) {
-			final ConfigurationPageRegistration provider = (ConfigurationPageRegistration) firstElement;
+		if (firstElement instanceof PageContribution) {
+			final PageContribution provider = (PageContribution) firstElement;
 			final String id = provider.getId();
 
 			// create page if necessary
@@ -344,7 +345,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 			headerForm.getForm().setImage(page.getTitleImage());
 			String title = page.getTitle();
 			if (StringUtils.isEmpty(title)) {
-				final ConfigurationPageRegistration registration = (ConfigurationPageRegistration) page.getControl().getData(REGISTRATION);
+				final PageContribution registration = (PageContribution) page.getControl().getData(REGISTRATION);
 				title = registration.getName();
 			}
 			headerForm.getForm().setText(title);

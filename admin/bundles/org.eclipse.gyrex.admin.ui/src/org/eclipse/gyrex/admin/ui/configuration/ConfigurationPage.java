@@ -19,10 +19,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.PlatformUI;
@@ -130,6 +132,21 @@ public abstract class ConfigurationPage extends EventManager {
 	 */
 	protected void createFormContent(final IManagedForm managedForm) {
 		// empty
+	}
+
+	/**
+	 * Creates the page control.
+	 * <p>
+	 * Subclasses must override and implement the page controls. Implements must
+	 * not make any assumptions about the parent controls.
+	 * </p>
+	 * 
+	 * @param parent
+	 *            the parent composite
+	 */
+	public void createPage(final Composite contentComp) {
+		final Label label = new Label(contentComp, SWT.NONE);
+		label.setText("empty");
 	}
 
 	/**

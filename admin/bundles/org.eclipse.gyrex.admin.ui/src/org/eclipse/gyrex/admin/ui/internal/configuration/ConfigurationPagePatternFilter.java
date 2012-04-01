@@ -11,6 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
+import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -23,13 +25,13 @@ public class ConfigurationPagePatternFilter extends PatternFilter {
 
 	@Override
 	public boolean isElementSelectable(final Object element) {
-		return element instanceof ConfigurationPageRegistration;
+		return element instanceof PageContribution;
 	}
 
 	@Override
 	public boolean isElementVisible(final Viewer viewer, final Object element) {
 		// always show the root input
-		if (!(element instanceof ConfigurationPageRegistration)) {
+		if (!(element instanceof PageContribution)) {
 			return true;
 		}
 
@@ -40,7 +42,7 @@ public class ConfigurationPagePatternFilter extends PatternFilter {
 		}
 
 		final ITreeContentProvider contentProvider = (ITreeContentProvider) ((TreeViewer) viewer).getContentProvider();
-		final ConfigurationPageRegistration node = (ConfigurationPageRegistration) element;
+		final PageContribution node = (PageContribution) element;
 		final Object[] children = contentProvider.getChildren(node);
 		// Will return true if any subnode of the element matches the search
 		if (filter(viewer, element, children).length > 0) {
@@ -52,11 +54,11 @@ public class ConfigurationPagePatternFilter extends PatternFilter {
 	@Override
 	protected boolean isLeafMatch(final Viewer viewer, final Object element) {
 		// always match the root input
-		if (!(element instanceof ConfigurationPageRegistration)) {
+		if (!(element instanceof PageContribution)) {
 			return true;
 		}
 
-		final ConfigurationPageRegistration page = (ConfigurationPageRegistration) element;
+		final PageContribution page = (PageContribution) element;
 
 		// check page name
 		final String text = page.getName();

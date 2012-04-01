@@ -12,6 +12,8 @@
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
+import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -44,25 +46,25 @@ public class ConfigurationNavigatorView extends ViewPart {
 		}
 
 		public Object[] getElements(final Object parent) {
-			if (parent instanceof ConfigurationPageRegistration) {
-				return ConfigurationPageRegistry.getInstance().getChildren((ConfigurationPageRegistration) parent);
+			if (parent instanceof PageContribution) {
+				return AdminPageRegistry.getInstance().getPages((PageContribution) parent);
 			} else {
-				return ConfigurationPageRegistry.getInstance().getChildren(null);
+				return AdminPageRegistry.getInstance().getPages(null);
 			}
 		}
 
 		@Override
 		public Object getParent(final Object element) {
-			if (element instanceof ConfigurationPageRegistration) {
-				return ConfigurationPageRegistry.getInstance().getParent((ConfigurationPageRegistration) element);
+			if (element instanceof PageContribution) {
+				return AdminPageRegistry.getInstance().getParent((PageContribution) element);
 			}
 			return null;
 		}
 
 		@Override
 		public boolean hasChildren(final Object element) {
-			if (element instanceof ConfigurationPageRegistration) {
-				return ConfigurationPageRegistry.getInstance().hasChildren((ConfigurationPageRegistration) element);
+			if (element instanceof PageContribution) {
+				return AdminPageRegistry.getInstance().hasPages((PageContribution) element);
 			}
 			return false;
 		}
@@ -80,8 +82,8 @@ public class ConfigurationNavigatorView extends ViewPart {
 
 		@Override
 		public String getText(final Object element) {
-			if (element instanceof ConfigurationPageRegistration) {
-				final ConfigurationPageRegistration provider = (ConfigurationPageRegistration) element;
+			if (element instanceof PageContribution) {
+				final PageContribution provider = (PageContribution) element;
 				return provider.getName();
 			} else {
 				return super.getText(element);
@@ -107,7 +109,7 @@ public class ConfigurationNavigatorView extends ViewPart {
 		getSite().setSelectionProvider(viewer);
 
 		// select the default page
-		final ConfigurationPageRegistration page = ConfigurationPageRegistry.getInstance().getPage("org.eclipse.gyrex.admin.ui.general");
+		final PageContribution page = AdminPageRegistry.getInstance().getPage("org.eclipse.gyrex.admin.ui.general");
 		if (page != null) {
 			viewer.setSelection(new StructuredSelection(page), true);
 		}
