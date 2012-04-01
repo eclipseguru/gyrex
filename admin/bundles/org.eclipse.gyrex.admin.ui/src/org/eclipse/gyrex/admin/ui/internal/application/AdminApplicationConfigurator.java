@@ -41,13 +41,19 @@ public class AdminApplicationConfigurator implements ApplicationConfigurator {
 			if (!constructor.isAccessible()) {
 				constructor.setAccessible(true);
 			}
-			final WorkbenchApplicationConfigurator configurer = constructor.newInstance(dummyServiceRegistration.getReference());
-			configurer.configure(configuration);
+			// use workbench configurator (to support all the extension points)
+			new WorkbenchApplicationConfigurator(null).configure(configuration);
 		} catch (final Exception e) {
 			throw new UnhandledException("Unable to intantiate internal workbench configurator.", e);
 		} finally {
 			dummyServiceRegistration.unregister();
 		}
+
+		// TODO: switch to JEE mode once we got rid of the workbench
+		// TODO: report bug with RAP to allow resetting the operation mode
+//		configuration.setOperationMode(OperationMode.JEE_COMPATIBILITY);
+//		final ApplicationContext applicationContext = ((Adaptable) configuration).getAdapter(ApplicationContext.class);
+//		applicationContext.getLifeCycleFactory().configure(null);
 
 //		configuration.setOperationMode(OperationMode.SWT_COMPATIBILITY);
 //		configuration.addEntryPoint(EP_ADMIN, AdminApplication.class);
