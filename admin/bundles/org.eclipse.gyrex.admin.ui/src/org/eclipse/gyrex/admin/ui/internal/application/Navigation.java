@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    EclipseSource - initial API and implementation
+ *    Gunnar Wagenknecht - adapted to Gyrex Console
  ******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.application;
 
@@ -31,7 +32,7 @@ public abstract class Navigation {
 
 	public Navigation(final Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(ExampleUtil.createGridLayoutWithoutMargin(9, false));
+		composite.setLayout(PageUtil.createGridLayoutWithoutMargin(9, false));
 		composite.setData(WidgetUtil.CUSTOM_VARIANT, "navigation");
 
 		// get and sort categories

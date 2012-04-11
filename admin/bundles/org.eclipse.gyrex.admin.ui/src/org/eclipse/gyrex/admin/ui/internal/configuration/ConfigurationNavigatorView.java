@@ -12,8 +12,9 @@
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
 import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
-import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
 import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
+import org.eclipse.gyrex.admin.ui.internal.pages.CategoryContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -37,6 +38,9 @@ public class ConfigurationNavigatorView extends ViewPart {
 
 	static class ViewContentProvider implements ITreeContentProvider {
 
+		private static final Object[] NO_CHILDREN = new Object[0];
+		static final Object ROOT = new Object();
+
 		public void dispose() {
 		}
 
@@ -46,10 +50,12 @@ public class ConfigurationNavigatorView extends ViewPart {
 		}
 
 		public Object[] getElements(final Object parent) {
-			if (parent instanceof PageContribution) {
-				return AdminPageRegistry.getInstance().getPages((PageContribution) parent);
+			if (parent == ROOT) {
+				return AdminPageRegistry.getInstance().getCategories().toArray();
+			} else if (parent instanceof CategoryContribution) {
+				return AdminPageRegistry.getInstance().getPages((CategoryContribution) parent).toArray();
 			} else {
-				return AdminPageRegistry.getInstance().getPages(null);
+				return NO_CHILDREN;
 			}
 		}
 
@@ -57,14 +63,18 @@ public class ConfigurationNavigatorView extends ViewPart {
 		public Object getParent(final Object element) {
 			if (element instanceof PageContribution) {
 				return AdminPageRegistry.getInstance().getParent((PageContribution) element);
+			} else if (element instanceof CategoryContribution) {
+				return ROOT;
 			}
 			return null;
 		}
 
 		@Override
 		public boolean hasChildren(final Object element) {
-			if (element instanceof PageContribution) {
-				return AdminPageRegistry.getInstance().hasPages((PageContribution) element);
+			if (element == ROOT) {
+				return true;
+			} else if (element instanceof CategoryContribution) {
+				return AdminPageRegistry.getInstance().hasPages((CategoryContribution) element);
 			}
 			return false;
 		}
@@ -104,7 +114,7 @@ public class ConfigurationNavigatorView extends ViewPart {
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setComparator(new ViewerComparator());
-		viewer.setInput(new Object());
+		viewer.setInput(ViewContentProvider.ROOT);
 
 		getSite().setSelectionProvider(viewer);
 

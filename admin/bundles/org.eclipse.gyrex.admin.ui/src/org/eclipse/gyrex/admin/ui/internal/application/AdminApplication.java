@@ -7,7 +7,8 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *      Mike Tschierschke - initial API and implementation
+ *     Mike Tschierschke - initial API and implementation
+ *     Gunnar Wagenknecht - rework to new console look (based on RAP Examples)
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.application;
 
@@ -42,7 +43,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class AdminApplication implements IEntryPoint {
 
 	private static FormData createNavigationFormData() {
 		final FormData data = new FormData();
-		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) - 7);
+		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) + 7);
 		data.top = new FormAttachment(0);
 		data.bottom = new FormAttachment(100);
 		data.width = CENTER_AREA_WIDTH;
@@ -89,8 +89,8 @@ public class AdminApplication implements IEntryPoint {
 
 	private static FormData createTitleFormData() {
 		final FormData data = new FormData();
-		data.bottom = new FormAttachment(100, -26);
-		data.left = new FormAttachment(0, 250);
+		data.bottom = new FormAttachment(100, -18);
+		data.left = new FormAttachment(0, 370);
 		return data;
 	}
 
@@ -99,8 +99,8 @@ public class AdminApplication implements IEntryPoint {
 		return imageDescriptor.createImage(display);
 	}
 
-	private static String getRapVersion() {
-		final Version version = FrameworkUtil.getBundle(RWT.class).getVersion();
+	private static String getVersion() {
+		final Version version = AdminUiActivator.getInstance().getBundleVersion();
 		final StringBuilder resultBuffer = new StringBuilder(20);
 		resultBuffer.append(version.getMajor());
 		resultBuffer.append('.');
@@ -137,14 +137,14 @@ public class AdminApplication implements IEntryPoint {
 				return;
 			}
 		}
-		final ConfigurationPage page = createdPages.get(contribution);
+		final ConfigurationPage page = createdPages.get(contribution.getId());
 		if (page != null) {
 			RWT.getBrowserHistory().createEntry(contribution.getId(), contribution.getName());
 			final Control[] children = centerArea.getChildren();
 			for (final Control child : children) {
 				child.dispose();
 			}
-			final Composite contentComp = ExampleUtil.initPage(contribution.getName(), centerArea);
+			final Composite contentComp = PageUtil.initPage(contribution.getName(), centerArea);
 			page.createPage(contentComp);
 			centerArea.layout(true, true);
 		}
@@ -173,7 +173,7 @@ public class AdminApplication implements IEntryPoint {
 		final FormData data = new FormData();
 		data.top = new FormAttachment(navBar, 0, SWT.BOTTOM);
 		data.bottom = new FormAttachment(footer, 0, SWT.TOP);
-		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) - 10);
+		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) + 10);
 		data.width = CENTER_AREA_WIDTH + 10;
 		return data;
 	}
@@ -213,7 +213,7 @@ public class AdminApplication implements IEntryPoint {
 		footer.setLayoutData(createFooterFormData());
 		final Label label = new Label(footer, SWT.NONE);
 		label.setData(WidgetUtil.CUSTOM_VARIANT, "footerLabel");
-		label.setText("RAP version: " + getRapVersion());
+		label.setText("Admin Console " + getVersion());
 		label.setLayoutData(createFooterLabelFormData(footer));
 		return footer;
 	}
@@ -272,9 +272,9 @@ public class AdminApplication implements IEntryPoint {
 
 	private void createLogo(final Composite headerComp) {
 		final Label logoLabel = new Label(headerComp, SWT.NONE);
-		final Image rapLogo = getImage(headerComp.getDisplay(), "gyrex/eclipse_gyrex.png");
-		logoLabel.setImage(rapLogo);
-		logoLabel.setLayoutData(createLogoFormData(rapLogo));
+		final Image logo = getImage(headerComp.getDisplay(), "gyrex/eclipse_gyrex.png");
+		logoLabel.setImage(logo);
+		logoLabel.setLayoutData(createLogoFormData(logo));
 		makeLink(logoLabel, GYREX_WEBSITE_URL);
 	}
 
@@ -313,7 +313,7 @@ public class AdminApplication implements IEntryPoint {
 
 	private void createTitle(final Composite headerComp) {
 		final Label title = new Label(headerComp, SWT.NONE);
-		title.setText("Demo");
+		title.setText("Admin Console");
 		title.setLayoutData(createTitleFormData());
 		title.setData(WidgetUtil.CUSTOM_VARIANT, "title");
 	}

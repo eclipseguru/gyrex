@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    EclipseSource - initial API and implementation
+ *    Gunnar Wagenknecht - adapted to Gyrex Console
  ******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.application;
 
@@ -104,13 +105,6 @@ abstract class DropDownNavigation extends Composite {
 		return category;
 	}
 
-	private void openFirstPage() {
-		for (final PageContribution page : pages) {
-			openPage(page);
-			break;
-		}
-	}
-
 	private void openMenu(final Point point) {
 		pullDownMenu.setLocation(point);
 		pullDownMenu.setVisible(true);
@@ -119,12 +113,6 @@ abstract class DropDownNavigation extends Composite {
 	protected abstract void openPage(PageContribution contribution);
 
 	void toolItemSelected(final ToolBar toolBar, final SelectionEvent event) {
-//			if (event.detail == SWT.ARROW) {
-//			openMenu(toolBar.toDisplay(event.x, event.y));
-//		} else {
-//			openFirstPage();
-//		}
-
 		final Rectangle pos = ((ToolItem) event.getSource()).getBounds();
 		openMenu(toolBar.toDisplay(pos.x, pos.y + pos.height));
 	}
