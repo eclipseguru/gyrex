@@ -11,8 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Realm;
@@ -27,7 +27,7 @@ import org.eclipse.ui.forms.IManagedForm;
 /**
  * Gyrex Cloud Configuration Page.
  */
-public class CloudConfigurationPage extends ConfigurationPage {
+public class CloudConfigurationPage extends AdminPage {
 
 	boolean disposed;
 	private DataBindingContext bindingContext;

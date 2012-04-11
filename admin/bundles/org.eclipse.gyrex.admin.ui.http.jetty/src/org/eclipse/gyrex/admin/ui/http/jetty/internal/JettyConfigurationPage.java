@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.http.jetty.admin.IJettyManager;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -35,7 +35,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Simple configuration page for the default ports where the built-in local
  * jetty server runs.
  */
-public class JettyConfigurationPage extends ConfigurationPage {
+public class JettyConfigurationPage extends AdminPage {
 
 	private static final String INPUT = "input";
 

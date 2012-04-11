@@ -11,10 +11,10 @@
  */
 package org.eclipse.gyrex.admin.ui.context.internal;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.context.internal.ContextActivator;
 import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
 import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
@@ -45,7 +45,7 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public class ContextsSection extends ViewerWithButtonsSectionPart {
 
-	private final ConfigurationPage page;
+	private final AdminPage page;
 
 	private Button addButton;
 	private Button removeButton;
@@ -58,7 +58,7 @@ public class ContextsSection extends ViewerWithButtonsSectionPart {
 	 * @param parent
 	 * @param page
 	 */
-	public ContextsSection(final Composite parent, final ConfigurationPage page) {
+	public ContextsSection(final Composite parent, final AdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		this.page = page;
 		final Section section = getSection();

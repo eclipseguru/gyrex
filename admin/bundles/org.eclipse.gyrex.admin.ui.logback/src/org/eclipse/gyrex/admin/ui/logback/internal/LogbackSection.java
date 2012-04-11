@@ -13,10 +13,10 @@ package org.eclipse.gyrex.admin.ui.logback.internal;
 
 import java.util.Collection;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutDataFactory;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 import org.eclipse.gyrex.admin.ui.logback.internal.LogbackConfigContentProvider.DefaultLogger;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.logback.config.internal.LogbackConfigActivator;
 import org.eclipse.gyrex.logback.config.internal.PreferenceBasedLogbackConfigStore;
 import org.eclipse.gyrex.logback.config.internal.model.Appender;
@@ -70,7 +70,7 @@ public class LogbackSection extends ViewerWithButtonsSectionPart {
 	 * @param parent
 	 * @param page
 	 */
-	public LogbackSection(final Composite parent, final ConfigurationPage page) {
+	public LogbackSection(final Composite parent, final AdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		final Section section = getSection();
 		section.setText("Configuration");

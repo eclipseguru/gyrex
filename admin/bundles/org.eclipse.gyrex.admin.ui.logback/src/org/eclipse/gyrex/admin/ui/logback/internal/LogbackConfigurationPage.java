@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-public class LogbackConfigurationPage extends ConfigurationPage {
+public class LogbackConfigurationPage extends AdminPage {
 
 	private LogbackSection logbackSection;
 

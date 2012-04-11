@@ -11,7 +11,7 @@
  */
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,14 +20,14 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.Saveable;
 
 /**
- * {@link Saveable} for {@link ConfigurationPage}
+ * {@link Saveable} for {@link AdminPage}
  */
 public class ConfigurationPageSaveable extends Saveable {
 
-	private final ConfigurationPage page;
+	private final AdminPage page;
 	private final ConfigurationPanelView view;
 
-	public ConfigurationPageSaveable(final ConfigurationPanelView view, final ConfigurationPage page) {
+	public ConfigurationPageSaveable(final ConfigurationPanelView view, final AdminPage page) {
 		this.view = view;
 		this.page = page;
 

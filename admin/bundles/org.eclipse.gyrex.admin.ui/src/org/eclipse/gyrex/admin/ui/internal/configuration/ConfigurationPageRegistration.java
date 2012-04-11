@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -35,8 +35,8 @@ public class ConfigurationPageRegistration {
 		}
 	}
 
-	public ConfigurationPage createPage() throws CoreException {
-		return (ConfigurationPage) element.createExecutableExtension("class");
+	public AdminPage createPage() throws CoreException {
+		return (AdminPage) element.createExecutableExtension("class");
 	}
 
 	@Override

@@ -14,11 +14,11 @@ package org.eclipse.gyrex.admin.ui.persistence.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutDataFactory;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.persistence.internal.storage.RepositoryRegistry;
 import org.eclipse.gyrex.persistence.storage.registry.IRepositoryDefinition;
 import org.eclipse.gyrex.persistence.storage.registry.IRepositoryRegistry;
@@ -63,7 +63,7 @@ public class RepositoriesSection extends ViewerWithButtonsSectionPart {
 	 * @param parent
 	 * @param page
 	 */
-	public RepositoriesSection(final Composite parent, final ConfigurationPage page) {
+	public RepositoriesSection(final Composite parent, final AdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		bindingContext = page.getBindingContext();
 		final Section section = getSection();

@@ -9,74 +9,39 @@
  * Contributors:
  *      Mike Tschierschke - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.configuration;
+package org.eclipse.gyrex.admin.ui.pages;
 
 import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.ManagedForm;
 import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for configuration pages in the Gyrex Admin UI.
+ * Base class for pages in the Gyrex Admin Console.
  * <p>
- * The Gyrex Admin UI provides a pluggable way for configuring systems. Clients
- * simply need to provide an implementation of this class in order to
- * participate in the configuration perspective in the Admin UI. The concept is
- * similar to Eclipse preferences but not tight to just preferences.
+ * The Gyrex Admin Console provides a pluggable way for configuring systems.
+ * Clients need to provide an implementation of this class in order to
+ * participate in the Admin Console.
  * </p>
  * <p>
- * This class must be subclassed by clients that contribute a configuration page
- * to Gyrex.
+ * This class must be subclassed by clients that contribute a page to the Gyrex
+ * Admin Console. It is considered part of a service provider API. As such it
+ * may evolve faster than other APIs.
  * </p>
  */
-public abstract class ConfigurationPage extends EventManager {
-
-	private static class PageForm extends ManagedForm {
-		public PageForm(final ConfigurationPage page, final ScrolledForm form, final FormToolkit toolkit) {
-			super(toolkit, form);
-			setContainer(page);
-		}
-
-		@Override
-		public void dirtyStateChanged() {
-			getPage().firePropertyChange(PROP_DIRTY);
-		}
-
-		public ConfigurationPage getPage() {
-			return (ConfigurationPage) getContainer();
-		}
-
-		@Override
-		public void staleStateChanged() {
-			if (getForm().isDisposed()) {
-				return;
-			}
-			if (getPage().isActive()) {
-				refresh();
-			}
-		}
-	}
+public abstract class AdminPage extends EventManager {
 
 	/**
 	 * The property id for {@link #getTitle()}, {@link #getTitleImage()} and
@@ -89,15 +54,25 @@ public abstract class ConfigurationPage extends EventManager {
 	 */
 	public static final int PROP_DIRTY = IWorkbenchPartConstants.PROP_DIRTY;
 
-	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationPage.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AdminPage.class);
 
-	private IConfigurationPageContainer container;
-	private PageForm mform;
 	private DataBindingContext bindingContext;
 
 	private String title;
 	private String titleToolTip;
 	private Image titleImage;
+
+	/**
+	 * Called by the Admin UI whenever a page becomes active.
+	 * <p>
+	 * The default implementation does nothing. Subclass may override and
+	 * trigger logic that is necessary in order to activate a page. Note, when a
+	 * page becomes active, its control has been created.
+	 * </p>
+	 */
+	public void activate() {
+		// empty
+	}
 
 	/**
 	 * Adds a listener for changes to properties of this configuration page. Has
@@ -111,6 +86,22 @@ public abstract class ConfigurationPage extends EventManager {
 	 */
 	public void addPropertyListener(final IPropertyListener listener) {
 		addListenerObject(listener);
+	}
+
+	/**
+	 * Creates the page control.
+	 * <p>
+	 * Subclasses must override and implement in order to create the page
+	 * controls. Note, implementors must not make any assumptions about the
+	 * parent controls.
+	 * </p>
+	 * 
+	 * @param parent
+	 *            the parent composite
+	 */
+	public void createControl(final Composite parent) {
+		final Label label = new Label(parent, SWT.NONE);
+		label.setText("empty");
 	}
 
 	/**
@@ -135,50 +126,11 @@ public abstract class ConfigurationPage extends EventManager {
 	}
 
 	/**
-	 * Creates the page control.
-	 * <p>
-	 * Subclasses must override and implement the page controls. Implements must
-	 * not make any assumptions about the parent controls.
-	 * </p>
-	 * 
-	 * @param parent
-	 *            the parent composite
-	 */
-	public void createPage(final Composite contentComp) {
-		final Label label = new Label(contentComp, SWT.NONE);
-		label.setText("empty");
-	}
-
-	/**
-	 * Creates the page control.
-	 * <p>
-	 * Calls the method
-	 * {@link ConfigurationPage#createFormContent(IManagedForm)} to fill the
-	 * page with specific content.
-	 * </p>
-	 * 
-	 * @param parent
-	 *            the parent composite
-	 * @param toolkit
-	 *            a reusable {@link FormToolkit} that must <strong>not</strong>
-	 *            be disposed by this page
-	 */
-	public void createPage(final Composite parent, final FormToolkit toolkit) {
-		final ScrolledForm form = toolkit.createScrolledForm(parent);
-		mform = new PageForm(this, form, toolkit);
-		BusyIndicator.showWhile(parent.getDisplay(), new Runnable() {
-			public void run() {
-				createFormContent(mform);
-			}
-		});
-	}
-
-	/**
 	 * Disposes of this page.
 	 * <p>
-	 * This is the last method called on the {@link ConfigurationPage}. At this
-	 * point the page controls (if they were ever created) have been disposed as
-	 * part of an SWT composite. There is no guarantee that
+	 * This is the last method called on the {@link AdminPage}. At this point
+	 * the page controls (if they were ever created) have been disposed as part
+	 * of an SWT composite. There is no guarantee that
 	 * {@link #createPageForm(IManagedForm)} has been called, so the page
 	 * controls may never have been created.
 	 * </p>
@@ -197,9 +149,6 @@ public abstract class ConfigurationPage extends EventManager {
 	 * </p>
 	 */
 	public void dispose() {
-		if (mform != null) {
-			mform.dispose();
-		}
 		if (bindingContext != null) {
 			// dispose but don't set to null
 			// (otherwise the getter might create a new one)
@@ -219,7 +168,7 @@ public abstract class ConfigurationPage extends EventManager {
 		for (int nX = 0; nX < array.length; nX++) {
 			final IPropertyListener l = (IPropertyListener) array[nX];
 			try {
-				l.propertyChanged(ConfigurationPage.this, propertyId);
+				l.propertyChanged(AdminPage.this, propertyId);
 			} catch (final RuntimeException e) {
 				LOG.error("Error notifying listener {}. {}", new Object[] { l, e.getMessage(), e });
 			}
@@ -237,46 +186,6 @@ public abstract class ConfigurationPage extends EventManager {
 			bindingContext = new DataBindingContext(realm);
 		}
 		return bindingContext;
-	}
-
-	/**
-	 * Returns the container which hosts this page.
-	 * 
-	 * @return the {@link IConfigurationPageContainer}
-	 */
-	public IConfigurationPageContainer getContainer() {
-		return container;
-	}
-
-	/**
-	 * Returns the page control.
-	 * 
-	 * @return managed form's control
-	 */
-	public Control getControl() {
-		return mform != null ? mform.getForm() : null;
-	}
-
-	/**
-	 * Returns the managed form owned by this page.
-	 * 
-	 * @return the managed form
-	 */
-	public IManagedForm getManagedForm() {
-		return mform;
-	}
-
-	/**
-	 * Returns the selection provider of this page.
-	 * <p>
-	 * The default implementation returns <code>null</code>. Subclasses may
-	 * override.
-	 * </p>
-	 * 
-	 * @return the selection provider (may be <code>null</code>)
-	 */
-	public ISelectionProvider getSelectionProvider() {
-		return null;
 	}
 
 	/**
@@ -323,51 +232,6 @@ public abstract class ConfigurationPage extends EventManager {
 	}
 
 	/**
-	 * Tests if the page is active by asking the parent container if this page
-	 * is the currently active page.
-	 * 
-	 * @return <code>true</code> if the page is currently active,
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isActive() {
-		return equals(container.getActivePageInstance());
-	}
-
-	/**
-	 * Indicates whether the page contains unapplied changes.
-	 * <p>
-	 * The default implementation delegates to the managed form.
-	 * </p>
-	 * 
-	 * @return true when unapplied changes occur on the page
-	 */
-	public boolean isDirty() {
-		if (mform != null) {
-			return mform.isDirty();
-		}
-		return false;
-	}
-
-	/**
-	 * Notifies that the save button of this page's container has been pressed.
-	 * <p>
-	 * The default implementation calls commit on the managed form and returns
-	 * {@link Status#OK_STATUS}.
-	 * </p>
-	 * 
-	 * @param monitor
-	 *            a monitor for reporting progress
-	 * @return a status indicating the result of the save operation
-	 */
-	public IStatus performSave(final IProgressMonitor monitor) {
-		if (mform != null) {
-			mform.commit(true);
-			firePropertyChange(PROP_DIRTY);
-		}
-		return Status.OK_STATUS;
-	}
-
-	/**
 	 * Removes the given property listener from this configuration page. Has no
 	 * affect if an identical listener is not registered.
 	 * 
@@ -376,43 +240,6 @@ public abstract class ConfigurationPage extends EventManager {
 	 */
 	public void removePropertyListener(final IPropertyListener listener) {
 		removeListenerObject(listener);
-	}
-
-	/**
-	 * Notifies this page that is has been activated within the Admin UI.
-	 * <p>
-	 * The default implementation refreshes the managed form if it is stale and
-	 * the page became active.
-	 * </p>
-	 * <p>
-	 * Clients should not call this method (the Admin UI calls this method at
-	 * appropriate times).
-	 * </p>
-	 * 
-	 * @param active
-	 *            <code>true</code> if the page has been activate,
-	 *            <code>false</code> otherwise
-	 */
-	public void setActive(final boolean active) {
-		if (active) {
-			if ((mform != null) && mform.isStale()) {
-				mform.refresh();
-			}
-		}
-	}
-
-	/**
-	 * Sets the container which hosts the page.
-	 * <p>
-	 * Clients should not call this method (the Admin UI calls this method at
-	 * appropriate times).
-	 * </p>
-	 * 
-	 * @param container
-	 *            the container
-	 */
-	public void setContainer(final IConfigurationPageContainer container) {
-		this.container = container;
 	}
 
 	/**

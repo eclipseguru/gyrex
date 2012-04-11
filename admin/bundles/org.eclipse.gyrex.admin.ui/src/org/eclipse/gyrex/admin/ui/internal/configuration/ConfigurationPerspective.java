@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.ui.IPageLayout;
@@ -23,7 +23,7 @@ import org.eclipse.ui.IPerspectiveFactory;
  * <p>
  * The tree to choose configuration pages is represented by the
  * {@link ConfigurationNavigatorView}, the matching configuration pages to the
- * tree elements are displayed as {@link ConfigurationPage} in the
+ * tree elements are displayed as {@link AdminPage} in the
  * {@link ConfigurationPanelView}
  */
 public class ConfigurationPerspective implements IPerspectiveFactory {

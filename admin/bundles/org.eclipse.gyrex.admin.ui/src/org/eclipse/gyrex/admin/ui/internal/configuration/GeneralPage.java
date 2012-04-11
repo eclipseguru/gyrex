@@ -11,8 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -21,7 +21,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 /**
  * General configuration page.
  */
-public class GeneralPage extends ConfigurationPage {
+public class GeneralPage extends AdminPage {
 
 	@Override
 	protected void createFormContent(final IManagedForm managedForm) {

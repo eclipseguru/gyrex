@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
-import org.eclipse.gyrex.admin.ui.configuration.IConfigurationPageContainer;
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.admin.ui.pages.IAdminPageService;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -56,12 +56,12 @@ import org.eclipse.ui.part.ViewPart;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * RAP based View to display a specific {@link ConfigurationPage}. The trigger
+ * RAP based View to display a specific {@link AdminPage}. The trigger
  * to change the currently displayed page is an {@link SelectionEvent} from the
  * {@link ConfigurationNavigatorView}
  */
 @SuppressWarnings("restriction")
-public class ConfigurationPanelView extends ViewPart implements ISelectionListener, IConfigurationPageContainer, ISaveablesSource, ISaveablePart {
+public class ConfigurationPanelView extends ViewPart implements ISelectionListener, IAdminPageService, ISaveablesSource, ISaveablePart {
 
 	private static class HeaderForm extends ManagedForm {
 		public HeaderForm(final ConfigurationPanelView configurationPanelView, final ScrolledForm form) {
@@ -92,19 +92,19 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	private static final String REGISTRATION = "org.eclipse.gyrex.admin.ui.internal.configuration.page.registration";
 
 	private FormToolkit toolkit;
-	private ConfigurationPage currentPage;
+	private AdminPage currentPage;
 	private HeaderForm headerForm;
 	private ScrolledPageBook pageBook;
 
-	private final Map<String, ConfigurationPage> pagesById = new HashMap<String, ConfigurationPage>();
+	private final Map<String, AdminPage> pagesById = new HashMap<String, AdminPage>();
 
 	private final IPropertyListener pagePropertyListener = new IPropertyListener() {
 		@Override
 		public void propertyChanged(final Object source, final int propId) {
 			switch (propId) {
 				case IWorkbenchPartConstants.PROP_DIRTY:
-					if (source instanceof ConfigurationPage) {
-						maybeDirty((ConfigurationPage) source);
+					if (source instanceof AdminPage) {
+						maybeDirty((AdminPage) source);
 						updateSaveActions();
 					}
 					break;
@@ -120,7 +120,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 
 	private IWorkbenchAction saveAction;
 	private IWorkbenchAction saveAllAction;
-	private final ConcurrentMap<ConfigurationPage, ConfigurationPageSaveable> saveablesByPage = new ConcurrentHashMap<ConfigurationPage, ConfigurationPageSaveable>(4);
+	private final ConcurrentMap<AdminPage, ConfigurationPageSaveable> saveablesByPage = new ConcurrentHashMap<AdminPage, ConfigurationPageSaveable>(4);
 
 	private synchronized void addPage(final String id, final PageContribution provider) {
 		if (pagesById.containsKey(id)) {
@@ -128,7 +128,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		}
 
 		try {
-			final ConfigurationPage page = provider.createPage();
+			final AdminPage page = provider.createPage();
 			pagesById.put(id, page);
 			page.setContainer(this);
 			final Composite pageParent = pageBook.createPage(id);
@@ -176,9 +176,9 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		super.dispose();
 
 		// dispose and clear
-		final Collection<ConfigurationPage> pages = pagesById.values();
+		final Collection<AdminPage> pages = pagesById.values();
 		pagesById.clear();
-		for (final ConfigurationPage page : pages) {
+		for (final AdminPage page : pages) {
 			page.dispose();
 		}
 	}
@@ -194,7 +194,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	}
 
 	@Override
-	public ConfigurationPage getActivePageInstance() {
+	public AdminPage getActivePageInstance() {
 		return currentPage;
 	}
 
@@ -249,7 +249,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 		return isDirty();
 	}
 
-	void maybeDirty(final ConfigurationPage source) {
+	void maybeDirty(final AdminPage source) {
 		if (source.isDirty()) {
 			final ConfigurationPageSaveable newSaveable = new ConfigurationPageSaveable(this, source);
 			final ConfigurationPageSaveable existingSaveable = saveablesByPage.putIfAbsent(source, newSaveable);
@@ -340,7 +340,7 @@ public class ConfigurationPanelView extends ViewPart implements ISelectionListen
 	}
 
 	void updateHeader() {
-		final ConfigurationPage page = getActivePageInstance();
+		final AdminPage page = getActivePageInstance();
 		if (page != null) {
 			headerForm.getForm().setImage(page.getTitleImage());
 			String title = page.getTitle();

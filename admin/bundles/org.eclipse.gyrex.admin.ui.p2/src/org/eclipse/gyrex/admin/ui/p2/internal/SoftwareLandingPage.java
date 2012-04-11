@@ -11,8 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -24,7 +24,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /**
  * Configuration page for Jobs.
  */
-public class SoftwareLandingPage extends ConfigurationPage {
+public class SoftwareLandingPage extends AdminPage {
 
 	/**
 	 * Creates a new instance.

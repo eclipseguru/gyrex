@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.context.internal;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -23,7 +23,7 @@ import org.eclipse.ui.forms.IManagedForm;
 /**
  *
  */
-public class ContextApplicationPage extends ConfigurationPage {
+public class ContextApplicationPage extends AdminPage {
 
 	private ContextsSection contextSection;
 

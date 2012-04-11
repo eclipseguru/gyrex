@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutDataFactory;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.http.application.manager.IApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
@@ -56,7 +56,7 @@ import org.osgi.service.prefs.BackingStoreException;
 @SuppressWarnings("restriction")
 public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 
-	private final ConfigurationPage page;
+	private final AdminPage page;
 
 	private Button addButton;
 	private Button editButton;
@@ -74,7 +74,7 @@ public class ApplicationsSection extends ViewerWithButtonsSectionPart {
 	 * @param parent
 	 * @param page
 	 */
-	public ApplicationsSection(final Composite parent, final ConfigurationPage page) {
+	public ApplicationsSection(final Composite parent, final AdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		this.page = page;
 		final Section section = getSection();

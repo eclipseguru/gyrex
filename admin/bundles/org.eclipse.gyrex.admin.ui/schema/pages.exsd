@@ -6,7 +6,13 @@
          <meta.schema plugin="org.eclipse.gyrex.admin.ui" id="pages" name="Admin Pages"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows the contribution of pages and categories to the Gyrex Admin Console. Pages are organized into categories. 
+&lt;p&gt;
+Note, as far as usability is concerned we recommend not creating a huge amount of additional categories. The Gyrex Admin Console is intended for administration of a Gyrex cluster. Thus, it should not be abused as a general administration UI for applications running in a cluster.
+&lt;/p&gt;
+&lt;p&gt;
+Although not marked as INTERNAL, contributions to the Admin Console are considered part of a provider API which may evolve faster than the usual Gyrex API.
+&lt;/p&gt;
       </documentation>
    </annotation>
 
@@ -49,6 +55,11 @@
    </element>
 
    <element name="page">
+      <annotation>
+         <documentation>
+            Adds a page to the Admin Console.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -93,7 +104,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage:"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.gyrex.admin.ui.pages.AdminPage:"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -108,6 +119,11 @@
    </element>
 
    <element name="category">
+      <annotation>
+         <documentation>
+            Adds a category to the Admin Console.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -149,14 +165,6 @@
 
 
 
-   <annotation>
-      <appinfo>
-         <meta.section type="implementation"/>
-      </appinfo>
-      <documentation>
-         [Geben Sie hier Informationen zur bereitgestellten Implementierung dieses Erweiterungspunkts ein.]
-      </documentation>
-   </annotation>
 
 
 </schema>

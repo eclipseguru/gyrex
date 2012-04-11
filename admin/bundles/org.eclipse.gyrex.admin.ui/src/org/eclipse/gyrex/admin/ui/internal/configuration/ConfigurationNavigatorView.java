@@ -11,10 +11,10 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
 import org.eclipse.gyrex.admin.ui.internal.pages.CategoryContribution;
 import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -32,7 +32,7 @@ import org.eclipse.ui.part.ViewPart;
 /**
  * A View that displays all registered admin configuration elements in the
  * running platform. Depending on the current selection, the matching
- * {@link ConfigurationPage} is displayed in the {@link ConfigurationPanelView}
+ * {@link AdminPage} is displayed in the {@link ConfigurationPanelView}
  */
 public class ConfigurationNavigatorView extends ViewPart {
 

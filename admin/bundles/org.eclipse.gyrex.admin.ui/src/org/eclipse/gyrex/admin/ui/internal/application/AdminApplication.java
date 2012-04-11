@@ -15,13 +15,16 @@ package org.eclipse.gyrex.admin.ui.internal.application;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
 import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.rwt.RWT;
 import org.eclipse.rwt.events.BrowserHistoryEvent;
 import org.eclipse.rwt.events.BrowserHistoryListener;
@@ -126,28 +129,20 @@ public class AdminApplication implements IEntryPoint {
 	private Composite centerArea;
 	private Navigation navigation;
 	private Composite navBar;
-	private final Map<String, ConfigurationPage> createdPages = new HashMap<String, ConfigurationPage>();
+	private final Map<String, AdminPage> pagesById = new HashMap<String, AdminPage>();
+	private AdminPage currentPage;
 
-	private void activate(final PageContribution contribution) {
-		if (!createdPages.containsKey(contribution.getId())) {
-			try {
-				createdPages.put(contribution.getId(), contribution.createPage());
-			} catch (final CoreException e) {
-				LOG.error("Unable to load page class", e);
-				return;
-			}
+	private void activate(final AdminPage page, final PageContribution contribution) {
+		// TODO: should switch to using a StackLayout and not disposing children every time
+		RWT.getBrowserHistory().createEntry(contribution.getId(), contribution.getName());
+		final Control[] children = centerArea.getChildren();
+		for (final Control child : children) {
+			child.dispose();
 		}
-		final ConfigurationPage page = createdPages.get(contribution.getId());
-		if (page != null) {
-			RWT.getBrowserHistory().createEntry(contribution.getId(), contribution.getName());
-			final Control[] children = centerArea.getChildren();
-			for (final Control child : children) {
-				child.dispose();
-			}
-			final Composite contentComp = PageUtil.initPage(contribution.getName(), centerArea);
-			page.createPage(contentComp);
-			centerArea.layout(true, true);
-		}
+		final Composite contentComp = PageUtil.initPage(page.getTitle(), centerArea);
+		page.createControl(contentComp);
+		centerArea.layout(true, true);
+		page.activate();
 	}
 
 	private void attachHistoryListener() {
@@ -337,9 +332,37 @@ public class AdminApplication implements IEntryPoint {
 		return 0;
 	}
 
+	private void deactivate(final AdminPage page) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private AdminPage getPage(final PageContribution contribution) throws CoreException {
+		if (!pagesById.containsKey(contribution.getId())) {
+			pagesById.put(contribution.getId(), contribution.createPage());
+		}
+		return pagesById.get(contribution.getId());
+	}
+
 	private void openPage(final PageContribution contribution) {
-		navigation.selectNavigationEntry(contribution);
-		activate(contribution);
+		try {
+			final AdminPage page = getPage(contribution);
+			if (null == page) {
+				Policy.getStatusHandler().show(new Status(IStatus.ERROR, AdminUiActivator.SYMBOLIC_NAME, String.format("Page '%s' not found!", contribution.getId())), "Error Opening Page");
+				return;
+			}
+
+			if ((null != currentPage) && (page != currentPage)) {
+				deactivate(currentPage);
+			}
+
+			currentPage = page;
+			navigation.selectNavigationEntry(contribution);
+			activate(page, contribution);
+		} catch (final CoreException e) {
+			Policy.getStatusHandler().show(e.getStatus(), "Error Opening Page");
+			return;
+		}
 	}
 
 	private void selectInitialContribution() {

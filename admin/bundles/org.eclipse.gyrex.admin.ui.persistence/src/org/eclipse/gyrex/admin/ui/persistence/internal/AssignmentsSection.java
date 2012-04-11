@@ -11,10 +11,10 @@
  */
 package org.eclipse.gyrex.admin.ui.persistence.internal;
 
-import org.eclipse.gyrex.admin.ui.configuration.ConfigurationPage;
-import org.eclipse.gyrex.admin.ui.configuration.IConfigurationPageContainer;
 import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutDataFactory;
 import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.admin.ui.pages.IAdminPageService;
 import org.eclipse.gyrex.persistence.internal.storage.RepositoryRegistry;
 import org.eclipse.gyrex.persistence.storage.lookup.DefaultRepositoryLookupStrategy;
 import org.eclipse.gyrex.persistence.storage.registry.IRepositoryDefinition;
@@ -46,7 +46,7 @@ public class AssignmentsSection extends ViewerWithButtonsSectionPart implements 
 
 	private TreeViewer assignmentsTree;
 	private final DataBindingContext bindingContext;
-	private final IConfigurationPageContainer configurationPageContainer;
+	private final IAdminPageService configurationPageContainer;
 	private IRepositoryDefinition currentInput;
 
 	/**
@@ -55,7 +55,7 @@ public class AssignmentsSection extends ViewerWithButtonsSectionPart implements 
 	 * @param parent
 	 * @param page
 	 */
-	public AssignmentsSection(final Composite parent, final ConfigurationPage page) {
+	public AssignmentsSection(final Composite parent, final AdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		bindingContext = page.getBindingContext();
 		configurationPageContainer = page.getContainer();
