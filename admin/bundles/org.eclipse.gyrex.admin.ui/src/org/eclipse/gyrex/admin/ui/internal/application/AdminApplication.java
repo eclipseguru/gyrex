@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
-import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
-import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.core.runtime.CoreException;
@@ -48,9 +48,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.osgi.framework.Version;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This class controls all aspects of the application's execution and is
  * contributed through the plugin.xml.
@@ -62,8 +59,6 @@ public class AdminApplication implements IEntryPoint {
 	private static final int CONTENT_MIN_HEIGHT = 800;
 	private static final int HEADER_HEIGHT = 140;
 	private static final int CENTER_AREA_WIDTH = 998;
-
-	private static final Logger LOG = LoggerFactory.getLogger(AdminApplication.class);
 
 	private static FormData createLogoFormData(final Image rapLogo) {
 		final FormData data = new FormData();
@@ -139,7 +134,7 @@ public class AdminApplication implements IEntryPoint {
 		for (final Control child : children) {
 			child.dispose();
 		}
-		final Composite contentComp = PageUtil.initPage(page.getTitle(), centerArea);
+		final Composite contentComp = AdminUiUtil.initPage(page.getTitle(), centerArea);
 		page.createControl(contentComp);
 		centerArea.layout(true, true);
 		page.activate();
@@ -328,13 +323,16 @@ public class AdminApplication implements IEntryPoint {
 				display.sleep();
 			}
 		}
+
+		if (null != currentPage) {
+			deactivate(currentPage);
+		}
 		display.dispose();
 		return 0;
 	}
 
 	private void deactivate(final AdminPage page) {
-		// TODO Auto-generated method stub
-
+		page.deactivate();
 	}
 
 	private AdminPage getPage(final PageContribution contribution) throws CoreException {

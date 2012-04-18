@@ -14,9 +14,9 @@ package org.eclipse.gyrex.admin.ui.internal.application;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
-import org.eclipse.gyrex.admin.ui.internal.pages.CategoryContribution;
-import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 
 import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;

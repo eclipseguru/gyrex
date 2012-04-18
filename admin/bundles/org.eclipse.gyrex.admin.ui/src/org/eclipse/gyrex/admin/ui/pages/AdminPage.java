@@ -12,18 +12,13 @@
 package org.eclipse.gyrex.admin.ui.pages;
 
 import org.eclipse.core.commands.common.EventManager;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbenchPartConstants;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.Form;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +51,6 @@ public abstract class AdminPage extends EventManager {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AdminPage.class);
 
-	private DataBindingContext bindingContext;
-
 	private String title;
 	private String titleToolTip;
 	private Image titleImage;
@@ -65,9 +58,16 @@ public abstract class AdminPage extends EventManager {
 	/**
 	 * Called by the Admin UI whenever a page becomes active.
 	 * <p>
-	 * The default implementation does nothing. Subclass may override and
-	 * trigger logic that is necessary in order to activate a page. Note, when a
-	 * page becomes active, its control has been created.
+	 * Subclass may override and trigger logic that is necessary in order to
+	 * activate a page (eg. register listeners with underlying model, etc.).
+	 * </p>
+	 * <p>
+	 * Note, when a page becomes active, its control has been created.
+	 * </p>
+	 * <p>
+	 * Clients should not call this method (the Admin UI calls this method at
+	 * appropriate times). However, implementors must call super at appropriate
+	 * times.
 	 * </p>
 	 */
 	public void activate() {
@@ -93,68 +93,39 @@ public abstract class AdminPage extends EventManager {
 	 * <p>
 	 * Subclasses must override and implement in order to create the page
 	 * controls. Note, implementors must not make any assumptions about the
-	 * parent controls.
-	 * </p>
-	 * 
-	 * @param parent
-	 *            the parent composite
-	 */
-	public void createControl(final Composite parent) {
-		final Label label = new Label(parent, SWT.NONE);
-		label.setText("empty");
-	}
-
-	/**
-	 * Subclasses should override this method to create content in the form
-	 * hosted in this page.
-	 * <p>
-	 * Implementors should not set a title or image on the form. Pages are
-	 * hosted in a container with a shared, stable header.
-	 * </p>
-	 * <p>
-	 * The method {@link IManagedForm#getForm()} returns the form whose
-	 * {@link Form#getBody() body} should be used as a parent composite. Note
-	 * that the form's body does not have a layout manager set. Implementors are
-	 * responsible for setting one.
-	 * </p>
-	 * 
-	 * @param managedForm
-	 *            the form hosted in this page.
-	 */
-	protected void createFormContent(final IManagedForm managedForm) {
-		// empty
-	}
-
-	/**
-	 * Disposes of this page.
-	 * <p>
-	 * This is the last method called on the {@link AdminPage}. At this point
-	 * the page controls (if they were ever created) have been disposed as part
-	 * of an SWT composite. There is no guarantee that
-	 * {@link #createPageForm(IManagedForm)} has been called, so the page
-	 * controls may never have been created.
-	 * </p>
-	 * <p>
-	 * Within this method a page may release any resources, fonts, images,
-	 * etc.&nbsp; held by this page. It is also very important to deregister all
-	 * listeners from the platform.
-	 * </p>
-	 * <p>
-	 * The default implementation disposes the manager form and removes all
-	 * listeners.
+	 * parent control.
 	 * </p>
 	 * <p>
 	 * Clients should not call this method (the Admin UI calls this method at
 	 * appropriate times).
 	 * </p>
+	 * 
+	 * @param parent
+	 *            the parent composite
+	 * @return the created control
+	 * @noreference This method is not intended to be referenced by clients.
 	 */
-	public void dispose() {
-		if (bindingContext != null) {
-			// dispose but don't set to null
-			// (otherwise the getter might create a new one)
-			bindingContext.dispose();
-		}
-		clearListeners();
+	public Control createControl(final Composite parent) {
+		final Label label = new Label(parent, SWT.NONE);
+		label.setText("empty");
+		return label;
+	}
+
+	/**
+	 * Called by the Admin UI whenever a page becomes inactive.
+	 * <p>
+	 * The default implementation does nothing. Subclass may override and
+	 * trigger logic that is necessary in order to inactivate a page (eg.
+	 * unregister listeners with underlying model, etc.).
+	 * </p>
+	 * <p>
+	 * Clients should not call this method (the Admin UI calls this method at
+	 * appropriate times). However, implementors must call super at appropriate
+	 * times.
+	 * </p>
+	 */
+	public void deactivate() {
+		// empty
 	}
 
 	/**
@@ -173,19 +144,6 @@ public abstract class AdminPage extends EventManager {
 				LOG.error("Error notifying listener {}. {}", new Object[] { l, e.getMessage(), e });
 			}
 		}
-	}
-
-	/**
-	 * Returns the {@link DataBindingContext} for the page.
-	 * 
-	 * @return the bindingContext
-	 */
-	public DataBindingContext getBindingContext() {
-		if (null == bindingContext) {
-			final Realm realm = SWTObservables.getRealm(PlatformUI.getWorkbench().getDisplay());
-			bindingContext = new DataBindingContext(realm);
-		}
-		return bindingContext;
 	}
 
 	/**

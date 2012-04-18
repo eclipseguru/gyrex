@@ -9,7 +9,7 @@
  * Contributors:
  *      Mike Tschierschke - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.internal.pages;
+package org.eclipse.gyrex.admin.ui.internal.pages.registry;
 
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 

@@ -68,13 +68,6 @@ Export-Package: org.eclipse.gyrex.admin.ui.internal;x-internal:=true,
    org.eclipse.gyrex.admin.ui.jobs,
    org.eclipse.gyrex.admin.ui.persistence,
    org.eclipse.gyrex.admin.ui.logback",
- org.eclipse.gyrex.admin.ui.internal.design;x-internal:=true,
- org.eclipse.gyrex.admin.ui.internal.design.builder;x-internal:=true,
- org.eclipse.gyrex.admin.ui.internal.design.business;x-internal:=true,
- org.eclipse.gyrex.admin.ui.internal.design.business.builder;x-internal:=true,
- org.eclipse.gyrex.admin.ui.internal.design.business.layoutsets;x-internal:=true,
- org.eclipse.gyrex.admin.ui.internal.design.managers;x-internal:=true,
- org.eclipse.gyrex.admin.ui.internal.design.stacks;x-internal:=true,
  org.eclipse.gyrex.admin.ui.internal.forms;
   x-friends:="org.eclipse.gyrex.admin.ui.cloud,
    org.eclipse.gyrex.admin.ui.persistence,
@@ -95,7 +88,6 @@ Export-Package: org.eclipse.gyrex.admin.ui.internal;x-internal:=true,
    org.eclipse.gyrex.admin.ui.http,
    org.eclipse.gyrex.admin.ui.persistence,
    org.eclipse.gyrex.admin.ui.logback",
- org.eclipse.gyrex.admin.ui.internal.intro;x-internal:=true,
  org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
   x-friends:="org.eclipse.gyrex.admin.ui,
    org.eclipse.gyrex.admin.ui.cloud,
@@ -117,3 +109,4 @@ Export-Package: org.eclipse.gyrex.admin.ui.internal;x-internal:=true,
    org.eclipse.gyrex.admin.ui.persistence,
    org.eclipse.gyrex.admin.ui.logback"
 Bundle-ClassPath: .
+Service-Component: OSGI-INF/overview-item-node-shortcuts.xml

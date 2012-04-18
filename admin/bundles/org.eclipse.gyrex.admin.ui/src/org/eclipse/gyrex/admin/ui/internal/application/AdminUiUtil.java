@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    EclipseSource - initial API and implementation
- *    Gunnar Wagenknecht - adapted to Gyrex Console
+ *    Gunnar Wagenknecht - adapted to Gyrex
  ******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.application;
 
@@ -20,7 +20,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-public final class PageUtil {
+public final class AdminUiUtil {
 
 	private static final int DEFAULT_SPACE = 10;
 
@@ -78,7 +78,7 @@ public final class PageUtil {
 	private static GridData createHeadlineLayoutData() {
 		final GridData layoutData = new GridData();
 		layoutData.verticalIndent = 30;
-		layoutData.horizontalIndent = DEFAULT_SPACE;
+//		layoutData.horizontalIndent = DEFAULT_SPACE;
 		return layoutData;
 	}
 
@@ -123,15 +123,16 @@ public final class PageUtil {
 
 	public static Composite initPage(final String title, final Composite parent) {
 		final Composite pageComp = new Composite(parent, SWT.NONE);
-		pageComp.setLayout(PageUtil.createGridLayoutWithoutMargin(1, false));
+		pageComp.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 		final Label label = createHeadlineLabel(pageComp, title);
 		label.setLayoutData(createHeadlineLayoutData());
 		final Composite contentComp = new Composite(pageComp, SWT.NONE);
-		contentComp.setLayoutData(PageUtil.createFillData());
+		contentComp.setLayoutData(AdminUiUtil.createFillData());
+		contentComp.setLayout(new FillLayout());
 		return contentComp;
 	}
 
-	private PageUtil() {
+	private AdminUiUtil() {
 		// prevent instantiation
 	}
 

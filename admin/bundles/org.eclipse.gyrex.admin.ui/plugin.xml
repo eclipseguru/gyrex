@@ -70,13 +70,13 @@
    <extension
          point="org.eclipse.gyrex.admin.ui.pages">
       <page
-            categoryId="org.eclipse.gyrex.admin.ui.general"
-            class="org.eclipse.gyrex.admin.ui.internal.configuration.GeneralPage"
-            id="org.eclipse.gyrex.admin.ui.page1"
-            name="General">
+            categoryId="org.eclipse.gyrex.admin.ui.system"
+            class="org.eclipse.gyrex.admin.ui.internal.pages.OverviewPage"
+            id="overview"
+            name="Overview">
       </page>
       <category
-            id="org.eclipse.gyrex.admin.ui.general"
+            id="org.eclipse.gyrex.admin.ui.system"
             name="System">
       </category>
    </extension>

@@ -111,7 +111,7 @@ public class DialogField {
 
 	/**
 	 * Creates all controls of the dialog field and fills it to a composite. The
-	 * composite is assumed to have <code>MGridLayout</code> as layout. The
+	 * composite is assumed to have <code>GridLayout</code> as layout. The
 	 * dialog field will adjust its controls' spans to the number of columns
 	 * given. To be reimplemented by dialog field implementors.
 	 */

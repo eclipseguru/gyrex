@@ -1,4 +1,4 @@
-package org.eclipse.gyrex.admin.ui.internal.pages;
+package org.eclipse.gyrex.admin.ui.internal.pages.registry;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 

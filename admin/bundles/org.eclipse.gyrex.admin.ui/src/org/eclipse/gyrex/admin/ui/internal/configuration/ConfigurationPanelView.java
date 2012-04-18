@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
-import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.admin.ui.pages.IAdminPageService;
 

@@ -11,9 +11,9 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.configuration;
 
-import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
-import org.eclipse.gyrex.admin.ui.internal.pages.CategoryContribution;
-import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;

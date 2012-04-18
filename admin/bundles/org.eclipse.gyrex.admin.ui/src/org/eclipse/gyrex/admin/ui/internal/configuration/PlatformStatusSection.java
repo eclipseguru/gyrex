@@ -14,6 +14,7 @@ package org.eclipse.gyrex.admin.ui.internal.configuration;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
+import org.eclipse.gyrex.admin.ui.internal.pages.OverviewPage;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -81,7 +82,7 @@ public class PlatformStatusSection extends SectionPart {
 	 * @param parent
 	 * @param page
 	 */
-	public PlatformStatusSection(final Composite parent, final GeneralPage page) {
+	public PlatformStatusSection(final Composite parent, final OverviewPage page) {
 		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		createContent(getSection(), page.getManagedForm().getToolkit());
 	}

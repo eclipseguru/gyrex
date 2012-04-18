@@ -14,9 +14,9 @@ package org.eclipse.gyrex.admin.ui.internal.application;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.gyrex.admin.ui.internal.pages.AdminPageRegistry;
-import org.eclipse.gyrex.admin.ui.internal.pages.CategoryContribution;
-import org.eclipse.gyrex.admin.ui.internal.pages.PageContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
+import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 
 import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
@@ -32,7 +32,7 @@ public abstract class Navigation {
 
 	public Navigation(final Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(PageUtil.createGridLayoutWithoutMargin(9, false));
+		composite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(9, false));
 		composite.setData(WidgetUtil.CUSTOM_VARIANT, "navigation");
 
 		// get and sort categories
