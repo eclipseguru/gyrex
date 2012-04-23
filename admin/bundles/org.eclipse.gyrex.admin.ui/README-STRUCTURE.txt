@@ -16,8 +16,14 @@ and to also separate the different administration aspects of a system.
 It's also intentional that the new structure is only two-levels
 (categories and pages). This should scale pretty well until the number of pages
 explodes. Therefore, please also do not introduce new pages freely. It must be
-discussed with the dev team whether the intend satisfy a new page and where is
+discussed with the dev team whether the intent satisfy a new page and where it
 should appear.
 
 
+
+System Category
+---------------
+
+The System category is intended for system relevant settings that have no connection
+to a tenant context.
 
