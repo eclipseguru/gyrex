@@ -55,14 +55,9 @@ public class TreeListDialogField extends DialogField {
 
 		private final Object[] NO_ELEMENTS = new Object[0];
 
-		// ------- ITreeContentProvider Interface ------------
-
 		public void dispose() {
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDoubleClickListener#doubleClick(org.eclipse.jface.viewers.DoubleClickEvent)
-		 */
 		public void doubleClick(final DoubleClickEvent event) {
 			doDoubleClick(event);
 		}
@@ -91,8 +86,6 @@ public class TreeListDialogField extends DialogField {
 			}
 			return false;
 		}
-
-		// ------- ISelectionChangedListener Interface ------------
 
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 			// will never happen
@@ -231,8 +224,6 @@ public class TreeListDialogField extends DialogField {
 		return false;
 	}
 
-	// ------ adapter communication
-
 	private boolean canMoveUp(final List<Object> selectedElements) {
 		if (isOkToUse(fTreeControl)) {
 			int nSelected = selectedElements.size();
@@ -255,8 +246,6 @@ public class TreeListDialogField extends DialogField {
 		}
 		return false;
 	}
-
-	// ------ layout helpers
 
 	protected Button createButton(final Composite parent, final String label, final SelectionListener listener) {
 		final Button button = new Button(parent, SWT.PUSH);
@@ -291,11 +280,6 @@ public class TreeListDialogField extends DialogField {
 		return new TreeViewer(tree);
 	}
 
-	// ------ UI creation
-
-	/*
-	* @see DialogField#dialogFieldChanged
-	*/
 	@Override
 	public void dialogFieldChanged() {
 		super.dialogFieldChanged();
@@ -319,9 +303,6 @@ public class TreeListDialogField extends DialogField {
 		}
 	}
 
-	/*
-	* @see DialogField#doFillIntoGrid
-	*/
 	@Override
 	public Control[] doFillIntoGrid(final Composite parent, final int nColumns) {
 		final PixelConverter converter = new PixelConverter(parent);
@@ -437,8 +418,6 @@ public class TreeListDialogField extends DialogField {
 		return fButtonsControl;
 	}
 
-	// ------ enable / disable management
-
 	/**
 	 * Gets the element shown at the given index.
 	 */
@@ -474,9 +453,6 @@ public class TreeListDialogField extends DialogField {
 		return true;
 	}
 
-	/*
-	* @see DialogField#getNumberOfControls
-	*/
 	@Override
 	public int getNumberOfControls() {
 		return 3;
@@ -505,8 +481,6 @@ public class TreeListDialogField extends DialogField {
 	public int getSize() {
 		return fElements.size();
 	}
-
-	// ------ model access
 
 	/**
 	 * Returns the tree control. When called the first time, the control will be
@@ -549,9 +523,9 @@ public class TreeListDialogField extends DialogField {
 		return fTreeControl;
 	}
 
-	/*
-	* Subclasses may override to specify a different style.
-	*/
+	/**
+	 * Subclasses may override to specify a different style.
+	 */
 	protected int getTreeStyle() {
 		final int style = SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL;
 		return style;
@@ -755,8 +729,6 @@ public class TreeListDialogField extends DialogField {
 		}
 	}
 
-	// ------- list maintenance
-
 	private List<Object> reverse(final List<Object> p) {
 		final List<Object> reverse = new ArrayList<Object>(p.size());
 		for (int i = p.size() - 1; i >= 0; i--) {
@@ -865,8 +837,6 @@ public class TreeListDialogField extends DialogField {
 		moveUp(getSelectedElements());
 	}
 
-	// ------- TreeViewerAdapter
-
 	/**
 	 * Updates the element.
 	 */
@@ -876,9 +846,9 @@ public class TreeListDialogField extends DialogField {
 		}
 	}
 
-	/*
-	* Updates the enable state of the all buttons
-	*/
+	/**
+	 * Updates the enable state of the all buttons
+	 */
 	protected void updateButtonState() {
 		if ((fButtonControls != null) && isOkToUse(fTreeControl) && fTreeControl.isEnabled()) {
 			final ISelection sel = fTree.getSelection();
@@ -891,9 +861,6 @@ public class TreeListDialogField extends DialogField {
 		}
 	}
 
-	/*
-	* @see DialogField#updateEnableState
-	*/
 	@Override
 	protected void updateEnableState() {
 		super.updateEnableState();
