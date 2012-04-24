@@ -14,106 +14,56 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Table;
-
 import org.eclipse.core.runtime.Assert;
-
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Table;
 
 /**
- * A list with check boxes and a button bar. Typical buttons are 'Check All' and 'Uncheck All'.
- * List model is independent of widget creation.
- * DialogFields controls are: Label, List and Composite containing buttons.
+ * A list with check boxes and a button bar. Typical buttons are 'Check All' and
+ * 'Uncheck All'. List model is independent of widget creation. DialogFields
+ * controls are: Label, List and Composite containing buttons.
  */
 public class CheckedListDialogField extends ListDialogField {
 
 	private int fCheckAllButtonIndex;
 	private int fUncheckAllButtonIndex;
 
-	private List fCheckedElements;
-	private List fGrayedElements;
+	private List<Object> fCheckedElements;
+	private final List<Object> fGrayedElements;
 
-	public CheckedListDialogField(IListAdapter adapter, String[] customButtonLabels, ILabelProvider lprovider) {
+	public CheckedListDialogField(final IListAdapter adapter, final String[] customButtonLabels, final ILabelProvider lprovider) {
 		super(adapter, customButtonLabels, lprovider);
-		fCheckedElements= new ArrayList();
-		fGrayedElements= new ArrayList();
+		fCheckedElements = new ArrayList<Object>();
+		fGrayedElements = new ArrayList<Object>();
 
-		fCheckAllButtonIndex= -1;
-		fUncheckAllButtonIndex= -1;
+		fCheckAllButtonIndex = -1;
+		fUncheckAllButtonIndex = -1;
 	}
 
 	/**
-	 * Sets the index of the 'check all' button in the button label array passed in the constructor.
-	 * The behavior of the button marked as the check button will then be handled internally.
-	 * (enable state, button invocation behavior)
+	 * Sets the check state of all elements.
 	 * 
-	 * @param checkAllButtonIndex the index of the check all button
+	 * @param state
+	 *            the checked state
 	 */
-	public void setCheckAllButtonIndex(int checkAllButtonIndex) {
-		Assert.isTrue(checkAllButtonIndex < fButtonLabels.length);
-		fCheckAllButtonIndex= checkAllButtonIndex;
-	}
-
-	/**
-	 * Sets the index of the 'uncheck all' button in the button label array passed in the
-	 * constructor. The behavior of the button marked as the uncheck button will then be handled
-	 * internally. (enable state, button invocation behavior)
-	 * 
-	 * @param uncheckAllButtonIndex the index of the check all button
-	 */
-	public void setUncheckAllButtonIndex(int uncheckAllButtonIndex) {
-		Assert.isTrue(uncheckAllButtonIndex < fButtonLabels.length);
-		fUncheckAllButtonIndex= uncheckAllButtonIndex;
-	}
-
-
-	/*
-	 * @see ListDialogField#createTableViewer
-	 */
-	protected TableViewer createTableViewer(Composite parent) {
-		Table table= new Table(parent, SWT.CHECK | getListStyle());
-		table.setFont(parent.getFont());
-		CheckboxTableViewer tableViewer= new CheckboxTableViewer(table);
-		tableViewer.addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent e) {
-				doCheckStateChanged(e);
-			}
-		});
-		return tableViewer;
-	}
-
-
-	/*
-	 * @see ListDialogField#getListControl
-	 */
-	public Control getListControl(Composite parent) {
-		Control control= super.getListControl(parent);
-		if (parent != null) {
-			((CheckboxTableViewer)fTable).setCheckedElements(fCheckedElements.toArray());
-			((CheckboxTableViewer)fTable).setGrayedElements(fGrayedElements.toArray());
+	public void checkAll(final boolean state) {
+		if (state) {
+			fCheckedElements = getElements();
+		} else {
+			fCheckedElements.clear();
 		}
-		return control;
-	}
-
-	/*
-	 * @see DialogField#dialogFieldChanged
-	 * Hooks in to get element changes to update check model.
-	 */
-	public void dialogFieldChanged() {
-		for (int i= fCheckedElements.size() -1; i >= 0; i--) {
-			if (!fElements.contains(fCheckedElements.get(i))) {
-				fCheckedElements.remove(i);
-			}
+		if (isOkToUse(fTableControl)) {
+			((CheckboxTableViewer) fTable).setAllChecked(state);
 		}
-		super.dialogFieldChanged();
+		checkStateChanged();
 	}
 
 	private void checkStateChanged() {
@@ -121,24 +71,62 @@ public class CheckedListDialogField extends ListDialogField {
 		super.dialogFieldChanged();
 	}
 
+	/*
+	 * @see ListDialogField#createTableViewer
+	 */
+	@Override
+	protected TableViewer createTableViewer(final Composite parent) {
+		final Table table = new Table(parent, SWT.CHECK | getListStyle());
+		table.setFont(parent.getFont());
+		final CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
+		tableViewer.addCheckStateListener(new ICheckStateListener() {
+			public void checkStateChanged(final CheckStateChangedEvent e) {
+				doCheckStateChanged(e);
+			}
+		});
+		return tableViewer;
+	}
+
+	/*
+	 * @see DialogField#dialogFieldChanged
+	 * Hooks in to get element changes to update check model.
+	 */
+	@Override
+	public void dialogFieldChanged() {
+		for (int i = fCheckedElements.size() - 1; i >= 0; i--) {
+			if (!fElements.contains(fCheckedElements.get(i))) {
+				fCheckedElements.remove(i);
+			}
+		}
+		super.dialogFieldChanged();
+	}
+
+	private void doCheckStateChanged(final CheckStateChangedEvent e) {
+		if (e.getChecked()) {
+			fCheckedElements.add(e.getElement());
+		} else {
+			fCheckedElements.remove(e.getElement());
+		}
+		checkStateChanged();
+	}
+
 	/**
 	 * Gets the checked elements.
 	 * 
 	 * @return the list of checked elements
 	 */
-	public List getCheckedElements() {
+	public List<Object> getCheckedElements() {
 		if (isOkToUse(fTableControl)) {
 			// workaround for bug 53853
-			Object[] checked= ((CheckboxTableViewer) fTable).getCheckedElements();
-			ArrayList res= new ArrayList(checked.length);
-			for (int i= 0; i < checked.length; i++) {
+			final Object[] checked = ((CheckboxTableViewer) fTable).getCheckedElements();
+			final ArrayList<Object> res = new ArrayList<Object>(checked.length);
+			for (int i = 0; i < checked.length; i++) {
 				res.add(checked[i]);
 			}
 			return res;
 		}
 
-
-		return new ArrayList(fCheckedElements);
+		return new ArrayList<Object>(fCheckedElements);
 	}
 
 	/**
@@ -150,126 +138,24 @@ public class CheckedListDialogField extends ListDialogField {
 		return fCheckedElements.size();
 	}
 
-	/**
-	 * Returns true if the element is checked.
-	 * 
-	 * @param obj the element to check
-	 * @return <code>true</code> if the given element is checked
+	/*
+	 * @see ListDialogField#getListControl
 	 */
-	public boolean isChecked(Object obj) {
-		if (isOkToUse(fTableControl)) {
-			return ((CheckboxTableViewer) fTable).getChecked(obj);
+	@Override
+	public Control getListControl(final Composite parent) {
+		final Control control = super.getListControl(parent);
+		if (parent != null) {
+			((CheckboxTableViewer) fTable).setCheckedElements(fCheckedElements.toArray());
+			((CheckboxTableViewer) fTable).setGrayedElements(fGrayedElements.toArray());
 		}
-
-		return fCheckedElements.contains(obj);
+		return control;
 	}
-
-	public boolean isGrayed(Object obj) {
-		if (isOkToUse(fTableControl)) {
-			return ((CheckboxTableViewer) fTable).getGrayed(obj);
-		}
-
-		return fGrayedElements.contains(obj);
-	}
-
-	/**
-	 * Sets the checked elements.
-	 * 
-	 * @param list the list of checked elements
-	 */
-	public void setCheckedElements(Collection list) {
-		fCheckedElements= new ArrayList(list);
-		if (isOkToUse(fTableControl)) {
-			((CheckboxTableViewer)fTable).setCheckedElements(list.toArray());
-		}
-		checkStateChanged();
-	}
-
-	/**
-	 * Sets the checked state of an element.
-	 * 
-	 * @param object the element for which to set the state
-	 * @param state the checked state
-	 */
-	public void setChecked(Object object, boolean state) {
-		setCheckedWithoutUpdate(object, state);
-		checkStateChanged();
-	}
-
-	/**
-	 * Sets the checked state of an element. No dialog changed listener is informed.
-	 * 
-	 * @param object the element for which to set the state
-	 * @param state the checked state
-	 */
-	public void setCheckedWithoutUpdate(Object object, boolean state) {
-		if (state) {
-			if (!fCheckedElements.contains(object)) {
-				fCheckedElements.add(object);
-			}
-		} else {
-			fCheckedElements.remove(object);
-		}
-		if (isOkToUse(fTableControl)) {
-			((CheckboxTableViewer)fTable).setChecked(object, state);
-		}
-	}
-
-	public void setGrayedWithoutUpdate(Object object, boolean state) {
-		if (state) {
-			if (!fGrayedElements.contains(object)) {
-				fGrayedElements.add(object);
-			}
-		} else {
-			fGrayedElements.remove(object);
-		}
-		if (isOkToUse(fTableControl)) {
-			((CheckboxTableViewer)fTable).setGrayed(object, state);
-		}
-	}
-
-	/**
-	 * Sets the check state of all elements.
-	 * 
-	 * @param state the checked state
-	 */
-	public void checkAll(boolean state) {
-		if (state) {
-			fCheckedElements= getElements();
-		} else {
-			fCheckedElements.clear();
-		}
-		if (isOkToUse(fTableControl)) {
-			((CheckboxTableViewer)fTable).setAllChecked(state);
-		}
-		checkStateChanged();
-	}
-
-
-	private void doCheckStateChanged(CheckStateChangedEvent e) {
-		if (e.getChecked()) {
-			fCheckedElements.add(e.getElement());
-		} else {
-			fCheckedElements.remove(e.getElement());
-		}
-		checkStateChanged();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.ListDialogField#replaceElement(java.lang.Object, java.lang.Object)
-	 */
-	public void replaceElement(Object oldElement, Object newElement) throws IllegalArgumentException {
-		boolean wasChecked= isChecked(oldElement);
-		super.replaceElement(oldElement, newElement);
-		setChecked(newElement, wasChecked);
-	}
-
-	// ------ enable / disable management
 
 	/*
 	 * @see ListDialogField#getManagedButtonState
 	 */
-	protected boolean getManagedButtonState(ISelection sel, int index) {
+	@Override
+	protected boolean getManagedButtonState(final ISelection sel, final int index) {
 		if (index == fCheckAllButtonIndex) {
 			return !fElements.isEmpty();
 		} else if (index == fUncheckAllButtonIndex) {
@@ -278,10 +164,34 @@ public class CheckedListDialogField extends ListDialogField {
 		return super.getManagedButtonState(sel, index);
 	}
 
+	/**
+	 * Returns true if the element is checked.
+	 * 
+	 * @param obj
+	 *            the element to check
+	 * @return <code>true</code> if the given element is checked
+	 */
+	public boolean isChecked(final Object obj) {
+		if (isOkToUse(fTableControl)) {
+			return ((CheckboxTableViewer) fTable).getChecked(obj);
+		}
+
+		return fCheckedElements.contains(obj);
+	}
+
+	public boolean isGrayed(final Object obj) {
+		if (isOkToUse(fTableControl)) {
+			return ((CheckboxTableViewer) fTable).getGrayed(obj);
+		}
+
+		return fGrayedElements.contains(obj);
+	}
+
 	/*
 	 * @see ListDialogField#extraButtonPressed
 	 */
-	protected boolean managedButtonPressed(int index) {
+	@Override
+	protected boolean managedButtonPressed(final int index) {
 		if (index == fCheckAllButtonIndex) {
 			checkAll(true);
 		} else if (index == fUncheckAllButtonIndex) {
@@ -292,16 +202,115 @@ public class CheckedListDialogField extends ListDialogField {
 		return true;
 	}
 
+	@Override
 	public void refresh() {
 		super.refresh();
 		if (isOkToUse(fTableControl)) {
-			((CheckboxTableViewer)fTable).setCheckedElements(fCheckedElements.toArray());
-			((CheckboxTableViewer)fTable).setGrayedElements(fGrayedElements.toArray());
+			((CheckboxTableViewer) fTable).setCheckedElements(fCheckedElements.toArray());
+			((CheckboxTableViewer) fTable).setGrayedElements(fGrayedElements.toArray());
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.ListDialogField#replaceElement(java.lang.Object, java.lang.Object)
+	 */
+	@Override
+	public void replaceElement(final Object oldElement, final Object newElement) throws IllegalArgumentException {
+		final boolean wasChecked = isChecked(oldElement);
+		super.replaceElement(oldElement, newElement);
+		setChecked(newElement, wasChecked);
+	}
 
+	/**
+	 * Sets the index of the 'check all' button in the button label array passed
+	 * in the constructor. The behavior of the button marked as the check button
+	 * will then be handled internally. (enable state, button invocation
+	 * behavior)
+	 * 
+	 * @param checkAllButtonIndex
+	 *            the index of the check all button
+	 */
+	public void setCheckAllButtonIndex(final int checkAllButtonIndex) {
+		Assert.isTrue(checkAllButtonIndex < fButtonLabels.length);
+		fCheckAllButtonIndex = checkAllButtonIndex;
+	}
 
+	/**
+	 * Sets the checked state of an element.
+	 * 
+	 * @param object
+	 *            the element for which to set the state
+	 * @param state
+	 *            the checked state
+	 */
+	public void setChecked(final Object object, final boolean state) {
+		setCheckedWithoutUpdate(object, state);
+		checkStateChanged();
+	}
 
+	/**
+	 * Sets the checked elements.
+	 * 
+	 * @param list
+	 *            the list of checked elements
+	 */
+	public void setCheckedElements(final Collection<?> list) {
+		fCheckedElements = new ArrayList<Object>(list);
+		if (isOkToUse(fTableControl)) {
+			((CheckboxTableViewer) fTable).setCheckedElements(list.toArray());
+		}
+		checkStateChanged();
+	}
+
+	// ------ enable / disable management
+
+	/**
+	 * Sets the checked state of an element. No dialog changed listener is
+	 * informed.
+	 * 
+	 * @param object
+	 *            the element for which to set the state
+	 * @param state
+	 *            the checked state
+	 */
+	public void setCheckedWithoutUpdate(final Object object, final boolean state) {
+		if (state) {
+			if (!fCheckedElements.contains(object)) {
+				fCheckedElements.add(object);
+			}
+		} else {
+			fCheckedElements.remove(object);
+		}
+		if (isOkToUse(fTableControl)) {
+			((CheckboxTableViewer) fTable).setChecked(object, state);
+		}
+	}
+
+	public void setGrayedWithoutUpdate(final Object object, final boolean state) {
+		if (state) {
+			if (!fGrayedElements.contains(object)) {
+				fGrayedElements.add(object);
+			}
+		} else {
+			fGrayedElements.remove(object);
+		}
+		if (isOkToUse(fTableControl)) {
+			((CheckboxTableViewer) fTable).setGrayed(object, state);
+		}
+	}
+
+	/**
+	 * Sets the index of the 'uncheck all' button in the button label array
+	 * passed in the constructor. The behavior of the button marked as the
+	 * uncheck button will then be handled internally. (enable state, button
+	 * invocation behavior)
+	 * 
+	 * @param uncheckAllButtonIndex
+	 *            the index of the check all button
+	 */
+	public void setUncheckAllButtonIndex(final int uncheckAllButtonIndex) {
+		Assert.isTrue(uncheckAllButtonIndex < fButtonLabels.length);
+		fUncheckAllButtonIndex = uncheckAllButtonIndex;
+	}
 
 }

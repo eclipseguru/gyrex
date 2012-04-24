@@ -107,7 +107,7 @@ public class TreeListDialogField extends DialogField {
 	protected TreeViewer fTree;
 	protected ILabelProvider fLabelProvider;
 	protected TreeViewerAdapter fTreeViewerAdapter;
-	protected List fElements;
+	protected List<Object> fElements;
 
 	protected ViewerComparator fViewerComparator;
 	protected String[] fButtonLabels;
@@ -143,7 +143,7 @@ public class TreeListDialogField extends DialogField {
 		fTreeViewerAdapter = new TreeViewerAdapter();
 		fParentElement = this;
 
-		fElements = new ArrayList(10);
+		fElements = new ArrayList<Object>(10);
 
 		fButtonLabels = buttonLabels;
 		if (fButtonLabels != null) {
@@ -184,12 +184,12 @@ public class TreeListDialogField extends DialogField {
 	/**
 	 * Adds elements at the end of the tree list.
 	 */
-	public boolean addElements(final List elements) {
+	public boolean addElements(final List<?> elements) {
 		final int nElements = elements.size();
 
 		if (nElements > 0) {
 			// filter duplicated
-			final ArrayList elementsToAdd = new ArrayList(nElements);
+			final ArrayList<Object> elementsToAdd = new ArrayList<Object>(nElements);
 
 			for (int i = 0; i < nElements; i++) {
 				final Object elem = elements.get(i);
@@ -218,7 +218,7 @@ public class TreeListDialogField extends DialogField {
 		}
 	}
 
-	private boolean canMoveDown(final List selectedElements) {
+	private boolean canMoveDown(final List<Object> selectedElements) {
 		if (isOkToUse(fTreeControl)) {
 			int nSelected = selectedElements.size();
 			for (int i = fElements.size() - 1; (i >= 0) && (nSelected > 0); i--) {
@@ -233,7 +233,7 @@ public class TreeListDialogField extends DialogField {
 
 	// ------ adapter communication
 
-	private boolean canMoveUp(final List selectedElements) {
+	private boolean canMoveUp(final List<Object> selectedElements) {
 		if (isOkToUse(fTreeControl)) {
 			int nSelected = selectedElements.size();
 			final int nElements = fElements.size();
@@ -247,7 +247,7 @@ public class TreeListDialogField extends DialogField {
 		return false;
 	}
 
-	protected boolean containsAttributes(final List selected) {
+	protected boolean containsAttributes(final List<Object> selected) {
 		for (int i = 0; i < selected.size(); i++) {
 			if (!fElements.contains(selected.get(i))) {
 				return true;
@@ -450,8 +450,8 @@ public class TreeListDialogField extends DialogField {
 	 * Gets the elements shown in the list. The list returned is a copy, so it
 	 * can be modified by the user.
 	 */
-	public List getElements() {
-		return new ArrayList(fElements);
+	public List<Object> getElements() {
+		return new ArrayList<Object>(fElements);
 	}
 
 	/**
@@ -462,7 +462,7 @@ public class TreeListDialogField extends DialogField {
 	}
 
 	protected boolean getManagedButtonState(final ISelection sel, final int index) {
-		final List selected = getSelectedElements();
+		final List<Object> selected = getSelectedElements();
 		final boolean hasAttributes = containsAttributes(selected);
 		if (index == fRemoveButtonIndex) {
 			return !selected.isEmpty() && !hasAttributes;
@@ -485,12 +485,12 @@ public class TreeListDialogField extends DialogField {
 	/**
 	 * Returns the selected elements.
 	 */
-	public List getSelectedElements() {
-		final ArrayList result = new ArrayList();
+	public List<Object> getSelectedElements() {
+		final ArrayList<Object> result = new ArrayList<Object>();
 		if (isOkToUse(fTreeControl)) {
 			final ISelection selection = fTree.getSelection();
 			if (selection instanceof IStructuredSelection) {
-				final Iterator iter = ((IStructuredSelection) selection).iterator();
+				final Iterator<?> iter = ((IStructuredSelection) selection).iterator();
 				while (iter.hasNext()) {
 					result.add(iter.next());
 				}
@@ -619,23 +619,23 @@ public class TreeListDialogField extends DialogField {
 		return true;
 	}
 
-	private void moveDown(final List toMoveDown) {
+	private void moveDown(final List<Object> toMoveDown) {
 		if (toMoveDown.size() > 0) {
 			setElements(reverse(moveUp(reverse(fElements), toMoveDown)));
 			fTree.reveal(toMoveDown.get(toMoveDown.size() - 1));
 		}
 	}
 
-	private void moveUp(final List toMoveUp) {
+	private void moveUp(final List<Object> toMoveUp) {
 		if (toMoveUp.size() > 0) {
 			setElements(moveUp(fElements, toMoveUp));
 			fTree.reveal(toMoveUp.get(0));
 		}
 	}
 
-	private List moveUp(final List elements, final List move) {
+	private List<Object> moveUp(final List<Object> elements, final List<Object> move) {
 		final int nElements = elements.size();
-		final List res = new ArrayList(nElements);
+		final List<Object> res = new ArrayList<Object>(nElements);
 		Object floating = null;
 		for (int i = 0; i < nElements; i++) {
 			final Object curr = elements.get(i);
@@ -719,7 +719,7 @@ public class TreeListDialogField extends DialogField {
 	/**
 	 * Removes elements from the list.
 	 */
-	public void removeElements(final List elements) {
+	public void removeElements(final List<Object> elements) {
 		if (elements.size() > 0) {
 			fElements.removeAll(elements);
 			if (isOkToUse(fTreeControl)) {
@@ -737,7 +737,7 @@ public class TreeListDialogField extends DialogField {
 		if (idx != -1) {
 			fElements.set(idx, newElement);
 			if (isOkToUse(fTreeControl)) {
-				final List selected = getSelectedElements();
+				final List<Object> selected = getSelectedElements();
 				if (selected.remove(oldElement)) {
 					selected.add(newElement);
 				}
@@ -757,8 +757,8 @@ public class TreeListDialogField extends DialogField {
 
 	// ------- list maintenance
 
-	private List reverse(final List p) {
-		final List reverse = new ArrayList(p.size());
+	private List<Object> reverse(final List<Object> p) {
+		final List<Object> reverse = new ArrayList<Object>(p.size());
 		for (int i = p.size() - 1; i >= 0; i--) {
 			reverse.add(p.get(i));
 		}
@@ -814,8 +814,8 @@ public class TreeListDialogField extends DialogField {
 	/**
 	 * Sets the elements shown in the list.
 	 */
-	public void setElements(final List elements) {
-		fElements = new ArrayList(elements);
+	public void setElements(final List<Object> elements) {
+		fElements = new ArrayList<Object>(elements);
 		refresh();
 		if (isOkToUse(fTreeControl)) {
 			fTree.expandToLevel(fTreeExpandLevel);
