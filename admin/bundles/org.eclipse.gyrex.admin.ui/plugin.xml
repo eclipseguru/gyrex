@@ -7,8 +7,8 @@
          point="org.eclipse.rap.ui.entrypoint">
       <entrypoint
             class="org.eclipse.gyrex.admin.ui.internal.application.AdminApplication"
-            parameter="gyrex-admin-console"
-            id="org.eclipse.gyrex.admin.ui.entrypoint">
+            id="org.eclipse.gyrex.admin.ui.entrypoint"
+            parameter="admin">
       </entrypoint>
    </extension>
    <extension
@@ -20,15 +20,6 @@
             id="org.eclipse.gyrex.admin.ui.branding"
             servletName="admin"
             title="Gyrex Admin">
-         <presentationFactory
-               defaultLayoutId="org.eclipse.gyrex.admin.ui.layout"
-               id="org.eclipse.gyrex.admin.ui.presentation.factory"
-               name="Gyrex Admin UI Presentation Factory"
-               viewActionsVisible="false">
-            <defaultStackPresentation
-                  id="org.eclipse.gyrex.admin.ui.stack.view">
-            </defaultStackPresentation>
-         </presentationFactory>
          <associatedEntrypoints>
             <entrypoint
                   id="org.eclipse.gyrex.admin.ui.entrypoint">

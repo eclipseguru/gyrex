@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Base class of all dialog fields. Dialog fields manage controls together with
@@ -77,17 +76,6 @@ public class DialogField {
 		fEnabled = true;
 		fLabel = null;
 		fLabelText = ""; //$NON-NLS-1$
-	}
-
-	// ------- focus management
-
-	/**
-	 * Adapts the dialog field to a from toolkit.
-	 * 
-	 * @param toolkit
-	 */
-	public void adaptToForm(final FormToolkit toolkit) {
-
 	}
 
 	protected final void assertCompositeNotNull(final Composite comp) {
