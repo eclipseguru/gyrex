@@ -48,6 +48,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.osgi.framework.Version;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class controls all aspects of the application's execution and is
  * contributed through the plugin.xml.
@@ -59,6 +62,8 @@ public class AdminApplication implements IEntryPoint {
 	private static final int CONTENT_MIN_HEIGHT = 800;
 	private static final int HEADER_HEIGHT = 140;
 	private static final int CENTER_AREA_WIDTH = 998;
+
+	private static final Logger LOG = LoggerFactory.getLogger(AdminApplication.class);
 
 	private static FormData createLogoFormData(final Image rapLogo) {
 		final FormData data = new FormData();
@@ -130,12 +135,18 @@ public class AdminApplication implements IEntryPoint {
 	private void activate(final AdminPage page, final PageContribution contribution) {
 		// TODO: should switch to using a StackLayout and not disposing children every time
 		RWT.getBrowserHistory().createEntry(contribution.getId(), contribution.getName());
-		final Control[] children = centerArea.getChildren();
-		for (final Control child : children) {
+		for (final Control child : centerArea.getChildren()) {
 			child.dispose();
 		}
 		final Composite contentComp = AdminUiUtil.initPage(page.getTitle(), centerArea);
 		page.createControl(contentComp);
+		// sanity check
+		for (final Control child : contentComp.getChildren()) {
+			if (null != child.getLayoutData()) {
+				LOG.warn("Programming error in page {}: child composites ({}) should not make any assumptions about the parent layout!", contribution.getId(), child);
+				child.setLayoutData(null);
+			}
+		}
 		centerArea.layout(true, true);
 		page.activate();
 	}
