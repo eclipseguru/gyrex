@@ -36,7 +36,7 @@ public class ApprovedNodesSection extends NodeListSection {
 
 	private Button retireButton;
 
-	public ApprovedNodesSection(final Composite parent, final CloudConfigurationPage page) {
+	public ApprovedNodesSection(final Composite parent, final ClusterAdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), ExpandableComposite.TITLE_BAR, page.getBindingContext());
 		final Section section = getSection();
 		section.setText("Approved Nodes");

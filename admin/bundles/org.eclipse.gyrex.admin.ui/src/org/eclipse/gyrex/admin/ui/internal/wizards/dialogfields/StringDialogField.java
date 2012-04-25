@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Text;
 public class StringDialogField extends DialogField {
 
 	protected static GridData gridDataForText(final int span) {
-		final GridData gd = new GridData(GridData.FILL, GridData.BEGINNING, false, false);
+		final GridData gd = new GridData(GridData.FILL, DEFAULT_VERTICAL_ALIGN, false, false);
 		gd.horizontalSpan = span;
 		return gd;
 	}

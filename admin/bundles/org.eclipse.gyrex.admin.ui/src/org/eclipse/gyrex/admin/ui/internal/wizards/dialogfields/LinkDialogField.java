@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Link;
 public class LinkDialogField extends DialogField {
 
 	protected static GridData gridDataForLink(final int span) {
-		final GridData gd = new GridData(GridData.FILL, GridData.BEGINNING, false, false);
+		final GridData gd = new GridData(GridData.FILL, DEFAULT_VERTICAL_ALIGN, false, false);
 		gd.horizontalSpan = span;
 		return gd;
 	}
@@ -45,7 +45,7 @@ public class LinkDialogField extends DialogField {
 	 * @return the link control
 	 */
 	protected Link createLinkControl(final Composite parent) {
-		final Link link = new Link(parent, SWT.DEFAULT);
+		final Link link = new Link(parent, SWT.LEFT | SWT.WRAP);
 		link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		return link;
 	}

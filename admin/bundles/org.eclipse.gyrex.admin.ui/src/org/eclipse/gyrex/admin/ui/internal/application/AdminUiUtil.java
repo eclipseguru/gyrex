@@ -86,6 +86,12 @@ public final class AdminUiUtil {
 		return new GridData(SWT.FILL, SWT.TOP, true, false);
 	}
 
+	public static GridData createHorzFillData(final int horizontalSpan) {
+		final GridData gd = createHorzFillData();
+		gd.horizontalSpan = horizontalSpan;
+		return gd;
+	}
+
 	public static GridLayout createMainLayout(final int numColumns) {
 		final GridLayout result = new GridLayout(numColumns, true);
 		result.marginWidth = 0;

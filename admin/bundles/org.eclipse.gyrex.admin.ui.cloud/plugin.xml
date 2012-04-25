@@ -2,40 +2,15 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.gyrex.admin.ui.configurationPages">
+         point="org.eclipse.gyrex.admin.ui.pages">
       <page
-            class="org.eclipse.gyrex.admin.ui.cloud.internal.CloudConfigurationPage"
-            id="org.eclipse.gyrex.admin.ui.cloud.page"
-            keywords="cloud node system server tasks role leader"
-            name="Cloud"
-            parentId="org.eclipse.gyrex.admin.ui.general">
+            categoryId="org.eclipse.gyrex.admin.ui.system"
+            class="org.eclipse.gyrex.admin.ui.cloud.internal.ClusterAdminPage"
+            id="cluster"
+            keywords="cloud cluster"
+            name="Cluster"
+            sortKey="100">
       </page>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            class="org.eclipse.gyrex.admin.ui.cloud.internal.zookeeper.ZooKeeperExplorer"
-            id="org.eclipse.gyrex.admin.ui.cloud.view.zookeeper"
-            name="ZooKeeper Explorer"
-            restorable="true">
-      </view>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.eclipse.gyrex.admin.ui.cloud.internal.zookeeper.ZooKeeperPerspective"
-            id="org.eclipse.gyrex.admin.ui.cloud.perspective.zookeeper"
-            name="ZooKeeper Browsing">
-      </perspective>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.gyrex.admin.ui.perspective.configuration">
-         <perspectiveShortcut
-               id="org.eclipse.gyrex.admin.ui.cloud.perspective.zookeeper">
-         </perspectiveShortcut>
-      </perspectiveExtension>
    </extension>
 
 

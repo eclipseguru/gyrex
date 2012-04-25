@@ -36,7 +36,7 @@ public class PendingNodesSection extends NodeListSection {
 
 	private Button approveButton;
 
-	public PendingNodesSection(final Composite parent, final CloudConfigurationPage page) {
+	public PendingNodesSection(final Composite parent, final ClusterAdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), ExpandableComposite.TITLE_BAR, page.getBindingContext());
 		final Section section = getSection();
 		section.setText("Pending Nodes");

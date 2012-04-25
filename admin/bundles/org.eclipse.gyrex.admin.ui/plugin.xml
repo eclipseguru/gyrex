@@ -64,7 +64,8 @@
             categoryId="org.eclipse.gyrex.admin.ui.system"
             class="org.eclipse.gyrex.admin.ui.internal.pages.OverviewPage"
             id="overview"
-            name="Overview">
+            name="Overview"
+            sortKey="000">
       </page>
       <category
             id="org.eclipse.gyrex.admin.ui.system"

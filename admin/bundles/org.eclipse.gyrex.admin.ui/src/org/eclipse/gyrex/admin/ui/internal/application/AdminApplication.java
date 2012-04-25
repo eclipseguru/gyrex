@@ -361,7 +361,11 @@ public class AdminApplication implements IEntryPoint {
 				return;
 			}
 
-			if ((null != currentPage) && (page != currentPage)) {
+			if (page == currentPage) {
+				// don't do anything if it's the same page
+				return;
+			} else if (null != currentPage) {
+				// deactivate old page first
 				deactivate(currentPage);
 			}
 

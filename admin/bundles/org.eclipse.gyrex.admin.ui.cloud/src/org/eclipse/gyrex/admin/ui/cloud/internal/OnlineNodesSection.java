@@ -24,7 +24,7 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public class OnlineNodesSection extends NodeListSection {
 
-	public OnlineNodesSection(final Composite parent, final CloudConfigurationPage page) {
+	public OnlineNodesSection(final Composite parent, final ClusterAdminPage page) {
 		super(parent, page.getManagedForm().getToolkit(), ExpandableComposite.TITLE_BAR, page.getBindingContext());
 		final Section section = getSection();
 		section.setText("Online Nodes");

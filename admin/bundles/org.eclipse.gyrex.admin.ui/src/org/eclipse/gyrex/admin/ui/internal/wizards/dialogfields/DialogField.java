@@ -27,6 +27,8 @@ import org.eclipse.swt.widgets.Label;
  */
 public class DialogField {
 
+	protected static final int DEFAULT_VERTICAL_ALIGN = GridData.CENTER;
+
 	/**
 	 * Creates a spacer control.
 	 * 
@@ -58,7 +60,7 @@ public class DialogField {
 	}
 
 	protected static GridData gridDataForLabel(final int span) {
-		final GridData gd = new GridData(GridData.FILL, GridData.BEGINNING, false, false);
+		final GridData gd = new GridData(GridData.FILL, DEFAULT_VERTICAL_ALIGN, false, false);
 		gd.horizontalSpan = span;
 		return gd;
 	}
