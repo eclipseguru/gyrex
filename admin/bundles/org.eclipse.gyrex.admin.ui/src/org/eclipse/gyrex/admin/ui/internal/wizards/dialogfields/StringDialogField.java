@@ -28,9 +28,7 @@ import org.eclipse.swt.widgets.Text;
 public class StringDialogField extends DialogField {
 
 	protected static GridData gridDataForText(final int span) {
-		final GridData gd = new GridData();
-		gd.horizontalAlignment = GridData.FILL;
-		gd.grabExcessHorizontalSpace = false;
+		final GridData gd = new GridData(GridData.FILL, GridData.BEGINNING, false, false);
 		gd.horizontalSpan = span;
 		return gd;
 	}
@@ -58,11 +56,6 @@ public class StringDialogField extends DialogField {
 		return new Text(parent, SWT.SINGLE | SWT.BORDER);
 	}
 
-	// ------- layout helpers
-
-	/*
-	 * @see DialogField#doFillIntoGrid
-	 */
 	@Override
 	public Control[] doFillIntoGrid(final Composite parent, final int nColumns) {
 		assertEnoughColumns(nColumns);
@@ -86,17 +79,10 @@ public class StringDialogField extends DialogField {
 		return fContentProposalProcessor;
 	}
 
-	// ------- focus methods
-
-	/*
-	 * @see DialogField#getNumberOfControls
-	 */
 	@Override
 	public int getNumberOfControls() {
 		return 2;
 	}
-
-	// ------- ui creation
 
 	/**
 	 * @return the text, can not be <code>null</code>

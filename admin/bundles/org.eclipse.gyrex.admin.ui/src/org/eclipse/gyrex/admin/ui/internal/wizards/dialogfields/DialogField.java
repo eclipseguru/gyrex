@@ -11,6 +11,7 @@
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -57,7 +58,7 @@ public class DialogField {
 	}
 
 	protected static GridData gridDataForLabel(final int span) {
-		final GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		final GridData gd = new GridData(GridData.FILL, GridData.BEGINNING, false, false);
 		gd.horizontalSpan = span;
 		return gd;
 	}
@@ -67,8 +68,6 @@ public class DialogField {
 	protected String fLabelText;
 
 	private IDialogFieldListener fDialogFieldListener;
-
-	// ------ change listener
 
 	private boolean fEnabled;
 
@@ -81,8 +80,6 @@ public class DialogField {
 	protected final void assertCompositeNotNull(final Composite comp) {
 		Assert.isNotNull(comp, "uncreated control requested with composite null"); //$NON-NLS-1$
 	}
-
-	// ------- layout helpers
 
 	protected final void assertEnoughColumns(final int nColumns) {
 		Assert.isTrue(nColumns >= getNumberOfControls(), "given number of columns is too small"); //$NON-NLS-1$
@@ -124,6 +121,7 @@ public class DialogField {
 			assertCompositeNotNull(parent);
 
 			fLabel = new Label(parent, SWT.LEFT | SWT.WRAP);
+			fLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			fLabel.setFont(parent.getFont());
 			fLabel.setEnabled(fEnabled);
 			if ((fLabelText != null) && !"".equals(fLabelText)) { //$NON-NLS-1$
@@ -136,8 +134,6 @@ public class DialogField {
 		}
 		return fLabel;
 	}
-
-	// ------- ui creation
 
 	/**
 	 * Returns the number of columns of the dialog field. To be reimplemented by
@@ -173,8 +169,6 @@ public class DialogField {
 			});
 		}
 	}
-
-	// --------- enable / disable management
 
 	/**
 	 * Brings the UI in sync with the model. Only needed when model was changed
