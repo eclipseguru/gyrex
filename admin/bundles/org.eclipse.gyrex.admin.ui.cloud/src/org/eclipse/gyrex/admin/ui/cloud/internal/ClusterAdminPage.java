@@ -209,7 +209,6 @@ public class ClusterAdminPage extends AdminPage {
 		final INodeConfigurer nodeConfigurer = cloudManager.getNodeConfigurer(localInfo.getNodeId());
 
 		nodeIdField.setText(localInfo.getNodeId());
-		final boolean wasEmpty = membershipStatusField.getText().length() == 0;
 		if (localInfo.inStandaloneMode()) {
 			membershipStatusField.setText("The node operates standalone using an embedded ZooKeeper server. <a href=\"#connect\">Connect</a> it now.");
 		} else {
@@ -228,11 +227,6 @@ public class ClusterAdminPage extends AdminPage {
 		}
 
 		filteredTree.getViewer().refresh();
-
-		if (wasEmpty) {
-			// re-layout (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=377607)
-			composite.layout(true, true);
-		}
 	}
 
 	void showConnectDialog() {
