@@ -11,6 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
+import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserComparator.SortIndex;
+import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
@@ -26,13 +28,19 @@ import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.util.Policy;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -41,19 +49,45 @@ import org.eclipse.ui.dialogs.FilteredTree;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 
 /**
  * Gyrex Cloud Configuration Page.
  */
 public class ClusterAdminPage extends AdminPage {
 
+	private final class NodeBrowserSortListener extends SelectionAdapter {
+		private final NodeBrowserComparator comparator;
+		private final TreeViewerColumn column;
+		private final SortIndex sortIndex;
+
+		private NodeBrowserSortListener(final NodeBrowserComparator comparator, final SortIndex sortIndex, final TreeViewerColumn column) {
+			this.comparator = comparator;
+			this.sortIndex = sortIndex;
+			this.column = column;
+		}
+
+		@Override
+		public void widgetSelected(final SelectionEvent e) {
+			if (comparator.getIndex() == sortIndex) {
+				comparator.setReverse(!comparator.isReverse());
+			} else {
+				comparator.setIndex(sortIndex);
+				treeViewer.getTree().setSortColumn(column.getColumn());
+			}
+			treeViewer.getTree().setSortDirection(comparator.isReverse() ? SWT.UP : SWT.DOWN);
+			treeViewer.refresh();
+		}
+	}
+
 	private ZooKeeperGateListener listener;
 
-	private FilteredTree filteredTree;
 	private StringDialogField nodeIdField;
 	private LinkDialogField membershipStatusField;
 
 	private Composite composite;
+
+	private TreeViewer treeViewer;
 
 	/**
 	 * Creates a new instance.
@@ -67,40 +101,45 @@ public class ClusterAdminPage extends AdminPage {
 	public void activate() {
 		super.activate();
 
-		if (null == filteredTree) {
-			return;
+		final Display display;
+		if (treeViewer != null) {
+			treeViewer.setInput(getCloudManager());
+			display = treeViewer.getControl().getDisplay();
+		} else {
+			display = null;
 		}
 
-		final Display display = filteredTree.getViewer().getControl().getDisplay();
-		listener = new ZooKeeperGateListener() {
+		if ((listener == null) && (display != null) && !display.isDisposed()) {
+			listener = new ZooKeeperGateListener() {
 
-			private void asyncRefresh() {
-				if (!display.isDisposed()) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							refresh();
-						}
-					});
+				private void asyncRefresh() {
+					if (!display.isDisposed()) {
+						display.asyncExec(new Runnable() {
+							@Override
+							public void run() {
+								refresh();
+							}
+						});
+					}
 				}
-			}
 
-			@Override
-			public void gateDown(final ZooKeeperGate gate) {
-				asyncRefresh();
-			}
+				@Override
+				public void gateDown(final ZooKeeperGate gate) {
+					asyncRefresh();
+				}
 
-			@Override
-			public void gateRecovering(final ZooKeeperGate gate) {
-				asyncRefresh();
-			}
+				@Override
+				public void gateRecovering(final ZooKeeperGate gate) {
+					asyncRefresh();
+				}
 
-			@Override
-			public void gateUp(final ZooKeeperGate gate) {
-				asyncRefresh();
-			}
-		};
-		ZooKeeperGate.addConnectionMonitor(listener);
+				@Override
+				public void gateUp(final ZooKeeperGate gate) {
+					asyncRefresh();
+				}
+			};
+			ZooKeeperGate.addConnectionMonitor(listener);
+		}
 
 		refresh();
 	}
@@ -153,26 +192,109 @@ public class ClusterAdminPage extends AdminPage {
 	@Override
 	public Control createControl(final Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
+		composite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 
 		final Control connectGroup = createConnectGroup(composite);
-		GridData gd = AdminUiUtil.createHorzFillData(2);
+		GridData gd = AdminUiUtil.createHorzFillData();
 		gd.verticalIndent = 10;
 		connectGroup.setLayoutData(gd);
 
-		filteredTree = createNodeBrowser(composite);
+		final Composite description = new Composite(composite, SWT.NONE);
 		gd = AdminUiUtil.createFillData();
 		gd.verticalIndent = 10;
-		filteredTree.setLayoutData(gd);
+		description.setLayoutData(gd);
+		description.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
+
+		final Control filteredTree = createNodeBrowser(description);
+		filteredTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		final Composite buttons = new Composite(description, SWT.NONE);
+		buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
+		buttons.setLayout(new RowLayout(SWT.VERTICAL));
+		final Button button = new Button(buttons, SWT.NONE);
+		button.setText("Approve");
 
 		return composite;
 	}
 
 	private FilteredTree createNodeBrowser(final Composite parent) {
-		final FilteredTree filteredTree = new FilteredTree(parent, SWT.NONE, new NodePatternFilter(), true);
+		final FilteredTree filteredTree = new FilteredTree(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, new NodePatternFilter(), true);
 
-		final TreeViewer viewer = filteredTree.getViewer();
-		viewer.setContentProvider(new NodeBrowserContentProvider());
+		treeViewer = filteredTree.getViewer();
+		treeViewer.getTree().setHeaderVisible(true);
+		final TableLayout layout = new TableLayout();
+		layout.addColumnData(new ColumnWeightData(50, 50));
+		layout.addColumnData(new ColumnWeightData(50, 50));
+		layout.addColumnData(new ColumnWeightData(60, 50));
+		layout.addColumnData(new ColumnWeightData(30, 50));
+		treeViewer.getTree().setLayout(layout);
+		treeViewer.setUseHashlookup(true);
+		treeViewer.setContentProvider(new NodeBrowserContentProvider());
+		final NodeBrowserComparator comparator = new NodeBrowserComparator();
+		treeViewer.setComparator(comparator);
+
+		final TreeViewerColumn idColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
+		idColumn.getColumn().setText("Node ID");
+		idColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.ID, idColumn));
+		idColumn.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				if (element instanceof NodeItem) {
+					return ((NodeItem) element).getDescriptor().getId();
+				}
+				return String.valueOf(element);
+			}
+		});
+		treeViewer.getTree().setSortColumn(idColumn.getColumn());
+		treeViewer.getTree().setSortDirection(comparator.isReverse() ? SWT.UP : SWT.DOWN);
+
+		final TreeViewerColumn locationColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
+		locationColumn.getColumn().setText("Location");
+		locationColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.LOCATION, locationColumn));
+		locationColumn.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				if (element instanceof NodeItem) {
+					return ((NodeItem) element).getDescriptor().getLocation();
+				}
+				return null;
+			}
+		});
+
+		final TreeViewerColumn tagsColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
+		tagsColumn.getColumn().setText("Tags");
+		tagsColumn.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				if (element instanceof NodeItem) {
+					return StringUtils.join(((NodeItem) element).getDescriptor().getTags(), ", ");
+				}
+				return null;
+			}
+		});
+
+		final TreeViewerColumn statusColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
+		statusColumn.getColumn().setText("Status");
+		statusColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.STATUS, statusColumn));
+		statusColumn.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				if (element instanceof NodeItem) {
+					final NodeItem nodeItem = (NodeItem) element;
+					final StrBuilder status = new StrBuilder();
+					if (nodeItem.isApproved()) {
+						status.append("approved");
+					} else {
+						status.append("pending");
+					}
+					if (nodeItem.isOnline()) {
+						status.appendSeparator(", ").append("online");
+					}
+					return status.toString();
+				}
+				return null;
+			}
+		});
 
 		return filteredTree;
 	}
@@ -180,6 +302,11 @@ public class ClusterAdminPage extends AdminPage {
 	@Override
 	public void deactivate() {
 		super.deactivate();
+
+		if (treeViewer != null) {
+			treeViewer.setInput(null);
+		}
+
 		if (listener != null) {
 			ZooKeeperGate.removeConnectionMonitor(listener);
 			listener = null;
@@ -226,7 +353,7 @@ public class ClusterAdminPage extends AdminPage {
 			}
 		}
 
-		filteredTree.getViewer().refresh();
+		treeViewer.refresh();
 	}
 
 	void showConnectDialog() {

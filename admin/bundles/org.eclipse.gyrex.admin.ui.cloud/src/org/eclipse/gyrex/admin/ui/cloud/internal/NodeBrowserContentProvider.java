@@ -11,7 +11,12 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.gyrex.cloud.admin.ICloudManager;
+import org.eclipse.gyrex.cloud.admin.INodeDescriptor;
 import org.eclipse.gyrex.cloud.admin.INodeListener;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -19,6 +24,31 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Control;
 
 public final class NodeBrowserContentProvider implements ITreeContentProvider {
+
+	public static final class NodeItem {
+
+		private final boolean approved;
+		private final boolean online;
+		private final INodeDescriptor descriptor;
+
+		public NodeItem(final boolean approved, final boolean online, final INodeDescriptor descriptor) {
+			this.approved = approved;
+			this.online = online;
+			this.descriptor = descriptor;
+		}
+
+		public INodeDescriptor getDescriptor() {
+			return descriptor;
+		}
+
+		public boolean isApproved() {
+			return approved;
+		}
+
+		public boolean isOnline() {
+			return online;
+		}
+	}
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -70,7 +100,16 @@ public final class NodeBrowserContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getElements(final Object inputElement) {
 		if (inputElement instanceof ICloudManager) {
-
+			final List<NodeItem> nodes = new ArrayList<NodeItem>();
+			final ICloudManager cloudManager = (ICloudManager) inputElement;
+			final Set<String> onlineNodes = cloudManager.getOnlineNodes();
+			for (final INodeDescriptor nodeDescriptor : cloudManager.getApprovedNodes()) {
+				nodes.add(new NodeItem(true, onlineNodes.contains(nodeDescriptor.getId()), nodeDescriptor));
+			}
+			for (final INodeDescriptor nodeDescriptor : cloudManager.getPendingNodes()) {
+				nodes.add(new NodeItem(false, onlineNodes.contains(nodeDescriptor.getId()), nodeDescriptor));
+			}
+			return nodes.toArray();
 		}
 		return EMPTY_ARRAY;
 	}

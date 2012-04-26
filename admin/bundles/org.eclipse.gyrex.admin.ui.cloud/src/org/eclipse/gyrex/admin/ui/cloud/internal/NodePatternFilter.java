@@ -11,6 +11,11 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
+
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.dialogs.PatternFilter;
 
@@ -20,6 +25,13 @@ import org.eclipse.ui.dialogs.PatternFilter;
 public class NodePatternFilter extends PatternFilter {
 
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Creates a new instance.
+	 */
+	public NodePatternFilter() {
+		setIncludeLeadingWildcard(true);
+	}
 
 	@Override
 	public boolean isElementSelectable(final Object element) {
@@ -35,7 +47,29 @@ public class NodePatternFilter extends PatternFilter {
 
 	@Override
 	protected boolean isLeafMatch(final Viewer viewer, final Object element) {
-		// TODO Auto-generated method stub
+		if (element instanceof NodeItem) {
+			final NodeItem nodeItem = (NodeItem) element;
+			final Set<String> keywords = new LinkedHashSet<String>();
+			keywords.add(nodeItem.getDescriptor().getId());
+			keywords.add(nodeItem.getDescriptor().getName());
+			keywords.add(nodeItem.getDescriptor().getLocation());
+			keywords.addAll(nodeItem.getDescriptor().getTags());
+			if (nodeItem.isApproved()) {
+				keywords.add("approved");
+			} else {
+				keywords.add("pending");
+			}
+			if (nodeItem.isOnline()) {
+				keywords.add("online");
+			}
+
+			for (final String word : keywords) {
+				if (wordMatches(word)) {
+					return true;
+				}
+			}
+		}
+
 		return super.isLeafMatch(viewer, element);
 	}
 
