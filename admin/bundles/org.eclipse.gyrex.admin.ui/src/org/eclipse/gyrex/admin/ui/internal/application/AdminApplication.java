@@ -320,6 +320,7 @@ public class AdminApplication implements IEntryPoint {
 	}
 
 	public int createUI() {
+
 		final Display display = new Display();
 		final Shell shell = createMainShell(display);
 		shell.setLayout(new FillLayout());
@@ -328,7 +329,9 @@ public class AdminApplication implements IEntryPoint {
 		scrolledArea.setContent(content);
 		attachHistoryListener();
 		shell.open();
-		selectInitialContribution();
+
+		openInitialPage();
+
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
@@ -353,6 +356,13 @@ public class AdminApplication implements IEntryPoint {
 		return pagesById.get(contribution.getId());
 	}
 
+	private void openInitialPage() {
+		final PageContribution contribution = navigation.findInitialPage();
+		if (contribution != null) {
+			openPage(contribution);
+		}
+	}
+
 	private void openPage(final PageContribution contribution) {
 		try {
 			final AdminPage page = getPage(contribution);
@@ -375,13 +385,6 @@ public class AdminApplication implements IEntryPoint {
 		} catch (final CoreException e) {
 			Policy.getStatusHandler().show(e.getStatus(), "Error Opening Page");
 			return;
-		}
-	}
-
-	private void selectInitialContribution() {
-		final PageContribution contribution = navigation.findInitialPage();
-		if (contribution != null) {
-			openPage(contribution);
 		}
 	}
 }
