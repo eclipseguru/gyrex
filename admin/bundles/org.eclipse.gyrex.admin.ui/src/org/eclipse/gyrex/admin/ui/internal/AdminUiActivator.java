@@ -57,7 +57,7 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.rwt.application.Application;
+import org.eclipse.rwt.application.ApplicationRunner;
 import org.eclipse.rwt.engine.RWTServlet;
 
 import org.osgi.framework.BundleContext;
@@ -108,6 +108,8 @@ public class AdminUiActivator extends BaseBundleActivator {
 		}
 		return activator;
 	}
+
+	private ApplicationRunner adminApplicationRunner;
 
 	/**
 	 * The constructor
@@ -175,9 +177,9 @@ public class AdminUiActivator extends BaseBundleActivator {
 		final IPath contextBase = Platform.getStateLocation(getBundle()).append("context");
 		contextHandler.setBaseResource(Resource.newResource(contextBase.toFile()));
 
-		// initialize RWT application
-		final Application application = new Application(new AdminApplicationConfigurator(), contextHandler.getServletContext());
-		application.start();
+		// initialize and start RWT application
+		adminApplicationRunner = new ApplicationRunner(new AdminApplicationConfigurator(), contextHandler.getServletContext());
+		adminApplicationRunner.start();
 
 		// serve admin application directly
 		contextHandler.addServlet(new AdminServletHolder(new RWTServlet()), "/admin");
@@ -255,7 +257,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 	private HashSessionManager createSessionManager() {
 		final HashSessionManager sessionManager = new HashSessionManager();
-		sessionManager.setMaxInactiveInterval(600);
+		sessionManager.setMaxInactiveInterval(1200);
 		return sessionManager;
 	}
 
@@ -338,6 +340,9 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 	private void stopServer() {
 		try {
+			adminApplicationRunner.stop();
+			adminApplicationRunner = null;
+
 			server.stop();
 			server = null;
 		} catch (final Exception e) {
