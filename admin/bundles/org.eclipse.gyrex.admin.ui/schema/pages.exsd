@@ -23,10 +23,10 @@ Although not marked as INTERNAL, contributions to the Admin Console are consider
          </appinfo>
       </annotation>
       <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="page"/>
+         <choice minOccurs="1" maxOccurs="unbounded">
             <element ref="category"/>
-         </sequence>
+            <element ref="page"/>
+         </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
