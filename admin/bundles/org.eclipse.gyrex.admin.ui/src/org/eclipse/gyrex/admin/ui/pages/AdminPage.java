@@ -11,17 +11,11 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.pages;
 
-import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.IWorkbenchPartConstants;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base class for pages in the Gyrex Admin Console.
@@ -36,20 +30,7 @@ import org.slf4j.LoggerFactory;
  * may evolve faster than other APIs.
  * </p>
  */
-public abstract class AdminPage extends EventManager {
-
-	/**
-	 * The property id for {@link #getTitle()}, {@link #getTitleImage()} and
-	 * {@link #getTitleToolTip()}.
-	 */
-	public static final int PROP_TITLE = IWorkbenchPartConstants.PROP_TITLE;
-
-	/**
-	 * The property id for {@link #isDirty()}.
-	 */
-	public static final int PROP_DIRTY = IWorkbenchPartConstants.PROP_DIRTY;
-
-	private static final Logger LOG = LoggerFactory.getLogger(AdminPage.class);
+public abstract class AdminPage {
 
 	private String title;
 	private String titleToolTip;
@@ -72,20 +53,6 @@ public abstract class AdminPage extends EventManager {
 	 */
 	public void activate() {
 		// empty
-	}
-
-	/**
-	 * Adds a listener for changes to properties of this configuration page. Has
-	 * no effect if an identical listener is already registered.
-	 * <p>
-	 * The property ids are defined in {@link IWorkbenchPartConstants}.
-	 * </p>
-	 * 
-	 * @param listener
-	 *            a property listener
-	 */
-	public void addPropertyListener(final IPropertyListener listener) {
-		addListenerObject(listener);
 	}
 
 	/**
@@ -126,24 +93,6 @@ public abstract class AdminPage extends EventManager {
 	 */
 	public void deactivate() {
 		// empty
-	}
-
-	/**
-	 * Fires a property changed event.
-	 * 
-	 * @param propertyId
-	 *            the id of the property that changed
-	 */
-	protected void firePropertyChange(final int propertyId) {
-		final Object[] array = getListeners();
-		for (int nX = 0; nX < array.length; nX++) {
-			final IPropertyListener l = (IPropertyListener) array[nX];
-			try {
-				l.propertyChanged(AdminPage.this, propertyId);
-			} catch (final RuntimeException e) {
-				LOG.error("Error notifying listener {}. {}", new Object[] { l, e.getMessage(), e });
-			}
-		}
 	}
 
 	/**
@@ -190,31 +139,17 @@ public abstract class AdminPage extends EventManager {
 	}
 
 	/**
-	 * Removes the given property listener from this configuration page. Has no
-	 * affect if an identical listener is not registered.
-	 * 
-	 * @param listener
-	 *            a property listener
-	 */
-	public void removePropertyListener(final IPropertyListener listener) {
-		removeListenerObject(listener);
-	}
-
-	/**
-	 * Sets the title of this configuration page and fires a
-	 * {@value #PROP_TITLE} change event.
+	 * Sets the title of this page.
 	 * 
 	 * @param title
 	 *            the title to set (maybe <code>null</code>)
 	 */
 	protected void setTitle(final String title) {
 		this.title = title;
-		firePropertyChange(PROP_TITLE);
 	}
 
 	/**
-	 * Sets the title image of this configuration page and fires a
-	 * {@value #PROP_TITLE} change even.
+	 * Sets the title image of this page.
 	 * 
 	 * @param titleImage
 	 *            the title image of this configuration page to set (maybe
@@ -226,12 +161,10 @@ public abstract class AdminPage extends EventManager {
 			return;
 		}
 		this.titleImage = titleImage;
-		firePropertyChange(PROP_TITLE);
 	}
 
 	/**
-	 * Sets the tool tip text of this configuration page and fires a
-	 * {@value #PROP_TITLE} change event.
+	 * Sets the tool tip text of this page.
 	 * 
 	 * @param titleToolTip
 	 *            the tool tip text of this configuration page to set (maybe
@@ -239,6 +172,5 @@ public abstract class AdminPage extends EventManager {
 	 */
 	protected void setTitleToolTip(final String titleToolTip) {
 		this.titleToolTip = titleToolTip;
-		firePropertyChange(PROP_TITLE);
 	}
 }

@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.gyrex.admin.ui.internal.application.AdminApplicationConfigurator;
+import org.eclipse.gyrex.admin.ui.internal.application.AdminApplicationConfiguration;
 import org.eclipse.gyrex.admin.ui.internal.jetty.AdminServletHolder;
 import org.eclipse.gyrex.admin.ui.internal.jetty.SimpleAdminLoginService;
 import org.eclipse.gyrex.admin.ui.internal.servlets.PreferencesServlet;
@@ -178,7 +178,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 		contextHandler.setBaseResource(Resource.newResource(contextBase.toFile()));
 
 		// initialize and start RWT application
-		adminApplicationRunner = new ApplicationRunner(new AdminApplicationConfigurator(), contextHandler.getServletContext());
+		adminApplicationRunner = new ApplicationRunner(new AdminApplicationConfiguration(), contextHandler.getServletContext());
 		adminApplicationRunner.start();
 
 		// serve admin application directly
@@ -258,6 +258,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 	private HashSessionManager createSessionManager() {
 		final HashSessionManager sessionManager = new HashSessionManager();
 		sessionManager.setMaxInactiveInterval(1200);
+		sessionManager.setUsingCookies(false); // allows to use RAP in multiple tabs
 		return sessionManager;
 	}
 

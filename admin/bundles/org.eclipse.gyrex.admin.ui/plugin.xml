@@ -4,33 +4,6 @@
    <extension-point id="pages" name="Admin Console Pages Extension Point" schema="schema/pages.exsd"/>
 
    <extension
-         point="org.eclipse.rap.ui.entrypoint">
-      <entrypoint
-            class="org.eclipse.gyrex.admin.ui.internal.application.AdminApplication"
-            id="org.eclipse.gyrex.admin.ui.entrypoint"
-            parameter="admin">
-      </entrypoint>
-   </extension>
-   <extension
-         point="org.eclipse.rap.ui.branding">
-      <branding
-            body="html/body.html"
-            defaultEntrypointId="org.eclipse.gyrex.admin.ui.entrypoint"
-            favicon="img/gyrex/eclipse.ico"
-            id="org.eclipse.gyrex.admin.ui.branding"
-            servletName="admin"
-            title="Gyrex Admin">
-         <associatedEntrypoints>
-            <entrypoint
-                  id="org.eclipse.gyrex.admin.ui.entrypoint">
-            </entrypoint>
-         </associatedEntrypoints>
-         <httpServiceFilter
-               class="org.eclipse.gyrex.admin.ui.internal.AdminUiServiceFilterFactory">
-         </httpServiceFilter>
-      </branding>
-   </extension>
-   <extension
          point="org.eclipse.gyrex.server.roles">
 
       <defaultStart
@@ -71,12 +44,5 @@
             id="org.eclipse.gyrex.admin.ui.system"
             name="System">
       </category>
-   </extension>
-   <extension
-         point="org.eclipse.rap.ui.themes">
-      <themeContribution
-            file="theme/admin.css"
-            themeId="org.eclipse.rap.rwt.theme.Default">
-      </themeContribution>
    </extension>
 </plugin>

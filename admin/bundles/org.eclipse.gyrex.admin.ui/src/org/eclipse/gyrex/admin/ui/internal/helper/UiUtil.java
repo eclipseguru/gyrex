@@ -18,13 +18,9 @@ import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
-import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +71,7 @@ public class UiUtil {
 		String tooltip;
 		try {
 			stroke = KeyStroke.getInstance("M1+SPACE"); //$NON-NLS-1$
-			tooltip = NLS.bind("Press {0} or begin typing to see a filtered list of previously used values", stroke.format());
+			tooltip = String.format("Press %s or begin typing to see a filtered list of previously used values", stroke.format());
 		} catch (final ParseException e1) {
 			LOG.error("Error constructing key binding.", e1);
 			stroke = null;
@@ -95,23 +91,5 @@ public class UiUtil {
 		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 
 		return adapter;
-	}
-
-	/**
-	 * @param id
-	 *            see {@link FontRegistry#getBold(String)}
-	 * @return the font
-	 */
-	public static Font getBoldFont(final String id) {
-		return PlatformUI.getWorkbench().getThemeManager().getCurrentTheme().getFontRegistry().getBold(id);
-	}
-
-	/**
-	 * @param id
-	 *            see {@link FontRegistry#get(String)}
-	 * @return the font
-	 */
-	public static Font getFont(final String id) {
-		return PlatformUI.getWorkbench().getThemeManager().getCurrentTheme().getFontRegistry().get(id);
 	}
 }

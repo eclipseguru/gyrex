@@ -23,16 +23,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
+import org.eclipse.gyrex.common.lifecycle.IShutdownParticipant;
 
 import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.core.runtime.dynamichelpers.ExtensionTracker;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionChangeHandler;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionTracker;
-import org.eclipse.ui.PlatformUI;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -52,14 +53,6 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 
 	private static final AdminPageRegistry instance = new AdminPageRegistry();
 
-	private static IExtensionPoint getConfigurationPagesExtensionPoint() {
-		final IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(AdminUiActivator.SYMBOLIC_NAME, EP_PAGES);
-		if (null == extensionPoint) {
-			throw new IllegalStateException("extension point not found");
-		}
-		return extensionPoint;
-	}
-
 	/**
 	 * Returns the shared instance.
 	 * 
@@ -74,12 +67,26 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 	private volatile Map<String, Set<PageContribution>> pagesByCategoryId;
 
 	private AdminPageRegistry() {
+		final IExtensionRegistry registry = RegistryFactory.getRegistry();
+		if (null == registry) {
+			throw new IllegalStateException("Extension registry is not available!");
+		}
+
 		// get extension point
-		final IExtensionPoint extensionPoint = getConfigurationPagesExtensionPoint();
+		final IExtensionPoint extensionPoint = registry.getExtensionPoint(AdminUiActivator.SYMBOLIC_NAME, EP_PAGES);
+		if (null == extensionPoint) {
+			throw new IllegalStateException("Admin pages extension point not found!");
+		}
 
 		// register tracker
-		final IExtensionTracker tracker = PlatformUI.getWorkbench().getExtensionTracker();
+		final IExtensionTracker tracker = new ExtensionTracker(registry);
 		tracker.registerHandler(this, ExtensionTracker.createExtensionPointFilter(extensionPoint));
+		AdminUiActivator.getInstance().addShutdownParticipant(new IShutdownParticipant() {
+			@Override
+			public void shutdown() throws Exception {
+				tracker.close();
+			}
+		});
 
 		// initial population
 		final IExtension[] extensions = extensionPoint.getExtensions();

@@ -332,16 +332,15 @@ public class AdminApplication implements IEntryPoint {
 
 		openInitialPage();
 
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
+		display.disposeExec(new Runnable() {
+			@Override
+			public void run() {
+				if (null != currentPage) {
+					deactivate(currentPage);
+				}
 			}
-		}
+		});
 
-		if (null != currentPage) {
-			deactivate(currentPage);
-		}
-		display.dispose();
 		return 0;
 	}
 
