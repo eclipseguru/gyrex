@@ -15,6 +15,7 @@ import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserComparator.SortIndex
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LinkDialogField;
@@ -357,9 +358,15 @@ public class ClusterAdminPage extends AdminPage {
 	}
 
 	void showConnectDialog() {
-		final ConnectToCloudDialog connectToCloudDialog = new ConnectToCloudDialog(getCloudManager(), SwtUtil.getShell(membershipStatusField.getLabelControl(null)));
-		if (connectToCloudDialog.open() == Window.OK) {
-			refresh();
-		}
+		final NonBlockingStatusDialog dialog = new ConnectToCloudDialog(getCloudManager(), SwtUtil.getShell(membershipStatusField.getLabelControl(null)));
+		dialog.openNonBlocking(new Runnable() {
+
+			@Override
+			public void run() {
+				if (dialog.getReturnCode() == Window.OK) {
+					refresh();
+				}
+			}
+		});
 	}
 }
