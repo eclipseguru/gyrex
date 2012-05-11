@@ -2,36 +2,14 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.gyrex.admin.ui.configurationPages">
+         point="org.eclipse.gyrex.admin.ui.pages">
       <page
+            categoryId="org.eclipse.gyrex.admin.ui.system"
             class="org.eclipse.gyrex.admin.ui.http.internal.HttpApplicationPage"
-            id="org.eclipse.gyrex.admin.ui.http.page"
+            id="applications"
+            keywords="applications"
             name="Applications"
-            parentId="org.eclipse.gyrex.admin.ui.general">
+            sortKey="100">
       </page>
    </extension>
-   <extension
-         point="org.eclipse.core.runtime.adapters">
-      <factory
-            adaptableType="org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration"
-            class="org.eclipse.gyrex.admin.ui.http.internal.HttpUiAdapterFactory">
-         <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
-         </adapter>
-         <adapter
-               type="org.eclipse.ui.views.properties.IPropertySource">
-         </adapter>
-      </factory>
-      <factory
-            adaptableType="org.eclipse.gyrex.http.internal.application.manager.ApplicationProviderRegistration"
-            class="org.eclipse.gyrex.admin.ui.http.internal.HttpUiAdapterFactory">
-         <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
-         </adapter>
-         <adapter
-               type="org.eclipse.ui.views.properties.IPropertySource">
-         </adapter>
-      </factory>
-   </extension>
-
 </plugin>

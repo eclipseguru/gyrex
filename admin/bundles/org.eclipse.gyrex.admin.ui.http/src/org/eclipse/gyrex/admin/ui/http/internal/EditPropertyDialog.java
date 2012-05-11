@@ -11,6 +11,7 @@
  */
 package org.eclipse.gyrex.admin.ui.http.internal;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
@@ -19,7 +20,6 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogFiel
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.apache.commons.lang.StringUtils;
 
-public class EditPropertyDialog extends StatusDialog {
+public class EditPropertyDialog extends NonBlockingStatusDialog {
 
 	private final StringDialogField keyField = new StringDialogField();
 	private final StringDialogField valueField = new StringDialogField();

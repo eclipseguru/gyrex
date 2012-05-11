@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Andreas Mihm	- rework new admin ui
  */
 package org.eclipse.gyrex.admin.ui.http.internal;
 
@@ -23,6 +24,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.ComboDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
@@ -46,7 +48,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -66,7 +67,7 @@ import org.eclipse.swt.widgets.Text;
 import org.apache.commons.lang.StringUtils;
 
 @SuppressWarnings("restriction")
-public class EditApplicationDialog extends StatusDialog {
+public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 	private static final class PropertiesFieldLabelProvider extends LabelProvider implements ITableLabelProvider {
 
@@ -170,17 +171,28 @@ public class EditApplicationDialog extends StatusDialog {
 
 	void addNewMount() {
 		final MountApplicationDialog dialog = new MountApplicationDialog(getParentShell());
-		if (dialog.open() == Window.OK) {
-			mountsField.addElement(dialog.getUrl().toExternalForm());
-		}
+		dialog.openNonBlocking(new Runnable() {
+			@Override
+			public void run() {
+				if (dialog.getReturnCode() == Window.OK) {
+					mountsField.addElement(dialog.getUrl().toExternalForm());
+				}
+			}
+		});
 	}
 
 	void addNewProperty() {
 		final EditPropertyDialog dialog = new EditPropertyDialog(getParentShell(), null, null);
-		if (dialog.open() == Window.OK) {
-			applicationProperties.put(dialog.getKey(), dialog.getValue());
-			refreshProperties();
-		}
+		dialog.openNonBlocking(new Runnable() {
+			@Override
+			public void run() {
+				if (dialog.getReturnCode() == Window.OK) {
+					applicationProperties.put(dialog.getKey(), dialog.getValue());
+					refreshProperties();
+				}
+			}
+		});
+
 	}
 
 	@Override
@@ -209,7 +221,7 @@ public class EditApplicationDialog extends StatusDialog {
 		final TreeSet<String> providerItems = new TreeSet<String>();
 		final Collection<ApplicationProviderRegistration> providers = HttpActivator.getInstance().getProviderRegistry().getRegisteredProviders().values();
 		for (final ApplicationProviderRegistration registration : providers) {
-			final String label = HttpUiAdapterFactory.WORKBENCH_ADAPTER.getLabel(registration);
+			final String label = HttpUiAdapter.getLabel(registration);
 			providerItemToIdMap.put(label, registration.getProviderId());
 			providerItems.add(label);
 		}
@@ -282,10 +294,15 @@ public class EditApplicationDialog extends StatusDialog {
 
 		final String[] elem = (String[]) selectedElements.get(0);
 		final EditPropertyDialog dialog = new EditPropertyDialog(getParentShell(), elem[0], elem[1]);
-		if (dialog.open() == Window.OK) {
-			applicationProperties.put(dialog.getKey(), dialog.getValue());
-			refreshProperties();
-		}
+		dialog.openNonBlocking(new Runnable() {
+			@Override
+			public void run() {
+				if (dialog.getReturnCode() == Window.OK) {
+					applicationProperties.put(dialog.getKey(), dialog.getValue());
+					refreshProperties();
+				}
+			}
+		});
 
 	}
 
