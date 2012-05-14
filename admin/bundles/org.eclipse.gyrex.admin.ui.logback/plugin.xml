@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.eclipse.gyrex.admin.ui.configurationPages">
-      <page
-            class="org.eclipse.gyrex.admin.ui.logback.internal.LogbackConfigurationPage"
-            id="org.eclipse.gyrex.admin.ui.logback.page"
-            name="Logging"
-            parentId="org.eclipse.gyrex.admin.ui.general">
-      </page>
-   </extension>
-
 </plugin>

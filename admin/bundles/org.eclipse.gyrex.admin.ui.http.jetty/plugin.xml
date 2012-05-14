@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.eclipse.gyrex.admin.ui.configurationPages">
-      <page
-            class="org.eclipse.gyrex.admin.ui.http.jetty.internal.JettyConfigurationPage"
-            id="org.eclipse.gyrex.admin.ui.http.jetty"
-            keywords="jetty ssl http web"
-            name="Jetty"
-            parentId="org.eclipse.gyrex.admin.ui.general">
-      </page>
-   </extension>
-
 </plugin>

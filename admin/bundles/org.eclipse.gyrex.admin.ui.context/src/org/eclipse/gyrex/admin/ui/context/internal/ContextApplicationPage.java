@@ -11,21 +11,14 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.context.internal;
 
-import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
-
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.IManagedForm;
 
 /**
  *
  */
 public class ContextApplicationPage extends AdminPage {
 
-	private ContextsSection contextSection;
+//	private ContextsSection contextSection;
 
 	/**
 	 * Creates a new instance.
@@ -35,27 +28,27 @@ public class ContextApplicationPage extends AdminPage {
 		setTitleToolTip("Define runtime contexts for web applications and background processing.");
 	}
 
-	@Override
-	protected void createFormContent(final IManagedForm managedForm) {
-		final Composite body = managedForm.getForm().getBody();
-		body.setLayout(FormLayoutFactory.createFormGridLayout(true, 1));
-		body.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+//	@Override
+//	protected void createFormContent(final IManagedForm managedForm) {
+//		final Composite body = managedForm.getForm().getBody();
+//		body.setLayout(FormLayoutFactory.createFormGridLayout(true, 1));
+//		body.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+//
+//		contextSection = new ContextsSection(body, this);
+//		contextSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
+//		managedForm.addPart(contextSection);
+//
+////		FormLayoutFactory.visualizeLayoutArea(body, SWT.COLOR_CYAN);
+////		FormLayoutFactory.visualizeLayoutArea(left, SWT.COLOR_DARK_GREEN);
+////		FormLayoutFactory.visualizeLayoutArea(right, SWT.COLOR_DARK_GREEN);
+//	}
 
-		contextSection = new ContextsSection(body, this);
-		contextSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
-		managedForm.addPart(contextSection);
-
-//		FormLayoutFactory.visualizeLayoutArea(body, SWT.COLOR_CYAN);
-//		FormLayoutFactory.visualizeLayoutArea(left, SWT.COLOR_DARK_GREEN);
-//		FormLayoutFactory.visualizeLayoutArea(right, SWT.COLOR_DARK_GREEN);
-	}
-
-	@Override
-	public ISelectionProvider getSelectionProvider() {
-		if (null != contextSection) {
-			return contextSection.getSelectionProvider();
-		}
-		return null;
-	}
-
+//	@Override
+//	public ISelectionProvider getSelectionProvider() {
+//		if (null != contextSection) {
+//			return contextSection.getSelectionProvider();
+//		}
+//		return null;
+//	}
+//
 }

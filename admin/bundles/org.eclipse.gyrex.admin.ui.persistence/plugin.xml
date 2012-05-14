@@ -2,16 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.gyrex.admin.ui.configurationPages">
-      <page
-            class="org.eclipse.gyrex.admin.ui.persistence.internal.RepositoriesPage"
-            id="org.eclipse.gyrex.admin.ui.persistence.repositories"
-            keywords="repository repositories sql database mysql oracle db2 nosql jdbc"
-            name="Repositories"
-            parentId="org.eclipse.gyrex.admin.ui.general">
-      </page>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="org.eclipse.gyrex.persistence.storage.lookup.RepositoryContentTypeAssignments"

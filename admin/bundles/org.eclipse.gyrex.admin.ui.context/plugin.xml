@@ -2,15 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.gyrex.admin.ui.configurationPages">
-      <page
-            class="org.eclipse.gyrex.admin.ui.context.internal.ContextApplicationPage"
-            id="org.eclipse.gyrex.admin.ui.context.page"
-            name="Contexts"
-            parentId="org.eclipse.gyrex.admin.ui.general">
-      </page>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="org.eclipse.gyrex.context.internal.registry.ContextDefinition"
