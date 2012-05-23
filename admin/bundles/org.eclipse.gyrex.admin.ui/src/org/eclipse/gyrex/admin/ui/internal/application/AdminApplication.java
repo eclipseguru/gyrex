@@ -322,9 +322,11 @@ public class AdminApplication implements IEntryPoint {
 		final Composite pageComp = new Composite(parent, SWT.NONE);
 		pageComp.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 
+		final GridData filterData = AdminUiUtil.createHorzFillData();
 		if (page instanceof FilteredAdminPage) {
-//			final Control filterControl = ((FilteredAdminPage) page).createFilterControl(pageComp);
-//			filterControl.setLayoutData(AdminUiUtil.createHorzFillData());
+			final Control filterControl = ((FilteredAdminPage) page).createFilterControl(pageComp);
+			filterData.exclude = !filterControl.isVisible();
+			filterControl.setLayoutData(filterData);
 		}
 
 		String title = page.getTitle();
@@ -333,7 +335,10 @@ public class AdminApplication implements IEntryPoint {
 		}
 		if (StringUtils.isNotBlank(title)) {
 			final Label label = createHeadlineLabel(pageComp, page.getTitle());
-			label.setLayoutData(createHeadlineLayoutData());
+			final GridData layoutData = new GridData();
+			layoutData.verticalIndent = ((page instanceof FilteredAdminPage) && !filterData.exclude) ? 5 : 30;
+//			layoutData.horizontalIndent = DEFAULT_SPACE;
+			label.setLayoutData(layoutData);
 		}
 
 		final Composite contentComp = new Composite(pageComp, SWT.NONE);

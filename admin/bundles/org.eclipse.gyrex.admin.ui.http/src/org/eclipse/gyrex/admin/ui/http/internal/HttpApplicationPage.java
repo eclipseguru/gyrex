@@ -13,6 +13,7 @@
 package org.eclipse.gyrex.admin.ui.http.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -79,6 +80,12 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		}
 	}
 
+	/** APPLICATION_PROVIDER */
+	private static final String FILTER_PROVIDER = "applicationProvider";
+
+	/** CONTEXT */
+	private static final String FILTER_CONTEXT = "context";
+
 	private Composite pageComposite;
 
 	private TreeViewer treeViewer;
@@ -93,13 +100,11 @@ public class HttpApplicationPage extends FilteredAdminPage {
 	public HttpApplicationPage() {
 		setTitle("Web Application Setup");
 		setTitleToolTip("Define, configure and mount applications.");
+		setFilters(Arrays.asList(FILTER_CONTEXT, FILTER_PROVIDER));
 		contextImage = createImage("resources/world.gif");
 		applicationImage = createImage("resources/greendot.gif");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.pages.AdminPage#activate()
-	 */
 	@Override
 	public void activate() {
 		super.activate();
@@ -359,6 +364,26 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		treeViewer.expandAll();
 	}
 
+	void editButtonPressed() {
+
+		if (getSelectedValue() == null) {
+			return;
+		}
+		final ApplicationRegistration app = getSelectedValue().getApplicationRegistration();
+
+		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(editButton), getApplicationManager(), app);
+		dialog.openNonBlocking(new Runnable() {
+			@Override
+			public void run() {
+				if (dialog.getReturnCode() == Window.OK) {
+					treeViewer.refresh();
+					treeViewer.expandAll();
+				}
+			}
+		});
+
+	}
+
 	/*
 		@Override
 		protected void createFormContent(final IManagedForm managedForm) {
@@ -385,31 +410,25 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		*/
 
-	void editButtonPressed() {
-
-		if (getSelectedValue() == null) {
-			return;
-		}
-		final ApplicationRegistration app = getSelectedValue().getApplicationRegistration();
-
-		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(editButton), getApplicationManager(), app);
-		dialog.openNonBlocking(new Runnable() {
-			@Override
-			public void run() {
-				if (dialog.getReturnCode() == Window.OK) {
-					treeViewer.refresh();
-					treeViewer.expandAll();
-				}
-			}
-		});
-
-	}
-
 	/**
 	 * @return
 	 */
 	private ApplicationManager getApplicationManager() {
 		return HttpUiActivator.getAppManager();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage#getFilterText(java.lang.String)
+	 */
+	@Override
+	protected String getFilterText(final String filter) {
+		if (FILTER_CONTEXT.equals(filter)) {
+			return "All Contexts";
+		}
+		if (FILTER_PROVIDER.equals(filter)) {
+			return "All Applications";
+		}
+		return super.getFilterText(filter);
 	}
 
 	private List<AppRegItem> getSelectedAppRegs() {

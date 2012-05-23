@@ -11,11 +11,16 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.pages;
 
-import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
+import java.util.Collections;
+import java.util.List;
 
+import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 /**
  * Specialized AdminPage which allows to filter the content within the page
@@ -24,6 +29,7 @@ import org.eclipse.swt.widgets.Control;
 public abstract class FilteredAdminPage extends AdminPage {
 
 	private Composite filterPanel;
+	private List<String> filters;
 
 	/**
 	 * Creates the filter control.
@@ -39,12 +45,45 @@ public abstract class FilteredAdminPage extends AdminPage {
 	 */
 	public Control createFilterControl(final Composite parent) {
 		filterPanel = new Composite(parent, SWT.NONE);
-		filterPanel.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
+		final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
+		layout.fill = true;
+		layout.marginTop = 0;
+		filterPanel.setLayout(layout);
+
+		final String customVariant = "filter";
+
+		// toolbar
+		final ToolBar toolBar = new ToolBar(filterPanel, SWT.HORIZONTAL);
+		toolBar.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
+
+		// tool item
+		for (final String filter : getFilters()) {
+			final ToolItem toolItem = new ToolItem(toolBar, SWT.DROP_DOWN);
+			toolItem.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
+			toolItem.setText(getFilterText(filter));
+		}
+
 		updateFilterPanel();
 		return filterPanel;
 	}
 
+	protected List<String> getFilters() {
+		if (null == filters) {
+			return Collections.emptyList();
+		}
+
+		return filters;
+	}
+
+	protected String getFilterText(final String filter) {
+		return filter;
+	}
+
+	protected void setFilters(final List<String> filters) {
+		this.filters = filters;
+	}
+
 	void updateFilterPanel() {
-		filterPanel.setVisible(false);
+		filterPanel.setVisible(!getFilters().isEmpty());
 	}
 }
