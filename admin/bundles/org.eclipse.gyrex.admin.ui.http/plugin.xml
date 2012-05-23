@@ -6,9 +6,9 @@
       <page
             categoryId="org.eclipse.gyrex.admin.ui.categories.apps"
             class="org.eclipse.gyrex.admin.ui.http.internal.HttpApplicationPage"
-            id="applications"
+            id="http-applications"
             keywords="applications"
-            name="Applications"
+            name="Web Applications"
             sortKey="100">
       </page>
    </extension>
