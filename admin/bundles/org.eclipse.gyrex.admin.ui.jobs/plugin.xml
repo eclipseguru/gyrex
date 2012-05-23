@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.pages">
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.apps"
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.BackgroundTasksPage"
+            id="background-tasks"
+            name="Background Tasks"
+            sortKey="200">
+      </page>
+   </extension>
 
 </plugin>
