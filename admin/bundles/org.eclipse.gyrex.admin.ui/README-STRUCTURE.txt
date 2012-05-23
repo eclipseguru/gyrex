@@ -25,5 +25,18 @@ System Category
 ---------------
 
 The System category is intended for system relevant settings that have no connection
-to a tenant context.
+to a context. This also includes setting up the contexts themselves.
 
+
+Applications
+------------
+
+The Application category is intended for all administrative tasks associated with
+applications. The current idea is to group the web/http application stuff as well
+as background jobs (schedule configuration) under this category.
+
+
+Data
+----
+
+The data category is intended for repositories, repository management, etc.
