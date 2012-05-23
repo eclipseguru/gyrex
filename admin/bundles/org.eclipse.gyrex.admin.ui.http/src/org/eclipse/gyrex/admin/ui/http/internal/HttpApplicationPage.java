@@ -21,7 +21,7 @@ import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvide
 import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupingItem;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
 
@@ -52,7 +52,7 @@ import org.eclipse.ui.dialogs.FilteredTree;
  *
  */
 @SuppressWarnings("restriction")
-public class HttpApplicationPage extends AdminPage {
+public class HttpApplicationPage extends FilteredAdminPage {
 
 	private final class ApplicationBrowserSortListener extends SelectionAdapter {
 		private final ApplicationBrowserComparator comparator;
@@ -382,7 +382,7 @@ public class HttpApplicationPage extends AdminPage {
 			}
 			return null;
 		}
-		
+
 		*/
 
 	void editButtonPressed() {

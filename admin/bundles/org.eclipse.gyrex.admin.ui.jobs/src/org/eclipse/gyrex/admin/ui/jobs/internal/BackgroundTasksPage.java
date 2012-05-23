@@ -13,7 +13,7 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.swt.SWT;
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  *
  */
-public class BackgroundTasksPage extends AdminPage {
+public class BackgroundTasksPage extends FilteredAdminPage {
 
 	/**
 	 * Creates a new instance.

@@ -19,6 +19,7 @@ import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -40,6 +41,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -49,6 +51,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.osgi.framework.Version;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +67,20 @@ public class AdminApplication implements IEntryPoint {
 	private static final int CENTER_AREA_WIDTH = 998;
 
 	private static final Logger LOG = LoggerFactory.getLogger(AdminApplication.class);
+
+	private static Label createHeadlineLabel(final Composite parent, final String text) {
+		final Label label = new Label(parent, SWT.NONE);
+		label.setText(text.replace("&", "&&"));
+		label.setData(WidgetUtil.CUSTOM_VARIANT, "pageHeadline");
+		return label;
+	}
+
+	private static GridData createHeadlineLayoutData() {
+		final GridData layoutData = new GridData();
+		layoutData.verticalIndent = 30;
+//		layoutData.horizontalIndent = DEFAULT_SPACE;
+		return layoutData;
+	}
 
 	private static FormData createLogoFormData(final Image logo) {
 		final FormData data = new FormData();
@@ -123,15 +140,7 @@ public class AdminApplication implements IEntryPoint {
 		for (final Control child : centerArea.getChildren()) {
 			child.dispose();
 		}
-		final Composite contentComp = AdminUiUtil.initPage(page.getTitle(), centerArea);
-		page.createControl(contentComp);
-		// sanity check
-		for (final Control child : contentComp.getChildren()) {
-			if (null != child.getLayoutData()) {
-				LOG.warn("Programming error in page {}: child composites ({}) should not make any assumptions about the parent layout!", contribution.getId(), child);
-				child.setLayoutData(null);
-			}
-		}
+		createPage(page, contribution, centerArea);
 		centerArea.layout(true, true);
 		page.activate();
 	}
@@ -307,6 +316,37 @@ public class AdminApplication implements IEntryPoint {
 		};
 
 		return navigation;
+	}
+
+	private void createPage(final AdminPage page, final PageContribution contribution, final Composite parent) {
+		final Composite pageComp = new Composite(parent, SWT.NONE);
+		pageComp.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
+
+		if (page instanceof FilteredAdminPage) {
+//			final Control filterControl = ((FilteredAdminPage) page).createFilterControl(pageComp);
+//			filterControl.setLayoutData(AdminUiUtil.createHorzFillData());
+		}
+
+		String title = page.getTitle();
+		if (StringUtils.isBlank(title)) {
+			title = contribution.getName();
+		}
+		if (StringUtils.isNotBlank(title)) {
+			final Label label = createHeadlineLabel(pageComp, page.getTitle());
+			label.setLayoutData(createHeadlineLayoutData());
+		}
+
+		final Composite contentComp = new Composite(pageComp, SWT.NONE);
+		contentComp.setLayoutData(AdminUiUtil.createFillData());
+		contentComp.setLayout(new FillLayout());
+		page.createControl(contentComp);
+		// sanity check
+		for (final Control child : contentComp.getChildren()) {
+			if (null != child.getLayoutData()) {
+				LOG.warn("Programming error in page {}: child composites ({}) should not make any assumptions about the parent layout!", contribution.getId(), child);
+				child.setLayoutData(null);
+			}
+		}
 	}
 
 	private ScrolledComposite createScrolledArea(final Composite parent) {

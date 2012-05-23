@@ -68,20 +68,6 @@ public final class AdminUiUtil {
 		label.setLayoutData(labelLayoutData);
 	}
 
-	private static Label createHeadlineLabel(final Composite parent, final String text) {
-		final Label label = new Label(parent, SWT.NONE);
-		label.setText(text.replace("&", "&&"));
-		label.setData(WidgetUtil.CUSTOM_VARIANT, "pageHeadline");
-		return label;
-	}
-
-	private static GridData createHeadlineLayoutData() {
-		final GridData layoutData = new GridData();
-		layoutData.verticalIndent = 30;
-//		layoutData.horizontalIndent = DEFAULT_SPACE;
-		return layoutData;
-	}
-
 	public static GridData createHorzFillData() {
 		return new GridData(SWT.FILL, SWT.TOP, true, false);
 	}
@@ -125,17 +111,6 @@ public final class AdminUiUtil {
 			result.marginWidth = 0;
 		}
 		return result;
-	}
-
-	public static Composite initPage(final String title, final Composite parent) {
-		final Composite pageComp = new Composite(parent, SWT.NONE);
-		pageComp.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
-		final Label label = createHeadlineLabel(pageComp, title);
-		label.setLayoutData(createHeadlineLayoutData());
-		final Composite contentComp = new Composite(pageComp, SWT.NONE);
-		contentComp.setLayoutData(AdminUiUtil.createFillData());
-		contentComp.setLayout(new FillLayout());
-		return contentComp;
 	}
 
 	private AdminUiUtil() {
