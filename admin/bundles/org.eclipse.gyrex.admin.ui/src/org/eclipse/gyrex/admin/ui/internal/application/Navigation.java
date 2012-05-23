@@ -22,8 +22,6 @@ import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 public abstract class Navigation {
 
@@ -44,13 +42,7 @@ public abstract class Navigation {
 	}
 
 	private void changeSelectedDropDownEntry(final PageContribution page, final DropDownNavigation navEntry) {
-		final boolean belongsToDropDownNav = pageBelongsToDropDownNav(page, navEntry);
-		final ToolItem item = ((ToolBar) navEntry.getChildren()[0]).getItem(0);
-		if (belongsToDropDownNav) {
-			item.setData(WidgetUtil.CUSTOM_VARIANT, "selected");
-		} else {
-			item.setData(WidgetUtil.CUSTOM_VARIANT, "navigation");
-		}
+		navEntry.setSelected(pageBelongsToDropDownNav(page, navEntry));
 	}
 
 	private void createNavigationControls(final Composite parent) {

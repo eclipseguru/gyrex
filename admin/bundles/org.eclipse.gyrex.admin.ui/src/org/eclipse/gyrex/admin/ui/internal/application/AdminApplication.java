@@ -40,6 +40,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -60,40 +61,23 @@ public class AdminApplication implements IEntryPoint {
 
 	private static final String GYREX_WEBSITE_URL = "http://eclipse.org/gyrex/";
 	private static final int CONTENT_MIN_HEIGHT = 800;
-	private static final int HEADER_HEIGHT = 140;
 	private static final int CENTER_AREA_WIDTH = 998;
 
 	private static final Logger LOG = LoggerFactory.getLogger(AdminApplication.class);
 
-	private static FormData createLogoFormData(final Image rapLogo) {
+	private static FormData createLogoFormData(final Image logo) {
 		final FormData data = new FormData();
 		data.left = new FormAttachment(0);
-		final int logoHeight = rapLogo.getBounds().height;
-		data.top = new FormAttachment(50, -(logoHeight / 2));
+//		final int logoHeight = logo.getBounds().height;
+//		data.top = new FormAttachment(50, -(logoHeight / 2));
+		data.top = new FormAttachment(0);
 		return data;
 	}
 
 	private static FormData createNavBarFormData() {
 		final FormData data = new FormData();
-		data.top = new FormAttachment(0);
-		data.left = new FormAttachment(0);
-		data.right = new FormAttachment(100);
-		return data;
-	}
-
-	private static FormData createNavigationFormData() {
-		final FormData data = new FormData();
-		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) + 7);
-		data.top = new FormAttachment(0);
-		data.bottom = new FormAttachment(100);
-		data.width = CENTER_AREA_WIDTH;
-		return data;
-	}
-
-	private static FormData createTitleFormData() {
-		final FormData data = new FormData();
-		data.bottom = new FormAttachment(100, -18);
-		data.left = new FormAttachment(0, 370);
+		data.bottom = new FormAttachment(100, 5);
+		data.right = new FormAttachment(100, 0);
 		return data;
 	}
 
@@ -131,6 +115,7 @@ public class AdminApplication implements IEntryPoint {
 	private Composite navBar;
 	private final Map<String, AdminPage> pagesById = new HashMap<String, AdminPage>();
 	private AdminPage currentPage;
+	private Image logo;
 
 	private void activate(final AdminPage page, final PageContribution contribution) {
 		// TODO: should switch to using a StackLayout and not disposing children every time
@@ -175,32 +160,43 @@ public class AdminApplication implements IEntryPoint {
 		data.top = new FormAttachment(navBar, 0, SWT.BOTTOM);
 		data.bottom = new FormAttachment(footer, 0, SWT.TOP);
 		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) + 10);
-		data.width = CENTER_AREA_WIDTH + 10;
+		data.width = CENTER_AREA_WIDTH - 10;
 		return data;
 	}
 
 	private Composite createContent(final ScrolledComposite scrolledArea) {
+		logo = getImage(scrolledArea.getDisplay(), "gyrex/gyrex-juno.png");
 		final Composite comp = new Composite(scrolledArea, SWT.NONE);
 		comp.setLayout(new FormLayout());
 		final Composite header = createHeader(comp);
-		header.setLayoutData(createHeaderFormData());
+		header.setLayoutData(createHeaderFormData(logo.getBounds().height));
 		createContentBody(comp, header);
 		return comp;
 	}
 
 	private void createContentBody(final Composite parent, final Composite header) {
+
+		// FIXME: the separator is a hack to work around missing "border-top" (or -bottom) in RAP (bug 283872)
+		final Composite separator = new Composite(parent, SWT.NONE);
+		separator.setData(WidgetUtil.CUSTOM_VARIANT, "mainContentAreaHeaderSeparator");
+		final FormData data = new FormData();
+		data.top = new FormAttachment(header, 0);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		data.height = 2;
+		separator.setLayoutData(data);
+
 		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setData(WidgetUtil.CUSTOM_VARIANT, "mainContentArea");
 		composite.setLayout(new FormLayout());
-		composite.setLayoutData(createContentBodyFormData(header));
-		navigation = createNavigation(composite);
+		composite.setLayoutData(createContentBodyFormData(separator));
 		final Composite footer = createFooter(composite);
 		centerArea = createCenterArea(composite, footer);
 	}
 
-	private FormData createContentBodyFormData(final Composite header) {
+	private FormData createContentBodyFormData(final Control topControlToAttachTo) {
 		final FormData data = new FormData();
-		data.top = new FormAttachment(header, 0);
+		data.top = new FormAttachment(topControlToAttachTo, 0);
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(100, 0);
 		data.bottom = new FormAttachment(100, 0);
@@ -241,8 +237,22 @@ public class AdminApplication implements IEntryPoint {
 		comp.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		comp.setLayout(new FormLayout());
 		final Composite headerCenterArea = createHeaderCenterArea(comp);
-		createLogo(headerCenterArea);
-		createTitle(headerCenterArea);
+
+		final Label logoLabel = new Label(headerCenterArea, SWT.NONE);
+		logoLabel.setImage(logo);
+		logoLabel.setLayoutData(createLogoFormData(logo));
+		makeLink(logoLabel, GYREX_WEBSITE_URL);
+
+//		final Label title = new Label(headerCenterArea, SWT.NONE);
+//		title.setText("Admin Console");
+//		title.setData(WidgetUtil.CUSTOM_VARIANT, "title");
+//		final FormData titleFormData = new FormData();
+//		titleFormData.bottom = new FormAttachment(100, -18);
+//		titleFormData.left = new FormAttachment(logo, 0);
+//		title.setLayoutData(titleFormData);
+
+		navigation = createNavigation(headerCenterArea);
+
 		return comp;
 	}
 
@@ -262,21 +272,13 @@ public class AdminApplication implements IEntryPoint {
 		return data;
 	}
 
-	private FormData createHeaderFormData() {
+	private FormData createHeaderFormData(final int height) {
 		final FormData data = new FormData();
 		data.top = new FormAttachment(0);
 		data.left = new FormAttachment(0);
 		data.right = new FormAttachment(100);
-		data.height = HEADER_HEIGHT;
+		data.height = height;
 		return data;
-	}
-
-	private void createLogo(final Composite headerComp) {
-		final Label logoLabel = new Label(headerComp, SWT.NONE);
-		final Image logo = getImage(headerComp.getDisplay(), "gyrex/eclipse_gyrex.png");
-		logoLabel.setImage(logo);
-		logoLabel.setLayoutData(createLogoFormData(logo));
-		makeLink(logoLabel, GYREX_WEBSITE_URL);
 	}
 
 	private Shell createMainShell(final Display display) {
@@ -288,18 +290,22 @@ public class AdminApplication implements IEntryPoint {
 
 	private Navigation createNavigation(final Composite parent) {
 		navBar = new Composite(parent, SWT.NONE);
-		navBar.setLayout(new FormLayout());
 		navBar.setLayoutData(createNavBarFormData());
 		navBar.setData(WidgetUtil.CUSTOM_VARIANT, "nav-bar");
+
+		final GridLayout layout = new GridLayout();
+		layout.marginWidth = 0;
+		layout.horizontalSpacing = 0;
+		layout.verticalSpacing = 0;
+		navBar.setLayout(layout);
+
 		final Navigation navigation = new Navigation(navBar) {
 			@Override
 			protected void openPage(final PageContribution page) {
 				AdminApplication.this.openPage(page);
 			}
 		};
-		final Control navigationControl = navigation.getControl();
-		navigationControl.setLayoutData(createNavigationFormData());
-		navigationControl.setData(WidgetUtil.CUSTOM_VARIANT, "navigation");
+
 		return navigation;
 	}
 
@@ -310,13 +316,6 @@ public class AdminApplication implements IEntryPoint {
 		scrolledComp.setExpandVertical(true);
 		scrolledComp.setExpandHorizontal(true);
 		return scrolledComp;
-	}
-
-	private void createTitle(final Composite headerComp) {
-		final Label title = new Label(headerComp, SWT.NONE);
-		title.setText("Admin Console");
-		title.setLayoutData(createTitleFormData());
-		title.setData(WidgetUtil.CUSTOM_VARIANT, "title");
 	}
 
 	public int createUI() {

@@ -5,12 +5,17 @@
 }
 
 .header {
-  background-color: #eee;
+  background-image: url(/theme/images/header-bg2.jpg);
+  background-color: #234558; 
 }
 
 .footer {
-  background-color : #e5e5e5;
+  background-color: #e5e5e5;
   border: 1px solid #bdbdbd;
+}
+
+Composite.mainContentAreaHeaderSeparator {
+  background-color: #34332F;
 }
 
 Composite.mainContentArea {
@@ -22,12 +27,7 @@ Composite.centerArea {
 }
 
 Composite.nav-bar {
-  background-color: #34332F;
-}
-
-Composite.infobox {
-  background-color: #34332F;
-  border-radius: 0 50px 0 50px;
+  background-color: transparent;
 }
 
 Composite.navigation {
@@ -40,43 +40,66 @@ ToolBar.navigation {
 }
 
 ToolItem.navigation {
-  color: #bdbdbd;
-  background-color: #34332F;
+  color: #d5d5d5;
+  background-color: transparent;
   background-image: none;
-  border-radius: 2px;
   border: none;
   padding: 8px;
   text-shadow: none;
 }
 
-ToolItem.navigation:hover {
+ToolItem.navigation:hover,
+ToolItem.navigationOpen:hover,
+ToolItem.navigationSelected:hover  {
   cursor: pointer;
   color: white;
-  background-color: transparent;
-  border-radius: 2px;
+  background-color: #34332F;
   background-image: none;
-  animation: none;
+  border-radius: 4px 4px 0 0;
 }
 
 ToolItem.navigation:pressed {
   padding: 8px 8px 8px 8px;
 }
 
-ToolItem.selected {
+ToolItem.navigationOpen {
+  color: #d5d5d5;
+  border: none;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolItem.navigationSelected {
   color: white;
   border: none;
   background-color: transparent;
   background-image: none;
 }
 
-ToolItem.selected:pressed {
+ToolItem.navigationSelectedOpen {
+  color: white;
+  border: none;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolItem.navigationSelected:pressed {
   padding: 8px 8px 8px 8px;
 }
 
-ToolItem-DropDownIcon:hover,
-ToolItem-DropDownIcon.selected {
-  border: none;
-  background-image: url( /theme/images/down.png );
+
+ToolItem-DropDownIcon.navigation,
+ToolItem-DropDownIcon.navigationOpen {
+  border:none;
+  background-image: url( /theme/images/down-nav.png );
+}
+
+ToolItem-DropDownIcon.navigation:hover,
+ToolItem-DropDownIcon.navigationOpen:hover,
+ToolItem-DropDownIcon.navigationSelected,
+ToolItem-DropDownIcon.navigationSelectedOpen {
+  border:none;
+  background-image: url( /theme/images/down-nav-hover.png );
 }
 
 Menu.navigation {
@@ -120,13 +143,19 @@ Label.footerLabel {
   font: 14px Helvetica, Verdana, sans-serif;
 }
 
+Composite.infobox {
+  background-color: #e5e5e5;
+  border: 1px solid #bdbdbd;
+  border-radius: 0 30px 0 30px;
+}
+
 Label.infobox {
-  color: #e5e5e5;
+  /*color: #bdbdbd;*/
 }
 
 Label.infobox-heading {
   font: 16px Helvetica, Verdana, sans-serif;
-  color: #357cd4;
+  color: #31619C; /*#357cd4;*/
 }
 
 Label.markup {

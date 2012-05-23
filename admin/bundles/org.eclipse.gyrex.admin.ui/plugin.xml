@@ -34,15 +34,26 @@
    <extension
          point="org.eclipse.gyrex.admin.ui.pages">
       <page
-            categoryId="org.eclipse.gyrex.admin.ui.system"
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
             class="org.eclipse.gyrex.admin.ui.internal.pages.OverviewPage"
             id="overview"
             name="Overview"
             sortKey="000">
       </page>
       <category
-            id="org.eclipse.gyrex.admin.ui.system"
-            name="System">
+            id="org.eclipse.gyrex.admin.ui.categories.system"
+            name="System"
+            sortKey="1000">
+      </category>
+      <category
+            id="org.eclipse.gyrex.admin.ui.categories.apps"
+            name="Applications"
+            sortKey="3000">
+      </category>
+      <category
+            id="org.eclipse.gyrex.admin.ui.categories.data"
+            name="Contexts"
+            sortKey="2000">
       </category>
    </extension>
 </plugin>

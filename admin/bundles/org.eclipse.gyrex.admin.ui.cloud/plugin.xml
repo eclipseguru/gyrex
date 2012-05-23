@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.gyrex.admin.ui.pages">
       <page
-            categoryId="org.eclipse.gyrex.admin.ui.system"
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
             class="org.eclipse.gyrex.admin.ui.cloud.internal.ClusterAdminPage"
             id="cluster"
             keywords="cloud cluster"

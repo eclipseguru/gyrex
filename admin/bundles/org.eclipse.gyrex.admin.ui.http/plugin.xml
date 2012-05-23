@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.gyrex.admin.ui.pages">
       <page
-            categoryId="org.eclipse.gyrex.admin.ui.system"
+            categoryId="org.eclipse.gyrex.admin.ui.categories.apps"
             class="org.eclipse.gyrex.admin.ui.http.internal.HttpApplicationPage"
             id="applications"
             keywords="applications"
