@@ -11,6 +11,8 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
+import java.util.Iterator;
+
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserComparator.SortIndex;
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
@@ -28,9 +30,15 @@ import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -41,11 +49,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.FilteredTree;
 
@@ -88,8 +98,13 @@ public class ClusterAdminPage extends AdminPage {
 	private LinkDialogField membershipStatusField;
 
 	private Composite composite;
-
 	private TreeViewer treeViewer;
+
+	private Button approveButton;
+	private Button retireButton;
+	private Button editButton;
+
+	private ISelectionChangedListener updateButtonsListener;
 
 	/**
 	 * Creates a new instance.
@@ -106,6 +121,14 @@ public class ClusterAdminPage extends AdminPage {
 		final Display display;
 		if (treeViewer != null) {
 			treeViewer.setInput(getCloudManager());
+			updateButtonsListener = new ISelectionChangedListener() {
+
+				@Override
+				public void selectionChanged(final SelectionChangedEvent event) {
+					updateButtons();
+				}
+			};
+			treeViewer.addSelectionChangedListener(updateButtonsListener);
 			display = treeViewer.getControl().getDisplay();
 		} else {
 			display = null;
@@ -144,6 +167,66 @@ public class ClusterAdminPage extends AdminPage {
 		}
 
 		refresh();
+	}
+
+	void approveSelectedNodes() {
+		final ICloudManager cloudManager = getCloudManager();
+		final MultiStatus result = new MultiStatus(CloudUiActivator.SYMBOLIC_NAME, 0, "Some nodes could not be approved.", null);
+		for (final Iterator stream = ((IStructuredSelection) treeViewer.getSelection()).iterator(); stream.hasNext();) {
+			final Object object = stream.next();
+			if (object instanceof NodeItem) {
+				final NodeItem nodeItem = (NodeItem) object;
+				if (!nodeItem.isApproved()) {
+					final IStatus status = cloudManager.approveNode(nodeItem.getDescriptor().getId());
+					if (!status.isOK()) {
+						result.add(status);
+					}
+				}
+			}
+		}
+		if (!result.isOK()) {
+			Policy.getStatusHandler().show(result, "Error");
+		}
+	}
+
+	private void createButtons(final Composite parent) {
+		approveButton = new Button(parent, SWT.PUSH);
+		approveButton.setText("Approve");
+		approveButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				approveSelectedNodes();
+			}
+		});
+
+		retireButton = new Button(parent, SWT.PUSH);
+		retireButton.setText("Retire");
+		retireButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				retireSelectedNodes();
+			}
+		});
+
+		createButtonSeparator(parent);
+
+		editButton = new Button(parent, SWT.PUSH);
+		editButton.setText("Edit");
+		editButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				editSelectedNode();
+			}
+		});
+	}
+
+	private Label createButtonSeparator(final Composite parent) {
+		final Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separator.setVisible(false);
+		final RowData gd = new RowData();
+		gd.height = 4;
+		separator.setLayoutData(gd);
+		return separator;
 	}
 
 	private Control createConnectGroup(final Composite parent) {
@@ -213,8 +296,7 @@ public class ClusterAdminPage extends AdminPage {
 		final Composite buttons = new Composite(description, SWT.NONE);
 		buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
 		buttons.setLayout(new RowLayout(SWT.VERTICAL));
-		final Button button = new Button(buttons, SWT.NONE);
-		button.setText("Approve");
+		createButtons(buttons);
 
 		return composite;
 	}
@@ -234,6 +316,12 @@ public class ClusterAdminPage extends AdminPage {
 		treeViewer.setContentProvider(new NodeBrowserContentProvider());
 		final NodeBrowserComparator comparator = new NodeBrowserComparator();
 		treeViewer.setComparator(comparator);
+		treeViewer.addOpenListener(new IOpenListener() {
+			@Override
+			public void open(final OpenEvent event) {
+				editSelectedNode();
+			}
+		});
 
 		final TreeViewerColumn idColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
 		idColumn.getColumn().setText("Node ID");
@@ -306,6 +394,10 @@ public class ClusterAdminPage extends AdminPage {
 		super.deactivate();
 
 		if (treeViewer != null) {
+			if (updateButtonsListener != null) {
+				treeViewer.removeSelectionChangedListener(updateButtonsListener);
+				updateButtonsListener = null;
+			}
 			treeViewer.setInput(null);
 		}
 
@@ -326,6 +418,23 @@ public class ClusterAdminPage extends AdminPage {
 		}
 
 		refresh();
+	}
+
+	void editSelectedNode() {
+		final Object firstElement = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+		if (!(firstElement instanceof NodeItem)) {
+			return;
+		}
+		final NonBlockingStatusDialog dialog = new EditNodeDialog(SwtUtil.getShell(membershipStatusField.getLabelControl(null)), getCloudManager(), ((NodeItem) firstElement).getDescriptor());
+		dialog.openNonBlocking(new DialogCallback() {
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					refresh();
+				}
+			}
+		});
 	}
 
 	private ICloudManager getCloudManager() {
@@ -356,6 +465,27 @@ public class ClusterAdminPage extends AdminPage {
 		}
 
 		treeViewer.refresh();
+		updateButtons();
+	}
+
+	void retireSelectedNodes() {
+		final ICloudManager cloudManager = getCloudManager();
+		final MultiStatus result = new MultiStatus(CloudUiActivator.SYMBOLIC_NAME, 0, "Some nodes could not be retired.", null);
+		for (final Iterator stream = ((IStructuredSelection) treeViewer.getSelection()).iterator(); stream.hasNext();) {
+			final Object object = stream.next();
+			if (object instanceof NodeItem) {
+				final NodeItem nodeItem = (NodeItem) object;
+				if (nodeItem.isApproved()) {
+					final IStatus status = cloudManager.retireNode(nodeItem.getDescriptor().getId());
+					if (!status.isOK()) {
+						result.add(status);
+					}
+				}
+			}
+		}
+		if (!result.isOK()) {
+			Policy.getStatusHandler().show(result, "Error");
+		}
 	}
 
 	void showConnectDialog() {
@@ -369,5 +499,33 @@ public class ClusterAdminPage extends AdminPage {
 				}
 			}
 		});
+	}
+
+	void updateButtons() {
+		final int selectedElementsCount = ((IStructuredSelection) treeViewer.getSelection()).size();
+		if (selectedElementsCount == 0) {
+			approveButton.setEnabled(false);
+			retireButton.setEnabled(false);
+			editButton.setEnabled(false);
+			return;
+		}
+
+		boolean hasApprovedNodes = false;
+		boolean hasPendingNodes = false;
+		for (final Iterator stream = ((IStructuredSelection) treeViewer.getSelection()).iterator(); stream.hasNext();) {
+			final Object object = stream.next();
+			if (object instanceof NodeItem) {
+				final NodeItem nodeItem = (NodeItem) object;
+				hasApprovedNodes |= nodeItem.isApproved();
+				hasPendingNodes |= !nodeItem.isApproved();
+			}
+			if (hasPendingNodes && hasApprovedNodes) {
+				break;
+			}
+		}
+
+		approveButton.setEnabled(hasPendingNodes);
+		retireButton.setEnabled(hasApprovedNodes);
+		editButton.setEnabled(selectedElementsCount == 1);
 	}
 }
