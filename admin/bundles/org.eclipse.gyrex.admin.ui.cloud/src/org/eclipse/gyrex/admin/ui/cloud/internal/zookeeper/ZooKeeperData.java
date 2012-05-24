@@ -22,9 +22,6 @@ import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +32,7 @@ import org.apache.zookeeper.data.Stat;
 /**
  *
  */
-public class ZooKeeperData implements IPropertySource {
+public class ZooKeeperData {
 
 	private static final Object PROP_PATH = new Object();
 	private static final Object PROP_VERSION = new Object();
@@ -100,7 +97,7 @@ public class ZooKeeperData implements IPropertySource {
 			if (IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path)) {
 				final Properties prop = new Properties();
 				prop.load(new ByteArrayInputStream(data));
-				return new PropertiesData(prop);
+				return prop;
 			}
 
 			return WordUtils.wrap(asString(data), 80);
@@ -108,11 +105,6 @@ public class ZooKeeperData implements IPropertySource {
 			return ExceptionUtils.getRootCauseMessage(e);
 		}
 
-	}
-
-	@Override
-	public Object getEditableValue() {
-		return null;
 	}
 
 	public String getLabel() {
@@ -135,12 +127,6 @@ public class ZooKeeperData implements IPropertySource {
 		return parent;
 	}
 
-	@Override
-	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return new IPropertyDescriptor[] { new PropertyDescriptor(PROP_PATH, "Path"), new PropertyDescriptor(PROP_VERSION, "Version"), new PropertyDescriptor(PROP_CVERSION, "CVersion"), new PropertyDescriptor(PROP_EPHEMERAL_OWNER, "Ephemeral Owner"), new PropertyDescriptor(PROP_DATA_LENGTH, "Data Length"), new PropertyDescriptor(PROP_DATA, "Data") };
-	}
-
-	@Override
 	public Object getPropertyValue(final Object id) {
 		if (id == PROP_PATH) {
 			return path;
@@ -174,11 +160,6 @@ public class ZooKeeperData implements IPropertySource {
 		return getChildren().length > 0;
 	}
 
-	@Override
-	public boolean isPropertySet(final Object id) {
-		return false;
-	}
-
 	private void load() {
 		stat = new Stat();
 		try {
@@ -191,16 +172,6 @@ public class ZooKeeperData implements IPropertySource {
 		} catch (final Exception e) {
 			children = new String[] { ExceptionUtils.getRootCauseMessage(e) };
 		}
-	}
-
-	@Override
-	public void resetPropertyValue(final Object id) {
-		// no-op
-	}
-
-	@Override
-	public void setPropertyValue(final Object id, final Object value) {
-		// no-op
 	}
 
 }

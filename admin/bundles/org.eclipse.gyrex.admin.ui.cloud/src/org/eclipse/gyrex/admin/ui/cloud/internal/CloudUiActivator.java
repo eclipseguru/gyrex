@@ -17,7 +17,6 @@ import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.common.services.IServiceProxy;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import org.osgi.framework.BundleContext;
 
@@ -39,7 +38,7 @@ public class CloudUiActivator extends BaseBundleActivator {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(final String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin(SYMBOLIC_NAME, path);
+		return ImageDescriptor.createFromURL(getInstance().getBundle().getEntry(path));
 	}
 
 	/**
