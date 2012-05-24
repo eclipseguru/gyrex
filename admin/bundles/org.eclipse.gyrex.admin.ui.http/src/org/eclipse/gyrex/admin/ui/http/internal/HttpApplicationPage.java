@@ -36,6 +36,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rwt.graphics.Graphics;
 import org.eclipse.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -132,10 +133,11 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 	void addButtonPressed() {
 		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(addButton), getApplicationManager(), null);
-		dialog.openNonBlocking(new Runnable() {
+		dialog.openNonBlocking(new DialogCallback() {
+
 			@Override
-			public void run() {
-				if (dialog.getReturnCode() == Window.OK) {
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
 					treeViewer.refresh();
 					treeViewer.expandAll();
 				}
@@ -371,10 +373,11 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		final ApplicationRegistration app = getSelectedValue().getApplicationRegistration();
 
 		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(editButton), getApplicationManager(), app);
-		dialog.openNonBlocking(new Runnable() {
+		dialog.openNonBlocking(new DialogCallback() {
+
 			@Override
-			public void run() {
-				if (dialog.getReturnCode() == Window.OK) {
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
 					treeViewer.refresh();
 					treeViewer.expandAll();
 				}

@@ -35,6 +35,7 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.Window;
+import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -359,11 +360,11 @@ public class ClusterAdminPage extends AdminPage {
 
 	void showConnectDialog() {
 		final NonBlockingStatusDialog dialog = new ConnectToCloudDialog(getCloudManager(), SwtUtil.getShell(membershipStatusField.getLabelControl(null)));
-		dialog.openNonBlocking(new Runnable() {
+		dialog.openNonBlocking(new DialogCallback() {
 
 			@Override
-			public void run() {
-				if (dialog.getReturnCode() == Window.OK) {
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
 					refresh();
 				}
 			}

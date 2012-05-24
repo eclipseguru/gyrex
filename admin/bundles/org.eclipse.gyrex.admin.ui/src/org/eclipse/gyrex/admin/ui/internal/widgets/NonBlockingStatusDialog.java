@@ -14,6 +14,7 @@ package org.eclipse.gyrex.admin.ui.internal.widgets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.dialogs.StatusDialog;
+import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -23,9 +24,9 @@ import org.eclipse.swt.widgets.Shell;
  * 
  * <pre>
  * final NonBlockingStatusDialog dialog = ...;
- * dialog.<strong>openNonBlocking</strong>(new Runnable() {
- *     public void run() {
- *         if (dialog.getReturnCode() == Window.OK) {
+ * dialog.<strong>openNonBlocking</strong>(new DialogCallback() {
+ *     public void dialogClosed(final int returnCode) {
+ *         if (returnCode == Window.OK) {
  *             // execute logic on success
  *         }
  *     }
@@ -36,7 +37,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class NonBlockingStatusDialog extends StatusDialog {
 
-	private final AtomicReference<Runnable> callbackRef = new AtomicReference<Runnable>();
+	private final AtomicReference<DialogCallback> callbackRef = new AtomicReference<DialogCallback>();
 
 	/**
 	 * Creates an instance of a status dialog.
@@ -52,9 +53,9 @@ public class NonBlockingStatusDialog extends StatusDialog {
 	public boolean close() {
 		final boolean closed = super.close();
 		if (closed) {
-			final Runnable callback = callbackRef.getAndSet(null);
+			final DialogCallback callback = callbackRef.getAndSet(null);
 			if (null != callback) {
-				callback.run();
+				callback.dialogClosed(getReturnCode());
 			}
 		}
 		return closed;
@@ -69,10 +70,9 @@ public class NonBlockingStatusDialog extends StatusDialog {
 	 * the return code that {@link #open()} returns in blocking mode.
 	 * </p>
 	 * 
-	 * @return the return code
 	 * @see #create()
 	 */
-	public void openNonBlocking(final Runnable callback) {
+	public void openNonBlocking(final DialogCallback callback) {
 		if (!callbackRef.compareAndSet(null, callback)) {
 			throw new IllegalStateException("Concurrent operation not supported!");
 		}

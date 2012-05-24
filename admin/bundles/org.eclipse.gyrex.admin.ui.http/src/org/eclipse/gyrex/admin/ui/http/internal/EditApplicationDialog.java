@@ -55,6 +55,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
+import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -171,10 +172,11 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 	void addNewMount() {
 		final MountApplicationDialog dialog = new MountApplicationDialog(getParentShell());
-		dialog.openNonBlocking(new Runnable() {
+		dialog.openNonBlocking(new DialogCallback() {
+
 			@Override
-			public void run() {
-				if (dialog.getReturnCode() == Window.OK) {
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
 					mountsField.addElement(dialog.getUrl().toExternalForm());
 				}
 			}
@@ -183,10 +185,11 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 	void addNewProperty() {
 		final EditPropertyDialog dialog = new EditPropertyDialog(getParentShell(), null, null);
-		dialog.openNonBlocking(new Runnable() {
+		dialog.openNonBlocking(new DialogCallback() {
+
 			@Override
-			public void run() {
-				if (dialog.getReturnCode() == Window.OK) {
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
 					applicationProperties.put(dialog.getKey(), dialog.getValue());
 					refreshProperties();
 				}
@@ -294,10 +297,11 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 		final String[] elem = (String[]) selectedElements.get(0);
 		final EditPropertyDialog dialog = new EditPropertyDialog(getParentShell(), elem[0], elem[1]);
-		dialog.openNonBlocking(new Runnable() {
+		dialog.openNonBlocking(new DialogCallback() {
+
 			@Override
-			public void run() {
-				if (dialog.getReturnCode() == Window.OK) {
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
 					applicationProperties.put(dialog.getKey(), dialog.getValue());
 					refreshProperties();
 				}
