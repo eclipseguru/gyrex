@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.http.internal;
 
+import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
+import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
 import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.ApplicationItem;
 import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupNode;
 
@@ -67,10 +69,12 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 	private int compareGroupingItems(final GroupNode e1, final GroupNode e2) {
 
 		if (SortIndex.ID.equals(getIndex())) {
+			final String v1 = getLabel(e1.getValue());
+			final String v2 = getLabel(e2.getValue());
 			if (isReverse()) {
-				return getComparator().compare(e2.getValue(), e1.getValue());
+				return getComparator().compare(v2, v1);
 			} else {
-				return getComparator().compare(e1.getValue(), e2.getValue());
+				return getComparator().compare(v1, v2);
 			}
 		}
 
@@ -84,6 +88,14 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 	 */
 	public SortIndex getIndex() {
 		return null != index ? index : SortIndex.ID;
+	}
+
+	private String getLabel(final Object o) {
+		final LabelAdapter adapter = AdapterUtil.getAdapter(0, LabelAdapter.class);
+		if (null != adapter) {
+			return adapter.getLabel(o);
+		}
+		return String.valueOf(o);
 	}
 
 	private String getText(final ApplicationItem appReg) {
