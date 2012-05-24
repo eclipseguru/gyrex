@@ -11,9 +11,13 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.http.internal;
 
+import java.net.URL;
+
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.http.application.manager.IApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
+
+import org.eclipse.jface.resource.ImageDescriptor;
 
 import org.osgi.framework.BundleContext;
 
@@ -26,6 +30,19 @@ public class HttpUiActivator extends BaseBundleActivator {
 
 	public static ApplicationManager getAppManager() {
 		return (ApplicationManager) getInstance().getService(IApplicationManager.class);
+	}
+
+	/**
+	 * Returns an image descriptor for the image file at the given plug-in
+	 * relative path
+	 * 
+	 * @param path
+	 *            the path
+	 * @return the image descriptor
+	 */
+	public static ImageDescriptor getImageDescriptor(final String path) {
+		final URL entry = instance.getBundle().getEntry(path);
+		return ImageDescriptor.createFromURL(entry);
 	}
 
 	/**

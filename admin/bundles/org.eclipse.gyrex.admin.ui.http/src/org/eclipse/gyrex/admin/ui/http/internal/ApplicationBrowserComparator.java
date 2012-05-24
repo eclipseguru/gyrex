@@ -12,8 +12,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.http.internal;
 
-import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.AppRegItem;
-import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupingItem;
+import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.ApplicationItem;
+import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupNode;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -37,10 +37,10 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 
 	@Override
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
-		if ((e1 instanceof AppRegItem) && (e2 instanceof AppRegItem)) {
-			return compareAppRegs((AppRegItem) e1, (AppRegItem) e2);
-		} else if ((e1 instanceof GroupingItem) && (e2 instanceof GroupingItem)) {
-			return compareGroupingItems((GroupingItem) e1, (GroupingItem) e2);
+		if ((e1 instanceof ApplicationItem) && (e2 instanceof ApplicationItem)) {
+			return compareAppRegs((ApplicationItem) e1, (ApplicationItem) e2);
+		} else if ((e1 instanceof GroupNode) && (e2 instanceof GroupNode)) {
+			return compareGroupingItems((GroupNode) e1, (GroupNode) e2);
 		}
 
 		// fallback to super
@@ -48,7 +48,7 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private int compareAppRegs(final AppRegItem n1, final AppRegItem n2) {
+	private int compareAppRegs(final ApplicationItem n1, final ApplicationItem n2) {
 		final String t1 = StringUtils.trimToEmpty(getText(n1));
 		final String t2 = StringUtils.trimToEmpty(getText(n2));
 		if (isReverse()) {
@@ -64,7 +64,7 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private int compareGroupingItems(final GroupingItem e1, final GroupingItem e2) {
+	private int compareGroupingItems(final GroupNode e1, final GroupNode e2) {
 
 		if (SortIndex.ID.equals(getIndex())) {
 			if (isReverse()) {
@@ -86,7 +86,7 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 		return null != index ? index : SortIndex.ID;
 	}
 
-	private String getText(final AppRegItem appReg) {
+	private String getText(final ApplicationItem appReg) {
 		switch (getIndex()) {
 			case ID:
 				return appReg.getApplicationId();
@@ -96,10 +96,8 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 
 			case CONTEXT:
 				return appReg.getContextPath();
-			case STATUS:
-				return appReg.getActivationStatus();
 			case MOUNTS:
-				return appReg.getMounts();
+				return StringUtils.join(appReg.getMounts(), ", ");
 			default:
 				return appReg.getContextPath();
 		}

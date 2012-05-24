@@ -17,6 +17,7 @@ import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationProviderRegistration;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
 @SuppressWarnings("restriction")
@@ -25,7 +26,10 @@ public class HttpUiAdapter {
 	public static String getLabel(final Object object) {
 		if (object instanceof ApplicationProviderRegistration) {
 			final ApplicationProviderRegistration applicationProviderRegistration = (ApplicationProviderRegistration) object;
-			return String.format("%s (%s)", applicationProviderRegistration.getProviderInfo(), applicationProviderRegistration.getProviderId());
+			if (StringUtils.isNotBlank(applicationProviderRegistration.getProviderInfo())) {
+				return applicationProviderRegistration.getProviderInfo();
+			}
+			return applicationProviderRegistration.getProviderId();
 		}
 		if (object instanceof ApplicationRegistration) {
 			final ApplicationManager mgr = HttpUiActivator.getAppManager();

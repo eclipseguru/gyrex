@@ -15,7 +15,7 @@ package org.eclipse.gyrex.admin.ui.http.internal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.AppRegItem;
+import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.ApplicationItem;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.dialogs.PatternFilter;
@@ -36,27 +36,25 @@ public class ApplicationPatternFilter extends PatternFilter {
 
 	@Override
 	public boolean isElementSelectable(final Object element) {
-		// TODO Auto-generated method stub
 		return super.isElementSelectable(element);
 	}
 
 	@Override
 	public boolean isElementVisible(final Viewer viewer, final Object element) {
-		// TODO Auto-generated method stub
 		return super.isElementVisible(viewer, element);
 	}
 
 	@Override
 	protected boolean isLeafMatch(final Viewer viewer, final Object element) {
-		if (element instanceof AppRegItem) {
-			final AppRegItem appReg = (AppRegItem) element;
+		if (element instanceof ApplicationItem) {
+			final ApplicationItem appReg = (ApplicationItem) element;
 			final Set<String> keywords = new LinkedHashSet<String>();
 			keywords.add(appReg.getApplicationId());
 			keywords.add(appReg.getProviderId());
 			keywords.add(appReg.getProviderLabel());
 			keywords.add(appReg.getContextPath());
-			keywords.add(appReg.getMounts());
-			keywords.add(appReg.getActivationStatus());
+			keywords.addAll(appReg.getMounts());
+			keywords.add(appReg.isActive() ? "active" : "inactive");
 
 			for (final String word : keywords) {
 				if (wordMatches(word)) {

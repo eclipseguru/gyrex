@@ -14,8 +14,10 @@ package org.eclipse.gyrex.admin.ui.http.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.gyrex.http.internal.HttpActivator;
@@ -23,177 +25,101 @@ import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationProviderRegistration;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import org.osgi.service.prefs.BackingStoreException;
 
+import org.apache.commons.lang.StringUtils;
+
 @SuppressWarnings("restriction")
 public final class ApplicationBrowserContentProvider implements ITreeContentProvider {
 
-	public class AppRegItem {
+	public static class ApplicationItem {
 
-		private final String applicationId;
-		private final String providerId;
-		private final String providerLabel;
-		private final String contextPath;
-		private final String activationStatus;
-		private final String mounts;
+		private final Set<String> mounts;
 		private final ApplicationRegistration applicationRegistration;
 		private final ApplicationProviderRegistration applicationProviderRegistration;
-		private GroupingItem parent;
+		private GroupNode parent;
+		private final boolean active;
 
-		/**
-		 * Creates a new instance.
-		 * 
-		 * @param applicationId
-		 * @param providerId
-		 * @param providerDesc
-		 * @param contextPath
-		 * @param activationStatus
-		 * @param mounts
-		 * @param applicationRegistration
-		 * @param applicationProviderRegistration
-		 */
-		public AppRegItem(final String applicationId, final String providerId, final String contextPath, final String activationStatus, final String mounts, final ApplicationRegistration applicationRegistration, final ApplicationProviderRegistration applicationProviderRegistration) {
-			super();
-			this.applicationId = applicationId;
-			this.providerId = providerId;
-			this.contextPath = contextPath;
-			this.activationStatus = activationStatus;
-			this.mounts = mounts;
+		public ApplicationItem(final ApplicationRegistration applicationRegistration, final ApplicationProviderRegistration applicationProviderRegistration, final boolean active, final Set<String> mounts) {
 			this.applicationRegistration = applicationRegistration;
 			this.applicationProviderRegistration = applicationProviderRegistration;
-			providerLabel = HttpUiAdapter.getLabel(applicationProviderRegistration);
+			this.active = active;
+			this.mounts = mounts;
 		}
 
-		/**
-		 * Returns the activationStatus.
-		 * 
-		 * @return the activationStatus
-		 */
-		public String getActivationStatus() {
-			return activationStatus;
-		}
-
-		/**
-		 * Returns the applicationId.
-		 * 
-		 * @return the applicationId
-		 */
 		public String getApplicationId() {
-			return applicationId;
+			return applicationRegistration.getApplicationId();
 		}
 
-		/**
-		 * Returns the applicationProviderRegistration.
-		 * 
-		 * @return the applicationProviderRegistration
-		 */
 		public ApplicationProviderRegistration getApplicationProviderRegistration() {
 			return applicationProviderRegistration;
 		}
 
-		/**
-		 * Returns the applicationRegistration.
-		 * 
-		 * @return the applicationRegistration
-		 */
 		public ApplicationRegistration getApplicationRegistration() {
 			return applicationRegistration;
 		}
 
-		/**
-		 * Returns the contextPath.
-		 * 
-		 * @return the contextPath
-		 */
 		public String getContextPath() {
-			return contextPath;
+			return applicationRegistration.getContext().getContextPath().toString();
 		}
 
-		/**
-		 * Returns the mounts.
-		 * 
-		 * @return the mounts
-		 */
-		public String getMounts() {
+		public Set<String> getMounts() {
 			return mounts;
 		}
 
-		/**
-		 * Returns the parent.
-		 * 
-		 * @return the parent
-		 */
-		public GroupingItem getParent() {
+		public GroupNode getParent() {
 			return parent;
 		}
 
-		/**
-		 * Returns the providerId.
-		 * 
-		 * @return the providerId
-		 */
 		public String getProviderId() {
-			return providerId;
+			return applicationRegistration.getProviderId();
 		}
 
-		/**
-		 * Returns the providerLabel.
-		 * 
-		 * @return the providerLabel
-		 */
 		public String getProviderLabel() {
-			return providerLabel;
+			final String providerInfo = applicationProviderRegistration.getProviderInfo();
+			if (StringUtils.isNotBlank(providerInfo)) {
+				return providerInfo;
+			}
+			return applicationRegistration.getProviderId();
 		}
 
 		/**
-		 * Sets the parent.
+		 * Returns the active.
 		 * 
-		 * @param parent
-		 *            the parent to set
+		 * @return the active
 		 */
-		public void setParent(final GroupingItem parent) {
+		public boolean isActive() {
+			return active;
+		}
+
+		public void setParent(final GroupNode parent) {
 			this.parent = parent;
 		}
-
 	}
 
-	public class GroupingItem {
+	public static class GroupNode {
 
-		private final String value;
-		private final List<AppRegItem> appRegItemChildren = new ArrayList<AppRegItem>();
+		private final Object value;
+		private final List<ApplicationItem> children = new ArrayList<ApplicationItem>();
 
-		/**
-		 * Creates a new instance.
-		 * 
-		 * @param value
-		 */
-		public GroupingItem(final String value) {
+		public GroupNode(final Object value) {
 			super();
 			this.value = value;
 		}
 
-		public void addAppregItem(final AppRegItem item) {
-			appRegItemChildren.add(item);
+		public void addChild(final ApplicationItem item) {
+			children.add(item);
 		}
 
-		/**
-		 * Returns the appRegItemChildren.
-		 * 
-		 * @return the appRegItemChildren
-		 */
-		public List<AppRegItem> getAppRegItemChildren() {
-			return appRegItemChildren;
+		public List<ApplicationItem> getChildren() {
+			return children;
 		}
 
-		/**
-		 * Returns the value.
-		 * 
-		 * @return the value
-		 */
-		public String getValue() {
+		public Object getValue() {
 			return value;
 		}
 
@@ -241,8 +167,8 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 
 	@Override
 	public Object[] getChildren(final Object parentElement) {
-		if (parentElement instanceof GroupingItem) {
-			return ((GroupingItem) parentElement).getAppRegItemChildren().toArray();
+		if (parentElement instanceof GroupNode) {
+			return ((GroupNode) parentElement).getChildren().toArray();
 		}
 		return EMPTY_ARRAY;
 	}
@@ -251,31 +177,36 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 	public Object[] getElements(final Object inputElement) {
 		if (inputElement instanceof ApplicationManager) {
 			final ApplicationManager appManager = (ApplicationManager) inputElement;
-			final java.util.Hashtable<String, Object> treeItems = new Hashtable<String, Object>();
-
+			final Map<Object, Object> treeItems = new HashMap<Object, Object>();
 			try {
 				final Collection<String> registeredApplications = new TreeSet<String>(appManager.getRegisteredApplications());
 				for (final String appId : registeredApplications) {
 					final ApplicationRegistration applicationRegistration = appManager.getApplicationRegistration(appId);
 
-					GroupingItem treeGroup = (GroupingItem) treeItems.get(applicationRegistration.getContext().getContextPath().toString());
+					final Object groupObject = applicationRegistration.getContext();
+					GroupNode treeGroup = (GroupNode) treeItems.get(groupObject);
 					if (treeGroup == null) {
-						treeGroup = new GroupingItem(applicationRegistration.getContext().getContextPath().toString());
+						treeGroup = new GroupNode(groupObject);
 						treeItems.put(treeGroup.getValue(), treeGroup);
 					}
 
-					String activationStatus = "INACTIVE";
-					if (appManager.isActive(appId)) {
-						activationStatus = "ACTIVE";
+					final IEclipsePreferences urlsNode = ApplicationManager.getUrlsNode();
+					final Set<String> mounts = new TreeSet<String>();
+					try {
+						final String[] urls = urlsNode.keys();
+						for (final String url : urls) {
+							if (appId.equals(urlsNode.get(url, StringUtils.EMPTY))) {
+								mounts.add(url);
+							}
+						}
+					} catch (final BackingStoreException e) {
+						mounts.add(e.getMessage());
 					}
-
-					final ApplicationRegistrationPropertySource appRegProps = new ApplicationRegistrationPropertySource(applicationRegistration);
-					final String mounts = ((ApplicationMountsPropertySource) appRegProps.getPropertyValue("urls")).getEditableValue().toString();
 
 					final ApplicationProviderRegistration applicationProviderRegistration = HttpActivator.getInstance().getProviderRegistry().getRegisteredProviders().get(applicationRegistration.getProviderId());
 
-					final AppRegItem item = new AppRegItem(applicationRegistration.getApplicationId(), applicationRegistration.getProviderId(), applicationRegistration.getContext().getContextPath().toString(), activationStatus, mounts, applicationRegistration, applicationProviderRegistration);
-					treeGroup.addAppregItem(item);
+					final ApplicationItem item = new ApplicationItem(applicationRegistration, applicationProviderRegistration, appManager.isActive(appId), mounts);
+					treeGroup.addChild(item);
 
 				}
 			} catch (final BackingStoreException e) {
@@ -289,15 +220,15 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 
 	@Override
 	public Object getParent(final Object element) {
-		if (element instanceof AppRegItem) {
-			return ((AppRegItem) element).getParent();
+		if (element instanceof ApplicationItem) {
+			return ((ApplicationItem) element).getParent();
 		}
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(final Object element) {
-		if (element instanceof GroupingItem) {
+		if (element instanceof GroupNode) {
 			return true;
 		}
 		return false;

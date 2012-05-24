@@ -16,26 +16,32 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
+import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
 import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserComparator.SortIndex;
-import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.AppRegItem;
-import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupingItem;
+import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.ApplicationItem;
+import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupNode;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
+import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
-import org.eclipse.rwt.graphics.Graphics;
-import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -48,6 +54,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.FilteredTree;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -91,18 +99,19 @@ public class HttpApplicationPage extends FilteredAdminPage {
 	private TreeViewer treeViewer;
 	private Button editButton;
 	private Button addButton;
-	private final Image contextImage;
-	private final Image applicationImage;
+	private Button removeButton;
+	private Button activateButton;
+	private Button deactivateButton;
+
+	private ISelectionChangedListener updateButtonsListener;
 
 	/**
 	 * Creates a new instance.
 	 */
 	public HttpApplicationPage() {
-		setTitle("Web Application Setup");
+		setTitle("Manage Web Applications");
 		setTitleToolTip("Define, configure and mount applications.");
 //		setFilters(Arrays.asList(FILTER_CONTEXT, FILTER_PROVIDER));
-		contextImage = createImage("resources/world.gif");
-		applicationImage = createImage("resources/greendot.gif");
 	}
 
 	@Override
@@ -112,6 +121,14 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		if (treeViewer != null) {
 			treeViewer.setInput(getApplicationManager());
+			updateButtonsListener = new ISelectionChangedListener() {
+
+				@Override
+				public void selectionChanged(final SelectionChangedEvent event) {
+					updateButtons();
+				}
+			};
+			treeViewer.addSelectionChangedListener(updateButtonsListener);
 			treeViewer.getControl().getDisplay();
 			treeViewer.expandAll();
 		} else {
@@ -119,16 +136,13 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 	}
 
-	void activateButtonPressed() {
-
-		final List<AppRegItem> selectedAppRegs = getSelectedAppRegs();
-		for (final AppRegItem appRegItem : selectedAppRegs) {
+	void activateSelectedApplications() {
+		final List<ApplicationItem> selectedAppRegs = getSelectedAppRegs();
+		for (final ApplicationItem appRegItem : selectedAppRegs) {
 			final ApplicationRegistration app = appRegItem.getApplicationRegistration();
 			getApplicationManager().activate(app.getApplicationId());
 		}
-
-		treeViewer.refresh();
-		treeViewer.expandAll();
+		refresh();
 	}
 
 	void addButtonPressed() {
@@ -138,8 +152,7 @@ public class HttpApplicationPage extends FilteredAdminPage {
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
-					treeViewer.refresh();
-					treeViewer.expandAll();
+					refresh();
 				}
 			}
 		});
@@ -152,78 +165,75 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		treeViewer = filteredTree.getViewer();
 		treeViewer.getTree().setHeaderVisible(true);
 		final TableLayout layout = new TableLayout();
-		layout.addColumnData(new ColumnWeightData(50, 50));
-		layout.addColumnData(new ColumnWeightData(50, 50));
-		layout.addColumnData(new ColumnWeightData(60, 50));
-		layout.addColumnData(new ColumnWeightData(30, 50));
-		layout.addColumnData(new ColumnWeightData(60, 50));
+		layout.addColumnData(new ColumnWeightData(50, 40));
+		layout.addColumnData(new ColumnWeightData(30, 20));
+		layout.addColumnData(new ColumnWeightData(20, 20));
 		treeViewer.getTree().setLayout(layout);
 		treeViewer.setUseHashlookup(true);
 		treeViewer.setContentProvider(new ApplicationBrowserContentProvider());
 		final ApplicationBrowserComparator comparator = new ApplicationBrowserComparator();
 		treeViewer.setComparator(comparator);
+		treeViewer.addOpenListener(new IOpenListener() {
+
+			@Override
+			public void open(final OpenEvent event) {
+				editSelectedApplication();
+			}
+		});
+
+		final Image activeApplication = HttpUiActivator.getImageDescriptor("icons/obj/app_active.gif").createImage(parent.getDisplay());
+		final Image inactiveApplication = HttpUiActivator.getImageDescriptor("icons/obj/app_inactive.gif").createImage(parent.getDisplay());
 
 		final TreeViewerColumn idColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		idColumn.getColumn().setText("Application ID");
+		idColumn.getColumn().setText("Instance ID");
 		idColumn.getColumn().addSelectionListener(new ApplicationBrowserSortListener(comparator, SortIndex.ID, idColumn));
 		idColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
-			public String getText(final Object element) {
-				if (element instanceof AppRegItem) {
-					return ((AppRegItem) element).getApplicationId();
-				} else if (element instanceof GroupingItem) {
-					return "Grouping Context:" + ((GroupingItem) element).getValue();
-				}
-				return String.valueOf(element);
+			public void dispose() {
+				super.dispose();
+				activeApplication.dispose();
+				inactiveApplication.dispose();
 			}
 
 			@Override
-			public void update(final ViewerCell cell) {
-				super.update(cell);
-				if (cell.getElement() instanceof GroupingItem) {
-					cell.setImage(contextImage);
-				} else {
-					cell.setImage(applicationImage);
+			public Image getImage(final Object element) {
+				if (element instanceof ApplicationItem) {
+					final ApplicationItem appItem = (ApplicationItem) element;
+					if (appItem.isActive()) {
+						return activeApplication;
+					} else {
+						return inactiveApplication;
+					}
 				}
+				return super.getImage(element);
+			}
+
+			@Override
+			public String getText(final Object element) {
+				if (element instanceof ApplicationItem) {
+					return ((ApplicationItem) element).getApplicationId();
+				} else if (element instanceof GroupNode) {
+					final Object value = ((GroupNode) element).getValue();
+					final LabelAdapter adapter = AdapterUtil.getAdapter(value, LabelAdapter.class);
+					if (null != adapter) {
+						return adapter.getLabel(value);
+					}
+					return String.valueOf(value);
+				}
+				return String.valueOf(element);
 			}
 		});
 		treeViewer.getTree().setSortColumn(idColumn.getColumn());
 		treeViewer.getTree().setSortDirection(comparator.isReverse() ? SWT.UP : SWT.DOWN);
 
 		final TreeViewerColumn providerColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		providerColumn.getColumn().setText("Provider ID");
+		providerColumn.getColumn().setText("Type");
 		providerColumn.getColumn().addSelectionListener(new ApplicationBrowserSortListener(comparator, SortIndex.PROVIDER_ID, providerColumn));
 		providerColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof AppRegItem) {
-					return HttpUiAdapter.getLabel(((AppRegItem) element).getApplicationProviderRegistration());
-				}
-				return null;
-			}
-		});
-
-		final TreeViewerColumn contextColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		contextColumn.getColumn().setText("ContextPath");
-		contextColumn.getColumn().addSelectionListener(new ApplicationBrowserSortListener(comparator, SortIndex.CONTEXT, contextColumn));
-		contextColumn.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(final Object element) {
-				if (element instanceof AppRegItem) {
-					return ((AppRegItem) element).getContextPath();
-				}
-				return null;
-			}
-		});
-
-		final TreeViewerColumn statusColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		statusColumn.getColumn().setText("Status");
-		statusColumn.getColumn().addSelectionListener(new ApplicationBrowserSortListener(comparator, SortIndex.STATUS, statusColumn));
-		statusColumn.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(final Object element) {
-				if (element instanceof AppRegItem) {
-					return ((AppRegItem) element).getActivationStatus();
+				if (element instanceof ApplicationItem) {
+					return HttpUiAdapter.getLabel(((ApplicationItem) element).getApplicationProviderRegistration());
 				}
 				return null;
 			}
@@ -235,8 +245,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		mountsColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof AppRegItem) {
-					return ((AppRegItem) element).getMounts();
+				if (element instanceof ApplicationItem) {
+					return StringUtils.join(((ApplicationItem) element).getMounts(), ", ");
 				}
 				return null;
 			}
@@ -245,16 +255,11 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		return filteredTree;
 	}
 
-	/**
-	 * @param buttons
-	 * @param buttonLabel
-	 * @return
-	 */
 	private Button createButton(final Composite buttons, final String buttonLabel) {
-		final Button activateButton = new Button(buttons, SWT.NONE);
-		activateButton.setText(buttonLabel);
-		activateButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		return activateButton;
+		final Button b = new Button(buttons, SWT.NONE);
+		b.setText(buttonLabel);
+		b.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		return b;
 	}
 
 	@Override
@@ -262,22 +267,16 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		pageComposite = new Composite(parent, SWT.NONE);
 		pageComposite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 
-		//final Control connectGroup = createConnectGroup(pageComposite);
-		GridData gd = AdminUiUtil.createHorzFillData();
-		gd.verticalIndent = 10;
-		//connectGroup.setLayoutData(gd);
-
-		final Label wrappedLabel = new Label(pageComposite, SWT.WRAP);
-		wrappedLabel.setLayoutData(AdminUiUtil.createHorzFillData());
-		wrappedLabel.setText("Define your applications in a context path and mount them to urls:\n\nIn Gyrex you can implement your ApplicationProvider class. Based on this definition you can configure applications at any context path. The context path is used for tenant separation e.g. /tenant1/ and /tenant2/.  It can also be used for separating sub-Tenant configuration sets in your application  (e.g. /tenant1/warehouse1/ /tenat1/warehouse2/ /tenant2/warehouse1/");
-
-		final Label tableTitle = new Label(pageComposite, SWT.NONE);
-		tableTitle.setLayoutData(AdminUiUtil.createHorzFillData());
-		tableTitle.setData(WidgetUtil.CUSTOM_VARIANT, "pageHeadline");
-		tableTitle.setText("\nYour Configured Applications");
+		if (Platform.inDevelopmentMode()) {
+			final Infobox infobox = new Infobox(pageComposite);
+			infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+			infobox.addHeading("Web Applications in Gyrex.");
+			infobox.addParagraph("In OSGi the HttpService is the prefered way of making Servlets and resources available. Out of the box (in development only) an HttpService is also available in Gyrex. However, that approache does not scale very well in a multi-tenant environment. Therefore, Gyrex allows to develop and integrate multiple kind of web applications. The OSGi HttpService is just one available example of a web application. It's possible to <a href=\"http://wiki.eclipse.org/Gyrex/Developer_Guide/Web_Applications\">develop your own applications</a>.");
+			infobox.addParagraph("In order to make a new application accessible an instance need to be defined first and then it needs to be mounted to an URL.");
+		}
 
 		final Composite description = new Composite(pageComposite, SWT.NONE);
-		gd = AdminUiUtil.createFillData();
+		final GridData gd = AdminUiUtil.createFillData();
 		gd.verticalIndent = 10;
 		description.setLayoutData(gd);
 		description.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
@@ -301,71 +300,69 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		editButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				editButtonPressed();
+				editSelectedApplication();
 			}
 		});
 
-		final Button removeButton = createButton(buttons, "Remove");
+		removeButton = createButton(buttons, "Remove");
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				removeButtonPressed();
+				removeSelectedApplication();
 			}
 		});
 
 		final Label label = new Label(buttons, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
-		final Button activateButton = createButton(buttons, "Activate");
+		activateButton = createButton(buttons, "Activate");
 		activateButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				activateButtonPressed();
+				activateSelectedApplications();
 			}
 		});
 
-		final Button deactivateButton = createButton(buttons, "Deactivate");
+		deactivateButton = createButton(buttons, "Deactivate");
 		deactivateButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				deactivateButtonPressed();
+				deactivateSelectedApplications();
 			}
 		});
+
+		updateButtons();
 
 		return pageComposite;
 	}
 
-	private Image createImage(final String name) {
-		final ClassLoader classLoader = getClass().getClassLoader();
-		return Graphics.getImage(name, classLoader);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.pages.AdminPage#deactivate()
-	 */
 	@Override
 	public void deactivate() {
 		super.deactivate();
-		// TODO Auto-generated method stub
 
 		// remove data inputs form controls
-		if (treeViewer != null) {
-			treeViewer.setInput(null);
+		if ((treeViewer != null)) {
+			if (updateButtonsListener != null) {
+				treeViewer.removeSelectionChangedListener(updateButtonsListener);
+				updateButtonsListener = null;
+			}
+			if (!treeViewer.getTree().isDisposed()) {
+				treeViewer.setInput(null);
+			}
 		}
 
 	}
 
-	void deactivateButtonPressed() {
-		final List<AppRegItem> selectedAppRegs = getSelectedAppRegs();
-		for (final AppRegItem appRegItem : selectedAppRegs) {
+	void deactivateSelectedApplications() {
+		final List<ApplicationItem> selectedAppRegs = getSelectedAppRegs();
+		for (final ApplicationItem appRegItem : selectedAppRegs) {
 			final ApplicationRegistration app = appRegItem.getApplicationRegistration();
 			getApplicationManager().deactivate(app.getApplicationId());
 		}
-		treeViewer.refresh();
-		treeViewer.expandAll();
+		refresh();
 	}
 
-	void editButtonPressed() {
+	void editSelectedApplication() {
 
 		if (getSelectedValue() == null) {
 			return;
@@ -378,12 +375,32 @@ public class HttpApplicationPage extends FilteredAdminPage {
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
-					treeViewer.refresh();
-					treeViewer.expandAll();
+					refresh();
 				}
 			}
 		});
 
+	}
+
+	/**
+	 * @return
+	 */
+	private ApplicationManager getApplicationManager() {
+		return HttpUiActivator.getAppManager();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage#getFilterText(java.lang.String)
+	 */
+	@Override
+	protected String getFilterText(final String filter) {
+		if (FILTER_CONTEXT.equals(filter)) {
+			return "All Contexts";
+		}
+		if (FILTER_PROVIDER.equals(filter)) {
+			return "All Applications";
+		}
+		return super.getFilterText(filter);
 	}
 
 	/*
@@ -412,70 +429,80 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		*/
 
-	/**
-	 * @return
-	 */
-	private ApplicationManager getApplicationManager() {
-		return HttpUiActivator.getAppManager();
-	}
+	private List<ApplicationItem> getSelectedAppRegs() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage#getFilterText(java.lang.String)
-	 */
-	@Override
-	protected String getFilterText(final String filter) {
-		if (FILTER_CONTEXT.equals(filter)) {
-			return "All Contexts";
-		}
-		if (FILTER_PROVIDER.equals(filter)) {
-			return "All Applications";
-		}
-		return super.getFilterText(filter);
-	}
-
-	private List<AppRegItem> getSelectedAppRegs() {
-
-		final List<AppRegItem> selectedOnes = new ArrayList<AppRegItem>();
+		final List<ApplicationItem> selectedOnes = new ArrayList<ApplicationItem>();
 		final TreeSelection selection = (TreeSelection) treeViewer.getSelection();
 		final Iterator it = selection.iterator();
 		while (it.hasNext()) {
 			final Object element = it.next();
-			if (element instanceof AppRegItem) {
-				selectedOnes.add((AppRegItem) element);
+			if (element instanceof ApplicationItem) {
+				selectedOnes.add((ApplicationItem) element);
 			}
 		}
 		return selectedOnes;
 	}
 
-	private AppRegItem getSelectedValue() {
+	private ApplicationItem getSelectedValue() {
 		final TreeSelection selection = (TreeSelection) treeViewer.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof AppRegItem)) {
-			return (AppRegItem) selection.getFirstElement();
+		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ApplicationItem)) {
+			return (ApplicationItem) selection.getFirstElement();
 		}
 
 		return null;
 	}
 
-	void removeButtonPressed() {
-		if (getSelectedValue() == null) {
+	void refresh() {
+		treeViewer.refresh();
+		treeViewer.expandAll();
+	}
+
+	void removeSelectedApplication() {
+		final ApplicationItem applicationItem = getSelectedValue();
+		if (applicationItem == null) {
 			return;
 		}
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Context", "Do you really want to delete the application(s)?", new DialogCallback() {
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Application", String.format("Do you really want to delete instance %s?", applicationItem.getApplicationId()), new DialogCallback() {
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {
 					return;
 				}
 
-				final List<AppRegItem> selectedAppRegs = getSelectedAppRegs();
-				for (final AppRegItem appRegItem : selectedAppRegs) {
-					final ApplicationRegistration app = appRegItem.getApplicationRegistration();
-					getApplicationManager().unregister(app.getApplicationId());
-				}
-				treeViewer.refresh();
-				treeViewer.expandAll();
+				getApplicationManager().unregister(applicationItem.getApplicationId());
+				refresh();
 			}
 		});
+	}
+
+	void updateButtons() {
+		final int selectedElementsCount = ((IStructuredSelection) treeViewer.getSelection()).size();
+		if (selectedElementsCount == 0) {
+			activateButton.setEnabled(false);
+			deactivateButton.setEnabled(false);
+			editButton.setEnabled(false);
+			removeButton.setEnabled(false);
+			return;
+		}
+
+		boolean hasActiveApps = false;
+		boolean hasInactiveApps = false;
+		for (final Iterator stream = ((IStructuredSelection) treeViewer.getSelection()).iterator(); stream.hasNext();) {
+			final Object object = stream.next();
+			if (object instanceof ApplicationItem) {
+				final ApplicationItem nodeItem = (ApplicationItem) object;
+				hasActiveApps |= nodeItem.isActive();
+				hasInactiveApps |= !nodeItem.isActive();
+			}
+			if (hasInactiveApps && hasActiveApps) {
+				break;
+			}
+		}
+
+		activateButton.setEnabled(hasInactiveApps);
+		deactivateButton.setEnabled(hasActiveApps);
+		editButton.setEnabled(selectedElementsCount == 1);
+		removeButton.setEnabled(selectedElementsCount == 1);
 	}
 }
