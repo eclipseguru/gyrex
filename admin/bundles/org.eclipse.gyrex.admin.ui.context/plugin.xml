@@ -7,10 +7,14 @@
             adaptableType="org.eclipse.gyrex.context.internal.registry.ContextDefinition"
             class="org.eclipse.gyrex.admin.ui.context.internal.AdapterFactory">
          <adapter
-               type="org.eclipse.ui.views.properties.IPropertySource">
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
          </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.gyrex.context.IRuntimeContext"
+            class="org.eclipse.gyrex.admin.ui.context.internal.AdapterFactory">
          <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
          </adapter>
       </factory>
    </extension>

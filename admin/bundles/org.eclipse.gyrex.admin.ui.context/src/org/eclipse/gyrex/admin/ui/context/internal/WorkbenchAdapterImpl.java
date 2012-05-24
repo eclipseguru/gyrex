@@ -11,7 +11,11 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.context.internal;
 
+import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
+import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
+import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
+import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
@@ -21,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  *
  */
-public class WorkbenchAdapterImpl implements IWorkbenchAdapter {
+public class WorkbenchAdapterImpl implements IWorkbenchAdapter, LabelAdapter {
 
 	private static final Object[] NO_CHILDREN = new Object[0];
 
@@ -52,6 +56,14 @@ public class WorkbenchAdapterImpl implements IWorkbenchAdapter {
 		}
 		if (o instanceof ContextDefinition) {
 			return getElementText((ContextDefinition) o);
+		}
+		if (o instanceof IRuntimeContext) {
+			final ContextRegistryImpl service = (ContextRegistryImpl) ContextUiActivator.getInstance().getService(IRuntimeContextRegistry.class);
+			final ContextDefinition definition = service.getDefinition(((IRuntimeContext) o).getContextPath());
+			if (null == definition) {
+				return ((IRuntimeContext) o).getContextPath().toString();
+			}
+			return getElementText(definition);
 		}
 		return "";
 	}
