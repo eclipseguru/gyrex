@@ -80,7 +80,7 @@ Export-Package: org.eclipse.gyrex.admin.ui.internal;x-internal:=true,
    org.eclipse.gyrex.admin.ui.jobs,
    org.eclipse.gyrex.admin.ui.persistence,
    org.eclipse.gyrex.admin.ui.logback",
- org.eclipse.gyrex.admin.ui.pages;
+ org.eclipse.gyrex.admin.ui.pages;version="1.0.0";
   x-friends:="org.eclipse.gyrex.admin.ui.cloud,
    org.eclipse.gyrex.admin.ui,
    org.eclipse.gyrex.admin.ui.context,
