@@ -11,6 +11,10 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.pages.overview;
 
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+
+import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.pages.OverviewPageItem;
@@ -26,6 +30,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class NodeShortcuts extends OverviewPageItem {
 
@@ -47,7 +56,7 @@ public class NodeShortcuts extends OverviewPageItem {
 		restartLink.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				NonBlockingMessageDialogs.openConfirm(SwtUtil.getShell(restartLink), "Restart Node", "The node will be restarted. Please confirm!", new DialogCallback() {
+				NonBlockingMessageDialogs.openConfirm(SwtUtil.getShell(restartLink), "Restart Node", String.format("Node %s will be restarted. Please confirm!", getNodeId()), new DialogCallback() {
 					@Override
 					public void dialogClosed(final int returnCode) {
 						if (returnCode == Window.OK) {
@@ -59,6 +68,26 @@ public class NodeShortcuts extends OverviewPageItem {
 		});
 
 		return composite;
+	}
+
+	String getNodeId() {
+		try {
+			// we use reflection to not depend on the cloud API at all.
+			final BundleContext bundleContext = AdminUiActivator.getInstance().getBundle().getBundleContext();
+			final ServiceReference<?> serviceReference = bundleContext.getServiceReference("org.eclipse.gyrex.cloud.environment.INodeEnvironment");
+			final Object service = bundleContext.getService(serviceReference);
+			if (service != null) {
+				try {
+					final Method method = service.getClass().getMethod("getNodeId");
+					return (String) method.invoke(service);
+				} finally {
+					bundleContext.ungetService(serviceReference);
+				}
+			}
+			return String.format("running on host %s", InetAddress.getLocalHost().getHostName());
+		} catch (final Exception e) {
+			return String.format("(%s)", ExceptionUtils.getRootCauseMessage(e));
+		}
 	}
 
 }
