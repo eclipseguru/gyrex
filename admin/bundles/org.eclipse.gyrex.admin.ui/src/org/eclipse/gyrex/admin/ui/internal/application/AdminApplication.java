@@ -75,18 +75,9 @@ public class AdminApplication implements IEntryPoint {
 		return label;
 	}
 
-	private static GridData createHeadlineLayoutData() {
-		final GridData layoutData = new GridData();
-		layoutData.verticalIndent = 30;
-//		layoutData.horizontalIndent = DEFAULT_SPACE;
-		return layoutData;
-	}
-
 	private static FormData createLogoFormData(final Image logo) {
 		final FormData data = new FormData();
 		data.left = new FormAttachment(0);
-//		final int logoHeight = logo.getBounds().height;
-//		data.top = new FormAttachment(50, -(logoHeight / 2));
 		data.top = new FormAttachment(0);
 		return data;
 	}
@@ -156,18 +147,18 @@ public class AdminApplication implements IEntryPoint {
 		});
 	}
 
-	private Composite createCenterArea(final Composite parent, final Composite footer) {
+	private Composite createCenterArea(final Composite parent, final Control topControl, final Control bottomControl) {
 		final Composite centerArea = new Composite(parent, SWT.NONE);
 		centerArea.setLayout(new FillLayout());
-		centerArea.setLayoutData(createCenterAreaFormData(footer));
+		centerArea.setLayoutData(createCenterAreaFormData(topControl, bottomControl));
 		centerArea.setData(WidgetUtil.CUSTOM_VARIANT, "centerArea");
 		return centerArea;
 	}
 
-	private FormData createCenterAreaFormData(final Composite footer) {
+	private FormData createCenterAreaFormData(final Control topAttachment, final Control bottomAttachment) {
 		final FormData data = new FormData();
-		data.top = new FormAttachment(navBar, 0, SWT.BOTTOM);
-		data.bottom = new FormAttachment(footer, 0, SWT.TOP);
+		data.top = new FormAttachment(topAttachment, 0, SWT.BOTTOM);
+		data.bottom = new FormAttachment(bottomAttachment, -10, SWT.TOP);
 		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) + 10);
 		data.width = CENTER_AREA_WIDTH - 10;
 		return data;
@@ -200,7 +191,7 @@ public class AdminApplication implements IEntryPoint {
 		composite.setLayout(new FormLayout());
 		composite.setLayoutData(createContentBodyFormData(separator));
 		final Composite footer = createFooter(composite);
-		centerArea = createCenterArea(composite, footer);
+		centerArea = createCenterArea(composite, separator, footer);
 	}
 
 	private FormData createContentBodyFormData(final Control topControlToAttachTo) {
