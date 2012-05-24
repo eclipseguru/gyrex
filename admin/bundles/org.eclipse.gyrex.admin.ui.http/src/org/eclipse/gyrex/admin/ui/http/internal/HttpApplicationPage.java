@@ -21,11 +21,11 @@ import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvide
 import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupingItem;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableLayout;
@@ -461,17 +461,21 @@ public class HttpApplicationPage extends FilteredAdminPage {
 			return;
 		}
 
-		if (!MessageDialog.openQuestion(SwtUtil.getShell(pageComposite), "Remove Context", "Do you really want to delete the application(s)?")) {
-			return;
-		}
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Context", "Do you really want to delete the application(s)?", new DialogCallback() {
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK) {
+					return;
+				}
 
-		final List<AppRegItem> selectedAppRegs = getSelectedAppRegs();
-		for (final AppRegItem appRegItem : selectedAppRegs) {
-			final ApplicationRegistration app = appRegItem.getApplicationRegistration();
-			getApplicationManager().unregister(app.getApplicationId());
-		}
-		treeViewer.refresh();
-		treeViewer.expandAll();
+				final List<AppRegItem> selectedAppRegs = getSelectedAppRegs();
+				for (final AppRegItem appRegItem : selectedAppRegs) {
+					final ApplicationRegistration app = appRegItem.getApplicationRegistration();
+					getApplicationManager().unregister(app.getApplicationId());
+				}
+				treeViewer.refresh();
+				treeViewer.expandAll();
+			}
+		});
 	}
-
 }

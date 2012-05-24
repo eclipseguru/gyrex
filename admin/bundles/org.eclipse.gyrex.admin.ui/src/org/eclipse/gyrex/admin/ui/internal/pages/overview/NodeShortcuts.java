@@ -14,9 +14,11 @@ package org.eclipse.gyrex.admin.ui.internal.pages.overview;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.pages.OverviewPageItem;
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
+import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -45,9 +47,14 @@ public class NodeShortcuts extends OverviewPageItem {
 		restartLink.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				if (MessageDialog.openConfirm(SwtUtil.getShell(restartLink), "Restart Node", "The node will be restarted. Please confirm!")) {
-					ServerApplication.restart();
-				}
+				NonBlockingMessageDialogs.openConfirm(SwtUtil.getShell(restartLink), "Restart Node", "The node will be restarted. Please confirm!", new DialogCallback() {
+					@Override
+					public void dialogClosed(final int returnCode) {
+						if (returnCode == Window.OK) {
+							ServerApplication.restart();
+						}
+					}
+				});
 			}
 		});
 
