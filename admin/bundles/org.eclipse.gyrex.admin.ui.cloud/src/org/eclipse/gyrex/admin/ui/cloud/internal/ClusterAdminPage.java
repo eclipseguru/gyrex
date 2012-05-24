@@ -398,7 +398,9 @@ public class ClusterAdminPage extends AdminPage {
 				treeViewer.removeSelectionChangedListener(updateButtonsListener);
 				updateButtonsListener = null;
 			}
-			treeViewer.setInput(null);
+			if (treeViewer.getTree().isDisposed()) {
+				treeViewer.setInput(null);
+			}
 		}
 
 		if (listener != null) {
