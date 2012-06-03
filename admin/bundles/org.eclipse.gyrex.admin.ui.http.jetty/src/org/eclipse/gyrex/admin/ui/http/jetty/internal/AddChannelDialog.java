@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Andreas Mihm	- rework new admin ui
  */
 package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 
@@ -15,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
@@ -28,7 +32,6 @@ import org.eclipse.gyrex.http.jetty.admin.IJettyManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -38,7 +41,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
@@ -46,7 +48,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
-public class AddChannelDialog extends StatusDialog {
+public class AddChannelDialog extends NonBlockingStatusDialog {
 
 	private final StringDialogField idField = new StringDialogField();
 	private final StringDialogField portField = new StringDialogField();
@@ -75,6 +77,7 @@ public class AddChannelDialog extends StatusDialog {
 		final GridData gd = (GridData) composite.getLayoutData();
 		gd.minimumHeight = convertVerticalDLUsToPixels(200);
 		gd.minimumWidth = convertHorizontalDLUsToPixels(400);
+		gd.widthHint = convertHorizontalDLUsToPixels(400);
 
 		idField.setLabelText("Id");
 		portField.setLabelText("Port");
@@ -135,9 +138,10 @@ public class AddChannelDialog extends StatusDialog {
 
 		secureField.attachDialogField(certificateIdField);
 
-		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
-		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		final Infobox infobox = new Infobox(composite);
+		infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+		infobox.addHeading("Create a new connector!");
+		infobox.addParagraph("Please fill in id and port to create a connector!\nIf the connector should support encryption, please choose the certificate to be used. You need some more documentation on the usage of the fields SecureConnector and nodefilter.");
 
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, portField, new Separator(), secureField, certificateIdField, new Separator(), secureChannelIdField, new Separator(), nodeFilterField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
@@ -146,7 +150,7 @@ public class AddChannelDialog extends StatusDialog {
 		masterLayout.marginWidth = 5;
 		masterLayout.marginHeight = 5;
 
-		LayoutUtil.setHorizontalSpan(warning, masterLayout.numColumns);
+		LayoutUtil.setHorizontalSpan(infobox, masterLayout.numColumns);
 
 		return composite;
 	}
@@ -168,7 +172,7 @@ public class AddChannelDialog extends StatusDialog {
 			channelDescriptor.setPort(NumberUtils.toInt(portField.getText()));
 			channelDescriptor.setSecure(secureField.isSelected());
 			channelDescriptor.setCertificateId(StringUtils.trimToNull(certificateIdField.getText()));
-			channelDescriptor.setSecureChannelId(StringUtils.trimToNull( secureChannelIdField.getText()));
+			channelDescriptor.setSecureChannelId(StringUtils.trimToNull(secureChannelIdField.getText()));
 			channelDescriptor.setNodeFilter((StringUtils.trimToNull(nodeFilterField.getText())));
 			jettyManager.saveChannel(channelDescriptor);
 		} catch (final Exception e) {

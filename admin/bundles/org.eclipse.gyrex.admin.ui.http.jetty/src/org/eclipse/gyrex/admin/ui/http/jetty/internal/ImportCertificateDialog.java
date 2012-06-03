@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Andreas Mihm	- rework new admin ui
  */
 package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 
@@ -21,6 +22,9 @@ import java.security.cert.Certificate;
 import java.util.Enumeration;
 import java.util.UUID;
 
+import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IUploadAdapter;
@@ -34,14 +38,12 @@ import org.eclipse.gyrex.http.jetty.admin.IJettyManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -51,7 +53,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 /**
  *
  */
-public class ImportCertificateDialog extends StatusDialog {
+public class ImportCertificateDialog extends NonBlockingStatusDialog {
 
 	private final StringDialogField idField = new StringDialogField();
 	private final StringDialogField keyStorePasswordField = new StringDialogField();
@@ -82,7 +84,7 @@ public class ImportCertificateDialog extends StatusDialog {
 			}
 			validate();
 		}
-	});
+	}, false);
 
 	private Throwable importError;
 	private byte[] keystoreBytes;
@@ -108,6 +110,7 @@ public class ImportCertificateDialog extends StatusDialog {
 		final GridData gd = (GridData) composite.getLayoutData();
 		gd.minimumHeight = convertVerticalDLUsToPixels(200);
 		gd.minimumWidth = convertHorizontalDLUsToPixels(400);
+		gd.widthHint = convertHorizontalDLUsToPixels(400);
 
 		idField.setLabelText("Id");
 		keystoreTypeField.setLabelText("Keystore Type");
@@ -128,18 +131,19 @@ public class ImportCertificateDialog extends StatusDialog {
 		keyPasswordField.setDialogFieldListener(validateListener);
 		keystoreUploadField.setDialogFieldListener(validateListener);
 
-		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
-		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		final Infobox infobox = new Infobox(composite);
+		infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+		infobox.addHeading("Import a keystore!");
+		infobox.addParagraph("Please fill in id, keytore type and passwords before uploading the keystore!\nAfter the upload the key store is validated. If the validation was sucessful,\nyou can import the key store into gyrex by pressing OK.");
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, new Separator(), keystoreUploadField, keystoreTypeField, keyStorePasswordField, keyPasswordField }, false);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, new Separator(), keyStorePasswordField, keyPasswordField, new Separator(), keystoreTypeField, keystoreUploadField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
 		masterLayout.marginWidth = 5;
 		masterLayout.marginHeight = 5;
 
-		LayoutUtil.setHorizontalSpan(warning, masterLayout.numColumns);
+		LayoutUtil.setHorizontalSpan(infobox, masterLayout.numColumns);
 
 		return composite;
 	}

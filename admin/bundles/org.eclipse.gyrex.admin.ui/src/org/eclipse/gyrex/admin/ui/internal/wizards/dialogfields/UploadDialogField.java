@@ -13,6 +13,8 @@ package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 
+import org.eclipse.rwt.widgets.DialogCallback;
+import org.eclipse.rwt.widgets.DialogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,10 +41,12 @@ public class UploadDialogField extends DialogField {
 	private String uploadButtonLabel;
 	private Button uploadControl;
 	private final IUploadAdapter uploadAdapter;
+	private final boolean multipleFilesUpload;
 
-	public UploadDialogField(final IUploadAdapter uploadAdapter) {
+	public UploadDialogField(final IUploadAdapter uploadAdapter, final boolean multipleFilesUpload) {
 		super();
 		this.uploadAdapter = uploadAdapter;
+		this.multipleFilesUpload = multipleFilesUpload;
 		uploadButtonLabel = "Upload..."; //$NON-NLS-1$
 	}
 
@@ -59,11 +63,22 @@ public class UploadDialogField extends DialogField {
 	}
 
 	void doOpenUploadDialog() {
-		final FileDialog fileDialog = new FileDialog(SwtUtil.getShell(uploadControl), SWT.TITLE | SWT.MULTI);
+		final FileDialog fileDialog;
+		if (multipleFilesUpload) {
+			fileDialog = new FileDialog(SwtUtil.getShell(uploadControl), SWT.TITLE | SWT.MULTI);
+		} else {
+			fileDialog = new FileDialog(SwtUtil.getShell(uploadControl), SWT.TITLE);
+		}
 		fileDialog.setText("Upload Files");
 		fileDialog.setAutoUpload(true);
-		fileDialog.open();
-		uploadAdapter.uploadFinished(fileDialog.getFileNames());
+		//fileDialog.open();
+		DialogUtil.open(fileDialog, new DialogCallback() {
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				uploadAdapter.uploadFinished(fileDialog.getFileNames());
+			}
+		});
 	}
 
 	@Override
