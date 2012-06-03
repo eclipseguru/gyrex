@@ -14,11 +14,7 @@ package org.eclipse.gyrex.http.jaxrs.internal;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.http.jaxrs.JaxRsApplication;
 import org.eclipse.gyrex.http.jaxrs.JaxRsApplicationProviderComponent;
-import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.ContextApplicationContextInjectableProvider;
-import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.ContextRuntimeContextInjectableProvider;
 import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.ContextServiceInjectableProvider;
-import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.InjectApplicationContextInjectableProvider;
-import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.InjectRuntimeContextInjectableProvider;
 import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.InjectServiceInjectableProvider;
 
 import org.osgi.framework.Bundle;
@@ -57,10 +53,10 @@ public final class ScanningJaxRsApplication extends JaxRsApplication {
 		}
 
 		// add more interesting injectors
-		resourceConfig.getSingletons().add(new ContextRuntimeContextInjectableProvider(getContext()));
-		resourceConfig.getSingletons().add(new InjectRuntimeContextInjectableProvider(getContext()));
-		resourceConfig.getSingletons().add(new ContextApplicationContextInjectableProvider(getApplicationContext()));
-		resourceConfig.getSingletons().add(new InjectApplicationContextInjectableProvider(getApplicationContext()));
+		JaxRsExtensions.addCommonInjectors(resourceConfig.getSingletons(), getContext(), getApplicationContext());
+
+		// add support for EclipseLink MOXy if available
+		JaxRsExtensions.addJsonProviderIfPossible(resourceConfig.getSingletons());
 
 		// done
 		return resourceConfig;
