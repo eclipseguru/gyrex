@@ -127,7 +127,8 @@ public class AdminApplication implements IEntryPoint {
 
 	private void activate(final AdminPage page, final PageContribution contribution) {
 		// TODO: should switch to using a StackLayout and not disposing children every time
-		RWT.getBrowserHistory().createEntry(contribution.getId(), contribution.getName());
+		final String historyText = StringUtils.isNotBlank(page.getTitleToolTip()) ? String.format("%s - %s - Gyrex Admin", contribution.getName(), page.getTitleToolTip()) : String.format("%s - Gyrex Admin", contribution.getName());
+		RWT.getBrowserHistory().createEntry(contribution.getId(), historyText);
 		for (final Control child : centerArea.getChildren()) {
 			child.dispose();
 		}
