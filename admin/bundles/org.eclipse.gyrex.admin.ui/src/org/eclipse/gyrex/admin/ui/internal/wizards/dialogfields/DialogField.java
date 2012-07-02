@@ -221,7 +221,7 @@ public class DialogField {
 	 * implementors.
 	 */
 	protected void updateEnableState() {
-		if (fLabel != null) {
+		if (isOkToUse(fLabel)) {
 			fLabel.setEnabled(fEnabled);
 		}
 	}

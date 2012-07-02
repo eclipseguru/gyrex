@@ -11,19 +11,31 @@
  */
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.eclipse.rwt.widgets.DialogCallback;
-import org.eclipse.rwt.widgets.DialogUtil;
+import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadEvent;
+import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadHandler;
+import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadListener;
+import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadReceiver;
+import org.eclipse.gyrex.admin.ui.internal.upload.IFileUploadDetails;
+
+import org.eclipse.rwt.lifecycle.UICallBack;
+import org.eclipse.rwt.widgets.FileUpload;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
  * DialogField using RWT Upload widget
@@ -39,15 +51,15 @@ public class UploadDialogField extends DialogField {
 	}
 
 	private String uploadButtonLabel;
-	private Button uploadControl;
-	private final IUploadAdapter uploadAdapter;
-	private final boolean multipleFilesUpload;
+	private Text fileText;
+	private FileUpload uploadControl;
 
-	public UploadDialogField(final IUploadAdapter uploadAdapter, final boolean multipleFilesUpload) {
+	private boolean uploadInProgress;
+	private String fileName = "";
+
+	public UploadDialogField() {
 		super();
-		this.uploadAdapter = uploadAdapter;
-		this.multipleFilesUpload = multipleFilesUpload;
-		uploadButtonLabel = "Upload..."; //$NON-NLS-1$
+		uploadButtonLabel = "Browse..."; //$NON-NLS-1$
 	}
 
 	@Override
@@ -56,34 +68,46 @@ public class UploadDialogField extends DialogField {
 
 		final Label label = getLabelControl(parent);
 		label.setLayoutData(gridDataForLabel(1));
-		final Button upload = getUploadControl(parent);
-		upload.setLayoutData(gridDataForUpload(nColumns - 1));
+		final Text text = getFileTextControl(parent);
+		text.setLayoutData(StringDialogField.gridDataForText(nColumns - 2));
+		final FileUpload upload = getUploadControl(parent);
+		upload.setLayoutData(gridDataForUpload(1));
 
-		return new Control[] { label, upload };
+		return new Control[] { label, text, upload };
 	}
 
-	void doOpenUploadDialog() {
-		final FileDialog fileDialog;
-		if (multipleFilesUpload) {
-			fileDialog = new FileDialog(SwtUtil.getShell(uploadControl), SWT.TITLE | SWT.MULTI);
-		} else {
-			fileDialog = new FileDialog(SwtUtil.getShell(uploadControl), SWT.TITLE);
+	private void doModifyFileName() {
+		if (isOkToUse(uploadControl)) {
+			fileName = StringUtils.trimToEmpty(uploadControl.getFileName());
+			fileText.setText(fileName);
 		}
-		fileDialog.setText("Upload Files");
-		fileDialog.setAutoUpload(true);
-		//fileDialog.open();
-		DialogUtil.open(fileDialog, new DialogCallback() {
+		dialogFieldChanged();
+	}
 
-			@Override
-			public void dialogClosed(final int returnCode) {
-				uploadAdapter.uploadFinished(fileDialog.getFileNames());
-			}
-		});
+	/**
+	 * Returns the name of the selected file.
+	 */
+	public String getFileName() {
+		return fileName;
+	}
+
+	public Text getFileTextControl(final Composite parent) {
+		if (fileText == null) {
+			assertCompositeNotNull(parent);
+
+			fileText = new Text(parent, SWT.BORDER | SWT.SINGLE);
+			fileText.setText(fileName);
+			fileText.setToolTipText("Selected file");
+			fileText.setEditable(false);
+			fileText.setFont(parent.getFont());
+			fileText.setEnabled(isEnabled());
+		}
+		return fileText;
 	}
 
 	@Override
 	public int getNumberOfControls() {
-		return 2;
+		return 3;
 	}
 
 	/**
@@ -94,17 +118,19 @@ public class UploadDialogField extends DialogField {
 	 *            already been created.
 	 * @return the text control
 	 */
-	public Button getUploadControl(final Composite parent) {
+	public FileUpload getUploadControl(final Composite parent) {
 		if (uploadControl == null) {
 			assertCompositeNotNull(parent);
 
-			uploadControl = new Button(parent, SWT.PUSH);
+			uploadControl = new FileUpload(parent, SWT.NONE);
+
 			uploadControl.setText(uploadButtonLabel);
+			uploadControl.setToolTipText("Select a file");
 			uploadControl.setFont(parent.getFont());
 			uploadControl.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
-					doOpenUploadDialog();
+					doModifyFileName();
 				}
 			});
 		}
@@ -139,12 +165,90 @@ public class UploadDialogField extends DialogField {
 		}
 	}
 
+	public void startUpload(final IUploadAdapter receiver) {
+		uploadInProgress = true;
+		updateEnableState();
+
+		// activate background updates
+		UICallBack.activate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+
+		final FileUploadHandler handler = new FileUploadHandler(new FileUploadReceiver() {
+			@Override
+			public void receive(final InputStream dataStream, final IFileUploadDetails details) throws IOException {
+				receiver.receive(dataStream, details.getFileName(), details.getContentType(), details.getContentLength());
+			}
+		});
+
+		uploadControl.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(final DisposeEvent event) {
+				handler.dispose();
+				UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+			}
+		});
+
+		final Display display = uploadControl.getDisplay();
+		final String url = handler.getUploadUrl();
+		handler.addUploadListener(new FileUploadListener() {
+
+			@Override
+			public void uploadFailed(final FileUploadEvent event) {
+				handler.dispose();
+				display.asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						fileText.setText(String.format("ERROR: %s", ExceptionUtils.getRootCauseMessage(event.getException())));
+						uploadInProgress = false;
+						setUploadButtonLabel(uploadButtonLabel);
+						updateEnableState();
+						UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+					}
+				});
+			}
+
+			@Override
+			public void uploadFinished(final FileUploadEvent event) {
+				handler.dispose();
+				display.asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if (isOkToUse(fileText)) {
+							fileText.setText(getFileName());
+						}
+						uploadInProgress = false;
+						setUploadButtonLabel(uploadButtonLabel);
+						updateEnableState();
+						UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+					}
+				});
+			}
+
+			@Override
+			public void uploadProgress(final FileUploadEvent event) {
+				handler.dispose();
+				display.asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						fileText.setText(fileText.getText() + ".");
+					}
+				});
+			}
+		});
+
+		// start upload
+		uploadControl.setText("Uploading...");
+		uploadControl.submit(url);
+	}
+
 	@Override
 	protected void updateEnableState() {
 		super.updateEnableState();
+
+		if (isOkToUse(fileText)) {
+			fileText.setEnabled(isEnabled());
+		}
 		if (isOkToUse(uploadControl)) {
-			uploadControl.setEnabled(isEnabled());
+			uploadControl.setEnabled(isEnabled() && !uploadInProgress);
 		}
 	}
-
 }

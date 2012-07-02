@@ -14,7 +14,7 @@ package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
@@ -43,50 +43,27 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
  *
  */
 public class ImportCertificateDialog extends NonBlockingStatusDialog {
 
+	private static final String[] POSSIBLE_PKCS12_EXTENSIONS = new String[] { ".p12", ".pkcs12" };
+
 	private final StringDialogField idField = new StringDialogField();
 	private final StringDialogField keyStorePasswordField = new StringDialogField();
 	private final StringDialogField keyPasswordField = new StringDialogField();
 	private final SelectionButtonDialogFieldGroup keystoreTypeField = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "JKS", "PKCS12" }, 2);
-	private final UploadDialogField keystoreUploadField = new UploadDialogField(new IUploadAdapter() {
-
-		@Override
-		public void uploadFinished(final String[] uploadedFileNames) {
-			for (final String uploadItem : uploadedFileNames) {
-				InputStream in = null;
-				try {
-					in = FileUtils.openInputStream(new File(uploadItem));
-					importKeystore(in);
-					importError = null;
-				} catch (final Exception e) {
-					final Throwable rootCause = ExceptionUtils.getRootCause(e);
-					importError = rootCause != null ? rootCause : e;
-					keystoreBytes = null;
-					generatedKeyPassword = null;
-					generatedKeystorePassword = null;
-				} finally {
-					IOUtils.closeQuietly(in);
-				}
-
-				// stop after the first one
-				break;
-			}
-			validate();
-		}
-	}, false);
+	private final UploadDialogField keystoreUploadField = new UploadDialogField();
 
 	private Throwable importError;
+	private String keystoreFileName;
 	private byte[] keystoreBytes;
 	private char[] generatedKeystorePassword;
 	private char[] generatedKeyPassword;
@@ -138,6 +115,7 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, new Separator(), keyStorePasswordField, keyPasswordField, new Separator(), keystoreTypeField, keystoreUploadField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
+		LayoutUtil.setHorizontalGrabbing(keystoreUploadField.getFileTextControl(null));
 
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
 		masterLayout.marginWidth = 5;
@@ -204,6 +182,55 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 
 	@Override
 	protected void okPressed() {
+//		// activate background updates
+//		UICallBack.activate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+//
+		// start and wait for update
+		final Display display = getShell().getDisplay();
+		final String fileName = keystoreUploadField.getFileName();
+		if (StringUtils.isNotBlank(fileName) && ((keystoreBytes == null) || (keystoreFileName == null) || !StringUtils.equals(keystoreFileName, fileName))) {
+			updateButtonsEnableState(new Status(IStatus.ERROR, JettyConfigActivator.SYMBOLIC_NAME, "Upload in progress!")); // deactivate buttons
+			keystoreUploadField.startUpload(new IUploadAdapter() {
+				@Override
+				public void receive(final InputStream stream, final String fileName, final String contentType, final long contentLength) {
+					InputStream in = null;
+					try {
+						in = stream instanceof FileInputStream ? new BufferedInputStream(stream) : stream;
+						importKeystore(in);
+						keystoreFileName = fileName;
+						importError = null;
+					} catch (final Exception e) {
+						importError = e;
+						keystoreBytes = null;
+						keystoreFileName = null;
+						generatedKeyPassword = null;
+						generatedKeystorePassword = null;
+					} finally {
+						IOUtils.closeQuietly(in);
+					}
+					display.asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							okPressedAndFileReceived();
+						}
+					});
+				}
+			});
+		} else {
+			// file is already uploaded
+			okPressedAndFileReceived();
+		}
+	}
+
+	void okPressedAndFileReceived() {
+		// deactivate background updates
+//		UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+
+		if (importError != null) {
+			setError("The uploaded keystore could not be imported.\n" + importError.getMessage());
+			return;
+		}
+
 		validate();
 		if (!getStatus().isOK()) {
 			return;
@@ -212,10 +239,11 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 		try {
 			jettyManager.addCertificate(idField.getText(), keystoreBytes, generatedKeystorePassword, generatedKeyPassword);
 		} catch (final Exception e) {
-			setError(e.getMessage());
+			setError(String.format("Error adding certificate: %s", e.getMessage()));
 			return;
 		}
 
+		// close dialog
 		super.okPressed();
 	}
 
@@ -228,15 +256,14 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 		updateStatus(new Status(IStatus.INFO, JettyConfigActivator.SYMBOLIC_NAME, message));
 	}
 
+	private void setWarning(final String message) {
+		updateStatus(new Status(IStatus.WARNING, JettyConfigActivator.SYMBOLIC_NAME, message));
+	}
+
 	void validate() {
 		final String id = idField.getText();
 		if (StringUtils.isNotBlank(id) && !IdHelper.isValidId(id)) {
 			setError("The entered id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
-			return;
-		}
-
-		if (importError != null) {
-			setError("The uploaded keystore could not be imported.\n" + importError.getMessage());
 			return;
 		}
 
@@ -250,8 +277,13 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 			return;
 		}
 
-		if (keystoreBytes == null) {
-			setInfo("Please upload a keystore.");
+		if (StringUtils.isBlank(keystoreUploadField.getFileName())) {
+			setInfo("Please select a keystore to upload.");
+			return;
+		}
+
+		if (StringUtils.endsWithAny(keystoreUploadField.getFileName().toLowerCase(), POSSIBLE_PKCS12_EXTENSIONS) && !keystoreTypeField.isSelected(1)) {
+			setWarning("The selected file might be a PKCS12 keystore. Please verify the correct keystore type is selected!");
 			return;
 		}
 

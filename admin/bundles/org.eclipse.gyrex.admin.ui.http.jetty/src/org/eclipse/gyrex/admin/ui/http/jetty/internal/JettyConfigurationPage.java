@@ -15,7 +15,6 @@ package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
-import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,9 +25,6 @@ import org.eclipse.swt.widgets.Label;
  * jetty server runs.
  */
 public class JettyConfigurationPage extends AdminPage {
-
-	private static final String INPUT = "input";
-	private DataBindingContext bindingContext;
 
 	boolean disposed;
 	private Composite pageComposite;
@@ -59,13 +55,10 @@ public class JettyConfigurationPage extends AdminPage {
 		pageComposite = new Composite(parent, SWT.NONE);
 		pageComposite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 
-//		final Realm realm = SWTObservables.getRealm(Display.getCurrent());
-//		bindingContext = new DataBindingContext(realm);
-
 		channelsArea = new ChannelsArea();
 		channelsArea.createChannelsControls(pageComposite);
 
-		final Label label = new Label(pageComposite, SWT.HORIZONTAL);
+		new Label(pageComposite, SWT.HORIZONTAL);
 
 		certificatesArea = new CertificatesArea();
 		certificatesArea.createChannelsControls(pageComposite);

@@ -11,9 +11,21 @@
  */
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
+import java.io.InputStream;
 
 public interface IUploadAdapter {
 
-	void uploadFinished(String[] fileNames);
+	/**
+	 * Called by the {@link UploadDialogField} to receive the uploaded data.
+	 * <p>
+	 * Maybe called outside UI thread.
+	 * </p>
+	 * 
+	 * @param stream
+	 * @param fileName
+	 * @param contentType
+	 * @param contentLength
+	 */
+	void receive(InputStream stream, String fileName, String contentType, long contentLength);
 
 }
