@@ -13,14 +13,17 @@ package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadEvent;
-import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadHandler;
-import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadListener;
-import org.eclipse.gyrex.admin.ui.internal.upload.FileUploadReceiver;
-import org.eclipse.gyrex.admin.ui.internal.upload.IFileUploadDetails;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.rwt.RWT;
 import org.eclipse.rwt.lifecycle.UICallBack;
+import org.eclipse.rwt.service.IServiceHandler;
 import org.eclipse.rwt.widgets.FileUpload;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -34,13 +37,142 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import org.apache.commons.fileupload.FileItemHeaders;
+import org.apache.commons.fileupload.FileItemHeadersSupport;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadBase;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 /**
  * DialogField using RWT Upload widget
  */
 public class UploadDialogField extends DialogField {
+
+	private interface IUploadHandlerListener {
+
+		void uploadFailed(Throwable e);
+
+		void uploadFinished(String fileName);
+
+	}
+
+	/**
+	 * RAP {@link IServiceHandler} for receiving uploads.
+	 */
+	private final class UploadHandler implements IServiceHandler {
+
+		private final String handlerId;
+		private final IUploadAdapter uploadAdapter;
+		private IUploadHandlerListener listener;
+
+		public UploadHandler(final IUploadAdapter uploadAdapter) {
+			this.uploadAdapter = uploadAdapter;
+			handlerId = UploadHandler.class.getName() + "@" + System.identityHashCode(this);
+			if (!uploadHandlerRef.compareAndSet(null, this)) {
+				throw new IllegalStateException("Concurrent upload in progress!");
+			}
+			RWT.getServiceManager().registerServiceHandler(handlerId, this);
+		}
+
+		public void dispose() {
+			uploadHandlerRef.compareAndSet(this, null);
+			RWT.getServiceManager().unregisterServiceHandler(handlerId);
+		}
+
+		private long getContentLength(final FileItemHeadersSupport itemWithHeaders) {
+			final FileItemHeaders headers = itemWithHeaders.getHeaders();
+			return NumberUtils.toLong(null != headers ? headers.getHeader(FileUploadBase.CONTENT_LENGTH) : null, -1L);
+		}
+
+		public String getUploadUrl() {
+			final StringBuilder url = new StringBuilder();
+			url.append(RWT.getRequest().getContextPath());
+			url.append(RWT.getRequest().getServletPath());
+			url.append("?");
+			try {
+				url.append(IServiceHandler.REQUEST_PARAM).append("=").append(URLEncoder.encode(handlerId, CharEncoding.UTF_8));
+			} catch (final UnsupportedEncodingException e) {
+				throw new IllegalStateException("UTF-8 encosing not support?!");
+			}
+			final int relativeIndex = url.lastIndexOf("/");
+			if (relativeIndex > -1) {
+				url.delete(0, relativeIndex + 1);
+			}
+			return RWT.getResponse().encodeURL(url.toString());
+		}
+
+		@Override
+		public void service() throws IOException, ServletException {
+			final HttpServletRequest request = RWT.getRequest();
+			final HttpServletResponse response = RWT.getResponse();
+
+			// Ignore requests to this service handler without a valid session for security reasons
+			final boolean hasSession = request.getSession(false) != null;
+			if (!hasSession) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+			if (!"POST".equals(request.getMethod().toUpperCase())) {
+				response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+				return;
+			}
+
+			if (!ServletFileUpload.isMultipartContent(request)) {
+				response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
+				return;
+			}
+
+			final ServletFileUpload servletFileUpload = new ServletFileUpload();
+			servletFileUpload.setFileSizeMax(1024 * 1024 * 5); // 5 MB
+
+			try {
+				final FileItemIterator itemIterator = servletFileUpload.getItemIterator(request);
+				while (itemIterator.hasNext()) {
+					final FileItemStream item = itemIterator.next();
+					if (item.isFormField()) {
+						continue; // skip form fields (just files)
+					}
+
+					final InputStream stream = item.openStream();
+					try {
+						uploadAdapter.receive(stream, item.getName(), item.getContentType(), getContentLength(item));
+					} finally {
+						IOUtils.closeQuietly(stream);
+					}
+
+					// at most one file will be received; unregister the handler and return
+					try {
+						if (null != listener) {
+							listener.uploadFinished(item.getName());
+						}
+					} finally {
+						dispose();
+					}
+					return;
+				}
+			} catch (final VirtualMachineError e) {
+				throw e;
+			} catch (final Throwable t) {
+				if (null != listener) {
+					listener.uploadFailed(t);
+				}
+				throw new ServletException("Error retrieving files.", t);
+			}
+
+			// no files?
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+		}
+
+		public void setListener(final IUploadHandlerListener listener) {
+			this.listener = listener;
+		}
+	}
 
 	protected static GridData gridDataForUpload(final int span) {
 		final GridData gd = new GridData();
@@ -49,6 +181,8 @@ public class UploadDialogField extends DialogField {
 		gd.horizontalSpan = span;
 		return gd;
 	}
+
+	final AtomicReference<UploadHandler> uploadHandlerRef = new AtomicReference<UploadHandler>();
 
 	private String uploadButtonLabel;
 	private Text fileText;
@@ -172,13 +306,7 @@ public class UploadDialogField extends DialogField {
 		// activate background updates
 		UICallBack.activate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
 
-		final FileUploadHandler handler = new FileUploadHandler(new FileUploadReceiver() {
-			@Override
-			public void receive(final InputStream dataStream, final IFileUploadDetails details) throws IOException {
-				receiver.receive(dataStream, details.getFileName(), details.getContentType(), details.getContentLength());
-			}
-		});
-
+		final UploadHandler handler = new UploadHandler(receiver);
 		uploadControl.addDisposeListener(new DisposeListener() {
 			@Override
 			public void widgetDisposed(final DisposeEvent event) {
@@ -189,15 +317,15 @@ public class UploadDialogField extends DialogField {
 
 		final Display display = uploadControl.getDisplay();
 		final String url = handler.getUploadUrl();
-		handler.addUploadListener(new FileUploadListener() {
+		handler.setListener(new IUploadHandlerListener() {
 
 			@Override
-			public void uploadFailed(final FileUploadEvent event) {
+			public void uploadFailed(final Throwable e) {
 				handler.dispose();
 				display.asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						fileText.setText(String.format("ERROR: %s", ExceptionUtils.getRootCauseMessage(event.getException())));
+						fileText.setText(String.format("ERROR: %s", ExceptionUtils.getRootCauseMessage(e)));
 						uploadInProgress = false;
 						setUploadButtonLabel(uploadButtonLabel);
 						updateEnableState();
@@ -207,7 +335,7 @@ public class UploadDialogField extends DialogField {
 			}
 
 			@Override
-			public void uploadFinished(final FileUploadEvent event) {
+			public void uploadFinished(final String fileName) {
 				handler.dispose();
 				display.asyncExec(new Runnable() {
 					@Override
@@ -219,17 +347,6 @@ public class UploadDialogField extends DialogField {
 						setUploadButtonLabel(uploadButtonLabel);
 						updateEnableState();
 						UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
-					}
-				});
-			}
-
-			@Override
-			public void uploadProgress(final FileUploadEvent event) {
-				handler.dispose();
-				display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						fileText.setText(fileText.getText() + ".");
 					}
 				});
 			}
