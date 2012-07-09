@@ -11,142 +11,188 @@
  */
 package org.eclipse.gyrex.admin.ui.context.internal;
 
-//import org.eclipse.gyrex.admin.ui.internal.databinding.TrueWhenListSelectionNotEmptyConverter;
-//import org.eclipse.gyrex.admin.ui.internal.forms.ViewerWithButtonsSectionPart;
-//import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
-//import org.eclipse.gyrex.admin.ui.pages.AdminPage;
-//import org.eclipse.gyrex.context.internal.ContextActivator;
-//import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
-//import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
-//
-//import org.eclipse.core.databinding.DataBindingContext;
-//import org.eclipse.core.databinding.UpdateValueStrategy;
-//import org.eclipse.jface.databinding.swt.SWTObservables;
-//import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
-//import org.eclipse.jface.databinding.viewers.ViewersObservables;
-//import org.eclipse.jface.dialogs.MessageDialog;
-//import org.eclipse.jface.layout.GridDataFactory;
-//import org.eclipse.jface.viewers.ArrayContentProvider;
-//import org.eclipse.jface.viewers.ISelectionProvider;
-//import org.eclipse.jface.viewers.ListViewer;
-//import org.eclipse.jface.window.Window;
-//import org.eclipse.swt.SWT;
-//import org.eclipse.swt.events.SelectionAdapter;
-//import org.eclipse.swt.events.SelectionEvent;
-//import org.eclipse.swt.widgets.Button;
-//import org.eclipse.swt.widgets.Composite;
-//import org.eclipse.swt.widgets.List;
-//import org.eclipse.ui.forms.IManagedForm;
-//import org.eclipse.ui.forms.widgets.ExpandableComposite;
-//import org.eclipse.ui.forms.widgets.Section;
-//
-///**
-// *
-// */
-//public class ContextsSection extends ViewerWithButtonsSectionPart {
-//
-//	private final AdminPage page;
-//
-//	private Button addButton;
-//	private Button removeButton;
-//	private ListViewer contextsList;
-//	protected IViewerObservableValue selectedValue;
-//
-//	/**
-//	 * Creates a new instance.
-//	 *
-//	 * @param parent
-//	 * @param page
-//	 */
-//	public ContextsSection(final Composite parent, final AdminPage page) {
-//		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-//		this.page = page;
-//		final Section section = getSection();
-//		section.setText("Available Contexts");
-//		section.setDescription("Define the available contexts.");
-//		createContent(section);
-//	}
-//
-//	void addButtonPressed() {
-//		final AddContextDialog dialog = new AddContextDialog(SwtUtil.getShell(addButton), getContextRegistry());
-//		if (dialog.open() == Window.OK) {
-//			markStale();
-//		}
-//	}
-//
-//	@Override
-//	protected void createButtons(final Composite buttonsPanel) {
-//		addButton = createButton(buttonsPanel, "Add...", new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(final SelectionEvent e) {
-//				addButtonPressed();
-//			}
-//		});
-//		removeButton = createButton(buttonsPanel, "Remove...", new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(final SelectionEvent e) {
-//				removeButtonPressed();
-//			}
-//		});
-//	}
-//
-//	@Override
-//	protected void createViewer(final Composite parent) {
-//		contextsList = new ListViewer(parent, getToolkit().getBorderStyle() | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
-//
-//		final List list = contextsList.getList();
-//		getToolkit().adapt(list, true, true);
-//		list.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
-//
-//		contextsList.setContentProvider(new ArrayContentProvider());
-//		contextsList.setLabelProvider(new ContextUiLabelProvider());
-//
-//		selectedValue = ViewersObservables.observeSingleSelection(contextsList);
-//	}
-//
-//	private DataBindingContext getBindingContext() {
-//		return page.getBindingContext();
-//	}
-//
-//	private ContextRegistryImpl getContextRegistry() {
-//		return ContextActivator.getInstance().getContextRegistryImpl();
-//	}
-//
-//	private ContextDefinition getSelectedContext() {
-//		return (ContextDefinition) (null != selectedValue ? selectedValue.getValue() : null);
-//	}
-//
-//	public ISelectionProvider getSelectionProvider() {
-//		return contextsList;
-//	}
-//
-//	@Override
-//	public void initialize(final IManagedForm form) {
-//		super.initialize(form);
-//
-//		final UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
-//		modelToTarget.setConverter(new TrueWhenListSelectionNotEmptyConverter());
-//		getBindingContext().bindValue(SWTObservables.observeEnabled(removeButton), SWTObservables.observeSelection(contextsList.getControl()), new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), modelToTarget);
-//	}
-//
-//	@Override
-//	public void refresh() {
-//		contextsList.setInput(getContextRegistry().getDefinedContexts());
-//		super.refresh();
-//	}
-//
-//	void removeButtonPressed() {
-//		final ContextDefinition contextDefinition = getSelectedContext();
-//		if (contextDefinition == null) {
-//			return;
-//		}
-//
-//		if (!MessageDialog.openQuestion(SwtUtil.getShell(getSection()), "Remove Context", "Do you really want to delete the context?")) {
-//			return;
-//		}
-//
-//		getContextRegistry().removeDefinition(contextDefinition);
-//		markStale();
-//	}
-//
-//}
+import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
+import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.context.internal.ContextActivator;
+import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
+import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
+
+import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.window.Window;
+import org.eclipse.rwt.widgets.DialogCallback;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.List;
+
+/**
+ * The Class ContextsSection.
+ */
+public class ContextsSection {
+
+	/** The page composite. */
+	private Composite pageComposite;
+
+	/** The add button. */
+	private Button addButton;
+
+	/** The remove button. */
+	private Button removeButton;
+
+	/** The contexts list. */
+	private ListViewer contextsList;
+
+	/** The selected value. */
+	protected IViewerObservableValue selectedValue;
+
+	/**
+	 * Adds the button pressed.
+	 */
+	void addButtonPressed() {
+		final AddContextDialog dialog = new AddContextDialog(SwtUtil.getShell(addButton), getContextRegistry());
+		dialog.openNonBlocking(new DialogCallback() {
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					refresh();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Creates the button.
+	 * 
+	 * @param buttons
+	 *            the buttons
+	 * @param buttonLabel
+	 *            the button label
+	 * @return the button
+	 */
+	private Button createButton(final Composite buttons, final String buttonLabel) {
+		final Button b = new Button(buttons, SWT.NONE);
+		b.setText(buttonLabel);
+		b.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		return b;
+	}
+
+	/**
+	 * Creates the context section control.
+	 * 
+	 * @param parent
+	 *            the parent
+	 */
+	public void createContextSectionControl(final Composite parent) {
+		pageComposite = parent;
+		final Infobox infobox = new Infobox(pageComposite);
+		infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+		infobox.addHeading("Contexts section in Gyrex.");
+		infobox.addParagraph("Gyrex provides a contextual runtime, which means it holds all its configuration information in the Context Tree, where configuration settings can be inherited and stored at the different context tree nodes. The context tree can reflect tenants or other configuration assets you build in your Gyrex application.<br/><br/>Every context is defined by name and path. ");
+
+		final Composite description = new Composite(pageComposite, SWT.NONE);
+		final GridData gd = AdminUiUtil.createFillData();
+		gd.verticalIndent = 10;
+		description.setLayoutData(gd);
+		description.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
+
+		contextsList = new ListViewer(description, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		final List list = contextsList.getList();
+		list.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+
+		contextsList.setContentProvider(new ArrayContentProvider());
+		contextsList.setLabelProvider(new ContextUiLabelProvider());
+
+		contextsList.setInput(getContextRegistry().getDefinedContexts());
+
+		selectedValue = ViewersObservables.observeSingleSelection(contextsList);
+
+		final Composite buttons = new Composite(description, SWT.NONE);
+		buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		buttons.setLayout(new GridLayout());
+
+		addButton = createButton(buttons, "Add");
+		addButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				addButtonPressed();
+			}
+		});
+
+		removeButton = createButton(buttons, "Remove");
+		removeButton.setEnabled(true);
+		removeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				removeButtonPressed();
+			}
+		});
+	}
+
+	/**
+	 * Gets the context registry.
+	 * 
+	 * @return the context registry
+	 */
+	private ContextRegistryImpl getContextRegistry() {
+		return ContextActivator.getInstance().getContextRegistryImpl();
+	}
+
+	/**
+	 * Gets the selected context.
+	 * 
+	 * @return the selected context
+	 */
+	private ContextDefinition getSelectedContext() {
+		return (ContextDefinition) (null != selectedValue ? selectedValue.getValue() : null);
+	}
+
+	/**
+	 * Gets the selection provider.
+	 * 
+	 * @return the selection provider
+	 */
+	public ISelectionProvider getSelectionProvider() {
+		return contextsList;
+	}
+
+	/**
+	 * Refresh.
+	 */
+	public void refresh() {
+		contextsList.setInput(getContextRegistry().getDefinedContexts());
+	}
+
+	/**
+	 * Removes the button pressed.
+	 */
+	void removeButtonPressed() {
+		final ContextDefinition contextDefinition = getSelectedContext();
+		if (contextDefinition == null) {
+			return;
+		}
+
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Context", String.format("Do you really want to delete the context %s?", contextDefinition.getPath() + contextDefinition.getName()), new DialogCallback() {
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK) {
+					return;
+				}
+				getContextRegistry().removeDefinition(contextDefinition);
+				refresh();
+			}
+
+		});
+	}
+}

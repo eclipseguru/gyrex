@@ -20,8 +20,6 @@ import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  *
  */
@@ -65,10 +63,7 @@ public class ContextUiLabelProvider extends LabelProvider {
 	public String getText(final Object element) {
 		if (element instanceof ContextDefinition) {
 			final ContextDefinition contextDefinition = (ContextDefinition) element;
-			if (StringUtils.isBlank(contextDefinition.getName())) {
-				return contextDefinition.getPath().toString();
-			}
-			return contextDefinition.getName();
+			return contextDefinition.getName() + " (" + contextDefinition.getPath().toString() + ")";
 		}
 
 		return super.getText(element);

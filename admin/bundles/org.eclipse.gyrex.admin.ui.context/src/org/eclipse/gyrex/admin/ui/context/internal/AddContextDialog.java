@@ -11,6 +11,7 @@
  */
 package org.eclipse.gyrex.admin.ui.context.internal;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
@@ -22,7 +23,6 @@ import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -33,17 +33,28 @@ import org.eclipse.swt.widgets.Text;
 
 import org.apache.commons.lang.StringUtils;
 
-public class AddContextDialog extends StatusDialog {
+/**
+ * The Class represents RAP UI non blocking status dialog to enter Context
+ * values.
+ */
+public class AddContextDialog extends NonBlockingStatusDialog {
 
+	/** The path field. */
 	private final StringDialogField pathField = new StringDialogField();
+
+	/** The name field. */
 	private final StringDialogField nameField = new StringDialogField();
 
+	/** The registry impl. */
 	private final ContextRegistryImpl registryImpl;
 
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param parent
+	 *            the parent UI element
+	 * @param registryImpl
+	 *            the registry impl
 	 */
 	public AddContextDialog(final Shell parent, final ContextRegistryImpl registryImpl) {
 		super(parent);
@@ -52,6 +63,9 @@ public class AddContextDialog extends StatusDialog {
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+	 */
 	@Override
 	protected Control createDialogArea(final Composite parent) {
 		final Composite composite = (Composite) super.createDialogArea(parent);
@@ -88,6 +102,9 @@ public class AddContextDialog extends StatusDialog {
 		return composite;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+	 */
 	@Override
 	protected void okPressed() {
 		validate();
@@ -107,19 +124,40 @@ public class AddContextDialog extends StatusDialog {
 		super.okPressed();
 	}
 
+	/**
+	 * Sets the error.
+	 * 
+	 * @param message
+	 *            the new error
+	 */
 	void setError(final String message) {
 		updateStatus(new Status(IStatus.ERROR, ContextUiActivator.SYMBOLIC_NAME, message));
 		getShell().pack(true);
 	}
 
+	/**
+	 * Sets the info.
+	 * 
+	 * @param message
+	 *            the new info
+	 */
 	void setInfo(final String message) {
 		updateStatus(new Status(IStatus.INFO, ContextUiActivator.SYMBOLIC_NAME, message));
 	}
 
+	/**
+	 * Sets the warning.
+	 * 
+	 * @param message
+	 *            the new warning
+	 */
 	void setWarning(final String message) {
 		updateStatus(new Status(IStatus.WARNING, ContextUiActivator.SYMBOLIC_NAME, message));
 	}
 
+	/**
+	 * Validate entered values.
+	 */
 	void validate() {
 		final String id = pathField.getText();
 		if (StringUtils.isNotBlank(id) && !Path.EMPTY.isValidPath(id)) {
