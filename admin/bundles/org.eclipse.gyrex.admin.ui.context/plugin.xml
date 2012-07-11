@@ -2,21 +2,15 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.core.runtime.adapters">
-      <factory
-            adaptableType="org.eclipse.gyrex.context.internal.registry.ContextDefinition"
-            class="org.eclipse.gyrex.admin.ui.context.internal.AdapterFactory">
-         <adapter
-               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
-         </adapter>
-      </factory>
-      <factory
-            adaptableType="org.eclipse.gyrex.context.IRuntimeContext"
-            class="org.eclipse.gyrex.admin.ui.context.internal.AdapterFactory">
-         <adapter
-               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
-         </adapter>
-      </factory>
+         point="org.eclipse.gyrex.admin.ui.pages">
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
+            class="org.eclipse.gyrex.admin.ui.context.internal.ContextApplicationPage"
+            id="context"
+            keywords="context"
+            name="Context"
+            sortKey="400">
+      </page>
    </extension>
-
+   
 </plugin>
