@@ -6,16 +6,12 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Gunnar Wagenknecht - extracted from RAP Examples
+ *    Gunnar Wagenknecht - extracted from RAP Examples and refactored
  ******************************************************************************/
-package org.eclipse.gyrex.admin.ui.internal.application;
-
-import java.util.List;
+package org.eclipse.gyrex.admin.ui.internal.widgets;
 
 import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -23,15 +19,12 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-public abstract class DropDownMenu extends Composite {
+public abstract class DropDownItem extends Composite {
 
 	private static final long serialVersionUID = 1L;
-	private final Menu pullDownMenu;
 	private final String text;
 	private final String customVariant;
 	private final ToolBar toolBar;
@@ -39,13 +32,11 @@ public abstract class DropDownMenu extends Composite {
 	private boolean selected;
 	private boolean open;
 
-	public DropDownMenu(final Composite parent, final String text, final String customVariant) {
+	public DropDownItem(final Composite parent, final String text, final String customVariant) {
 		super(parent, SWT.NONE);
 		this.text = text;
 		this.customVariant = customVariant;
 
-		// menu
-		pullDownMenu = createMenu(parent);
 		setLayout(new FillLayout());
 		setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
@@ -66,34 +57,8 @@ public abstract class DropDownMenu extends Composite {
 		});
 	}
 
-	private Menu createMenu(final Composite parent) {
-		final Menu menu = new Menu(parent.getShell(), SWT.POP_UP);
-		menu.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
-		return menu;
-	}
-
-	private void createMenuItem(final String item) {
-		final MenuItem menuItem = new MenuItem(pullDownMenu, SWT.PUSH | SWT.LEFT);
-		menuItem.setText(item.replace("&", "&&"));
-		menuItem.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
-		menuItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				openItem(item);
-			}
-		});
-	}
-
-	public void createMenuItems(final List<String> items) {
-		// dispose existing
-		for (final MenuItem menuItem : pullDownMenu.getItems()) {
-			menuItem.dispose();
-		}
-
-		// create new
-		for (final String item : items) {
-			createMenuItem(item);
-		}
+	protected String getCustomVariant() {
+		return customVariant;
 	}
 
 	/**
@@ -114,25 +79,7 @@ public abstract class DropDownMenu extends Composite {
 		return toolItem;
 	}
 
-	protected abstract void openItem(String item);
-
-	private void openMenu(final Point point) {
-		// set open
-		setOpen(true);
-
-		// reset when menu is hidden
-		pullDownMenu.addMenuListener(new MenuAdapter() {
-			@Override
-			public void menuHidden(final MenuEvent e) {
-				setOpen(false);
-				pullDownMenu.removeMenuListener(this);
-			}
-		});
-
-		// show menu
-		pullDownMenu.setLocation(point);
-		pullDownMenu.setVisible(true);
-	}
+	protected abstract void openDropDown(final Point location);
 
 	public void setOpen(final boolean open) {
 		this.open = open;
@@ -145,12 +92,8 @@ public abstract class DropDownMenu extends Composite {
 	}
 
 	void toolItemSelected(final ToolBar toolBar, final SelectionEvent event) {
-		if (pullDownMenu.getItemCount() == 0) {
-			return;
-		}
-
 		final Rectangle pos = ((ToolItem) event.getSource()).getBounds();
-		openMenu(toolBar.toDisplay(pos.x, pos.y + pos.height));
+		openDropDown(toolBar.toDisplay(pos.x, pos.y + pos.height));
 	}
 
 	private void updateCustomVariant() {

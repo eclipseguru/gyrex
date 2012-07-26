@@ -18,13 +18,22 @@ import java.util.List;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
+import org.eclipse.gyrex.admin.ui.internal.widgets.DropDownItem;
 
+import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
-abstract class DropDownNavigation extends DropDownMenu {
+abstract class DropDownNavigation extends DropDownItem {
 
 	private static List<String> getItemLabels(final List<PageContribution> pages) {
 		final ArrayList<String> list = new ArrayList<String>();
@@ -36,6 +45,7 @@ abstract class DropDownNavigation extends DropDownMenu {
 
 	private final CategoryContribution category;
 	private final List<PageContribution> pages;
+	private final Menu pullDownMenu;
 
 	public DropDownNavigation(final Composite parent, final CategoryContribution category) {
 		super(parent, category.getName(), "navigation");
@@ -47,8 +57,36 @@ abstract class DropDownNavigation extends DropDownMenu {
 		pages = AdminPageRegistry.getInstance().getPages(category);
 		Collections.sort(pages);
 
+		// menu
+		pullDownMenu = new Menu(parent.getShell(), SWT.POP_UP);
+		pullDownMenu.setData(WidgetUtil.CUSTOM_VARIANT, getCustomVariant());
+
 		// build menu
 		createMenuItems(getItemLabels(pages));
+	}
+
+	private void createMenuItem(final String item) {
+		final MenuItem menuItem = new MenuItem(pullDownMenu, SWT.PUSH | SWT.LEFT);
+		menuItem.setText(item.replace("&", "&&"));
+		menuItem.setData(WidgetUtil.CUSTOM_VARIANT, getCustomVariant());
+		menuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				openItem(item);
+			}
+		});
+	}
+
+	public void createMenuItems(final List<String> items) {
+		// dispose existing
+		for (final MenuItem menuItem : pullDownMenu.getItems()) {
+			menuItem.dispose();
+		}
+
+		// create new
+		for (final String item : items) {
+			createMenuItem(item);
+		}
 	}
 
 	public PageContribution findFirstPage() {
@@ -63,6 +101,27 @@ abstract class DropDownNavigation extends DropDownMenu {
 	}
 
 	@Override
+	protected void openDropDown(final Point location) {
+		if (pullDownMenu.getItemCount() == 0) {
+			return;
+		}
+		// set open
+		setOpen(true);
+
+		// reset when menu is hidden
+		pullDownMenu.addMenuListener(new MenuAdapter() {
+			@Override
+			public void menuHidden(final MenuEvent e) {
+				setOpen(false);
+				pullDownMenu.removeMenuListener(this);
+			}
+		});
+
+		// show menu
+		pullDownMenu.setLocation(location);
+		pullDownMenu.setVisible(true);
+	}
+
 	protected void openItem(final String item) {
 		for (final PageContribution page : pages) {
 			if (item.equals(page.getName())) {

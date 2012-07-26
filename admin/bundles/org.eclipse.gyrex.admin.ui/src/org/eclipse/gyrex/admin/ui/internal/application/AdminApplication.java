@@ -119,7 +119,7 @@ public class AdminApplication implements IEntryPoint {
 	}
 
 	private Composite centerArea;
-	private Navigation navigation;
+	private NavigationBar navigation;
 	private Composite navBar;
 	private final Map<String, AdminPage> pagesById = new HashMap<String, AdminPage>();
 	private AdminPage currentPage;
@@ -289,7 +289,7 @@ public class AdminApplication implements IEntryPoint {
 		return shell;
 	}
 
-	private Navigation createNavigation(final Composite parent) {
+	private NavigationBar createNavigation(final Composite parent) {
 		navBar = new Composite(parent, SWT.NONE);
 		navBar.setLayoutData(createNavBarFormData());
 		navBar.setData(WidgetUtil.CUSTOM_VARIANT, "nav-bar");
@@ -300,7 +300,7 @@ public class AdminApplication implements IEntryPoint {
 		layout.verticalSpacing = 0;
 		navBar.setLayout(layout);
 
-		final Navigation navigation = new Navigation(navBar) {
+		final NavigationBar navigation = new NavigationBar(navBar) {
 			@Override
 			protected void openPage(final PageContribution page) {
 				AdminApplication.this.openPage(page);

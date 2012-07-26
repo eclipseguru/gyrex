@@ -23,11 +23,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public abstract class Navigation extends Composite {
+public abstract class NavigationBar extends Composite {
 
 	private final List<CategoryContribution> categories;
 
-	public Navigation(final Composite parent) {
+	public NavigationBar(final Composite parent) {
 		super(parent, SWT.NONE);
 		setLayout(AdminUiUtil.createGridLayoutWithoutMargin(5, false));
 		setData(WidgetUtil.CUSTOM_VARIANT, "navigation");
@@ -50,7 +50,7 @@ public abstract class Navigation extends Composite {
 		new DropDownNavigation(this, category) {
 			@Override
 			protected void openPage(final PageContribution page) {
-				Navigation.this.openPage(page);
+				NavigationBar.this.openPage(page);
 			}
 		};
 	}
