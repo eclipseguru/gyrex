@@ -124,6 +124,7 @@ public class AdminApplication implements IEntryPoint {
 	private final Map<String, AdminPage> pagesById = new HashMap<String, AdminPage>();
 	private AdminPage currentPage;
 	private Image logo;
+	private Composite filterContainer;
 
 	private void activate(final AdminPage page, final PageContribution contribution) {
 		// TODO: should switch to using a StackLayout and not disposing children every time
@@ -204,6 +205,11 @@ public class AdminApplication implements IEntryPoint {
 		return data;
 	}
 
+	private Composite createFilterContainer(final Composite parent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private Composite createFooter(final Composite contentComposite) {
 		final Composite footer = new Composite(contentComposite, SWT.NONE);
 		footer.setLayout(new FormLayout());
@@ -252,6 +258,7 @@ public class AdminApplication implements IEntryPoint {
 //		titleFormData.left = new FormAttachment(logo, 0);
 //		title.setLayoutData(titleFormData);
 
+		filterContainer = createFilterContainer(headerCenterArea);
 		navigation = createNavigation(headerCenterArea);
 
 		return comp;
@@ -316,7 +323,7 @@ public class AdminApplication implements IEntryPoint {
 
 		final GridData filterData = AdminUiUtil.createHorzFillData();
 		if (page instanceof FilteredAdminPage) {
-			final Control filterControl = ((FilteredAdminPage) page).createFilterControl(pageComp);
+			final Control filterControl = ((FilteredAdminPage) page).getFilterControl(pageComp);
 			filterData.exclude = !filterControl.isVisible();
 			filterControl.setLayoutData(filterData);
 		}

@@ -43,7 +43,11 @@ public abstract class FilteredAdminPage extends AdminPage {
 	 * @return the created filter control
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
-	public Control createFilterControl(final Composite parent) {
+	public final Control getFilterControl(final Composite parent) {
+		if (null != filterPanel) {
+			return filterPanel;
+		}
+
 		filterPanel = new Composite(parent, SWT.NONE);
 		final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
 		layout.fill = true;
