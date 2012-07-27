@@ -13,6 +13,7 @@
 package org.eclipse.gyrex.admin.ui.http.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,22 +27,31 @@ import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
+import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
 import org.eclipse.gyrex.server.Platform;
 
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeViewerListener;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
+import org.eclipse.jface.viewers.TreeNode;
+import org.eclipse.jface.viewers.TreeNodeContentProvider;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
+import org.eclipse.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -54,6 +64,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -111,7 +122,7 @@ public class HttpApplicationPage extends FilteredAdminPage {
 	public HttpApplicationPage() {
 		setTitle("Manage Web Applications");
 		setTitleToolTip("Define, configure and mount applications.");
-//		setFilters(Arrays.asList(FILTER_CONTEXT, FILTER_PROVIDER));
+		setFilters(Arrays.asList(FILTER_CONTEXT, FILTER_PROVIDER));
 	}
 
 	@Override
@@ -337,6 +348,65 @@ public class HttpApplicationPage extends FilteredAdminPage {
 	}
 
 	@Override
+	protected Control createFilterControl(final String filter, final Composite parent) {
+		final Composite content = new Composite(parent, SWT.NONE);
+		content.setLayout(GridLayoutFactory.fillDefaults().create());
+
+		final FilteredTree filteredTree = new FilteredTree(content, SWT.FULL_SELECTION | SWT.SINGLE, new PatternFilter(), true);
+		filteredTree.setData(WidgetUtil.CUSTOM_VARIANT, "filter-tree");
+		filteredTree.getFilterControl().setData(WidgetUtil.CUSTOM_VARIANT, "filter-tree");
+
+		final TreeViewer viewer = filteredTree.getViewer();
+		viewer.getControl().setData(WidgetUtil.CUSTOM_VARIANT, "filter-tree");
+
+		((GridData) viewer.getControl().getLayoutData()).minimumHeight = 200;
+		((GridData) viewer.getControl().getLayoutData()).minimumWidth = 300;
+
+		viewer.addTreeListener(new ITreeViewerListener() {
+			@Override
+			public void treeCollapsed(final TreeExpansionEvent event) {
+				parent.getShell().pack(true);
+			}
+
+			@Override
+			public void treeExpanded(final TreeExpansionEvent event) {
+				parent.getShell().pack(true);
+			}
+		});
+
+		viewer.setContentProvider(new TreeNodeContentProvider());
+		viewer.setLabelProvider(new LabelProvider() {
+
+			@Override
+			public String getText(final Object element) {
+				if (element instanceof TreeNode) {
+					final Object value = ((TreeNode) element).getValue();
+					if (value instanceof ContextDefinition) {
+						final ContextDefinition contextDefinition = (ContextDefinition) value;
+						if (StringUtils.isNotBlank(contextDefinition.getName())) {
+							return contextDefinition.getName();
+						}
+						return contextDefinition.getPath().toString();
+					}
+					return super.getText(value);
+				}
+				return super.getText(element);
+			}
+		});
+		viewer.setComparator(new ViewerComparator());
+
+		if (FILTER_CONTEXT.equals(filter)) {
+			viewer.setInput(RuntimeContextTree.getTree());
+		} else {
+			final TreeNode root = new TreeNode("Root");
+			root.setChildren(new TreeNode[] { new TreeNode("One"), new TreeNode("Two") });
+			viewer.setInput(new TreeNode[] { new TreeNode("One"), new TreeNode("Two") });
+		}
+
+		return content;
+	}
+
+	@Override
 	public void deactivate() {
 		super.deactivate();
 
@@ -389,9 +459,6 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		return HttpUiActivator.getAppManager();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage#getFilterText(java.lang.String)
-	 */
 	@Override
 	protected String getFilterText(final String filter) {
 		if (FILTER_CONTEXT.equals(filter)) {
@@ -402,32 +469,6 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		}
 		return super.getFilterText(filter);
 	}
-
-	/*
-		@Override
-		protected void createFormContent(final IManagedForm managedForm) {
-			final Composite body = managedForm.getForm().getBody();
-			body.setLayout(FormLayoutFactory.createFormGridLayout(true, 1));
-			body.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
-
-			appSection = new ApplicationsSection(body, this);
-			appSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
-			managedForm.addPart(appSection);
-
-	//		FormLayoutFactory.visualizeLayoutArea(body, SWT.COLOR_CYAN);
-	//		FormLayoutFactory.visualizeLayoutArea(left, SWT.COLOR_DARK_GREEN);
-	//		FormLayoutFactory.visualizeLayoutArea(right, SWT.COLOR_DARK_GREEN);
-		}
-
-		@Override
-		public ISelectionProvider getSelectionProvider() {
-			if (null != appSection) {
-				return appSection.getSelectionProvider();
-			}
-			return null;
-		}
-
-		*/
 
 	private List<ApplicationItem> getSelectedAppRegs() {
 
