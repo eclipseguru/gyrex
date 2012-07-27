@@ -144,8 +144,23 @@ Label.footerLabel {
   font: 14px Helvetica, Verdana, sans-serif;
 }
 
+Composite.filter-container {
+  background-color: transparent;
+}
+
+Composite.filter {
+  color: white;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolBar.filter {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #34332F;
+}
+
 ToolItem.filter {
-  color: #34332F;
+  color: #d5d5d5;
   background-color: transparent;
   background-image: none;
   border: none;
@@ -160,17 +175,21 @@ ToolItem.filter:pressed {
   background-color: #34332F;
   background-image: none;
   border: none;
-  border-radius: 0 0 4px 4px;
+  border-radius: 4px 4px 0 0;
   padding: 8px;
   text-shadow: none;
 }
 
-ToolItem-DropDownIcon.filter {
+ToolItem-DropDownIcon.filter,
+ToolItem-DropDownIcon.filterOpen {
   border:none;
-/*  background-image: url( /theme/images/down-nav.png );*/
+  background-image: url( /theme/images/down-nav.png );
 }
 
-ToolItem-DropDownIcon.filter:hover {
+ToolItem-DropDownIcon.filter:hover,
+ToolItem-DropDownIcon.filterOpen:hover,
+ToolItem-DropDownIcon.filterSelected,
+ToolItem-DropDownIcon.filterSelectedOpen {
   border:none;
   background-image: url( /theme/images/down-nav-hover.png );
 }

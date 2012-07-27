@@ -27,8 +27,6 @@ import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -50,8 +48,6 @@ abstract class DropDownNavigation extends DropDownItem {
 	public DropDownNavigation(final Composite parent, final CategoryContribution category) {
 		super(parent, category.getName(), "navigation");
 		this.category = category;
-		setLayout(new FillLayout());
-		setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
 		// get pages for category and sort
 		pages = AdminPageRegistry.getInstance().getPages(category);

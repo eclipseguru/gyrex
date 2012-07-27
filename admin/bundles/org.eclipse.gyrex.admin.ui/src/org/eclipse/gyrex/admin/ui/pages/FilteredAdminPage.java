@@ -14,13 +14,12 @@ package org.eclipse.gyrex.admin.ui.pages;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.rwt.lifecycle.WidgetUtil;
+import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.DropDownItem;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 /**
  * Specialized AdminPage which allows to filter the content within the page
@@ -43,32 +42,23 @@ public abstract class FilteredAdminPage extends AdminPage {
 	 * @return the created filter control
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
-	public final Control getFilterControl(final Composite parent) {
-		if (null != filterPanel) {
-			return filterPanel;
-		}
-
+	public final void createFilterControls(final Composite parent) {
 		filterPanel = new Composite(parent, SWT.NONE);
-		final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
-		layout.fill = true;
-		layout.marginTop = 0;
-		filterPanel.setLayout(layout);
+		filterPanel.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(5, false));
 
 		final String customVariant = "filter";
 
-		// toolbar
-		final ToolBar toolBar = new ToolBar(filterPanel, SWT.HORIZONTAL);
-		toolBar.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
-
-		// tool item
+		// filter drop-downs
 		for (final String filter : getFilters()) {
-			final ToolItem toolItem = new ToolItem(toolBar, SWT.DROP_DOWN);
-			toolItem.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
-			toolItem.setText(getFilterText(filter));
+			new DropDownItem(filterPanel, getFilterText(filter), customVariant) {
+				@Override
+				protected void openDropDown(final Point location) {
+					// TODO Auto-generated method stub
+				}
+			};
 		}
 
 		updateFilterPanel();
-		return filterPanel;
 	}
 
 	protected List<String> getFilters() {

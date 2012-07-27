@@ -125,16 +125,29 @@ public class AdminApplication implements IEntryPoint {
 	private AdminPage currentPage;
 	private Image logo;
 	private Composite filterContainer;
+	private Composite headerCenterArea;
 
 	private void activate(final AdminPage page, final PageContribution contribution) {
 		// TODO: should switch to using a StackLayout and not disposing children every time
-		final String historyText = StringUtils.isNotBlank(page.getTitleToolTip()) ? String.format("%s - %s - Gyrex Admin", contribution.getName(), page.getTitleToolTip()) : String.format("%s - Gyrex Admin", contribution.getName());
-		RWT.getBrowserHistory().createEntry(contribution.getId(), historyText);
 		for (final Control child : centerArea.getChildren()) {
 			child.dispose();
 		}
+		for (final Control child : filterContainer.getChildren()) {
+			child.dispose();
+		}
+
+		// create history entry
+		final String historyText = StringUtils.isNotBlank(page.getTitleToolTip()) ? String.format("%s - %s - Gyrex Admin", contribution.getName(), page.getTitleToolTip()) : String.format("%s - Gyrex Admin", contribution.getName());
+		RWT.getBrowserHistory().createEntry(contribution.getId(), historyText);
+
+		// create page
 		createPage(page, contribution, centerArea);
+
+		// re-layout
+		headerCenterArea.layout(true, true);
 		centerArea.layout(true, true);
+
+		// activate
 		page.activate();
 	}
 
@@ -205,9 +218,22 @@ public class AdminApplication implements IEntryPoint {
 		return data;
 	}
 
-	private Composite createFilterContainer(final Composite parent) {
-		// TODO Auto-generated method stub
-		return null;
+	private Composite createFilterContainer(final Composite parent, final Control left) {
+		final Composite filterContainer = new Composite(parent, SWT.NONE);
+		filterContainer.setData(WidgetUtil.CUSTOM_VARIANT, "filter-container");
+
+		final FormData data = new FormData();
+		data.bottom = new FormAttachment(100, 5);
+		data.left = new FormAttachment(left, 5);
+		filterContainer.setLayoutData(data);
+
+		final GridLayout layout = new GridLayout();
+		layout.marginWidth = 0;
+		layout.horizontalSpacing = 0;
+		layout.verticalSpacing = 0;
+		filterContainer.setLayout(layout);
+
+		return filterContainer;
 	}
 
 	private Composite createFooter(final Composite contentComposite) {
@@ -243,7 +269,7 @@ public class AdminApplication implements IEntryPoint {
 		comp.setData(WidgetUtil.CUSTOM_VARIANT, "header");
 		comp.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		comp.setLayout(new FormLayout());
-		final Composite headerCenterArea = createHeaderCenterArea(comp);
+		headerCenterArea = createHeaderCenterArea(comp);
 
 		final Label logoLabel = new Label(headerCenterArea, SWT.NONE);
 		logoLabel.setImage(logo);
@@ -258,7 +284,7 @@ public class AdminApplication implements IEntryPoint {
 //		titleFormData.left = new FormAttachment(logo, 0);
 //		title.setLayoutData(titleFormData);
 
-		filterContainer = createFilterContainer(headerCenterArea);
+		filterContainer = createFilterContainer(headerCenterArea, logoLabel);
 		navigation = createNavigation(headerCenterArea);
 
 		return comp;
@@ -321,11 +347,8 @@ public class AdminApplication implements IEntryPoint {
 		final Composite pageComp = new Composite(parent, SWT.NONE);
 		pageComp.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 
-		final GridData filterData = AdminUiUtil.createHorzFillData();
 		if (page instanceof FilteredAdminPage) {
-			final Control filterControl = ((FilteredAdminPage) page).getFilterControl(pageComp);
-			filterData.exclude = !filterControl.isVisible();
-			filterControl.setLayoutData(filterData);
+			((FilteredAdminPage) page).createFilterControls(filterContainer);
 		}
 
 		String title = page.getTitle();
@@ -335,7 +358,7 @@ public class AdminApplication implements IEntryPoint {
 		if (StringUtils.isNotBlank(title)) {
 			final Label label = createHeadlineLabel(pageComp, page.getTitle());
 			final GridData layoutData = new GridData();
-			layoutData.verticalIndent = ((page instanceof FilteredAdminPage) && !filterData.exclude) ? 5 : 30;
+			layoutData.verticalIndent = 30;
 //			layoutData.horizontalIndent = DEFAULT_SPACE;
 			label.setLayoutData(layoutData);
 		}
