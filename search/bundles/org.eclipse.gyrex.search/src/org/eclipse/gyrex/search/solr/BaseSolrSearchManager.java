@@ -307,12 +307,8 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 			throw new IllegalArgumentException("Invalid query. Must be created using #createQuery from this service instance.");
 		}
 
-		// create query
-		final ThroughputMetric queryMetric = getSolrSearchManagerMetrics().getQueryMetric();
-		final long requestStarted = queryMetric.requestStarted();
 		final SolrQuery solrQuery = createSolrQuery(query);
 		final QueryResponse response = query(solrQuery);
-		queryMetric.requestFinished(1, System.currentTimeMillis() - requestStarted);
 		return new ResultImpl(getContext(), (QueryImpl) query, response);
 	}
 
