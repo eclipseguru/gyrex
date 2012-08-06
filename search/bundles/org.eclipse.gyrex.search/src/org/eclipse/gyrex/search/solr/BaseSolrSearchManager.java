@@ -69,6 +69,8 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for {@link ISearchManager search managers} based on Apache Solr.
@@ -84,6 +86,8 @@ import org.apache.solr.common.SolrInputDocument;
  * </p>
  */
 public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse.gyrex.persistence.solr.SolrServerRepository> implements ISearchManager {
+
+	private static final Logger LOG = LoggerFactory.getLogger(BaseSolrSearchManager.class);
 
 	private final AtomicBoolean commitsAllowed = new AtomicBoolean(true);
 
@@ -533,15 +537,19 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 	public final QueryResponse query(final SolrQuery solrQuery) {
 		final ThroughputMetric queryMetric = getSolrSearchManagerMetrics().getQueryMetric();
 		final String query = solrQuery.toString();
-		// TODO: limit should be configurable
 		try {
+			final SolrServer server = getRepository().getSolrServerOptimizedForQuery();
+			if (SearchDebug.searchRequests) {
+				LOG.debug("[SEARCH] {} (using {})", solrQuery, server);
+			}
+
 			final long started = queryMetric.requestStarted();
-			final int urlLengthLimit = 2000;
+			final int urlLengthLimit = 2000; // TODO: limit should be configurable
 			QueryResponse response;
 			if (query.length() > urlLengthLimit) {
-				response = getRepository().getSolrServerOptimizedForQuery().query(solrQuery, SolrRequest.METHOD.POST);
+				response = server.query(solrQuery, SolrRequest.METHOD.POST);
 			} else {
-				response = getRepository().getSolrServerOptimizedForQuery().query(solrQuery, SolrRequest.METHOD.GET);
+				response = server.query(solrQuery, SolrRequest.METHOD.GET);
 			}
 			queryMetric.requestFinished(1, System.currentTimeMillis() - started);
 			return response;

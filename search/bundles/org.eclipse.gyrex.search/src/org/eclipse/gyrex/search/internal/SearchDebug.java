@@ -19,5 +19,6 @@ import org.eclipse.gyrex.common.debug.BundleDebugOptions;
 public class SearchDebug extends BundleDebugOptions {
 
 	public static boolean debug;
+	public static boolean searchRequests;
 
 }
