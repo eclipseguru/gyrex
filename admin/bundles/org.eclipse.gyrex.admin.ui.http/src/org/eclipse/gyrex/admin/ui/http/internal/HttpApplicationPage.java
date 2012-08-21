@@ -13,7 +13,6 @@
 package org.eclipse.gyrex.admin.ui.http.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -122,7 +121,7 @@ public class HttpApplicationPage extends FilteredAdminPage {
 	public HttpApplicationPage() {
 		setTitle("Manage Web Applications");
 		setTitleToolTip("Define, configure and mount applications.");
-		setFilters(Arrays.asList(FILTER_CONTEXT, FILTER_PROVIDER));
+//		setFilters(Arrays.asList(FILTER_CONTEXT, FILTER_PROVIDER));
 	}
 
 	@Override
