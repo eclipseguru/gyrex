@@ -68,10 +68,10 @@ Although not marked as INTERNAL, contributions to the Admin Console are consider
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="categoryId" type="string" use="required">
+         <attribute name="categoryId" type="string">
             <annotation>
                <documentation>
-                  reference to a parent page
+                  reference to a category where the page should be visible (if not provided or empty/invalid, the page will not appear in the UI)
                </documentation>
                <appinfo>
                   <meta.attribute kind="identifier" basedOn="org.eclipse.gyrex.admin.ui.pages/category/@id"/>

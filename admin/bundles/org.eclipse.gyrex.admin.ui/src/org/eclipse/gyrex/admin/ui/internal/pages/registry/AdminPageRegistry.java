@@ -46,7 +46,6 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 
 	private static final String ELEMENT_PAGE = "page";
 	private static final String ELEMENT_CATEGORY = "category";
-	private static final String NO_CATEGORY = "(unknown)";
 	private static final String EP_PAGES = "pages";
 
 	private static final Logger LOG = LoggerFactory.getLogger(AdminPageRegistry.class);
@@ -150,12 +149,15 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 	}
 
 	public boolean hasPages(final CategoryContribution category) {
+		if (category == null) {
+			return false;
+		}
+
 		final Map<String, Set<PageContribution>> mappings = pagesByCategoryId;
 		if (mappings == null) {
 			return false;
 		}
-		final String pageId = category != null ? category.getId() : NO_CATEGORY;
-		final Set<PageContribution> children = mappings.get(pageId);
+		final Set<PageContribution> children = mappings.get(category.getId());
 		return (children != null) && !children.isEmpty();
 	}
 
@@ -163,14 +165,12 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 		final Map<String, Set<PageContribution>> mappings = new HashMap<String, Set<PageContribution>>();
 		final Collection<PageContribution> values = pagesById.values();
 		for (final PageContribution page : values) {
-			final String categoryId = page.getCategoryId() != null ? page.getCategoryId() : NO_CATEGORY;
-			if (!mappings.containsKey(categoryId)) {
-				mappings.put(categoryId, new HashSet<PageContribution>(1));
+			if (!mappings.containsKey(page.getCategoryId())) {
+				mappings.put(page.getCategoryId(), new HashSet<PageContribution>(1));
 			}
-			mappings.get(categoryId).add(page);
+			mappings.get(page.getCategoryId()).add(page);
 		}
 		pagesByCategoryId = mappings;
-
 	}
 
 	@Override
