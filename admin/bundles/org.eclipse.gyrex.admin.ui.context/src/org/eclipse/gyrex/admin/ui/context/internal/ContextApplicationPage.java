@@ -38,9 +38,6 @@ public class ContextApplicationPage extends AdminPage {
 		setTitleToolTip("Define runtime contexts for web applications and background processing.");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.pages.AdminPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
 	@Override
 	public Control createControl(final Composite parent) {
 		pageComposite = new Composite(parent, SWT.NONE);
