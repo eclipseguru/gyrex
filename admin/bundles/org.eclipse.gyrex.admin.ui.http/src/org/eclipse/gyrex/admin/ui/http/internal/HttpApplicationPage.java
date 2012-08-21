@@ -282,7 +282,7 @@ public class HttpApplicationPage extends FilteredAdminPage {
 			final Infobox infobox = new Infobox(pageComposite);
 			infobox.setLayoutData(AdminUiUtil.createHorzFillData());
 			infobox.addHeading("Web Applications in Gyrex.");
-			infobox.addParagraph("In OSGi the HttpService is the prefered way of making Servlets and resources available. Out of the box (in development only) an HttpService is also available in Gyrex. However, that approache does not scale very well in a multi-tenant environment. Therefore, Gyrex allows to develop and integrate multiple kind of web applications. The OSGi HttpService is just one available example of a web application. It's possible to <a href=\"http://wiki.eclipse.org/Gyrex/Developer_Guide/Web_Applications\">develop your own applications</a>.");
+			infobox.addParagraph("In OSGi the HttpService is a standardized way of making Servlets and resources available. Out of the box (in development only) an HttpService is also available in Gyrex. However, that approache does not scale very well in a multi-tenant environment. Therefore, Gyrex allows to develop and integrate multiple kind of web applications. The OSGi HttpService is just one available example of a web application. It's possible to <a href=\"http://wiki.eclipse.org/Gyrex/Developer_Guide/Web_Applications\">develop your own applications</a>.");
 			infobox.addParagraph("In order to make a new application accessible an instance need to be defined first and then it needs to be mounted to an URL.");
 		}
 
