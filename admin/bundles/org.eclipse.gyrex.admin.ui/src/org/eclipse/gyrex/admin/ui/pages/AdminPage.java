@@ -35,6 +35,7 @@ public abstract class AdminPage {
 	private String title;
 	private String titleToolTip;
 	private Image titleImage;
+	private String[] arguments;
 
 	/**
 	 * Called by the Admin UI whenever a page becomes active.
@@ -96,6 +97,15 @@ public abstract class AdminPage {
 	}
 
 	/**
+	 * Returns the page arguments.
+	 * 
+	 * @return the arguments
+	 */
+	public String[] getArguments() {
+		return arguments;
+	}
+
+	/**
 	 * Returns the title of this configuration page. If this value changes the
 	 * page must fire a property listener event with {@link #PROP_TITLE}.
 	 * <p>
@@ -136,6 +146,26 @@ public abstract class AdminPage {
 	 */
 	public String getTitleToolTip() {
 		return titleToolTip != null ? titleToolTip : "";
+	}
+
+	/**
+	 * Sets the page arguments.
+	 * <p>
+	 * If any, arguments were received together with the request to open/show
+	 * the page (eg., within the URL). They may provide further hints for
+	 * pre-filling the page with data. The first element in the argument is the
+	 * id which triggered this page.
+	 * </p>
+	 * <p>
+	 * Note, when this method is invoked by the framework, no control might have
+	 * been created yet.
+	 * </p>
+	 * 
+	 * @param args
+	 *            the arguments (never <code>null</code>)
+	 */
+	public void setArguments(final String[] args) {
+		arguments = args;
 	}
 
 	/**

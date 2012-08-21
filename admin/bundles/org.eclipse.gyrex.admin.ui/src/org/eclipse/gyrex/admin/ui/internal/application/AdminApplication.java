@@ -127,8 +127,9 @@ public class AdminApplication implements IEntryPoint {
 	private Composite filterContainer;
 	private Composite headerCenterArea;
 
-	private void activate(final AdminPage page, final PageContribution contribution) {
+	private void activate(final AdminPage page, final PageContribution contribution, String[] args) {
 		// TODO: should switch to using a StackLayout and not disposing children every time
+		// however, disposal might be necessary if input changes
 		for (final Control child : centerArea.getChildren()) {
 			child.dispose();
 		}
@@ -136,9 +137,17 @@ public class AdminApplication implements IEntryPoint {
 			child.dispose();
 		}
 
+		// initialize arguments (allows safe use within this method as well as for API contract)
+		if ((args == null) || (args.length == 0)) {
+			args = new String[] { contribution.getId() };
+		}
+
+		// update page with input
+		page.setArguments(args);
+
 		// create history entry
 		final String historyText = StringUtils.isNotBlank(page.getTitleToolTip()) ? String.format("%s - %s - Gyrex Admin", contribution.getName(), page.getTitleToolTip()) : String.format("%s - Gyrex Admin", contribution.getName());
-		RWT.getBrowserHistory().createEntry(contribution.getId(), historyText);
+		RWT.getBrowserHistory().createEntry(StringUtils.join(args, ':'), historyText);
 
 		// create page
 		createPage(page, contribution, centerArea);
@@ -154,9 +163,10 @@ public class AdminApplication implements IEntryPoint {
 	private void attachHistoryListener() {
 		RWT.getBrowserHistory().addBrowserHistoryListener(new BrowserHistoryListener() {
 			public void navigated(final BrowserHistoryEvent event) {
-				final PageContribution contribution = AdminPageRegistry.getInstance().getPage(event.entryId);
+				final String[] tokens = StringUtils.split(event.entryId, ':');
+				final PageContribution contribution = AdminPageRegistry.getInstance().getPage(tokens[0]);
 				if (contribution != null) {
-					openPage(contribution);
+					openPage(contribution, tokens);
 				}
 			}
 		});
@@ -336,7 +346,7 @@ public class AdminApplication implements IEntryPoint {
 		final NavigationBar navigation = new NavigationBar(navBar) {
 			@Override
 			protected void openPage(final PageContribution page) {
-				AdminApplication.this.openPage(page);
+				AdminApplication.this.openPage(page, null);
 			}
 		};
 
@@ -424,11 +434,11 @@ public class AdminApplication implements IEntryPoint {
 	private void openInitialPage() {
 		final PageContribution contribution = navigation.findInitialPage();
 		if (contribution != null) {
-			openPage(contribution);
+			openPage(contribution, null);
 		}
 	}
 
-	private void openPage(final PageContribution contribution) {
+	private void openPage(final PageContribution contribution, final String[] args) {
 		try {
 			final AdminPage page = getPage(contribution);
 			if (null == page) {
@@ -446,7 +456,7 @@ public class AdminApplication implements IEntryPoint {
 
 			currentPage = page;
 			navigation.selectNavigationEntry(contribution);
-			activate(page, contribution);
+			activate(page, contribution, args);
 		} catch (final CoreException e) {
 			Policy.getStatusHandler().show(e.getStatus(), "Error Opening Page");
 			return;
