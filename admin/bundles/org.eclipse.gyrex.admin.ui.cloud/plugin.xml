@@ -11,6 +11,11 @@
             name="Cluster"
             sortKey="100">
       </page>
+      <page
+            class="org.eclipse.gyrex.admin.ui.cloud.internal.NodeAdminPage"
+            id="node"
+            name="Node">
+      </page>
    </extension>
 
 
