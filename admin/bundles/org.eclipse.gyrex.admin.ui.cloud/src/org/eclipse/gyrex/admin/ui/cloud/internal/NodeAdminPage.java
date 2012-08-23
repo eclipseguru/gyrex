@@ -13,10 +13,22 @@ package org.eclipse.gyrex.admin.ui.cloud.internal;
 
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+
+import org.apache.commons.lang.StringUtils;
+
 public class NodeAdminPage extends AdminPage {
 
-	public NodeAdminPage() {
-		// TODO Auto-generated constructor stub
+	public static final String ID = "node";
+
+	@Override
+	public Control createControl(final Composite parent) {
+		final Label label = new Label(parent, SWT.NONE);
+		label.setText(StringUtils.join(getArguments(), " - "));
+		return label;
 	}
 
 }

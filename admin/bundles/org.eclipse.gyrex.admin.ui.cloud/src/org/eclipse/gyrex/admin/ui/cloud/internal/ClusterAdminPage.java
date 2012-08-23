@@ -103,6 +103,7 @@ public class ClusterAdminPage extends AdminPage {
 	private Button approveButton;
 	private Button retireButton;
 	private Button editButton;
+	private Button manageButton;
 
 	private ISelectionChangedListener updateButtonsListener;
 
@@ -211,11 +212,20 @@ public class ClusterAdminPage extends AdminPage {
 		createButtonSeparator(parent);
 
 		editButton = new Button(parent, SWT.PUSH);
-		editButton.setText("Edit");
+		editButton.setText("Edit..");
 		editButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				editSelectedNode();
+			}
+		});
+
+		manageButton = new Button(parent, SWT.PUSH);
+		manageButton.setText("Manage");
+		manageButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				manageSelectedNode();
 			}
 		});
 	}
@@ -319,7 +329,7 @@ public class ClusterAdminPage extends AdminPage {
 		treeViewer.addOpenListener(new IOpenListener() {
 			@Override
 			public void open(final OpenEvent event) {
-				editSelectedNode();
+				manageSelectedNode();
 			}
 		});
 
@@ -443,6 +453,15 @@ public class ClusterAdminPage extends AdminPage {
 		return CloudUiActivator.getInstance().getCloudManager();
 	}
 
+	void manageSelectedNode() {
+		final Object firstElement = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+		if (!(firstElement instanceof NodeItem)) {
+			return;
+		}
+
+		getAdminUi().openPage(NodeAdminPage.ID, new String[] { ((NodeItem) firstElement).getDescriptor().getId() });
+	}
+
 	void refresh() {
 		final ICloudManager cloudManager = getCloudManager();
 		final INodeEnvironment localInfo = cloudManager.getLocalInfo();
@@ -509,6 +528,7 @@ public class ClusterAdminPage extends AdminPage {
 			approveButton.setEnabled(false);
 			retireButton.setEnabled(false);
 			editButton.setEnabled(false);
+			manageButton.setEnabled(false);
 			return;
 		}
 
@@ -529,5 +549,6 @@ public class ClusterAdminPage extends AdminPage {
 		approveButton.setEnabled(hasPendingNodes);
 		retireButton.setEnabled(hasApprovedNodes);
 		editButton.setEnabled(selectedElementsCount == 1);
+		manageButton.setEnabled(selectedElementsCount == 1);
 	}
 }
