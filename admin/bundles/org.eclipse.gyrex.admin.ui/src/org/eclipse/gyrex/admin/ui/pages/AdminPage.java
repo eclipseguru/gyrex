@@ -62,7 +62,7 @@ public abstract class AdminPage {
 	 * <p>
 	 * Subclasses must override and implement in order to create the page
 	 * controls. Note, implementors must not make any assumptions about the
-	 * parent control.
+	 * parent control and/or the control created by the default implementation.
 	 * </p>
 	 * <p>
 	 * Clients should not call this method (the Admin UI calls this method at
