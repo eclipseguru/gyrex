@@ -20,6 +20,7 @@ import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
+import org.eclipse.gyrex.admin.ui.pages.IAdminUi;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * contributed through the plugin.xml.
  */
 @SuppressWarnings("restriction")
-public class AdminApplication implements IEntryPoint {
+public class AdminApplication implements IEntryPoint, IAdminUi {
 
 	private static final String GYREX_WEBSITE_URL = "http://eclipse.org/gyrex/";
 	private static final int CONTENT_MIN_HEIGHT = 800;
@@ -426,7 +427,9 @@ public class AdminApplication implements IEntryPoint {
 
 	private AdminPage getPage(final PageContribution contribution) throws CoreException {
 		if (!pagesById.containsKey(contribution.getId())) {
-			pagesById.put(contribution.getId(), contribution.createPage());
+			final AdminPage page = contribution.createPage();
+			page.setAdminUi(this);
+			pagesById.put(contribution.getId(), page);
 		}
 		return pagesById.get(contribution.getId());
 	}
@@ -461,5 +464,27 @@ public class AdminApplication implements IEntryPoint {
 			Policy.getStatusHandler().show(e.getStatus(), "Error Opening Page");
 			return;
 		}
+	}
+
+	@Override
+	public void openPage(final String pageId, final String[] args) {
+		if (StringUtils.isBlank(pageId)) {
+			throw new IllegalArgumentException("invalid page id");
+		}
+		final PageContribution contribution = AdminPageRegistry.getInstance().getPage(pageId);
+		if (contribution == null) {
+			return;
+		}
+
+		final String[] argsWithPageId;
+		if (args != null) {
+			argsWithPageId = new String[args.length + 1];
+			argsWithPageId[0] = pageId;
+			System.arraycopy(args, 0, argsWithPageId, 1, args.length);
+		} else {
+			argsWithPageId = new String[] { pageId };
+		}
+
+		openPage(contribution, argsWithPageId);
 	}
 }

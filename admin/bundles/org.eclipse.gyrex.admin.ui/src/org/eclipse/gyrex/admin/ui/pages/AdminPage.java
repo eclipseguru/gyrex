@@ -36,6 +36,7 @@ public abstract class AdminPage {
 	private String titleToolTip;
 	private Image titleImage;
 	private String[] arguments;
+	private IAdminUi adminUi;
 
 	/**
 	 * Called by the Admin UI whenever a page becomes active.
@@ -97,6 +98,18 @@ public abstract class AdminPage {
 	}
 
 	/**
+	 * Returns the adminUi.
+	 * 
+	 * @return the adminUi
+	 */
+	public final IAdminUi getAdminUi() {
+		if (adminUi == null) {
+			throw new IllegalStateException("not initialized");
+		}
+		return adminUi;
+	}
+
+	/**
 	 * Returns the page arguments.
 	 * 
 	 * @return the arguments
@@ -146,6 +159,17 @@ public abstract class AdminPage {
 	 */
 	public String getTitleToolTip() {
 		return titleToolTip != null ? titleToolTip : "";
+	}
+
+	/**
+	 * Sets the Admin UI.
+	 * 
+	 * @param ui
+	 *            the admin ui to set
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
+	public final void setAdminUi(final IAdminUi ui) {
+		adminUi = ui;
 	}
 
 	/**
