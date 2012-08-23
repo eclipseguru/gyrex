@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("restriction")
 public class AdminApplication implements IEntryPoint, IAdminUi {
 
+	private static final String HISTORY_TOKEN_SEPARATOR = "--";
 	private static final String GYREX_WEBSITE_URL = "http://eclipse.org/gyrex/";
 	private static final int CONTENT_MIN_HEIGHT = 800;
 	private static final int CENTER_AREA_WIDTH = 998;
@@ -148,7 +149,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 		// create history entry
 		final String historyText = StringUtils.isNotBlank(page.getTitleToolTip()) ? String.format("%s - %s - Gyrex Admin", contribution.getName(), page.getTitleToolTip()) : String.format("%s - Gyrex Admin", contribution.getName());
-		RWT.getBrowserHistory().createEntry(StringUtils.join(args, ':'), historyText);
+		RWT.getBrowserHistory().createEntry(StringUtils.join(args, HISTORY_TOKEN_SEPARATOR), historyText);
 
 		// create page
 		createPage(page, contribution, centerArea);
@@ -164,7 +165,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 	private void attachHistoryListener() {
 		RWT.getBrowserHistory().addBrowserHistoryListener(new BrowserHistoryListener() {
 			public void navigated(final BrowserHistoryEvent event) {
-				final String[] tokens = StringUtils.split(event.entryId, ':');
+				final String[] tokens = StringUtils.splitByWholeSeparator(event.entryId, HISTORY_TOKEN_SEPARATOR);
 				final PageContribution contribution = AdminPageRegistry.getInstance().getPage(tokens[0]);
 				if (contribution != null) {
 					openPage(contribution, tokens);
