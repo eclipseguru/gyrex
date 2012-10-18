@@ -20,6 +20,9 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 public class SelectAppenderDialog extends ElementListSelectionDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	public SelectAppenderDialog(final Shell shell, final Collection<Appender> appenders) {
 		super(shell, new LogbackLabelProvider());
 		setTitle("Select Appender");

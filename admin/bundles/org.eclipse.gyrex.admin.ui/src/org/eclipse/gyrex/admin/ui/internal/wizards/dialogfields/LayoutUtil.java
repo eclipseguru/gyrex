@@ -72,15 +72,15 @@ public class LayoutUtil {
 	 */
 	public static int getNumberOfColumns(final DialogField[] editors) {
 		int nCulumns = 0;
-		for (int i = 0; i < editors.length; i++) {
-			nCulumns = Math.max(editors[i].getNumberOfControls(), nCulumns);
+		for (final DialogField editor : editors) {
+			nCulumns = Math.max(editor.getNumberOfControls(), nCulumns);
 		}
 		return nCulumns;
 	}
 
 	private static void modifyLabelSpans(final Control[][] controls, final int nCulumns) {
-		for (int i = 0; i < controls.length; i++) {
-			setHorizontalSpan(controls[i][0], nCulumns);
+		for (final Control[] control : controls) {
+			setHorizontalSpan(control[0], nCulumns);
 		}
 	}
 
@@ -138,7 +138,7 @@ public class LayoutUtil {
 	public static void setVerticalGrabbing(final Control control) {
 		final Object ld = control.getLayoutData();
 		if (ld instanceof GridData) {
-			final GridData gd = ((GridData) ld);
+			final GridData gd = (GridData) ld;
 			gd.grabExcessVerticalSpace = true;
 			gd.verticalAlignment = SWT.FILL;
 		}

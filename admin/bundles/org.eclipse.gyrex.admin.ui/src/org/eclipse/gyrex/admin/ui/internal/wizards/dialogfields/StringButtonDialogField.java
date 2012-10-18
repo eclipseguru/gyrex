@@ -104,10 +104,15 @@ public class StringButtonDialogField extends StringDialogField {
 			fBrowseButton.setText(fBrowseButtonLabel);
 			fBrowseButton.setEnabled(isEnabled() && fButtonEnabled);
 			fBrowseButton.addSelectionListener(new SelectionListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
 				public void widgetDefaultSelected(final SelectionEvent e) {
 					changeControlPressed();
 				}
 
+				@Override
 				public void widgetSelected(final SelectionEvent e) {
 					changeControlPressed();
 				}

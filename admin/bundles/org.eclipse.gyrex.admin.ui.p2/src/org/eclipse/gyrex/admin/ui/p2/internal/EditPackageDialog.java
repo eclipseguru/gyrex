@@ -14,11 +14,6 @@ package org.eclipse.gyrex.admin.ui.p2.internal;
 
 import java.util.List;
 
-import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.eclipse.equinox.p2.metadata.MetadataFactory;
-import org.eclipse.equinox.p2.query.IQuery;
-import org.eclipse.equinox.p2.query.QueryUtil;
-
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
@@ -34,6 +29,10 @@ import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.eclipse.equinox.p2.metadata.MetadataFactory;
+import org.eclipse.equinox.p2.query.IQuery;
+import org.eclipse.equinox.p2.query.QueryUtil;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rwt.widgets.DialogCallback;
@@ -51,6 +50,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.apache.commons.lang.StringUtils;
 
 public class EditPackageDialog extends NonBlockingStatusDialog {
+
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 
 	private final ILabelProvider labelProvider = new P2UiLabelProvider();
 
@@ -100,13 +102,16 @@ public class EditPackageDialog extends NonBlockingStatusDialog {
 
 	void addComponentButtonPressed() {
 		// query for everything that provides an OSGi bundle and features
-		final IQuery query = QueryUtil.createMatchQuery("properties[$0] == true || providedCapabilities.exists(p | p.namespace == 'osgi.bundle')", new Object[] { MetadataFactory.InstallableUnitDescription.PROP_TYPE_GROUP }); //$NON-NLS-1$
+		final IQuery<IInstallableUnit> query = QueryUtil.createMatchQuery("properties[$0] == true || providedCapabilities.exists(p | p.namespace == 'osgi.bundle')", new Object[] { MetadataFactory.InstallableUnitDescription.PROP_TYPE_GROUP }); //$NON-NLS-1$
 
 		// create the query for features
 //		final IQuery<IInstallableUnit> query = QueryUtil.createIUGroupQuery();
 
 		final FilteredIUSelectionDialog dialog = new FilteredIUSelectionDialog(getShell(), query);
 		dialog.openNonBlocking(new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -175,14 +180,13 @@ public class EditPackageDialog extends NonBlockingStatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 			final PackageDefinition packageDefinition = new PackageDefinition();
 			packageDefinition.setId(idField.getText());
-			packageDefinition.setNodeFilter((StringUtils.trimToNull(nodeFilterField.getText())));
+			packageDefinition.setNodeFilter(StringUtils.trimToNull(nodeFilterField.getText()));
 			final List components = componentsField.getElements();
 			for (final Object component : components) {
 				packageDefinition.addComponentToInstall((InstallableUnitReference) component);

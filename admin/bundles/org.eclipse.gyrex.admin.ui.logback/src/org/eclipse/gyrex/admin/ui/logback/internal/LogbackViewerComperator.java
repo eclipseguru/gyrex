@@ -20,6 +20,9 @@ import org.eclipse.jface.viewers.ViewerComparator;
 
 public class LogbackViewerComperator extends ViewerComparator {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public int category(final Object element) {
 		if (element instanceof LogbackConfig) {

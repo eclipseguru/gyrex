@@ -55,8 +55,8 @@ public class SelectionButtonDialogField extends DialogField {
 	 */
 	public void attachDialogFields(final DialogField[] dialogFields) {
 		fAttachedDialogFields = dialogFields;
-		for (int i = 0; i < dialogFields.length; i++) {
-			dialogFields[i].setEnabled(fIsSelected);
+		for (final DialogField dialogField : dialogFields) {
+			dialogField.setEnabled(fIsSelected);
 		}
 	}
 
@@ -65,10 +65,10 @@ public class SelectionButtonDialogField extends DialogField {
 			fIsSelected = newState;
 			if (fAttachedDialogFields != null) {
 				boolean focusSet = false;
-				for (int i = 0; i < fAttachedDialogFields.length; i++) {
-					fAttachedDialogFields[i].setEnabled(fIsSelected);
+				for (final DialogField fAttachedDialogField : fAttachedDialogFields) {
+					fAttachedDialogField.setEnabled(fIsSelected);
 					if (fIsSelected && !focusSet) {
-						focusSet = fAttachedDialogFields[i].setFocus();
+						focusSet = fAttachedDialogField.setFocus();
 					}
 				}
 			}
@@ -134,10 +134,15 @@ public class SelectionButtonDialogField extends DialogField {
 			fButton.setEnabled(isEnabled());
 			fButton.setSelection(fIsSelected);
 			fButton.addSelectionListener(new SelectionListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
 				public void widgetDefaultSelected(final SelectionEvent e) {
 					doWidgetSelected(e);
 				}
 
+				@Override
 				public void widgetSelected(final SelectionEvent e) {
 					doWidgetSelected(e);
 				}
@@ -152,8 +157,8 @@ public class SelectionButtonDialogField extends DialogField {
 	 */
 	public boolean isAttached(final DialogField editor) {
 		if (fAttachedDialogFields != null) {
-			for (int i = 0; i < fAttachedDialogFields.length; i++) {
-				if (fAttachedDialogFields[i] == editor) {
+			for (final DialogField fAttachedDialogField : fAttachedDialogFields) {
+				if (fAttachedDialogField == editor) {
 					return true;
 				}
 			}

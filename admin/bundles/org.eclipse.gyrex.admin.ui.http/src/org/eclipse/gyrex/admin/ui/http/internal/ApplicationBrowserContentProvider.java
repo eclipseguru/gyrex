@@ -36,6 +36,9 @@ import org.apache.commons.lang.StringUtils;
 @SuppressWarnings("restriction")
 public final class ApplicationBrowserContentProvider implements ITreeContentProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	public static class ApplicationItem {
 
 		private final Set<String> mounts;
@@ -236,7 +239,7 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 
 	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-		if ((null != this.viewer) && (this.viewer != viewer)) {
+		if (null != this.viewer && this.viewer != viewer) {
 			throw new IllegalStateException("please use separate provider instance for different viewers");
 		}
 		this.viewer = viewer;

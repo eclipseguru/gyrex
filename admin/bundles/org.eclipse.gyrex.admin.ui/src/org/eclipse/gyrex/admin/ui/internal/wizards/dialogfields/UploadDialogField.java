@@ -262,6 +262,9 @@ public class UploadDialogField extends DialogField {
 			uploadControl.setToolTipText("Select a file");
 			uploadControl.setFont(parent.getFont());
 			uploadControl.addSelectionListener(new SelectionAdapter() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
 					doModifyFileName();
@@ -308,6 +311,9 @@ public class UploadDialogField extends DialogField {
 
 		final UploadHandler handler = new UploadHandler(receiver);
 		uploadControl.addDisposeListener(new DisposeListener() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetDisposed(final DisposeEvent event) {
 				handler.dispose();

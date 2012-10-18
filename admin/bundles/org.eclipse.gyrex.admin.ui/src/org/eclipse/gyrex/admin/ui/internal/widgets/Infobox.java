@@ -21,6 +21,8 @@ import org.eclipse.swt.widgets.Label;
 
 public class Infobox extends Composite {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final Composite contentComp;
 
 	public Infobox(final Composite parent) {

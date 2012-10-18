@@ -47,6 +47,9 @@ import org.apache.commons.lang.text.StrBuilder;
 public class CertificatesArea {
 
 	static class CertificatesLabelProvider extends LabelProvider {
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getText(final Object element) {
 			if (element instanceof ICertificate) {
@@ -83,6 +86,9 @@ public class CertificatesArea {
 	void addButtonPressed() {
 		final ImportCertificateDialog dialog = new ImportCertificateDialog(SwtUtil.getShell(addButton), getJettyManager());
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {
@@ -129,6 +135,9 @@ public class CertificatesArea {
 
 		addButton = createButton(buttons, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				addButtonPressed();
@@ -138,6 +147,9 @@ public class CertificatesArea {
 		removeButton = createButton(buttons, "Remove");
 		removeButton.setEnabled(false);
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				removeButtonPressed();
@@ -149,7 +161,7 @@ public class CertificatesArea {
 	public void deactivate() {
 
 		// remove data inputs form controls
-		if ((certificatesList != null)) {
+		if (certificatesList != null) {
 			if (updateButtonsListener != null) {
 				certificatesList.removeSelectionChangedListener(updateButtonsListener);
 				updateButtonsListener = null;
@@ -167,7 +179,7 @@ public class CertificatesArea {
 
 	private ICertificate getSelectedCertificate() {
 		final IStructuredSelection selection = (IStructuredSelection) certificatesList.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ICertificate)) {
+		if (!selection.isEmpty() && selection.getFirstElement() instanceof ICertificate) {
 			return (ICertificate) selection.getFirstElement();
 		}
 
@@ -199,6 +211,9 @@ public class CertificatesArea {
 				errorMessage.append("  * ").appendln(channelDescriptor.getId());
 			}
 			NonBlockingMessageDialogs.openError(SwtUtil.getShell(pageComposite), "Still In Use", errorMessage.toString(), new DialogCallback() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void dialogClosed(final int returnCode) {
 					if (returnCode != Window.OK) {
@@ -211,6 +226,9 @@ public class CertificatesArea {
 		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove selected Certificate", String.format("Do you really want to delete certificate %s?", certificate.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {

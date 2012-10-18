@@ -30,6 +30,10 @@ public class TextBoxDialogField extends StringDialogField {
 	protected Text createTextControl(final Composite parent) {
 		final Text text = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		text.addTraverseListener(new TraverseListener() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
 			public void keyTraversed(final TraverseEvent event) {
 				switch (event.detail) {
 					case SWT.TRAVERSE_ESCAPE:

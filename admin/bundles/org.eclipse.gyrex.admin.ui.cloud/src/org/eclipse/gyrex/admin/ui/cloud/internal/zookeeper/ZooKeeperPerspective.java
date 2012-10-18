@@ -22,6 +22,7 @@ public class ZooKeeperPerspective implements IPerspectiveFactory {
 
 	public static final String ID = "org.eclipse.gyrex.admin.ui.cloud.perspective.zookeeper";
 
+	@Override
 	public void createInitialLayout(final IPageLayout layout) {
 		final String editorArea = layout.getEditorArea();
 		layout.setEditorAreaVisible(true);

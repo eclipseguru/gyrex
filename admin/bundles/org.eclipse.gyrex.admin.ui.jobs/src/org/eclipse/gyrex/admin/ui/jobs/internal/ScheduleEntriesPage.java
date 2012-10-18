@@ -69,27 +69,6 @@ public class ScheduleEntriesPage extends AdminPage {
 		setTitleToolTip("Configure the entries of a schedule for executing background tasks.");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.pages.AdminPage#setArguments(java.lang.String[])
-	 */
-	@Override
-	public void setArguments(final String[] args) {
-		super.setArguments(args);
-		if (args.length > 1) {
-
-			final String storageKey = args[1];
-			try {
-				final ScheduleImpl schedule = ScheduleStore.load(storageKey, ScheduleManagerImpl.getExternalId(storageKey), false);
-				if (schedule != null) {
-					setSchedule(schedule);
-					setTitle("Schedule Entries of " + schedule.getId());
-				}
-			} catch (final BackingStoreException e) {
-			}
-		}
-
-	}
-
 	@Override
 	public void activate() {
 
@@ -106,6 +85,37 @@ public class ScheduleEntriesPage extends AdminPage {
 		} else {
 		}
 
+	}
+
+	void addButtonPressed() {
+		final AddScheduleDialog dialog = new AddScheduleDialog(SwtUtil.getShell(addButton));
+		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					refresh();
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * 
+	 */
+	protected void backButtonPressed() {
+		getAdminUi().openPage(BackgroundTasksPage.ID, new String[] {});
+	}
+
+	private Button createButton(final Composite buttons, final String buttonLabel) {
+		final Button b = new Button(buttons, SWT.NONE);
+		b.setText(buttonLabel);
+		b.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		return b;
 	}
 
 	@Override
@@ -127,6 +137,9 @@ public class ScheduleEntriesPage extends AdminPage {
 		backLink.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		backLink.moveAbove(null);
 		backLink.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				backButtonPressed();
@@ -140,27 +153,6 @@ public class ScheduleEntriesPage extends AdminPage {
 			return pageComposite;
 		}
 		return pageComposite;
-	}
-
-	void addButtonPressed() {
-		final AddScheduleDialog dialog = new AddScheduleDialog(SwtUtil.getShell(addButton));
-		dialog.openNonBlocking(new DialogCallback() {
-
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode == Window.OK) {
-					refresh();
-				}
-			}
-		});
-
-	}
-
-	private Button createButton(final Composite buttons, final String buttonLabel) {
-		final Button b = new Button(buttons, SWT.NONE);
-		b.setText(buttonLabel);
-		b.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		return b;
 	}
 
 	/**
@@ -200,6 +192,9 @@ public class ScheduleEntriesPage extends AdminPage {
 
 		addButton = createButton(buttons, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				addButtonPressed();
@@ -208,6 +203,9 @@ public class ScheduleEntriesPage extends AdminPage {
 
 		enableButton = createButton(buttons, "Enable");
 		enableButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				enableButtonPressed();
@@ -216,6 +214,9 @@ public class ScheduleEntriesPage extends AdminPage {
 
 		disableButton = createButton(buttons, "Disable");
 		disableButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				disableButtonPressed();
@@ -225,91 +226,15 @@ public class ScheduleEntriesPage extends AdminPage {
 		removeButton = createButton(buttons, "Remove");
 		removeButton.setEnabled(false);
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				removeButtonPressed();
 			}
 		});
 
-	}
-
-	/**
-	 * 
-	 */
-	protected void backButtonPressed() {
-		getAdminUi().openPage(BackgroundTasksPage.ID, new String[] {});
-	}
-
-	/**
-	 * Returns the schedule.
-	 * 
-	 * @return the schedule
-	 */
-	public ScheduleImpl getSchedule() {
-		return schedule;
-	}
-
-	/**
-	 * Sets the schedule.
-	 * 
-	 * @param schedule
-	 *            the schedule to set
-	 */
-	public void setSchedule(final ScheduleImpl schedule) {
-		this.schedule = schedule;
-	}
-
-	private ScheduleEntryImpl getSelectedScheduleEntry() {
-		final IStructuredSelection selection = (IStructuredSelection) scheduleEntriesList.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ScheduleEntryImpl)) {
-			return (ScheduleEntryImpl) selection.getFirstElement();
-		}
-
-		return null;
-	}
-
-	void removeButtonPressed() {
-
-		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
-		if (scheduleEntry == null) {
-			return;
-		}
-
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Remove selected Schedule entry ", String.format("Do you really want to delete schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
-					return;
-				}
-
-				//ScheduleStore.(scheduleEntry.getStorageKey(), scheduleEntry.getId());
-				// TODO remove schedule entry
-
-				refresh();
-			}
-		});
-	}
-
-	void enableButtonPressed() {
-
-		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
-		if (scheduleEntry == null) {
-			return;
-		}
-
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Enable selected Schedule Entry ", String.format("Do you really want to enable schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
-					return;
-				}
-
-				//scheduleEntry.setEnabled(true);
-				// TODO set enabled
-
-				refresh();
-			}
-		});
 	}
 
 	void disableButtonPressed() {
@@ -320,6 +245,9 @@ public class ScheduleEntriesPage extends AdminPage {
 		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Disable selected Schedule Entry ", String.format("Do you really want to disable schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {
@@ -334,9 +262,108 @@ public class ScheduleEntriesPage extends AdminPage {
 		});
 	}
 
+	void enableButtonPressed() {
+
+		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
+		if (scheduleEntry == null) {
+			return;
+		}
+
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Enable selected Schedule Entry ", String.format("Do you really want to enable schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK) {
+					return;
+				}
+
+				//scheduleEntry.setEnabled(true);
+				// TODO set enabled
+
+				refresh();
+			}
+		});
+	}
+
+	/**
+	 * Returns the schedule.
+	 * 
+	 * @return the schedule
+	 */
+	public ScheduleImpl getSchedule() {
+		return schedule;
+	}
+
+	private ScheduleEntryImpl getSelectedScheduleEntry() {
+		final IStructuredSelection selection = (IStructuredSelection) scheduleEntriesList.getSelection();
+		if (!selection.isEmpty() && selection.getFirstElement() instanceof ScheduleEntryImpl) {
+			return (ScheduleEntryImpl) selection.getFirstElement();
+		}
+
+		return null;
+	}
+
 	public void refresh() {
 		scheduleEntriesList.refresh();
 		updateButtons();
+	}
+
+	void removeButtonPressed() {
+
+		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
+		if (scheduleEntry == null) {
+			return;
+		}
+
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Remove selected Schedule entry ", String.format("Do you really want to delete schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK) {
+					return;
+				}
+
+				//ScheduleStore.(scheduleEntry.getStorageKey(), scheduleEntry.getId());
+				// TODO remove schedule entry
+
+				refresh();
+			}
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.gyrex.admin.ui.pages.AdminPage#setArguments(java.lang.String[])
+	 */
+	@Override
+	public void setArguments(final String[] args) {
+		super.setArguments(args);
+		if (args.length > 1) {
+
+			final String storageKey = args[1];
+			try {
+				final ScheduleImpl schedule = ScheduleStore.load(storageKey, ScheduleManagerImpl.getExternalId(storageKey), false);
+				if (schedule != null) {
+					setSchedule(schedule);
+					setTitle("Schedule Entries of " + schedule.getId());
+				}
+			} catch (final BackingStoreException e) {
+			}
+		}
+
+	}
+
+	/**
+	 * Sets the schedule.
+	 * 
+	 * @param schedule
+	 *            the schedule to set
+	 */
+	public void setSchedule(final ScheduleImpl schedule) {
+		this.schedule = schedule;
 	}
 
 	void updateButtons() {

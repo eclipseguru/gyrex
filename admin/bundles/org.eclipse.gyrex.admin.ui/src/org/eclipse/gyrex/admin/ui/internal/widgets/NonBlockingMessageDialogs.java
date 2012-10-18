@@ -51,6 +51,9 @@ public class NonBlockingMessageDialogs {
 	private static void open(final int kind, final Shell parent, final String title, final String message, final DialogCallback callback) {
 		final String[] buttonLabels = getButtonLabels(kind);
 		final MessageDialog dialog = new MessageDialog(parent, title, null, message, kind, buttonLabels, 0) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean close() {
 				final boolean result = super.close();

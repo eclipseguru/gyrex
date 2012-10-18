@@ -20,6 +20,9 @@ import org.eclipse.ui.dialogs.PatternFilter;
  */
 public class PathPatternFilter extends PatternFilter {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public boolean isElementSelectable(final Object element) {
 		return element instanceof IPath;

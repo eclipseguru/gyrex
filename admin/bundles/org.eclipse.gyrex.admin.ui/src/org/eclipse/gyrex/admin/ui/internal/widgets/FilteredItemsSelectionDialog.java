@@ -112,6 +112,9 @@ import org.eclipse.swt.widgets.ToolItem;
  */
 public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * An interface to content providers for
 	 * <code>FilterItemsSelectionDialog</code>.
@@ -147,6 +150,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 * filtered list.
 	 */
 	private class ContentProvider extends AbstractContentProvider implements IStructuredContentProvider, ILazyContentProvider {
+
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 
 		private SelectionHistory selectionHistory;
 
@@ -253,7 +259,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			if (selectionHistory != null) {
 				selectionHistory.accessed(item);
 			}
-			if ((filter == null) || !filter.matchItem(item)) {
+			if (filter == null || !filter.matchItem(item)) {
 				items.remove(item);
 				duplicates.remove(item);
 				lastSortedItems.remove(item);
@@ -272,8 +278,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		public void addHistoryItems(final ItemsFilter itemsFilter) {
 			if (selectionHistory != null) {
 				final Object[] items = selectionHistory.getHistoryItems();
-				for (int i = 0; i < items.length; i++) {
-					final Object item = items[i];
+				for (final Object item : items) {
 					if (itemsFilter == filter) {
 						if (itemsFilter != null) {
 							if (itemsFilter.matchItem(item)) {
@@ -299,7 +304,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 				}
 				final HashMap<String, Object> helperMap = new HashMap<String, Object>();
 				for (int i = 0; i < lastFilteredItems.size(); i++) {
-					if (reset || ((subMonitor != null) && subMonitor.isCanceled())) {
+					if (reset || subMonitor != null && subMonitor.isCanceled()) {
 						return;
 					}
 					final Object item = lastFilteredItems.get(i);
@@ -314,7 +319,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 						}
 					}
 
-					if ((subMonitor != null) && (reportEvery != 0) && (((i + 1) % reportEvery) == 0)) {
+					if (subMonitor != null && reportEvery != 0 && (i + 1) % reportEvery == 0) {
 						subMonitor.worked(1);
 					}
 				}
@@ -327,6 +332,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 * 
 		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 		 */
+		@Override
 		public void dispose() {
 		}
 
@@ -335,6 +341,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 * 
 		 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 		 */
+		@Override
 		public Object[] getElements(final Object inputElement) {
 			return lastFilteredItems.toArray();
 		}
@@ -357,7 +364,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 			monitor.beginTask(WidgetMessages.get().FilteredItemsSelectionDialog_cacheRefreshJob_getFilteredElements, ticks);
 			if (filters != null) {
-				ticks /= (filters.size() + 2);
+				ticks /= filters.size() + 2;
 			} else {
 				ticks /= 2;
 			}
@@ -368,15 +375,14 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			monitor.worked(ticks);
 
 			// filter the elements using provided ViewerFilters
-			if ((filters != null) && (filteredElements != null)) {
-				for (final Iterator<ViewerFilter> iter = filters.iterator(); iter.hasNext();) {
-					final ViewerFilter f = iter.next();
+			if (filters != null && filteredElements != null) {
+				for (final ViewerFilter f : filters) {
 					filteredElements = f.filter(list, parent, filteredElements);
 					monitor.worked(ticks);
 				}
 			}
 
-			if ((filteredElements == null) || monitor.isCanceled()) {
+			if (filteredElements == null || monitor.isCanceled()) {
 				monitor.done();
 				return new Object[0];
 			}
@@ -403,7 +409,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 				preparedElements.add(item);
 
-				if ((reportEvery != 0) && (((i + 1) % reportEvery) == 0)) {
+				if (reportEvery != 0 && (i + 1) % reportEvery == 0) {
 					monitor.worked(1);
 				}
 			}
@@ -446,6 +452,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
 		 *      java.lang.Object, java.lang.Object)
 		 */
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 		}
 
@@ -519,7 +526,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 			lastFilteredItems = Arrays.asList(getFilteredItems(list.getInput(), monitor != null ? new SubProgressMonitor(monitor, 100) : null));
 
-			if (reset || ((monitor != null) && monitor.isCanceled())) {
+			if (reset || monitor != null && monitor.isCanceled()) {
 				if (monitor != null) {
 					monitor.done();
 				}
@@ -560,7 +567,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			if (selectionHistory != null) {
 				selectionHistory.remove(item);
 			}
-			if ((filter == null) || (filter.getPattern().length() == 0)) {
+			if (filter == null || filter.getPattern().length() == 0) {
 				items.remove(item);
 				duplicates.remove(item);
 				lastSortedItems.remove(item);
@@ -635,9 +642,10 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 * 
 		 * @see org.eclipse.jface.viewers.ILazyContentProvider#updateElement(int)
 		 */
+		@Override
 		public void updateElement(final int index) {
 
-			list.replace((lastFilteredItems.size() > index) ? lastFilteredItems.get(index) : null, index);
+			list.replace(lastFilteredItems.size() > index ? lastFilteredItems.get(index) : null, index);
 
 		}
 
@@ -649,6 +657,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 * the attached LabelProvider is updated.
 	 */
 	private class DetailsContentViewer extends ContentViewer {
+
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 
 		private final CLabel label;
 
@@ -771,12 +782,12 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 *            list of changed object
 		 */
 		private void refresh(final Object[] objs) {
-			if ((objs == null) || (getInput() == null)) {
+			if (objs == null || getInput() == null) {
 				return;
 			}
 			final Object input = getInput();
-			for (int i = 0; i < objs.length; i++) {
-				if (objs[i].equals(input)) {
+			for (final Object obj : objs) {
+				if (obj.equals(input)) {
 					refresh();
 					break;
 				}
@@ -841,7 +852,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 			contentProvider.addHistoryItems(itemsFilter);
 
-			if (!((lastCompletedFilter != null) && lastCompletedFilter.isSubFilter(itemsFilter))) {
+			if (!(lastCompletedFilter != null && lastCompletedFilter.isSubFilter(itemsFilter))) {
 				contentProvider.refresh();
 			}
 
@@ -906,7 +917,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 */
 		protected void filterContent(final GranualProgressMonitor monitor) throws CoreException {
 
-			if ((lastCompletedFilter != null) && lastCompletedFilter.isSubFilter(itemsFilter)) {
+			if (lastCompletedFilter != null && lastCompletedFilter.isSubFilter(itemsFilter)) {
 
 				final int length = lastCompletedResult.size() / 500;
 				monitor.beginTask(WidgetMessages.get(display).FilteredItemsSelectionDialog_cacheSearchJob_taskName, length);
@@ -919,7 +930,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 					}
 					contentProvider.add(item, itemsFilter);
 
-					if ((pos % 500) == 0) {
+					if (pos % 500 == 0) {
 						monitor.worked(1);
 					}
 				}
@@ -938,7 +949,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 				fillContentProvider(contentProvider, itemsFilter, subMonitor);
 
-				if ((monitor != null) && !monitor.isCanceled()) {
+				if (monitor != null && !monitor.isCanceled()) {
 					monitor.worked(2);
 					contentProvider.rememberResult(itemsFilter);
 					monitor.worked(3);
@@ -1059,7 +1070,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 				return message;
 			}
 
-			return NLS.bind(WidgetMessages.get(display).FilteredItemsSelectionDialog_taskProgressMessage, new Object[] { message, new Integer((int) ((worked * 100) / totalWork)) });
+			return NLS.bind(WidgetMessages.get(display).FilteredItemsSelectionDialog_taskProgressMessage, new Object[] { message, new Integer((int) (worked * 100 / totalWork)) });
 
 		}
 
@@ -1139,8 +1150,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 * 
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
+		@Override
 		public int compare(final Object o1, final Object o2) {
-			if ((isHistoryElement(o1) && isHistoryElement(o2)) || (!isHistoryElement(o1) && !isHistoryElement(o2))) {
+			if (isHistoryElement(o1) && isHistoryElement(o2) || !isHistoryElement(o1) && !isHistoryElement(o2)) {
 				return getItemsComparator().compare(o1, o2);
 			}
 
@@ -1180,7 +1192,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		public ItemsFilter(final SearchPattern searchPattern) {
 			patternMatcher = searchPattern;
 			String stringPattern = ""; //$NON-NLS-1$
-			if ((pattern != null)/* && !pattern.getText().equals("*")*/) {
+			if (pattern != null/* && !pattern.getText().equals("*")*/) {
 				stringPattern = pattern.getText();
 			}
 			patternMatcher.setPattern(stringPattern);
@@ -1199,7 +1211,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		 * @see org.eclipse.ui.dialogs.SearchPattern#equalsPattern(org.eclipse.ui.dialogs.SearchPattern)
 		 */
 		public boolean equalsFilter(final ItemsFilter filter) {
-			if ((filter != null) && filter.patternMatcher.equalsPattern(patternMatcher)) {
+			if (filter != null && filter.patternMatcher.equalsPattern(patternMatcher)) {
 				return true;
 			}
 			return false;
@@ -1327,6 +1339,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	// RAP [rh] StyledCellLabelProvider not supported	
 //	private class ItemsListLabelProvider extends StyledCellLabelProvider
 	private class ItemsListLabelProvider extends CellLabelProvider implements ILabelProviderListener {
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
+
 		private ILabelProvider provider;
 
 		private ILabelDecorator selectionDecorator;
@@ -1466,7 +1481,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			gc.dispose();
 
 			final StringBuffer dashes = new StringBuffer();
-			final int chars = (((width - fMessageLength) / fSeparatorWidth) / 2) - 2;
+			final int chars = (width - fMessageLength) / fSeparatorWidth / 2 - 2;
 			for (int i = 0; i < chars; i++) {
 				dashes.append('-');
 			}
@@ -1484,7 +1499,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			}
 
 			final String str = provider.getText(element);
-			if ((selectionDecorator != null) && isSelected(element)) {
+			if (selectionDecorator != null && isSelected(element)) {
 				return selectionDecorator.decorateText(str.toString(), element);
 			}
 
@@ -1496,16 +1511,16 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			if (provider.isLabelProperty(element, property)) {
 				return true;
 			}
-			if ((selectionDecorator != null) && selectionDecorator.isLabelProperty(element, property)) {
+			if (selectionDecorator != null && selectionDecorator.isLabelProperty(element, property)) {
 				return true;
 			}
 			return false;
 		}
 
 		private boolean isSelected(final Object element) {
-			if ((element != null) && (currentSelection != null)) {
-				for (int i = 0; i < currentSelection.length; i++) {
-					if (element.equals(currentSelection[i])) {
+			if (element != null && currentSelection != null) {
+				for (final Object element2 : currentSelection) {
+					if (element.equals(element2)) {
 						return true;
 					}
 				}
@@ -1513,6 +1528,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			return false;
 		}
 
+		@Override
 		public void labelProviderChanged(final LabelProviderChangedEvent event) {
 			final Object[] l = listeners.getListeners();
 			for (int i = 0; i < listeners.size(); i++) {
@@ -1626,9 +1642,14 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 */
 	private class NullContentProvider implements IContentProvider {
 
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 		}
 
@@ -1675,6 +1696,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			if (FilteredItemsSelectionDialog.this != null) {
 // RAP [if] fake context
 				UICallBack.runNonUIThreadWithFakeContext(display, new Runnable() {
+					@Override
 					public void run() {
 						final GranualProgressMonitor wrappedMonitor = new GranualProgressMonitor(monitor);
 						reloadCache(true, wrappedMonitor);
@@ -1772,7 +1794,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 				progressLabel.setText(progressMonitor != null ? progressMonitor.getMessage() : EMPTY_STRING);
 			}
 
-			if ((progressMonitor == null) || progressMonitor.isDone()) {
+			if (progressMonitor == null || progressMonitor.isDone()) {
 				return new Status(IStatus.CANCEL, AdminUiActivator.SYMBOLIC_NAME, IStatus.OK, EMPTY_STRING, null);
 			}
 
@@ -1798,6 +1820,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	}
 
 	private class RemoveHistoryItemAction extends Action {
+
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 
 		/**
 		 * Creates a new instance of the class.
@@ -1995,6 +2020,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 	private class ToggleStatusLineAction extends Action {
 
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * Creates a new instance of the class.
 		 */
@@ -2170,7 +2198,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		// don't apply filtering for patterns which mean the same, for example:
 		// *a**b and ***a*b
-		if ((filter != null) && filter.equalsFilter(newFilter)) {
+		if (filter != null && filter.equalsFilter(newFilter)) {
 			return;
 		}
 
@@ -2316,6 +2344,10 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		createPopupMenu();
 
 		pattern.addModifyListener(new ModifyListener() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
 			public void modifyText(final ModifyEvent e) {
 				applyFilter();
 			}
@@ -2333,6 +2365,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 //		});
 
 		list.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				final StructuredSelection selection = (StructuredSelection) event.getSelection();
 				handleSelected(selection);
@@ -2340,6 +2373,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		});
 
 		list.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				handleDoubleClick();
 			}
@@ -2469,7 +2503,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		header.setLayout(layout);
 
 		final Label headerLabel = new Label(header, SWT.NONE);
-		headerLabel.setText(((getMessage() != null) && (getMessage().trim().length() > 0)) ? getMessage() : WidgetMessages.get().FilteredItemsSelectionDialog_patternLabel);
+		headerLabel.setText(getMessage() != null && getMessage().trim().length() > 0 ? getMessage() : WidgetMessages.get().FilteredItemsSelectionDialog_patternLabel);
 // RAP [rh] Traverse events missing		
 //		headerLabel.addTraverseListener(new TraverseListener() {
 //			public void keyTraversed(TraverseEvent e) {
@@ -2533,6 +2567,10 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		contextMenuManager = new MenuManager();
 		contextMenuManager.setRemoveAllWhenShown(true);
 		contextMenuManager.addMenuListener(new IMenuListener() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
 			public void menuAboutToShow(final IMenuManager manager) {
 				fillContextMenu(manager);
 			}
@@ -2552,6 +2590,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		toolBar.setLayoutData(data);
 
 		toolBar.addMouseListener(new MouseAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void mouseDown(final MouseEvent e) {
 				showViewMenu();
@@ -2561,6 +2602,9 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		toolItem.setImage(AdminUiActivator.getInstance().getImageRegistry().get(AdminUiImages.IMG_VIEW_MENU));
 		toolItem.setToolTipText(WidgetMessages.get().FilteredItemsSelectionDialog_menu);
 		toolItem.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				showViewMenu();
@@ -2623,7 +2667,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		for (final Iterator<Object> it = selectedElements.iterator(); it.hasNext();) {
 			item = it.next();
-			if ((item instanceof ItemsListSeparator) || !isHistoryElement(item)) {
+			if (item instanceof ItemsListSeparator || !isHistoryElement(item)) {
 				return;
 			}
 		}
@@ -2826,7 +2870,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		if (selection.size() == 0) {
 			status = new Status(IStatus.ERROR, AdminUiActivator.SYMBOLIC_NAME, IStatus.ERROR, EMPTY_STRING, null);
 
-			if ((lastSelection != null) && (getListSelectionLabelDecorator() != null)) {
+			if (lastSelection != null && getListSelectionLabelDecorator() != null) {
 				list.update(lastSelection, null);
 			}
 
@@ -2840,9 +2884,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			Object item = null;
 			IStatus tempStatus = null;
 
-			for (final Iterator<Object> it = items.iterator(); it.hasNext();) {
-				final Object o = it.next();
-
+			for (final Object o : items) {
 				if (o instanceof ItemsListSeparator) {
 					continue;
 				}
@@ -2860,7 +2902,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 				}
 			}
 
-			if ((lastSelection != null) && (getListSelectionLabelDecorator() != null)) {
+			if (lastSelection != null && getListSelectionLabelDecorator() != null) {
 				list.update(lastSelection, null);
 			}
 
@@ -2902,7 +2944,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 */
 	@Override
 	protected void okPressed() {
-		if ((status != null) && (status.isOK() || (status.getCode() == IStatus.INFO))) {
+		if (status != null && (status.isOK() || status.getCode() == IStatus.INFO)) {
 			super.okPressed();
 		}
 	}
@@ -2933,7 +2975,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 */
 	@SuppressWarnings("unchecked")
 	public void refresh() {
-		if ((list != null) && !list.getTable().isDisposed()) {
+		if (list != null && !list.getTable().isDisposed()) {
 
 			final List<Object> lastRefreshSelection = ((StructuredSelection) list.getSelection()).toList();
 			list.getTable().deselectAll();
@@ -2943,7 +2985,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 			if (list.getTable().getItemCount() > 0) {
 				// preserve previous selection
-				if (refreshWithLastSelection && (lastRefreshSelection != null) && (lastRefreshSelection.size() > 0)) {
+				if (refreshWithLastSelection && lastRefreshSelection != null && lastRefreshSelection.size() > 0) {
 					list.setSelection(new StructuredSelection(lastRefreshSelection));
 				} else {
 					refreshWithLastSelection = true;
@@ -2996,7 +3038,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 *            available
 	 */
 	public void reloadCache(final boolean checkDuplicates, final IProgressMonitor monitor) {
-		if ((list != null) && !list.getTable().isDisposed() && (contentProvider != null)) {
+		if (list != null && !list.getTable().isDisposed() && contentProvider != null) {
 			contentProvider.reloadCache(checkDuplicates, monitor);
 		}
 	}
@@ -3019,8 +3061,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 *            items to be removed
 	 */
 	private void removeSelectedItems(final List<Object> items) {
-		for (final Iterator<Object> iter = items.iterator(); iter.hasNext();) {
-			final Object item = iter.next();
+		for (final Object item : items) {
 			removeHistoryItem(item);
 		}
 		refreshWithLastSelection = false;
@@ -3062,7 +3103,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 * Schedules progress message refresh.
 	 */
 	public void scheduleProgressMessageRefresh() {
-		if ((filterJob.getState() != Job.RUNNING) && (refreshProgressMessageJob.getState() != Job.RUNNING)) {
+		if (filterJob.getState() != Job.RUNNING && refreshProgressMessageJob.getState() != Job.RUNNING) {
 			refreshProgressMessageJob.scheduleProgressRefresh(null);
 		}
 	}
@@ -3078,6 +3119,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	public void scheduleRefresh() {
 // RAP [rh] fake context	  
 		UICallBack.runNonUIThreadWithFakeContext(display, new Runnable() {
+			@Override
 			public void run() {
 				refreshCacheJob.cancelAll();
 				refreshCacheJob.schedule();

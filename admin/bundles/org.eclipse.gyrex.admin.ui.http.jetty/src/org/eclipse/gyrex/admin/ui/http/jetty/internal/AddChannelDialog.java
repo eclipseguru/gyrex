@@ -50,6 +50,8 @@ import org.apache.commons.lang.math.NumberUtils;
 
 public class AddChannelDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final StringDialogField idField = new StringDialogField();
 	private final StringDialogField portField = new StringDialogField();
 	private final SelectionButtonDialogField secureField = new SelectionButtonDialogField(SWT.CHECK);
@@ -101,6 +103,9 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 		nodeFilterField.setDialogFieldListener(validateListener);
 
 		certificateIdField.setContentProposalProcessor(new IContentProposalProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public IContentProposal[] getProposals(final String contents, final int position) {
 				final List<IContentProposal> resultList = new ArrayList<IContentProposal>();
@@ -109,7 +114,7 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 
 				final Collection<ICertificate> certificates = jettyManager.getCertificates();
 				for (final ICertificate certificate : certificates) {
-					if ((null == patternString) || StringUtils.contains(certificate.getId(), patternString)) {
+					if (null == patternString || StringUtils.contains(certificate.getId(), patternString)) {
 						resultList.add(new ContentProposal(certificate.getId(), certificate.getInfo()));
 					}
 				}
@@ -119,6 +124,9 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 		});
 
 		secureChannelIdField.setContentProposalProcessor(new IContentProposalProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public IContentProposal[] getProposals(final String contents, final int position) {
 				final List<IContentProposal> resultList = new ArrayList<IContentProposal>();
@@ -127,7 +135,7 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 
 				final Collection<ChannelDescriptor> channels = jettyManager.getChannels();
 				for (final ChannelDescriptor channel : channels) {
-					if (channel.isSecure() && ((null == patternString) || StringUtils.contains(channel.getId(), patternString))) {
+					if (channel.isSecure() && (null == patternString || StringUtils.contains(channel.getId(), patternString))) {
 						resultList.add(new ContentProposal(channel.getId(), String.format("%s (%d)", channel.getId(), channel.toString())));
 					}
 				}
@@ -156,7 +164,7 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 	}
 
 	private boolean isWithinRange(final int port, final int lower, final int higher) {
-		return ((port >= lower) && (port <= higher));
+		return port >= lower && port <= higher;
 	}
 
 	@Override
@@ -173,7 +181,7 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 			channelDescriptor.setSecure(secureField.isSelected());
 			channelDescriptor.setCertificateId(StringUtils.trimToNull(certificateIdField.getText()));
 			channelDescriptor.setSecureChannelId(StringUtils.trimToNull(secureChannelIdField.getText()));
-			channelDescriptor.setNodeFilter((StringUtils.trimToNull(nodeFilterField.getText())));
+			channelDescriptor.setNodeFilter(StringUtils.trimToNull(nodeFilterField.getText()));
 			jettyManager.saveChannel(channelDescriptor);
 		} catch (final Exception e) {
 			setError(e.getMessage());

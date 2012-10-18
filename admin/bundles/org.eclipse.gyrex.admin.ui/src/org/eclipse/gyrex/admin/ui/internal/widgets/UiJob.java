@@ -78,10 +78,11 @@ public abstract class UiJob extends Job {
 			return Status.CANCEL_STATUS;
 		}
 		final Display asyncDisplay = getDisplay();
-		if ((asyncDisplay == null) || asyncDisplay.isDisposed()) {
+		if (asyncDisplay == null || asyncDisplay.isDisposed()) {
 			return Status.CANCEL_STATUS;
 		}
 		asyncDisplay.asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				IStatus result = null;
 				Throwable throwable = null;

@@ -54,9 +54,15 @@ public class NodeShortcuts extends OverviewPageItem {
 		restartLink.setText("<a>Restart local node</a>");
 		restartLink.setLayoutData(AdminUiUtil.createHorzFillData());
 		restartLink.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				NonBlockingMessageDialogs.openConfirm(SwtUtil.getShell(restartLink), "Restart Node", String.format("Node %s will be restarted. Please confirm!", getNodeId()), new DialogCallback() {
+					/** serialVersionUID */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void dialogClosed(final int returnCode) {
 						if (returnCode == Window.OK) {

@@ -70,7 +70,13 @@ import org.apache.commons.lang.StringUtils;
 @SuppressWarnings("restriction")
 public class EditApplicationDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	private static final class PropertiesFieldLabelProvider extends LabelProvider implements ITableLabelProvider {
+
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Image getColumnImage(final Object element, final int columnIndex) {
@@ -174,6 +180,9 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 		final MountApplicationDialog dialog = new MountApplicationDialog(getParentShell());
 		dialog.openNonBlocking(new DialogCallback() {
 
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -186,6 +195,9 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 	void addNewProperty() {
 		final EditPropertyDialog dialog = new EditPropertyDialog(getParentShell(), null, null);
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {
@@ -231,6 +243,9 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 		providerField.setItems(providerItems.toArray(new String[providerItems.size()]));
 
 		contextPathField.setContentProposalProcessor(new IContentProposalProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public IContentProposal[] getProposals(final String contents, final int position) {
 				final List<IContentProposal> resultList = new ArrayList<IContentProposal>();
@@ -239,7 +254,7 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 				final Collection<ContextDefinition> contexts = ContextActivator.getInstance().getContextRegistryImpl().getDefinedContexts();
 				for (final ContextDefinition contextDefinition : contexts) {
-					if ((null == patternString) || StringUtils.contains(contextDefinition.getPath().toString(), patternString)) {
+					if (null == patternString || StringUtils.contains(contextDefinition.getPath().toString(), patternString)) {
 						resultList.add(new ContentProposal(contextDefinition.getPath().toString(), contextDefinition.toString()));
 					}
 				}
@@ -298,6 +313,9 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 		final String[] elem = (String[]) selectedElements.get(0);
 		final EditPropertyDialog dialog = new EditPropertyDialog(getParentShell(), elem[0], elem[1]);
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {

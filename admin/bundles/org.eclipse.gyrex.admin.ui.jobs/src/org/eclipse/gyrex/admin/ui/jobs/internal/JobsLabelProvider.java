@@ -30,6 +30,8 @@ import org.eclipse.ui.PlatformUI;
  */
 public class JobsLabelProvider extends LabelProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private ResourceManager manager;
 
 	@Override

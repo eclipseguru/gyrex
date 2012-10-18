@@ -33,6 +33,7 @@ public class FilteredItemsSelectionDialogMessages {
 	public static FilteredItemsSelectionDialogMessages get(final Display display) {
 		final FilteredItemsSelectionDialogMessages[] result = { null };
 		UICallBack.runNonUIThreadWithFakeContext(display, new Runnable() {
+			@Override
 			public void run() {
 				result[0] = get();
 			}

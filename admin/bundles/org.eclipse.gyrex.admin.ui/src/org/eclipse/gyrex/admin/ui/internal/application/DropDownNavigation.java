@@ -33,6 +33,9 @@ import org.eclipse.swt.widgets.MenuItem;
 
 abstract class DropDownNavigation extends DropDownItem {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	private static List<String> getItemLabels(final List<PageContribution> pages) {
 		final ArrayList<String> list = new ArrayList<String>();
 		for (final PageContribution pageContribution : pages) {
@@ -66,6 +69,9 @@ abstract class DropDownNavigation extends DropDownItem {
 		menuItem.setText(item.replace("&", "&&"));
 		menuItem.setData(WidgetUtil.CUSTOM_VARIANT, getCustomVariant());
 		menuItem.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				openItem(item);
@@ -106,6 +112,9 @@ abstract class DropDownNavigation extends DropDownItem {
 
 		// reset when menu is hidden
 		pullDownMenu.addMenuListener(new MenuAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void menuHidden(final MenuEvent e) {
 				setOpen(false);

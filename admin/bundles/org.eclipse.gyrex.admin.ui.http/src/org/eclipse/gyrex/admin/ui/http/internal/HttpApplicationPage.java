@@ -74,6 +74,8 @@ import org.apache.commons.lang.StringUtils;
 public class HttpApplicationPage extends FilteredAdminPage {
 
 	private final class ApplicationBrowserSortListener extends SelectionAdapter {
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 		private final ApplicationBrowserComparator comparator;
 		private final TreeViewerColumn column;
 		private final SortIndex sortIndex;
@@ -159,6 +161,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(addButton), getApplicationManager(), null);
 		dialog.openNonBlocking(new DialogCallback() {
 
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -198,6 +203,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		idColumn.getColumn().setText("Instance ID");
 		idColumn.getColumn().addSelectionListener(new ApplicationBrowserSortListener(comparator, SortIndex.ID, idColumn));
 		idColumn.setLabelProvider(new ColumnLabelProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dispose() {
 				super.dispose();
@@ -240,6 +248,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		providerColumn.getColumn().setText("Type");
 		providerColumn.getColumn().addSelectionListener(new ApplicationBrowserSortListener(comparator, SortIndex.PROVIDER_ID, providerColumn));
 		providerColumn.setLabelProvider(new ColumnLabelProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof ApplicationItem) {
@@ -253,6 +264,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		mountsColumn.getColumn().setText("Mounts");
 		mountsColumn.getColumn().addSelectionListener(new ApplicationBrowserSortListener(comparator, SortIndex.MOUNTS, mountsColumn));
 		mountsColumn.setLabelProvider(new ColumnLabelProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof ApplicationItem) {
@@ -300,6 +314,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		addButton = createButton(buttons, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				addButtonPressed();
@@ -308,6 +325,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		editButton = createButton(buttons, "Edit");
 		editButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				editSelectedApplication();
@@ -316,6 +336,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		removeButton = createButton(buttons, "Remove");
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				removeSelectedApplication();
@@ -327,6 +350,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		activateButton = createButton(buttons, "Activate");
 		activateButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				activateSelectedApplications();
@@ -335,6 +361,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		deactivateButton = createButton(buttons, "Deactivate");
 		deactivateButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				deactivateSelectedApplications();
@@ -376,6 +405,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		viewer.setContentProvider(new TreeNodeContentProvider());
 		viewer.setLabelProvider(new LabelProvider() {
 
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof TreeNode) {
@@ -410,7 +442,7 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		super.deactivate();
 
 		// remove data inputs form controls
-		if ((treeViewer != null)) {
+		if (treeViewer != null) {
 			if (updateButtonsListener != null) {
 				treeViewer.removeSelectionChangedListener(updateButtonsListener);
 				updateButtonsListener = null;
@@ -440,6 +472,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(editButton), getApplicationManager(), app);
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {
@@ -485,7 +520,7 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 	private ApplicationItem getSelectedValue() {
 		final TreeSelection selection = (TreeSelection) treeViewer.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ApplicationItem)) {
+		if (!selection.isEmpty() && selection.getFirstElement() instanceof ApplicationItem) {
 			return (ApplicationItem) selection.getFirstElement();
 		}
 
@@ -504,6 +539,9 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Application", String.format("Do you really want to delete instance %s?", applicationItem.getApplicationId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {

@@ -16,16 +16,6 @@ import java.net.URI;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import org.eclipse.equinox.p2.core.IProvisioningAgent;
-import org.eclipse.equinox.p2.core.IProvisioningAgentProvider;
-import org.eclipse.equinox.p2.core.ProvisionException;
-import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.eclipse.equinox.p2.query.IQuery;
-import org.eclipse.equinox.p2.query.QueryUtil;
-import org.eclipse.equinox.p2.repository.IRepositoryManager;
-import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
-import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
-
 import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredItemsSelectionDialog;
 import org.eclipse.gyrex.p2.internal.repositories.RepoUtil;
 
@@ -36,6 +26,15 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.eclipse.equinox.p2.core.IProvisioningAgentProvider;
+import org.eclipse.equinox.p2.core.ProvisionException;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.eclipse.equinox.p2.query.IQuery;
+import org.eclipse.equinox.p2.query.QueryUtil;
+import org.eclipse.equinox.p2.repository.IRepositoryManager;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -49,10 +48,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FilteredIUSelectionDialog extends FilteredItemsSelectionDialog {
+
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 
 	class IUItemsFilter extends ItemsFilter {
 
@@ -76,7 +79,7 @@ public class FilteredIUSelectionDialog extends FilteredItemsSelectionDialog {
 		}
 
 		public boolean isIUMatch(final IInstallableUnit iu) {
-			if ((iu.getFragments() != null) && (iu.getFragments().size() > 0)) {
+			if (iu.getFragments() != null && iu.getFragments().size() > 0) {
 				return false;
 			}
 
@@ -89,7 +92,7 @@ public class FilteredIUSelectionDialog extends FilteredItemsSelectionDialog {
 
 			// get name
 			String name = iu.getProperty(IInstallableUnit.PROP_NAME, null);
-			if ((name == null) || name.startsWith("%")) {
+			if (name == null || name.startsWith("%")) {
 				name = ""; //$NON-NLS-1$
 			}
 
@@ -209,6 +212,9 @@ public class FilteredIUSelectionDialog extends FilteredItemsSelectionDialog {
 		fShowLatestVersionOnlyButton.setText("Show latest version only");
 		fShowLatestVersionOnlyButton.addSelectionListener(new SelectionAdapter() {
 
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				fShowLatestVersionOnly = fShowLatestVersionOnlyButton.getSelection();
@@ -281,6 +287,7 @@ public class FilteredIUSelectionDialog extends FilteredItemsSelectionDialog {
 	@Override
 	protected Comparator getItemsComparator() {
 		return new Comparator() {
+			@Override
 			public int compare(final Object o1, final Object o2) {
 				String id1 = null;
 				String id2 = null;

@@ -37,6 +37,8 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class NonBlockingStatusDialog extends StatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final AtomicReference<DialogCallback> callbackRef = new AtomicReference<DialogCallback>();
 
 	/**

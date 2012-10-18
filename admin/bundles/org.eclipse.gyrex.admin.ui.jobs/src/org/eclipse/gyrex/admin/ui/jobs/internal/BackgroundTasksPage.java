@@ -40,6 +40,16 @@ public class BackgroundTasksPage extends FilteredAdminPage {
 	}
 
 	@Override
+	public void activate() {
+		super.activate();
+
+		if (schedulesSection != null) {
+			schedulesSection.activate();
+		}
+
+	}
+
+	@Override
 	public Control createControl(final Composite parent) {
 
 		pageComposite = new Composite(parent, SWT.NONE);
@@ -58,15 +68,5 @@ public class BackgroundTasksPage extends FilteredAdminPage {
 		schedulesSection.createSchedulesControls(pageComposite);
 
 		return pageComposite;
-	}
-
-	@Override
-	public void activate() {
-		super.activate();
-
-		if (schedulesSection != null) {
-			schedulesSection.activate();
-		}
-
 	}
 }

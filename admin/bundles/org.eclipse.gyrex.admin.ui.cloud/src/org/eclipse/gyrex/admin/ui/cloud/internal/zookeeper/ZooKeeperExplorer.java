@@ -38,8 +38,11 @@ public class ZooKeeperExplorer extends ViewPart {
 
 	static class ViewContentProvider implements ITreeContentProvider {
 
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 		private static final Object[] NO_CHILDREN = new Object[0];
 
+		@Override
 		public void dispose() {
 		}
 
@@ -48,6 +51,7 @@ public class ZooKeeperExplorer extends ViewPart {
 			return getElements(parent);
 		}
 
+		@Override
 		public Object[] getElements(final Object parent) {
 			if (parent instanceof ZooKeeperData) {
 				return ((ZooKeeperData) parent).getChildren();
@@ -73,11 +77,15 @@ public class ZooKeeperExplorer extends ViewPart {
 			}
 		}
 
+		@Override
 		public void inputChanged(final Viewer v, final Object oldInput, final Object newInput) {
 		}
 	}
 
 	static class ViewLabelProvider extends LabelProvider {
+
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Image getImage(final Object obj) {
@@ -102,6 +110,9 @@ public class ZooKeeperExplorer extends ViewPart {
 
 	private void createActions() {
 		refreshAction = new Action() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void run() {
 				// reset input

@@ -53,15 +53,20 @@ public class TreeListDialogField extends DialogField {
 
 	private class TreeViewerAdapter implements ITreeContentProvider, ISelectionChangedListener, IDoubleClickListener {
 
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 		private final Object[] NO_ELEMENTS = new Object[0];
 
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 			doDoubleClick(event);
 		}
 
+		@Override
 		public Object[] getChildren(final Object element) {
 			if (fTreeAdapter != null) {
 				return fTreeAdapter.getChildren(TreeListDialogField.this, element);
@@ -69,17 +74,20 @@ public class TreeListDialogField extends DialogField {
 			return NO_ELEMENTS;
 		}
 
+		@Override
 		public Object[] getElements(final Object obj) {
 			return fElements.toArray();
 		}
 
+		@Override
 		public Object getParent(final Object element) {
-			if (!fElements.contains(element) && (fTreeAdapter != null)) {
+			if (!fElements.contains(element) && fTreeAdapter != null) {
 				return fTreeAdapter.getParent(TreeListDialogField.this, element);
 			}
 			return fParentElement;
 		}
 
+		@Override
 		public boolean hasChildren(final Object element) {
 			if (fTreeAdapter != null) {
 				return fTreeAdapter.hasChildren(TreeListDialogField.this, element);
@@ -87,10 +95,12 @@ public class TreeListDialogField extends DialogField {
 			return false;
 		}
 
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 			// will never happen
 		}
 
+		@Override
 		public void selectionChanged(final SelectionChangedEvent event) {
 			doListSelected(event);
 		}
@@ -206,7 +216,7 @@ public class TreeListDialogField extends DialogField {
 	}
 
 	private void buttonPressed(final int index) {
-		if (!managedButtonPressed(index) && (fTreeAdapter != null)) {
+		if (!managedButtonPressed(index) && fTreeAdapter != null) {
 			fTreeAdapter.customButtonPressed(this, index);
 		}
 	}
@@ -214,7 +224,7 @@ public class TreeListDialogField extends DialogField {
 	private boolean canMoveDown(final List<Object> selectedElements) {
 		if (isOkToUse(fTreeControl)) {
 			int nSelected = selectedElements.size();
-			for (int i = fElements.size() - 1; (i >= 0) && (nSelected > 0); i--) {
+			for (int i = fElements.size() - 1; i >= 0 && nSelected > 0; i--) {
 				if (!selectedElements.contains(fElements.get(i))) {
 					return true;
 				}
@@ -228,7 +238,7 @@ public class TreeListDialogField extends DialogField {
 		if (isOkToUse(fTreeControl)) {
 			int nSelected = selectedElements.size();
 			final int nElements = fElements.size();
-			for (int i = 0; (i < nElements) && (nSelected > 0); i++) {
+			for (int i = 0; i < nElements && nSelected > 0; i++) {
 				if (!selectedElements.contains(fElements.get(i))) {
 					return true;
 				}
@@ -353,7 +363,7 @@ public class TreeListDialogField extends DialogField {
 	 * Sets a button enabled or disabled.
 	 */
 	public void enableButton(final int index, final boolean enable) {
-		if ((fButtonsEnabled != null) && (index < fButtonsEnabled.length)) {
+		if (fButtonsEnabled != null && index < fButtonsEnabled.length) {
 			fButtonsEnabled[index] = enable;
 			updateButtonState();
 		}
@@ -378,10 +388,15 @@ public class TreeListDialogField extends DialogField {
 			assertCompositeNotNull(parent);
 
 			final SelectionListener listener = new SelectionListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
 				public void widgetDefaultSelected(final SelectionEvent e) {
 					doButtonSelected(e);
 				}
 
+				@Override
 				public void widgetSelected(final SelectionEvent e) {
 					doButtonSelected(e);
 				}
@@ -498,6 +513,9 @@ public class TreeListDialogField extends DialogField {
 
 			fTreeControl = (Tree) fTree.getControl();
 			fTreeControl.addKeyListener(new KeyAdapter() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void keyPressed(final KeyEvent e) {
 					handleKeyPressed(e);
@@ -543,8 +561,8 @@ public class TreeListDialogField extends DialogField {
 	 * is pressed.
 	 */
 	protected void handleKeyPressed(final KeyEvent event) {
-		if ((event.character == SWT.DEL) && (event.stateMask == 0)) {
-			if ((fRemoveButtonIndex != -1) && isButtonEnabled(fTree.getSelection(), fRemoveButtonIndex)) {
+		if (event.character == SWT.DEL && event.stateMask == 0) {
+			if (fRemoveButtonIndex != -1 && isButtonEnabled(fTree.getSelection(), fRemoveButtonIndex)) {
 				managedButtonPressed(fRemoveButtonIndex);
 				return;
 			}
@@ -632,6 +650,7 @@ public class TreeListDialogField extends DialogField {
 		if (isOkToUse(fTreeControl)) {
 			final Display d = fTreeControl.getDisplay();
 			d.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					if (isOkToUse(fTreeControl)) {
 						selectElements(selection);
@@ -808,7 +827,7 @@ public class TreeListDialogField extends DialogField {
 
 	public void setTreeExpansionLevel(final int level) {
 		fTreeExpandLevel = level;
-		if (isOkToUse(fTreeControl) && (fTreeExpandLevel > 0)) {
+		if (isOkToUse(fTreeControl) && fTreeExpandLevel > 0) {
 			fTree.expandToLevel(level);
 		}
 	}
@@ -850,7 +869,7 @@ public class TreeListDialogField extends DialogField {
 	 * Updates the enable state of the all buttons
 	 */
 	protected void updateButtonState() {
-		if ((fButtonControls != null) && isOkToUse(fTreeControl) && fTreeControl.isEnabled()) {
+		if (fButtonControls != null && isOkToUse(fTreeControl) && fTreeControl.isEnabled()) {
 			final ISelection sel = fTree.getSelection();
 			for (int i = 0; i < fButtonControls.length; i++) {
 				final Button button = fButtonControls[i];

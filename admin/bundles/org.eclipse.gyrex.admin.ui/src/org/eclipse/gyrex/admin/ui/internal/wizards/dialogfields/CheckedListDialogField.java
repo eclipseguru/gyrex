@@ -80,6 +80,7 @@ public class CheckedListDialogField extends ListDialogField {
 		table.setFont(parent.getFont());
 		final CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
 		tableViewer.addCheckStateListener(new ICheckStateListener() {
+			@Override
 			public void checkStateChanged(final CheckStateChangedEvent e) {
 				doCheckStateChanged(e);
 			}
@@ -120,8 +121,8 @@ public class CheckedListDialogField extends ListDialogField {
 			// workaround for bug 53853
 			final Object[] checked = ((CheckboxTableViewer) fTable).getCheckedElements();
 			final ArrayList<Object> res = new ArrayList<Object>(checked.length);
-			for (int i = 0; i < checked.length; i++) {
-				res.add(checked[i]);
+			for (final Object element : checked) {
+				res.add(element);
 			}
 			return res;
 		}

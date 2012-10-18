@@ -43,6 +43,8 @@ import org.eclipse.swt.widgets.Shell;
 
 public class RepositoriesListDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private ListViewer reposViewer;
 	private Button addButton;
 	private Button removeButton;
@@ -90,6 +92,9 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 	private void addNewRepository() {
 		final EditRepositoryDialog dialog = new EditRepositoryDialog(getParentShell(), null, repoManager);
 		dialog.openNonBlocking(new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -109,6 +114,9 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 	protected void createButtons(final Composite buttonsPanel) {
 		addButton = createButton(buttonsPanel, "Add...");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				addNewRepository();
@@ -116,6 +124,9 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 		});
 		removeButton = createButton(buttonsPanel, "Remove...");
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				removeRepository();
@@ -124,6 +135,9 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 
 		editButton = createButton(buttonsPanel, "Edit...");
 		editButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				editSelectedRepository();
@@ -186,6 +200,9 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 	private void editSelectedRepository() {
 		final EditRepositoryDialog dialog = new EditRepositoryDialog(getParentShell(), getSelectedRepo(), repoManager);
 		dialog.openNonBlocking(new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -197,7 +214,7 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 
 	private RepositoryDefinition getSelectedRepo() {
 		final StructuredSelection selection = (StructuredSelection) reposViewer.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof RepositoryDefinition)) {
+		if (!selection.isEmpty() && selection.getFirstElement() instanceof RepositoryDefinition) {
 			return (RepositoryDefinition) selection.getFirstElement();
 		}
 
@@ -215,6 +232,9 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(removeButton), "Remove Repository", "Do you really want to delete the repository?", new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {

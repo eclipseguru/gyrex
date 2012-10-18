@@ -90,26 +90,34 @@ public class ListDialogField extends DialogField {
 
 		// ------- ITableContentProvider Interface ------------
 
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public void dispose() {
 		}
 
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.IDoubleClickListener#doubleClick(org.eclipse.jface.viewers.DoubleClickEvent)
 		 */
+		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 			doDoubleClick(event);
 		}
 
+		@Override
 		public Object[] getElements(final Object obj) {
 			return fElements.toArray();
 		}
 
 		// ------- ISelectionChangedListener Interface ------------
 
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 			// will never happen
 		}
 
+		@Override
 		public void selectionChanged(final SelectionChangedEvent event) {
 			doListSelected(event);
 		}
@@ -223,7 +231,7 @@ public class ListDialogField extends DialogField {
 
 		final int nElements = elements.size();
 
-		if ((nElements > 0) && (index >= 0) && (index <= fElements.size())) {
+		if (nElements > 0 && index >= 0 && index <= fElements.size()) {
 			// filter duplicated
 			final ArrayList<Object> elementsToAdd = new ArrayList<Object>(nElements);
 
@@ -255,7 +263,7 @@ public class ListDialogField extends DialogField {
 	// ------ adapter communication
 
 	private void buttonPressed(final int index) {
-		if (!managedButtonPressed(index) && (fListAdapter != null)) {
+		if (!managedButtonPressed(index) && fListAdapter != null) {
 			fListAdapter.customButtonPressed(this, index);
 		}
 	}
@@ -425,7 +433,7 @@ public class ListDialogField extends DialogField {
 	 * Sets a button enabled or disabled.
 	 */
 	public void enableButton(final int index, final boolean enable) {
-		if ((fButtonsEnabled != null) && (index < fButtonsEnabled.length)) {
+		if (fButtonsEnabled != null && index < fButtonsEnabled.length) {
 			fButtonsEnabled[index] = enable;
 			updateButtonState();
 		}
@@ -446,10 +454,15 @@ public class ListDialogField extends DialogField {
 			assertCompositeNotNull(parent);
 
 			final SelectionListener listener = new SelectionListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
 				public void widgetDefaultSelected(final SelectionEvent e) {
 					doButtonSelected(e);
 				}
 
+				@Override
 				public void widgetSelected(final SelectionEvent e) {
 					doButtonSelected(e);
 				}
@@ -549,6 +562,9 @@ public class ListDialogField extends DialogField {
 			}
 
 			fTable.getTable().addKeyListener(new KeyAdapter() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void keyPressed(final KeyEvent e) {
 					handleKeyPressed(e);
@@ -644,8 +660,8 @@ public class ListDialogField extends DialogField {
 	 * is pressed.
 	 */
 	protected void handleKeyPressed(final KeyEvent event) {
-		if ((event.character == SWT.DEL) && (event.stateMask == 0)) {
-			if ((fRemoveButtonIndex != -1) && isButtonEnabled(fTable.getSelection(), fRemoveButtonIndex)) {
+		if (event.character == SWT.DEL && event.stateMask == 0) {
+			if (fRemoveButtonIndex != -1 && isButtonEnabled(fTable.getSelection(), fRemoveButtonIndex)) {
 				managedButtonPressed(fRemoveButtonIndex);
 			}
 		}
@@ -666,12 +682,12 @@ public class ListDialogField extends DialogField {
 			remove();
 		} else if (index == fUpButtonIndex) {
 			up();
-			if (!fButtonControls[index].isEnabled() && (fDownButtonIndex != -1)) {
+			if (!fButtonControls[index].isEnabled() && fDownButtonIndex != -1) {
 				fButtonControls[fDownButtonIndex].setFocus();
 			}
 		} else if (index == fDownButtonIndex) {
 			down();
-			if (!fButtonControls[index].isEnabled() && (fUpButtonIndex != -1)) {
+			if (!fButtonControls[index].isEnabled() && fUpButtonIndex != -1) {
 				fButtonControls[fUpButtonIndex].setFocus();
 			}
 		} else {
@@ -719,6 +735,7 @@ public class ListDialogField extends DialogField {
 		if (isOkToUse(fTableControl)) {
 			final Display d = fTableControl.getDisplay();
 			d.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					if (isOkToUse(fTableControl)) {
 						selectElements(selection);
@@ -876,7 +893,7 @@ public class ListDialogField extends DialogField {
 	 */
 	@Override
 	public boolean setFocus() {
-		if ((fTable != null) && isOkToUse(fTable.getControl())) {
+		if (fTable != null && isOkToUse(fTable.getControl())) {
 			fTable.getControl().setFocus();
 		}
 		return true;
@@ -925,7 +942,7 @@ public class ListDialogField extends DialogField {
 	 * Updates the enable state of the all buttons
 	 */
 	protected void updateButtonState() {
-		if ((fButtonControls != null) && isOkToUse(fTableControl) && fTableControl.isEnabled()) {
+		if (fButtonControls != null && isOkToUse(fTableControl) && fTableControl.isEnabled()) {
 			final ISelection sel = fTable.getSelection();
 			for (int i = 0; i < fButtonControls.length; i++) {
 				final Button button = fButtonControls[i];

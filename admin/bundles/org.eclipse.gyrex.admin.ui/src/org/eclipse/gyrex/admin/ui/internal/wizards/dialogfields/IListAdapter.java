@@ -11,7 +11,8 @@
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
 /**
- * Change listener used by <code>ListDialogField</code> and <code>CheckedListDialogField</code>
+ * Change listener used by <code>ListDialogField</code> and
+ * <code>CheckedListDialogField</code>
  */
 public interface IListAdapter {
 
@@ -21,13 +22,13 @@ public interface IListAdapter {
 	void customButtonPressed(ListDialogField field, int index);
 
 	/**
-	 * The selection of the list has changed.
-	 */
-	void selectionChanged(ListDialogField field);
-
-	/**
 	 * En entry in the list has been double clicked
 	 */
 	void doubleClicked(ListDialogField field);
+
+	/**
+	 * The selection of the list has changed.
+	 */
+	void selectionChanged(ListDialogField field);
 
 }

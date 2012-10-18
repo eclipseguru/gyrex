@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Version;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +114,9 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 	private static void makeLink(final Label control, final String url) {
 		control.setCursor(control.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 		control.addMouseListener(new MouseAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void mouseDown(final MouseEvent e) {
 				JSExecutor.executeJS("window.location.href = '" + url + "'");
@@ -140,7 +144,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 		}
 
 		// initialize arguments (allows safe use within this method as well as for API contract)
-		if ((args == null) || (args.length == 0)) {
+		if (args == null || args.length == 0) {
 			args = new String[] { contribution.getId() };
 		}
 
@@ -164,6 +168,10 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 	private void attachHistoryListener() {
 		RWT.getBrowserHistory().addBrowserHistoryListener(new BrowserHistoryListener() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
 			public void navigated(final BrowserHistoryEvent event) {
 				final String[] tokens = StringUtils.splitByWholeSeparator(event.entryId, HISTORY_TOKEN_SEPARATOR);
 				final PageContribution contribution = AdminPageRegistry.getInstance().getPage(tokens[0]);
@@ -186,7 +194,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 		final FormData data = new FormData();
 		data.top = new FormAttachment(topAttachment, 0, SWT.BOTTOM);
 		data.bottom = new FormAttachment(bottomAttachment, -10, SWT.TOP);
-		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) + 10);
+		data.left = new FormAttachment(50, -CENTER_AREA_WIDTH / 2 + 10);
 		data.width = CENTER_AREA_WIDTH - 10;
 		return data;
 	}
@@ -262,7 +270,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 	private FormData createFooterFormData() {
 		final FormData data = new FormData();
-		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2));
+		data.left = new FormAttachment(50, -CENTER_AREA_WIDTH / 2);
 		data.top = new FormAttachment(100, -40);
 		data.bottom = new FormAttachment(100);
 		data.width = CENTER_AREA_WIDTH - 10 - 2;
@@ -346,6 +354,9 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 		navBar.setLayout(layout);
 
 		final NavigationBar navigation = new NavigationBar(navBar) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void openPage(final PageContribution page) {
 				AdminApplication.this.openPage(page, null);
@@ -397,6 +408,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 		return scrolledComp;
 	}
 
+	@Override
 	public int createUI() {
 
 		final Display display = new Display();

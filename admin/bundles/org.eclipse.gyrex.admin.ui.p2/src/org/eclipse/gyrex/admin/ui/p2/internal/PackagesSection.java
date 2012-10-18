@@ -69,6 +69,9 @@ public class PackagesSection {
 	void addButtonPressed() {
 		final EditPackageDialog dialog = new EditPackageDialog(SwtUtil.getShell(addButton), getPackageManager(), null);
 		dialog.openNonBlocking(new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -89,6 +92,9 @@ public class PackagesSection {
 	protected void createButtons(final Composite buttonsPanel) {
 		addButton = createButton(buttonsPanel, "Add...");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				addButtonPressed();
@@ -97,6 +103,9 @@ public class PackagesSection {
 
 		removeButton = createButton(buttonsPanel, "Remove...");
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				removeButtonPressed();
@@ -107,6 +116,9 @@ public class PackagesSection {
 
 		provisionButton = createButton(buttonsPanel, "Provision");
 		provisionButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				provisionButtonPressed();
@@ -115,6 +127,9 @@ public class PackagesSection {
 
 		revokeButton = createButton(buttonsPanel, "Revoke");
 		revokeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				revokeButtonPressed();
@@ -219,6 +234,9 @@ public class PackagesSection {
 		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(removeButton), "Remove Package", "Do you really want to delete the package?", new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				// TODO Auto-generated method stub

@@ -85,6 +85,9 @@ public abstract class FilteredAdminPage extends AdminPage {
 		// filter drop-downs
 		for (final String filter : getFilters()) {
 			new DropDownItem(filterPanel, getFilterText(filter), customVariant) {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void openDropDown(final Point location) {
 					setOpen(true);
@@ -124,6 +127,9 @@ public abstract class FilteredAdminPage extends AdminPage {
 
 	void openFilterPopUp(final String filter, final Point location, final Runnable closeCallback) {
 		final PopupDialog dialog = new PopupDialog(SwtUtil.getShell(filterPanel), SWT.NO_TRIM | SWT.NO_SCROLL | SWT.MODELESS, false, false, false, false, false, null, null) {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void adjustBounds() {
@@ -169,6 +175,10 @@ public abstract class FilteredAdminPage extends AdminPage {
 			public int open() {
 				final int result = super.open();
 				final Listener closeListener = new Listener() {
+					/** serialVersionUID */
+					private static final long serialVersionUID = 1L;
+
+					@Override
 					public void handleEvent(final Event event) {
 						close();
 					}

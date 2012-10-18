@@ -42,6 +42,9 @@ import org.eclipse.swt.widgets.List;
 public class ChannelsArea {
 
 	static class ChannelsLabelProvider extends LabelProvider {
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getText(final Object element) {
 			if (element instanceof ChannelDescriptor) {
@@ -54,7 +57,6 @@ public class ChannelsArea {
 
 	private ISelectionChangedListener updateButtonsListener;
 	private Button addButton;
-	private Button editButton;
 	private Button removeButton;
 	private ListViewer channelsList;
 	private Composite pageComposite;
@@ -79,6 +81,9 @@ public class ChannelsArea {
 	void addButtonPressed() {
 		final AddChannelDialog dialog = new AddChannelDialog(SwtUtil.getShell(addButton), getJettyManager());
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {
@@ -125,6 +130,9 @@ public class ChannelsArea {
 
 		addButton = createButton(buttons, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				addButtonPressed();
@@ -134,6 +142,9 @@ public class ChannelsArea {
 		removeButton = createButton(buttons, "Remove");
 		removeButton.setEnabled(false);
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				removeButtonPressed();
@@ -145,7 +156,7 @@ public class ChannelsArea {
 	public void deactivate() {
 
 		// remove data inputs form controls
-		if ((channelsList != null)) {
+		if (channelsList != null) {
 			if (updateButtonsListener != null) {
 				channelsList.removeSelectionChangedListener(updateButtonsListener);
 				updateButtonsListener = null;
@@ -163,9 +174,8 @@ public class ChannelsArea {
 
 	private ChannelDescriptor getSelectedChannel() {
 		final IStructuredSelection selection = (IStructuredSelection) channelsList.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ChannelDescriptor)) {
+		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ChannelDescriptor))
 			return (ChannelDescriptor) selection.getFirstElement();
-		}
 
 		return null;
 	}
@@ -178,16 +188,17 @@ public class ChannelsArea {
 	void removeButtonPressed() {
 
 		final ChannelDescriptor channel = getSelectedChannel();
-		if (channel == null) {
+		if (channel == null)
 			return;
-		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove selected Channel", String.format("Do you really want to delete channel %s?", channel.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
+				if (returnCode != Window.OK)
 					return;
-				}
 
 				getJettyManager().removeChannel(channel.getId());
 				refresh();

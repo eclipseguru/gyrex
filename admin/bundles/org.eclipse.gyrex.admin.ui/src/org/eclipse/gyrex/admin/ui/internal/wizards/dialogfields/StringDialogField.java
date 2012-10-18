@@ -103,6 +103,10 @@ public class StringDialogField extends DialogField {
 		if (fTextControl == null) {
 			assertCompositeNotNull(parent);
 			fModifyListener = new ModifyListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
 				public void modifyText(final ModifyEvent e) {
 					doModifyText();
 				}
@@ -137,7 +141,7 @@ public class StringDialogField extends DialogField {
 
 	public void setContentProposalProcessor(final IContentProposalProvider processor) {
 		fContentProposalProcessor = processor;
-		if ((fContentProposalProcessor != null) && isOkToUse(fTextControl)) {
+		if (fContentProposalProcessor != null && isOkToUse(fTextControl)) {
 			UiUtil.addContentProposalBehavior(fTextControl, fContentProposalProcessor);
 		}
 	}

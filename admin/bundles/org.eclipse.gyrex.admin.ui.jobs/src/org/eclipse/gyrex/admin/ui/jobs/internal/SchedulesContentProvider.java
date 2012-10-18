@@ -28,6 +28,9 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class SchedulesContentProvider implements IStructuredContentProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 	 */

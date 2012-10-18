@@ -23,6 +23,9 @@ import org.eclipse.jface.viewers.Viewer;
 import ch.qos.logback.classic.Level;
 
 public class LogbackConfigContentProvider implements ITreeContentProvider {
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	public static class DefaultLogger {
 
 		private final LogbackConfig config;

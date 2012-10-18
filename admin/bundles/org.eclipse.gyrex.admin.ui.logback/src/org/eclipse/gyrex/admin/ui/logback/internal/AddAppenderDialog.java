@@ -41,6 +41,9 @@ import ch.qos.logback.classic.Level;
 
 public class AddAppenderDialog extends StatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	private final SelectionButtonDialogFieldGroup typeField = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "Console", "File" }, 2);
 	private final StringDialogField nameField = new StringDialogField();
 	private final StringDialogField fileNameField = new StringDialogField();
@@ -132,9 +135,8 @@ public class AddAppenderDialog extends StatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 			if (typeField.isSelected(0)) {

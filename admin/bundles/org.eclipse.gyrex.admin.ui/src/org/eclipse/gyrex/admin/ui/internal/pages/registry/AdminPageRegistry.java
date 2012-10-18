@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.dynamichelpers.IExtensionChangeHandler;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionTracker;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,8 +90,8 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 
 		// initial population
 		final IExtension[] extensions = extensionPoint.getExtensions();
-		for (int i = 0; i < extensions.length; i++) {
-			addExtension(tracker, extensions[i]);
+		for (final IExtension extension : extensions) {
+			addExtension(tracker, extension);
 		}
 	}
 
@@ -129,11 +130,11 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 
 	public List<PageContribution> getPages(final CategoryContribution category) {
 		final Map<String, Set<PageContribution>> mappings = pagesByCategoryId;
-		if ((mappings == null) || mappings.isEmpty()) {
+		if (mappings == null || mappings.isEmpty()) {
 			return Collections.emptyList();
 		}
 		final Set<PageContribution> children = mappings.get(category.getId());
-		if ((children == null) || children.isEmpty()) {
+		if (children == null || children.isEmpty()) {
 			return Collections.emptyList();
 		}
 		// return a copy
@@ -158,7 +159,7 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 			return false;
 		}
 		final Set<PageContribution> children = mappings.get(category.getId());
-		return (children != null) && !children.isEmpty();
+		return children != null && !children.isEmpty();
 	}
 
 	private void rebuildCategories() {

@@ -121,7 +121,7 @@ public class StringMatcher {
 		if (end > tlen) {
 			end = tlen;
 		}
-		if ((end < 0) || (start >= end)) {
+		if (end < 0 || start >= end) {
 			return null;
 		}
 		if (fLength == 0) {
@@ -143,7 +143,7 @@ public class StringMatcher {
 		int curPos = start;
 		int matchStart = -1;
 		int i;
-		for (i = 0; (i < segCount) && (curPos < end); ++i) {
+		for (i = 0; i < segCount && curPos < end; ++i) {
 			final String current = fSegments[i];
 			final int nextMatch = regExpPosIn(text, curPos, end, current);
 			if (nextMatch < 0) {
@@ -197,10 +197,10 @@ public class StringMatcher {
 		}
 
 		if (fIgnoreWildCards) {
-			return ((end - start) == fLength) && fPattern.regionMatches(fIgnoreCase, 0, text, start, fLength);
+			return end - start == fLength && fPattern.regionMatches(fIgnoreCase, 0, text, start, fLength);
 		}
 		final int segCount = fSegments.length;
-		if ((segCount == 0) && (fHasLeadingStar || fHasTrailingStar)) {
+		if (segCount == 0 && (fHasLeadingStar || fHasTrailingStar)) {
 			return true;
 		}
 		if (start == end) {
@@ -236,7 +236,7 @@ public class StringMatcher {
 				tCurPos = tCurPos + segLength;
 			}
 		}
-		if ((fSegments.length == 1) && (!fHasLeadingStar) && (!fHasTrailingStar)) {
+		if (fSegments.length == 1 && !fHasLeadingStar && !fHasTrailingStar) {
 			// only one segment to match, no wildcards specified
 			return tCurPos == end;
 		}
@@ -261,7 +261,7 @@ public class StringMatcher {
 		}
 
 		/* process final segment */
-		if (!fHasTrailingStar && (tCurPos != end)) {
+		if (!fHasTrailingStar && tCurPos != end) {
 			final int clen = current.length();
 			return regExpRegionMatches(text, end - clen, current, 0, clen);
 		}
@@ -293,7 +293,7 @@ public class StringMatcher {
 		}
 		if (fPattern.endsWith("*")) {//$NON-NLS-1$
 			/* make sure it's not an escaped wildcard */
-			if ((fLength > 1) && (fPattern.charAt(fLength - 2) != '\\')) {
+			if (fLength > 1 && fPattern.charAt(fLength - 2) != '\\') {
 				fHasTrailingStar = true;
 			}
 		}
@@ -311,7 +311,7 @@ public class StringMatcher {
 					} else {
 						final char next = fPattern.charAt(pos++);
 						/* if it's an escape sequence */
-						if ((next == '*') || (next == '?') || (next == '\\')) {
+						if (next == '*' || next == '?' || next == '\\') {
 							buf.append(next);
 						} else {
 							/* not an escape sequence, just insert literally */
@@ -362,7 +362,7 @@ public class StringMatcher {
 
 		if (!fIgnoreCase) {
 			final int i = text.indexOf(fPattern, start);
-			if ((i == -1) || (i > max)) {
+			if (i == -1 || i > max) {
 				return -1;
 			}
 			return i;
@@ -465,7 +465,7 @@ public class StringMatcher {
 
 		if (!fIgnoreCase) {
 			final int i = text.indexOf(p, start);
-			if ((i == -1) || (i > max)) {
+			if (i == -1 || i > max) {
 				return -1;
 			}
 			return i;

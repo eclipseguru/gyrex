@@ -53,7 +53,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 	public SelectionButtonDialogFieldGroup(final int buttonsStyle, final String[] buttonNames, final int nColumns, final int borderStyle) {
 		super();
 
-		Assert.isTrue((buttonsStyle == SWT.RADIO) || (buttonsStyle == SWT.CHECK) || (buttonsStyle == SWT.TOGGLE));
+		Assert.isTrue(buttonsStyle == SWT.RADIO || buttonsStyle == SWT.CHECK || buttonsStyle == SWT.TOGGLE);
 		fButtonNames = buttonNames;
 		fButtonsStyle = buttonsStyle;
 
@@ -69,7 +69,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 		}
 
 		fGroupBorderStyle = borderStyle;
-		fGroupNumberOfColumns = (nColumns <= 0) ? nButtons : nColumns;
+		fGroupNumberOfColumns = nColumns <= 0 ? nButtons : nColumns;
 
 	}
 
@@ -130,7 +130,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 	 * Sets the enable state of a button contained in the group.
 	 */
 	public void enableSelectionButton(final int index, final boolean enable) {
-		if ((index >= 0) && (index < fButtonsEnabled.length)) {
+		if (index >= 0 && index < fButtonsEnabled.length) {
 			fButtonsEnabled[index] = enable;
 			if (fButtons != null) {
 				final Button button = fButtons[index];
@@ -146,14 +146,14 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 	 */
 	@Override
 	public int getNumberOfControls() {
-		return (fGroupBorderStyle == SWT.NONE) ? 2 : 1;
+		return fGroupBorderStyle == SWT.NONE ? 2 : 1;
 	}
 
 	/**
 	 * Returns a button from the group or <code>null</code> if not yet created.
 	 */
 	public Button getSelectionButton(final int index) {
-		if ((index >= 0) && (index < fButtons.length)) {
+		if (index >= 0 && index < fButtons.length) {
 			return fButtons[index];
 		}
 		return null;
@@ -180,7 +180,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 			if (fGroupBorderStyle != SWT.NONE) {
 				final Group group = new Group(parent, fGroupBorderStyle);
 				group.setFont(parent.getFont());
-				if ((fLabelText != null) && (fLabelText.length() > 0)) {
+				if (fLabelText != null && fLabelText.length() > 0) {
 					group.setText(fLabelText);
 				}
 				fButtonComposite = group;
@@ -194,10 +194,15 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 			fButtonComposite.setLayout(layout);
 
 			final SelectionListener listener = new SelectionListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
 				public void widgetDefaultSelected(final SelectionEvent e) {
 					doWidgetSelected(e);
 				}
 
+				@Override
 				public void widgetSelected(final SelectionEvent e) {
 					doWidgetSelected(e);
 				}
@@ -208,7 +213,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 				fButtons[i] = createSelectionButton(i, fButtonComposite, listener);
 			}
 			final int nRows = nButtons / fGroupNumberOfColumns;
-			final int nFillElements = (nRows * fGroupNumberOfColumns) - nButtons;
+			final int nFillElements = nRows * fGroupNumberOfColumns - nButtons;
 			for (int i = 0; i < nFillElements; i++) {
 				createEmptySpace(fButtonComposite);
 			}
@@ -220,8 +225,8 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 	 * Indicates if any button contained in the group is selected.
 	 */
 	public boolean isAnySelected() {
-		for (int i = 0; i < fButtonsSelected.length; i++) {
-			if (fButtonsSelected[i]) {
+		for (final boolean element : fButtonsSelected) {
+			if (element) {
 				return true;
 			}
 		}
@@ -235,7 +240,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 	 *            The index of the button
 	 */
 	public boolean isSelected(final int index) {
-		if ((index >= 0) && (index < fButtonsSelected.length)) {
+		if (index >= 0 && index < fButtonsSelected.length) {
 			return fButtonsSelected[index];
 		}
 		return false;
@@ -261,7 +266,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 	 * Sets the selection state of a button contained in the group.
 	 */
 	public void setSelection(final int index, final boolean selected) {
-		if ((index >= 0) && (index < fButtonsSelected.length)) {
+		if (index >= 0 && index < fButtonsSelected.length) {
 			if (fButtonsSelected[index] != selected) {
 				fButtonsSelected[index] = selected;
 				if (fButtons != null) {

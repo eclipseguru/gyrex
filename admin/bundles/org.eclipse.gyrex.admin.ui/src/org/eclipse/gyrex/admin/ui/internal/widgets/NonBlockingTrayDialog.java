@@ -37,6 +37,8 @@ import org.eclipse.swt.widgets.Shell;
  */
 public abstract class NonBlockingTrayDialog extends TrayDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final AtomicReference<DialogCallback> callbackRef = new AtomicReference<DialogCallback>();
 
 	/**

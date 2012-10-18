@@ -14,6 +14,13 @@ package org.eclipse.gyrex.admin.ui.p2.internal;
 
 import java.util.Locale;
 
+import org.eclipse.gyrex.p2.internal.P2Activator;
+import org.eclipse.gyrex.p2.internal.packages.IPackageManager;
+import org.eclipse.gyrex.p2.internal.packages.InstallableUnitReference;
+import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
+import org.eclipse.gyrex.p2.internal.repositories.RepositoryDefinition;
+
+import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.metadata.IArtifactKey;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
@@ -24,14 +31,6 @@ import org.eclipse.equinox.p2.repository.IRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.artifact.IProcessingStepDescriptor;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
-
-import org.eclipse.gyrex.p2.internal.P2Activator;
-import org.eclipse.gyrex.p2.internal.packages.IPackageManager;
-import org.eclipse.gyrex.p2.internal.packages.InstallableUnitReference;
-import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
-import org.eclipse.gyrex.p2.internal.repositories.RepositoryDefinition;
-
-import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -48,6 +47,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class P2UiLabelProvider extends LabelProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private ResourceManager manager;
 
 	@Override
@@ -81,7 +82,7 @@ public class P2UiLabelProvider extends LabelProvider {
 
 	private String getElementText(final IProfile profile) {
 		final String name = profile.getProperty(IProfile.PROP_NAME);
-		if ((name != null) && (name.length() > 0)) {
+		if (name != null && name.length() > 0) {
 			return name;
 		}
 		return profile.getProfileId();
@@ -89,7 +90,7 @@ public class P2UiLabelProvider extends LabelProvider {
 
 	private String getElementText(final IRepository<?> repository) {
 		final String name = repository.getName();
-		if ((name != null) && (name.length() > 0)) {
+		if (name != null && name.length() > 0) {
 			return name;
 		}
 		return URIUtil.toUnencodedString(repository.getLocation());

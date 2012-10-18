@@ -27,88 +27,102 @@ import org.eclipse.swt.widgets.Label;
  */
 public class ComboDialogField extends DialogField {
 
+	protected static GridData gridDataForCombo(final int span) {
+		final GridData gd = new GridData();
+		gd.horizontalAlignment = GridData.FILL;
+		gd.grabExcessHorizontalSpace = false;
+		gd.horizontalSpan = span;
+		return gd;
+	}
+
 	private String fText;
 	private int fSelectionIndex;
 	private String[] fItems;
 	private Combo fComboControl;
 	private ModifyListener fModifyListener;
-	private int fFlags;
 
-	public ComboDialogField(int flags) {
-		super();
-		fText= ""; //$NON-NLS-1$
-		fItems= new String[0];
-		fFlags= flags;
-		fSelectionIndex= -1;
-	}
+	private final int fFlags;
 
 	// ------- layout helpers
+
+	public ComboDialogField(final int flags) {
+		super();
+		fText = ""; //$NON-NLS-1$
+		fItems = new String[0];
+		fFlags = flags;
+		fSelectionIndex = -1;
+	}
 
 	/*
 	 * @see DialogField#doFillIntoGrid
 	 */
-	public Control[] doFillIntoGrid(Composite parent, int nColumns) {
+	@Override
+	public Control[] doFillIntoGrid(final Composite parent, final int nColumns) {
 		assertEnoughColumns(nColumns);
 
-		Label label= getLabelControl(parent);
+		final Label label = getLabelControl(parent);
 		label.setLayoutData(gridDataForLabel(1));
-		Combo combo= getComboControl(parent);
+		final Combo combo = getComboControl(parent);
 		combo.setLayoutData(gridDataForCombo(nColumns - 1));
 
 		return new Control[] { label, combo };
 	}
 
-	/*
-	 * @see DialogField#getNumberOfControls
-	 */
-	public int getNumberOfControls() {
-		return 2;
-	}
-
-	protected static GridData gridDataForCombo(int span) {
-		GridData gd= new GridData();
-		gd.horizontalAlignment= GridData.FILL;
-		gd.grabExcessHorizontalSpace= false;
-		gd.horizontalSpan= span;
-		return gd;
+	private void doModifyText(final ModifyEvent e) {
+		if (isOkToUse(fComboControl)) {
+			fText = fComboControl.getText();
+			fSelectionIndex = fComboControl.getSelectionIndex();
+		}
+		dialogFieldChanged();
 	}
 
 	// ------- focus methods
 
-	/*
-	 * @see DialogField#setFocus
-	 */
-	public boolean setFocus() {
+	private void doSelectionChanged(final SelectionEvent e) {
 		if (isOkToUse(fComboControl)) {
-			fComboControl.setFocus();
+			fItems = fComboControl.getItems();
+			fText = fComboControl.getText();
+			fSelectionIndex = fComboControl.getSelectionIndex();
 		}
-		return true;
+		dialogFieldChanged();
 	}
 
 	// ------- ui creation
 
 	/**
 	 * Creates or returns the created combo control.
-	 * @param parent The parent composite or <code>null</code> when the widget has
-	 * already been created.
+	 * 
+	 * @param parent
+	 *            The parent composite or <code>null</code> when the widget has
+	 *            already been created.
 	 */
-	public Combo getComboControl(Composite parent) {
+	public Combo getComboControl(final Composite parent) {
 		if (fComboControl == null) {
 			assertCompositeNotNull(parent);
-			fModifyListener= new ModifyListener() {
-				public void modifyText(ModifyEvent e) {
+			fModifyListener = new ModifyListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void modifyText(final ModifyEvent e) {
 					doModifyText(e);
 				}
 			};
-			SelectionListener selectionListener= new SelectionListener() {
-				public void widgetSelected(SelectionEvent e) {
-					doSelectionChanged(e);
+			final SelectionListener selectionListener = new SelectionListener() {
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetDefaultSelected(final SelectionEvent e) {
 				}
 
-				public void widgetDefaultSelected(SelectionEvent e) {	}
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					doSelectionChanged(e);
+				}
 			};
 
-			fComboControl= new Combo(parent, fFlags);
+			fComboControl = new Combo(parent, fFlags);
 			// moved up due to 1GEUNW2
 			fComboControl.setItems(fItems);
 			if (fSelectionIndex != -1) {
@@ -125,37 +139,6 @@ public class ComboDialogField extends DialogField {
 		return fComboControl;
 	}
 
-	private void doModifyText(ModifyEvent e) {
-		if (isOkToUse(fComboControl)) {
-			fText= fComboControl.getText();
-			fSelectionIndex= fComboControl.getSelectionIndex();
-		}
-		dialogFieldChanged();
-	}
-
-	private void doSelectionChanged(SelectionEvent e) {
-		if (isOkToUse(fComboControl)) {
-			fItems= fComboControl.getItems();
-			fText= fComboControl.getText();
-			fSelectionIndex= fComboControl.getSelectionIndex();
-		}
-		dialogFieldChanged();
-	}
-
-	// ------ enable / disable management
-
-	/*
-	 * @see DialogField#updateEnableState
-	 */
-	protected void updateEnableState() {
-		super.updateEnableState();
-		if (isOkToUse(fComboControl)) {
-			fComboControl.setEnabled(isEnabled());
-		}
-	}
-
-	// ------ text access
-
 	/**
 	 * Gets the combo items.
 	 */
@@ -163,16 +146,21 @@ public class ComboDialogField extends DialogField {
 		return fItems;
 	}
 
-	/**
-	 * Sets the combo items. Triggers a dialog-changed event.
+	/*
+	 * @see DialogField#getNumberOfControls
 	 */
-	public void setItems(String[] items) {
-		fItems= items;
-		if (isOkToUse(fComboControl)) {
-			fComboControl.setItems(items);
-		}
-		dialogFieldChanged();
+	@Override
+	public int getNumberOfControls() {
+		return 2;
 	}
+
+	// ------ enable / disable management
+
+	public int getSelectionIndex() {
+		return fSelectionIndex;
+	}
+
+	// ------ text access
 
 	/**
 	 * Gets the text.
@@ -181,31 +169,28 @@ public class ComboDialogField extends DialogField {
 		return fText;
 	}
 
-	/**
-	 * Sets the text. Triggers a dialog-changed event.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField#refresh()
 	 */
-	public void setText(String text) {
-		fText= text;
-		if (isOkToUse(fComboControl)) {
-			fComboControl.setText(text);
-		} else {
-			dialogFieldChanged();
-		}
+	@Override
+	public void refresh() {
+		super.refresh();
+		setTextWithoutUpdate(fText);
 	}
 
 	/**
 	 * Selects an item.
 	 */
-	public boolean selectItem(int index) {
-		boolean success= false;
+	public boolean selectItem(final int index) {
+		boolean success = false;
 		if (isOkToUse(fComboControl)) {
 			fComboControl.select(index);
-			success= fComboControl.getSelectionIndex() == index;
+			success = fComboControl.getSelectionIndex() == index;
 		} else {
 			if (index >= 0 && index < fItems.length) {
-				fText= fItems[index];
-				fSelectionIndex= index;
-				success= true;
+				fText = fItems[index];
+				fSelectionIndex = index;
+				success = true;
 			}
 		}
 		if (success) {
@@ -217,8 +202,8 @@ public class ComboDialogField extends DialogField {
 	/**
 	 * Selects an item.
 	 */
-	public boolean selectItem(String name) {
-		for (int i= 0; i < fItems.length; i++) {
+	public boolean selectItem(final String name) {
+		for (int i = 0; i < fItems.length; i++) {
 			if (fItems[i].equals(name)) {
 				return selectItem(i);
 			}
@@ -226,17 +211,45 @@ public class ComboDialogField extends DialogField {
 		return false;
 	}
 
-
-	public int getSelectionIndex() {
-		return fSelectionIndex;
+	/*
+	 * @see DialogField#setFocus
+	 */
+	@Override
+	public boolean setFocus() {
+		if (isOkToUse(fComboControl)) {
+			fComboControl.setFocus();
+		}
+		return true;
 	}
 
+	/**
+	 * Sets the combo items. Triggers a dialog-changed event.
+	 */
+	public void setItems(final String[] items) {
+		fItems = items;
+		if (isOkToUse(fComboControl)) {
+			fComboControl.setItems(items);
+		}
+		dialogFieldChanged();
+	}
+
+	/**
+	 * Sets the text. Triggers a dialog-changed event.
+	 */
+	public void setText(final String text) {
+		fText = text;
+		if (isOkToUse(fComboControl)) {
+			fComboControl.setText(text);
+		} else {
+			dialogFieldChanged();
+		}
+	}
 
 	/**
 	 * Sets the text without triggering a dialog-changed event.
 	 */
-	public void setTextWithoutUpdate(String text) {
-		fText= text;
+	public void setTextWithoutUpdate(final String text) {
+		fText = text;
 		if (isOkToUse(fComboControl)) {
 			fComboControl.removeModifyListener(fModifyListener);
 			fComboControl.setText(text);
@@ -244,12 +257,15 @@ public class ComboDialogField extends DialogField {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField#refresh()
+	/*
+	 * @see DialogField#updateEnableState
 	 */
-	public void refresh() {
-		super.refresh();
-		setTextWithoutUpdate(fText);
+	@Override
+	protected void updateEnableState() {
+		super.updateEnableState();
+		if (isOkToUse(fComboControl)) {
+			fComboControl.setEnabled(isEnabled());
+		}
 	}
 
 }

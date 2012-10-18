@@ -25,6 +25,9 @@ import org.eclipse.swt.widgets.Control;
 
 public final class NodeBrowserContentProvider implements ITreeContentProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	public static final class NodeItem {
 
 		private final boolean approved;
@@ -57,7 +60,7 @@ public final class NodeBrowserContentProvider implements ITreeContentProvider {
 		public void nodesChanged() {
 			final Viewer viewer = NodeBrowserContentProvider.this.viewer;
 			final Control control = viewer.getControl();
-			if ((null != control) && !control.isDisposed()) {
+			if (null != control && !control.isDisposed()) {
 				control.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
@@ -126,7 +129,7 @@ public final class NodeBrowserContentProvider implements ITreeContentProvider {
 
 	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-		if ((null != this.viewer) && (this.viewer != viewer)) {
+		if (null != this.viewer && this.viewer != viewer) {
 			throw new IllegalStateException("please use separate provider instance for different viewers");
 		}
 		this.viewer = viewer;

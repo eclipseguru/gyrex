@@ -102,7 +102,7 @@ public class OverviewPage extends AdminPage {
 	public void deactivate() {
 		super.deactivate();
 
-		if ((null != itemServiceProxy) && (null != layoutOnServiceChange)) {
+		if (null != itemServiceProxy && null != layoutOnServiceChange) {
 			((ServiceProxy<OverviewPageItem>) itemServiceProxy).removeChangeListener(layoutOnServiceChange);
 			layoutOnServiceChange = null;
 		}

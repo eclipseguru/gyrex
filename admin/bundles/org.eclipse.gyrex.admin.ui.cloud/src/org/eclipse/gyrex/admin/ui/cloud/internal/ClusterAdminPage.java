@@ -69,6 +69,8 @@ import org.apache.commons.lang.text.StrBuilder;
 public class ClusterAdminPage extends AdminPage {
 
 	private final class NodeBrowserSortListener extends SelectionAdapter {
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 		private final NodeBrowserComparator comparator;
 		private final TreeViewerColumn column;
 		private final SortIndex sortIndex;
@@ -135,7 +137,7 @@ public class ClusterAdminPage extends AdminPage {
 			display = null;
 		}
 
-		if ((listener == null) && (display != null) && !display.isDisposed()) {
+		if (listener == null && display != null && !display.isDisposed()) {
 			listener = new ZooKeeperGateListener() {
 
 				private void asyncRefresh() {
@@ -194,6 +196,9 @@ public class ClusterAdminPage extends AdminPage {
 		approveButton = new Button(parent, SWT.PUSH);
 		approveButton.setText("Approve");
 		approveButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				approveSelectedNodes();
@@ -203,6 +208,9 @@ public class ClusterAdminPage extends AdminPage {
 		retireButton = new Button(parent, SWT.PUSH);
 		retireButton.setText("Retire");
 		retireButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				retireSelectedNodes();
@@ -214,6 +222,9 @@ public class ClusterAdminPage extends AdminPage {
 		editButton = new Button(parent, SWT.PUSH);
 		editButton.setText("Edit..");
 		editButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				editSelectedNode();
@@ -223,6 +234,9 @@ public class ClusterAdminPage extends AdminPage {
 		manageButton = new Button(parent, SWT.PUSH);
 		manageButton.setText("Manage");
 		manageButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				manageSelectedNode();
@@ -272,6 +286,9 @@ public class ClusterAdminPage extends AdminPage {
 		LayoutUtil.setHeightHint(membershipStatusField.getLinkControl(null), heightHint);
 
 		membershipStatusField.getLinkControl(null).addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				if ("#connect".equals(e.text)) {
@@ -337,6 +354,9 @@ public class ClusterAdminPage extends AdminPage {
 		idColumn.getColumn().setText("Node ID");
 		idColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.ID, idColumn));
 		idColumn.setLabelProvider(new ColumnLabelProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof NodeItem) {
@@ -352,6 +372,9 @@ public class ClusterAdminPage extends AdminPage {
 		locationColumn.getColumn().setText("Location");
 		locationColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.LOCATION, locationColumn));
 		locationColumn.setLabelProvider(new ColumnLabelProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof NodeItem) {
@@ -364,6 +387,9 @@ public class ClusterAdminPage extends AdminPage {
 		final TreeViewerColumn tagsColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
 		tagsColumn.getColumn().setText("Tags");
 		tagsColumn.setLabelProvider(new ColumnLabelProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof NodeItem) {
@@ -377,6 +403,9 @@ public class ClusterAdminPage extends AdminPage {
 		statusColumn.getColumn().setText("Status");
 		statusColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.STATUS, statusColumn));
 		statusColumn.setLabelProvider(new ColumnLabelProvider() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof NodeItem) {
@@ -439,6 +468,9 @@ public class ClusterAdminPage extends AdminPage {
 		}
 		final NonBlockingStatusDialog dialog = new EditNodeDialog(SwtUtil.getShell(membershipStatusField.getLabelControl(null)), getCloudManager(), ((NodeItem) firstElement).getDescriptor());
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {
@@ -512,6 +544,9 @@ public class ClusterAdminPage extends AdminPage {
 	void showConnectDialog() {
 		final NonBlockingStatusDialog dialog = new ConnectToCloudDialog(getCloudManager(), SwtUtil.getShell(membershipStatusField.getLabelControl(null)));
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {

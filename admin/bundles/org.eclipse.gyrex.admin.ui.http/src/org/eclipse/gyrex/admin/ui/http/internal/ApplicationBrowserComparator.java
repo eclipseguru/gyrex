@@ -39,9 +39,9 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 
 	@Override
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
-		if ((e1 instanceof ApplicationItem) && (e2 instanceof ApplicationItem)) {
+		if (e1 instanceof ApplicationItem && e2 instanceof ApplicationItem) {
 			return compareAppRegs((ApplicationItem) e1, (ApplicationItem) e2);
-		} else if ((e1 instanceof GroupNode) && (e2 instanceof GroupNode)) {
+		} else if (e1 instanceof GroupNode && e2 instanceof GroupNode) {
 			return compareGroupingItems((GroupNode) e1, (GroupNode) e2);
 		}
 

@@ -37,6 +37,8 @@ import org.apache.commons.lang.StringUtils;
 
 public class EditNodeDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final StringDialogField idField = new StringDialogField();
 	private final StringDialogField nameField = new StringDialogField();
 	private final StringDialogField locationField = new StringDialogField();

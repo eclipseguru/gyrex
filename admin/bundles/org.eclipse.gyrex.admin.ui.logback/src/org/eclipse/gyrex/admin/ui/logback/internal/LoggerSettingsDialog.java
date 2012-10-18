@@ -46,6 +46,8 @@ import ch.qos.logback.classic.Level;
 
 public class LoggerSettingsDialog extends StatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final StringDialogField nameField = new StringDialogField();
 	private final SelectionButtonDialogField inheritAppendersField = new SelectionButtonDialogField(SWT.CHECK);
 	private final SelectionButtonDialogFieldGroup levelField = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "ALL", "DEBUG", "INFO", "WARN", "ERROR", "OFF" }, 6);
@@ -242,7 +244,7 @@ public class LoggerSettingsDialog extends StatusDialog {
 			final List elements = appenderRefsField.getElements();
 			final List<String> appenderRefs = new ArrayList<String>();
 			for (final Object appenderRef : elements) {
-				if ((appenderRef instanceof String) && !appenderRefs.contains(appenderRef)) {
+				if (appenderRef instanceof String && !appenderRefs.contains(appenderRef)) {
 					appenderRefs.add((String) appenderRef);
 				}
 			}

@@ -59,10 +59,6 @@ public class SchedulesSection {
 		this.page = page;
 	}
 
-	public Composite getComposite() {
-		return schedulesPanel;
-	}
-
 	public void activate() {
 
 		if (schedulesList != null) {
@@ -83,6 +79,9 @@ public class SchedulesSection {
 	void addButtonPressed() {
 		final AddScheduleDialog dialog = new AddScheduleDialog(SwtUtil.getShell(addButton));
 		dialog.openNonBlocking(new DialogCallback() {
+
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void dialogClosed(final int returnCode) {
@@ -130,6 +129,9 @@ public class SchedulesSection {
 
 		addButton = createButton(buttons, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				addButtonPressed();
@@ -138,6 +140,9 @@ public class SchedulesSection {
 
 		enableButton = createButton(buttons, "Enable");
 		enableButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				enableButtonPressed();
@@ -146,6 +151,9 @@ public class SchedulesSection {
 
 		disableButton = createButton(buttons, "Disable");
 		disableButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				disableButtonPressed();
@@ -155,6 +163,9 @@ public class SchedulesSection {
 		removeButton = createButton(buttons, "Remove");
 		removeButton.setEnabled(false);
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				removeButtonPressed();
@@ -164,9 +175,116 @@ public class SchedulesSection {
 		showEntriesButton = createButton(buttons, "Show Schedule Entries");
 		showEntriesButton.setEnabled(false);
 		showEntriesButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				showEntriesButtonPressed();
+			}
+		});
+	}
+
+	void disableButtonPressed() {
+
+		final ScheduleImpl schedule = getSelectedSchedule();
+		if (schedule == null || !schedule.isEnabled()) {
+			return;
+		}
+
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Disable selected Schedule", String.format("Do you really want to disable schedule %s?", schedule.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK) {
+					return;
+				}
+
+				try {
+					schedule.setEnabled(false);
+					ScheduleStore.flush(schedule.getStorageKey(), schedule);
+				} catch (final BackingStoreException e) {
+					e.printStackTrace();
+				}
+
+				refresh();
+			}
+		});
+	}
+
+	void enableButtonPressed() {
+
+		final ScheduleImpl schedule = getSelectedSchedule();
+		if (schedule == null || schedule.isEnabled()) {
+			return;
+		}
+
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Enable selected Schedule", String.format("Do you really want to enable schedule %s?", schedule.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK) {
+					return;
+				}
+
+				try {
+					schedule.setEnabled(true);
+					ScheduleStore.flush(schedule.getStorageKey(), schedule);
+				} catch (final BackingStoreException e) {
+					e.printStackTrace();
+				}
+
+				refresh();
+			}
+		});
+	}
+
+	public Composite getComposite() {
+		return schedulesPanel;
+	}
+
+	private ScheduleImpl getSelectedSchedule() {
+		final IStructuredSelection selection = (IStructuredSelection) schedulesList.getSelection();
+		if (!selection.isEmpty() && selection.getFirstElement() instanceof ScheduleImpl) {
+			return (ScheduleImpl) selection.getFirstElement();
+		}
+
+		return null;
+	}
+
+	public void refresh() {
+		schedulesList.refresh();
+		updateButtons();
+	}
+
+	void removeButtonPressed() {
+
+		final ScheduleImpl schedule = getSelectedSchedule();
+		if (schedule == null) {
+			return;
+		}
+
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Remove selected Schedule", String.format("Do you really want to delete schedule %s?", schedule.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK) {
+					return;
+				}
+
+				try {
+					ScheduleStore.remove(schedule.getStorageKey(), schedule.getId());
+				} catch (final BackingStoreException e) {
+					e.printStackTrace();
+				}
+
+				refresh();
 			}
 		});
 	}
@@ -187,97 +305,6 @@ public class SchedulesSection {
 //		scheduleEntriesSection.createScheduleEntriesControls(stackComposite);
 //		scheduleEntriesSection.activate();
 //		show(scheduleEntriesSection.getComposite());
-	}
-
-	private ScheduleImpl getSelectedSchedule() {
-		final IStructuredSelection selection = (IStructuredSelection) schedulesList.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ScheduleImpl)) {
-			return (ScheduleImpl) selection.getFirstElement();
-		}
-
-		return null;
-	}
-
-	void removeButtonPressed() {
-
-		final ScheduleImpl schedule = getSelectedSchedule();
-		if (schedule == null) {
-			return;
-		}
-
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Remove selected Schedule", String.format("Do you really want to delete schedule %s?", schedule.getId()), new DialogCallback() {
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
-					return;
-				}
-
-				try {
-					ScheduleStore.remove(schedule.getStorageKey(), schedule.getId());
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
-
-				refresh();
-			}
-		});
-	}
-
-	void enableButtonPressed() {
-
-		final ScheduleImpl schedule = getSelectedSchedule();
-		if ((schedule == null) || schedule.isEnabled()) {
-			return;
-		}
-
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Enable selected Schedule", String.format("Do you really want to enable schedule %s?", schedule.getId()), new DialogCallback() {
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
-					return;
-				}
-
-				try {
-					schedule.setEnabled(true);
-					ScheduleStore.flush(schedule.getStorageKey(), schedule);
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
-
-				refresh();
-			}
-		});
-	}
-
-	void disableButtonPressed() {
-
-		final ScheduleImpl schedule = getSelectedSchedule();
-		if ((schedule == null) || !schedule.isEnabled()) {
-			return;
-		}
-
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Disable selected Schedule", String.format("Do you really want to disable schedule %s?", schedule.getId()), new DialogCallback() {
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
-					return;
-				}
-
-				try {
-					schedule.setEnabled(false);
-					ScheduleStore.flush(schedule.getStorageKey(), schedule);
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
-
-				refresh();
-			}
-		});
-	}
-
-	public void refresh() {
-		schedulesList.refresh();
-		updateButtons();
 	}
 
 	void updateButtons() {

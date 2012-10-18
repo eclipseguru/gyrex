@@ -33,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
 
 public class ConnectToCloudDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final StringDialogField connectStringField = new StringDialogField();
 	private final ICloudManager cloudManager;
 

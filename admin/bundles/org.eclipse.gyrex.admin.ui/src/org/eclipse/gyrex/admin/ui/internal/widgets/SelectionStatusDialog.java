@@ -42,11 +42,16 @@ import org.eclipse.swt.widgets.Shell;
  */
 public abstract class SelectionStatusDialog extends SelectionDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * A message line displaying a status.
 	 */
 	private class MessageLine extends CLabel {
 
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
 		private final Color fNormalMsgAreaBackground;
 
 		/**
@@ -97,9 +102,9 @@ public abstract class SelectionStatusDialog extends SelectionDialog {
 		 *            the empty text and no image.
 		 */
 		public void setErrorStatus(final IStatus status) {
-			if ((status != null) && !status.isOK()) {
+			if (status != null && !status.isOK()) {
 				final String message = status.getMessage();
-				if ((message != null) && (message.length() > 0)) {
+				if (message != null && message.length() > 0) {
 					setText(message);
 					// unqualified call of setImage is too ambiguous for
 					// Foundation 1.0 compiler
@@ -202,7 +207,7 @@ public abstract class SelectionStatusDialog extends SelectionDialog {
 	 */
 	public Object getFirstResult() {
 		final Object[] result = getResult();
-		if ((result == null) || (result.length == 0)) {
+		if (result == null || result.length == 0) {
 			return null;
 		}
 		return result[0];
@@ -256,7 +261,7 @@ public abstract class SelectionStatusDialog extends SelectionDialog {
 	 */
 	protected void updateButtonsEnableState(final IStatus status) {
 		final Button okButton = getOkButton();
-		if ((okButton != null) && !okButton.isDisposed()) {
+		if (okButton != null && !okButton.isDisposed()) {
 			okButton.setEnabled(!status.matches(IStatus.ERROR));
 		}
 	}
@@ -269,7 +274,7 @@ public abstract class SelectionStatusDialog extends SelectionDialog {
 	 */
 	protected void updateStatus(final IStatus status) {
 		fLastStatus = status;
-		if ((fStatusLine != null) && !fStatusLine.isDisposed()) {
+		if (fStatusLine != null && !fStatusLine.isDisposed()) {
 			updateButtonsEnableState(status);
 			fStatusLine.setErrorStatus(status);
 		}

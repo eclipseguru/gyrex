@@ -104,7 +104,7 @@ public class SearchPattern {
 		final StringBuffer buf = new StringBuffer(pattern.length());
 		int prevAsterisk = 0;
 		do {
-			if ((prevAsterisk == 0) || (prevAsterisk != i)) {
+			if (prevAsterisk == 0 || prevAsterisk != i) {
 				buf.append(pattern.substring(prevAsterisk, i + 1));
 			}
 			prevAsterisk = i + 1;
@@ -287,7 +287,7 @@ public class SearchPattern {
 
 		int patternLength = patternEnd;
 
-		if ((pattern.charAt(patternEnd - 1) == END_SYMBOL) || (pattern.charAt(patternEnd - 1) == BLANK)) {
+		if (pattern.charAt(patternEnd - 1) == END_SYMBOL || pattern.charAt(patternEnd - 1) == BLANK) {
 			patternLength = patternEnd - 1;
 		}
 
@@ -330,7 +330,7 @@ public class SearchPattern {
 			// name
 			while (true) {
 				if (iName == nameEnd) {
-					if ((iPattern == patternLength) && ((patternChar == END_SYMBOL) || (patternChar == BLANK))) {
+					if (iPattern == patternLength && (patternChar == END_SYMBOL || patternChar == BLANK)) {
 						return true;
 					}
 					return false;
@@ -338,7 +338,7 @@ public class SearchPattern {
 
 				nameChar = name.charAt(iName);
 
-				if ((iPattern == patternLength) && ((patternChar == END_SYMBOL) || (patternChar == BLANK))) {
+				if (iPattern == patternLength && (patternChar == END_SYMBOL || patternChar == BLANK)) {
 					if (isNameCharAllowed(nameChar)) {
 						return false;
 					}
@@ -482,7 +482,7 @@ public class SearchPattern {
 		}
 		final char last = pattern.charAt(length - 1);
 
-		if ((pattern.indexOf('*') != -1) || (pattern.indexOf('?') != -1)) {
+		if (pattern.indexOf('*') != -1 || pattern.indexOf('?') != -1) {
 			matchRule = RULE_PATTERN_MATCH;
 			switch (last) {
 				case END_SYMBOL:
@@ -504,7 +504,7 @@ public class SearchPattern {
 			return;
 		}
 
-		if ((last == END_SYMBOL) || (last == BLANK)) {
+		if (last == END_SYMBOL || last == BLANK) {
 			matchRule = RULE_EXACT_MATCH;
 			stringPattern = pattern.substring(0, length - 1);
 			return;
@@ -535,7 +535,7 @@ public class SearchPattern {
 	 * @return true if patternChar is in set of allowed characters for pattern
 	 */
 	protected boolean isPatternCharAllowed(final char patternChar) {
-		return (patternChar == END_SYMBOL) || (patternChar == BLANK) || Character.isUpperCase(patternChar) || Character.isDigit(patternChar);
+		return patternChar == END_SYMBOL || patternChar == BLANK || Character.isUpperCase(patternChar) || Character.isDigit(patternChar);
 	}
 
 	/**
@@ -660,7 +660,7 @@ public class SearchPattern {
 		// Verify Pattern match rule
 		final int starIndex = stringPattern.indexOf('*');
 		final int questionIndex = stringPattern.indexOf('?');
-		if ((starIndex < 0) && (questionIndex < 0)) {
+		if (starIndex < 0 && questionIndex < 0) {
 			// reset pattern match bit if any
 			matchRule &= ~RULE_PATTERN_MATCH;
 		} else {
@@ -678,7 +678,7 @@ public class SearchPattern {
 			// Verify sting pattern validity
 			final int length = stringPattern.length();
 			boolean validCamelCase = true;
-			for (int i = 0; (i < length) && validCamelCase; i++) {
+			for (int i = 0; i < length && validCamelCase; i++) {
 				final char ch = stringPattern.charAt(i);
 				validCamelCase = isValidCamelCaseChar(ch);
 			}

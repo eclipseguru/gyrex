@@ -126,7 +126,7 @@ public class DialogField {
 			fLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			fLabel.setFont(parent.getFont());
 			fLabel.setEnabled(fEnabled);
-			if ((fLabelText != null) && !"".equals(fLabelText)) { //$NON-NLS-1$
+			if (fLabelText != null && !"".equals(fLabelText)) { //$NON-NLS-1$
 				fLabel.setText(fLabelText);
 			} else {
 				// XXX: to avoid a 16 pixel wide empty label - revisit
@@ -156,7 +156,7 @@ public class DialogField {
 	 * Tests is the control is not <code>null</code> and not disposed.
 	 */
 	protected final boolean isOkToUse(final Control control) {
-		return (control != null) && (Display.getCurrent() != null) && !control.isDisposed();
+		return control != null && Display.getCurrent() != null && !control.isDisposed();
 	}
 
 	/**
@@ -165,6 +165,7 @@ public class DialogField {
 	public void postSetFocusOnDialogField(final Display display) {
 		if (display != null) {
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					setFocus();
 				}

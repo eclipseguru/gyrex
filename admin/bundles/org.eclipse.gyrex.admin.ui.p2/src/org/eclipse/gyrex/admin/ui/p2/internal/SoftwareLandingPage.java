@@ -90,6 +90,9 @@ public class SoftwareLandingPage extends AdminPage {
 	void addButtonPressed() {
 		final EditPackageDialog dialog = new EditPackageDialog(SwtUtil.getShell(addButton), getPackageManager(), null);
 		dialog.openNonBlocking(new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -109,6 +112,9 @@ public class SoftwareLandingPage extends AdminPage {
 	protected void createButtons(final Composite buttonsPanel) {
 		addButton = createButton(buttonsPanel, "Add...");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				addButtonPressed();
@@ -117,6 +123,9 @@ public class SoftwareLandingPage extends AdminPage {
 
 		editButton = createButton(buttonsPanel, "Edit...");
 		editButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				editSelectedPackage();
@@ -125,6 +134,9 @@ public class SoftwareLandingPage extends AdminPage {
 
 		removeButton = createButton(buttonsPanel, "Remove...");
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				removeButtonPressed();
@@ -135,6 +147,9 @@ public class SoftwareLandingPage extends AdminPage {
 
 		provisionButton = createButton(buttonsPanel, "Provision");
 		provisionButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				provisionButtonPressed();
@@ -143,6 +158,9 @@ public class SoftwareLandingPage extends AdminPage {
 
 		revokeButton = createButton(buttonsPanel, "Revoke");
 		revokeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				revokeButtonPressed();
@@ -173,6 +191,9 @@ public class SoftwareLandingPage extends AdminPage {
 		manageRepos.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		manageRepos.moveAbove(null);
 		manageRepos.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				editRepositoriesList();
@@ -213,7 +234,7 @@ public class SoftwareLandingPage extends AdminPage {
 	public void deactivate() {
 		super.deactivate();
 
-		if ((packagesViewer != null)) {
+		if (packagesViewer != null) {
 			if (updateButtonsListener != null) {
 				packagesViewer.removeSelectionChangedListener(updateButtonsListener);
 				updateButtonsListener = null;
@@ -227,6 +248,9 @@ public class SoftwareLandingPage extends AdminPage {
 	void editRepositoriesList() {
 		final RepositoriesListDialog dialog = new RepositoriesListDialog(SwtUtil.getShell(manageRepos), getRepoManager());
 		dialog.openNonBlocking(new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -239,6 +263,9 @@ public class SoftwareLandingPage extends AdminPage {
 	void editSelectedPackage() {
 		final EditPackageDialog dialog = new EditPackageDialog(SwtUtil.getShell(addButton), getPackageManager(), getSelectedPackage());
 		dialog.openNonBlocking(new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -262,7 +289,7 @@ public class SoftwareLandingPage extends AdminPage {
 
 	private PackageDefinition getSelectedPackage() {
 		final StructuredSelection selection = (StructuredSelection) packagesViewer.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof PackageDefinition)) {
+		if (!selection.isEmpty() && selection.getFirstElement() instanceof PackageDefinition) {
 			return (PackageDefinition) selection.getFirstElement();
 		}
 
@@ -290,6 +317,9 @@ public class SoftwareLandingPage extends AdminPage {
 		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(removeButton), "Remove Package", "Do you really want to delete the package?", new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {

@@ -49,6 +49,9 @@ public abstract class DropDownItem extends Composite {
 		toolItem.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
 		toolItem.setText(text.replace("&", "&&"));
 		toolItem.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				toolItemSelected(toolBar, event);

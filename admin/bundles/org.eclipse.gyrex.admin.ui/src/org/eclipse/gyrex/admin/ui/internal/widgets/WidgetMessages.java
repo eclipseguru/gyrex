@@ -31,6 +31,7 @@ public class WidgetMessages {
 	public static WidgetMessages get(final Display display) {
 		final WidgetMessages[] result = { null };
 		UICallBack.runNonUIThreadWithFakeContext(display, new Runnable() {
+			@Override
 			public void run() {
 				result[0] = get();
 			}

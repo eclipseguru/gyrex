@@ -54,6 +54,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ImportCertificateDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	private static final String[] POSSIBLE_PKCS12_EXTENSIONS = new String[] { ".p12", ".pkcs12" };
 
 	private final StringDialogField idField = new StringDialogField();
@@ -188,7 +191,7 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 		// start and wait for update
 		final Display display = getShell().getDisplay();
 		final String fileName = keystoreUploadField.getFileName();
-		if (StringUtils.isNotBlank(fileName) && ((keystoreBytes == null) || (keystoreFileName == null) || !StringUtils.equals(keystoreFileName, fileName))) {
+		if (StringUtils.isNotBlank(fileName) && (keystoreBytes == null || keystoreFileName == null || !StringUtils.equals(keystoreFileName, fileName))) {
 			updateButtonsEnableState(new Status(IStatus.ERROR, JettyConfigActivator.SYMBOLIC_NAME, "Upload in progress!")); // deactivate buttons
 			keystoreUploadField.startUpload(new IUploadAdapter() {
 				@Override

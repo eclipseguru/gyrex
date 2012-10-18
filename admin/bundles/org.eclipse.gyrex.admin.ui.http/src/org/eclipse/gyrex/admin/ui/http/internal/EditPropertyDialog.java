@@ -30,6 +30,8 @@ import org.apache.commons.lang.StringUtils;
 
 public class EditPropertyDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final StringDialogField keyField = new StringDialogField();
 	private final StringDialogField valueField = new StringDialogField();
 	private final String key;

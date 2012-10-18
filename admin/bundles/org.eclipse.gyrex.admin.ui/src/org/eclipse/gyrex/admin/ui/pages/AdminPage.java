@@ -211,7 +211,7 @@ public abstract class AdminPage {
 	 */
 	protected void setTitleImage(final Image titleImage) {
 		final Image oldImage = this.titleImage;
-		if ((oldImage != null) && oldImage.equals(titleImage)) {
+		if (oldImage != null && oldImage.equals(titleImage)) {
 			return;
 		}
 		this.titleImage = titleImage;

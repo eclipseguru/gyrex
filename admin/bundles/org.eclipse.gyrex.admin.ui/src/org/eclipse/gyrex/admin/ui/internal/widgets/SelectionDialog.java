@@ -34,6 +34,9 @@ import org.eclipse.swt.widgets.Shell;
  * @since 1.0
  */
 public abstract class SelectionDialog extends NonBlockingTrayDialog {
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	// the final collection of selected elements, or null if this dialog was
 	// canceled
 	private Object[] result;
@@ -220,8 +223,8 @@ public abstract class SelectionDialog extends NonBlockingTrayDialog {
 	 */
 	public void setInitialSelections(final Object[] selectedElements) {
 		initialSelections = new ArrayList<>(selectedElements.length);
-		for (int i = 0; i < selectedElements.length; i++) {
-			initialSelections.add(selectedElements[i]);
+		for (final Object selectedElement : selectedElements) {
+			initialSelections.add(selectedElement);
 		}
 	}
 

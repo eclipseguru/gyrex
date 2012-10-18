@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.adapter;
 
-
 /**
  * An adapter for presenting elements in the Admin UI.
  */

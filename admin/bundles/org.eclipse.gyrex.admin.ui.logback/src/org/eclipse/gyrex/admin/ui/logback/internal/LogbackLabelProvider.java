@@ -29,6 +29,8 @@ import org.apache.commons.lang.text.StrBuilder;
 
 public class LogbackLabelProvider extends LabelProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private LocalResourceManager manager;
 
 	@Override

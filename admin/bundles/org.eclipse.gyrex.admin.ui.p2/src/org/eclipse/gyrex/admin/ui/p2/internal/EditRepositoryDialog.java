@@ -42,6 +42,8 @@ import org.apache.commons.lang.StringUtils;
 
 public class EditRepositoryDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final StringDialogField idField = new StringDialogField();
 	private final StringDialogField uriField = new StringDialogField();
 	private final StringDialogField nodeFilterField = new StringDialogField();
@@ -123,7 +125,7 @@ public class EditRepositoryDialog extends NonBlockingStatusDialog {
 			final RepositoryDefinition repository = new RepositoryDefinition();
 			repository.setId(idField.getText());
 			repository.setLocation(new URI(uriField.getText()));
-			repository.setNodeFilter((StringUtils.trimToNull(nodeFilterField.getText())));
+			repository.setNodeFilter(StringUtils.trimToNull(nodeFilterField.getText()));
 			repoManager.saveRepository(repository);
 		} catch (final Exception e) {
 			setError(e.getMessage());

@@ -48,26 +48,32 @@ public class AdminApplicationConfiguration implements ApplicationConfiguration {
 			this.resourceName = resourceName;
 		}
 
+		@Override
 		public String getCharset() {
 			return null;
 		}
 
+		@Override
 		public ClassLoader getLoader() {
 			return AdminUiActivator.class.getClassLoader();
 		}
 
+		@Override
 		public String getLocation() {
 			return resourceName;
 		}
 
+		@Override
 		public RegisterOptions getOptions() {
 			return RegisterOptions.NONE;
 		}
 
+		@Override
 		public boolean isExternal() {
 			return false;
 		}
 
+		@Override
 		public boolean isJSLibrary() {
 			return false;
 		}

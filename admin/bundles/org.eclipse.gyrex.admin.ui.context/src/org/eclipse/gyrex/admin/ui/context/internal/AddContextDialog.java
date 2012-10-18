@@ -39,6 +39,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class AddContextDialog extends NonBlockingStatusDialog {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	/** The path field. */
 	private final StringDialogField pathField = new StringDialogField();
 

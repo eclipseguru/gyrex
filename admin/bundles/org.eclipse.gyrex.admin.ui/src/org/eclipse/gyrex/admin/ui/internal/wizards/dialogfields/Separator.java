@@ -21,71 +21,78 @@ import org.eclipse.swt.widgets.Label;
  */
 public class Separator extends DialogField {
 
+	protected static GridData gridDataForSeperator(final int span, final int height) {
+		final GridData gd = new GridData();
+		gd.horizontalAlignment = GridData.FILL;
+		gd.verticalAlignment = GridData.BEGINNING;
+		gd.heightHint = height;
+		gd.horizontalSpan = span;
+		return gd;
+	}
+
 	private Label fSeparator;
-	private int fStyle;
+
+	private final int fStyle;
 
 	public Separator() {
 		this(SWT.NONE);
 	}
 
-	/**
-	 * @param style of the separator. See <code>Label</code> for possible
-	 * styles.
-	 */
-	public Separator(int style) {
-		super();
-		fStyle= style;
-	}
-
 	// ------- layout helpers
 
 	/**
-	 * Creates the separator and fills it in a MGridLayout.
-	 * @param height The height of the separator
+	 * @param style
+	 *            of the separator. See <code>Label</code> for possible styles.
 	 */
-	public Control[] doFillIntoGrid(Composite parent, int nColumns, int height) {
+	public Separator(final int style) {
+		super();
+		fStyle = style;
+	}
+
+	/*
+	 * @see DialogField#doFillIntoGrid
+	 */
+	@Override
+	public Control[] doFillIntoGrid(final Composite parent, final int nColumns) {
+		return doFillIntoGrid(parent, nColumns, 4);
+	}
+
+	/**
+	 * Creates the separator and fills it in a MGridLayout.
+	 * 
+	 * @param height
+	 *            The height of the separator
+	 */
+	public Control[] doFillIntoGrid(final Composite parent, final int nColumns, final int height) {
 		assertEnoughColumns(nColumns);
 
-		Control separator= getSeparator(parent);
+		final Control separator = getSeparator(parent);
 		separator.setLayoutData(gridDataForSeperator(nColumns, height));
 
 		return new Control[] { separator };
 	}
 
 	/*
-	 * @see DialogField#doFillIntoGrid
-	 */
-	public Control[] doFillIntoGrid(Composite parent, int nColumns) {
-		return doFillIntoGrid(parent, nColumns, 4);
-	}
-
-	/*
 	 * @see DialogField#getNumberOfControls
 	 */
+	@Override
 	public int getNumberOfControls() {
 		return 1;
-	}
-
-	protected static GridData gridDataForSeperator(int span, int height) {
-		GridData gd= new GridData();
-		gd.horizontalAlignment= GridData.FILL;
-		gd.verticalAlignment= GridData.BEGINNING;
-		gd.heightHint= height;
-		gd.horizontalSpan= span;
-		return gd;
 	}
 
 	// ------- ui creation
 
 	/**
 	 * Creates or returns the created separator.
-	 * @param parent The parent composite or <code>null</code> if the widget has
-	 * already been created.
+	 * 
+	 * @param parent
+	 *            The parent composite or <code>null</code> if the widget has
+	 *            already been created.
 	 */
-	public Control getSeparator(Composite parent) {
+	public Control getSeparator(final Composite parent) {
 		if (fSeparator == null) {
 			assertCompositeNotNull(parent);
-			fSeparator= new Label(parent, fStyle);
+			fSeparator = new Label(parent, fStyle);
 		}
 		return fSeparator;
 	}

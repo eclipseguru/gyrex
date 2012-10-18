@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Control;
 
 public abstract class NavigationBar extends Composite {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 	private final List<CategoryContribution> categories;
 
 	public NavigationBar(final Composite parent) {
@@ -48,6 +50,9 @@ public abstract class NavigationBar extends Composite {
 
 	private void createNavigationDropDown(final CategoryContribution category) {
 		new DropDownNavigation(this, category) {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void openPage(final PageContribution page) {
 				NavigationBar.this.openPage(page);

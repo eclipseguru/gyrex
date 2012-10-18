@@ -24,6 +24,9 @@ import org.eclipse.jface.viewers.Viewer;
  */
 public class RepositoryContentProvider implements IStructuredContentProvider {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub

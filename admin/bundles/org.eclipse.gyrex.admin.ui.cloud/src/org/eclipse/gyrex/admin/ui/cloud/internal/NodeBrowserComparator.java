@@ -23,6 +23,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class NodeBrowserComparator extends ViewerComparator {
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	public static enum SortIndex {
 		ID, LOCATION, STATUS
 	}
@@ -32,7 +35,7 @@ public final class NodeBrowserComparator extends ViewerComparator {
 
 	@Override
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
-		if ((e1 instanceof NodeItem) && (e2 instanceof NodeItem)) {
+		if (e1 instanceof NodeItem && e2 instanceof NodeItem) {
 			return compareNodes((NodeItem) e1, (NodeItem) e2);
 		}
 
@@ -66,7 +69,7 @@ public final class NodeBrowserComparator extends ViewerComparator {
 				return node.getDescriptor().getLocation();
 
 			case STATUS:
-				return node.isApproved() ? (node.isOnline() ? "A1" : "A2") : (node.isOnline() ? "P1" : "P2");
+				return node.isApproved() ? node.isOnline() ? "A1" : "A2" : node.isOnline() ? "P1" : "P2";
 
 			case ID:
 			default:

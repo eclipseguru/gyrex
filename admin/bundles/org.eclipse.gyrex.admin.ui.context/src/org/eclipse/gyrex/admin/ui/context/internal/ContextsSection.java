@@ -63,6 +63,9 @@ public class ContextsSection {
 		final AddContextDialog dialog = new AddContextDialog(SwtUtil.getShell(addButton), getContextRegistry());
 		dialog.openNonBlocking(new DialogCallback() {
 
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
@@ -124,6 +127,9 @@ public class ContextsSection {
 
 		addButton = createButton(buttons, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				addButtonPressed();
@@ -133,6 +139,9 @@ public class ContextsSection {
 		removeButton = createButton(buttons, "Remove");
 		removeButton.setEnabled(true);
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				removeButtonPressed();
@@ -184,6 +193,9 @@ public class ContextsSection {
 		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Context", String.format("Do you really want to delete the context %s?", contextDefinition.getPath() + contextDefinition.getName()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {
