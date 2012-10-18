@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube - add new separator image
  */
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
@@ -28,6 +29,8 @@ public class P2UiImages {
 	public final static String IMG_DISABLED_PATCH_IU = "obj/iu_disabled_patch_obj.gif"; //$NON-NLS-1$
 	public final static String IMG_PROFILE = "obj/profile_obj.gif"; //$NON-NLS-1$
 	public final static String IMG_CATEGORY = "obj/category_obj.gif"; //$NON-NLS-1$
+	public final static String IMG_VIEW_MENU = "obj/view_menu.gif";
+	public final static String IMG_SEPARATOR = "obj/separator.gif";
 
 	/**
 	 * Returns the image descriptor for the given image ID. Returns

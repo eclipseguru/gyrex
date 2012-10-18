@@ -8,12 +8,14 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube	- rework new Admin UI
  */
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
@@ -25,7 +27,6 @@ import org.eclipse.gyrex.p2.internal.repositories.RepositoryDefinition;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,22 +40,27 @@ import org.osgi.framework.InvalidSyntaxException;
 
 import org.apache.commons.lang.StringUtils;
 
-public class AddRepositoryDialog extends StatusDialog {
+public class EditRepositoryDialog extends NonBlockingStatusDialog {
 
 	private final StringDialogField idField = new StringDialogField();
 	private final StringDialogField uriField = new StringDialogField();
 	private final StringDialogField nodeFilterField = new StringDialogField();
 
 	private final IRepositoryDefinitionManager repoManager;
+	private final RepositoryDefinition repoDefinition;
 
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param parent
+	 *            the shell parent
+	 * @param repoManager
+	 *            the repository manager to be used
 	 */
-	public AddRepositoryDialog(final Shell parent, final IRepositoryDefinitionManager repoManager) {
+	public EditRepositoryDialog(final Shell parent, final RepositoryDefinition repoDefinition, final IRepositoryDefinitionManager repoManager) {
 		super(parent);
 		this.repoManager = repoManager;
+		this.repoDefinition = repoDefinition;
 		setTitle("New Software Repository");
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	}
@@ -88,6 +94,14 @@ public class AddRepositoryDialog extends StatusDialog {
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(uriField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(nodeFilterField.getTextControl(null));
+
+		if (null != repoDefinition) {
+			idField.setEnabled(false);
+			idField.setText(repoDefinition.getId());
+
+			uriField.setText(repoDefinition.getLocation().toString());
+			nodeFilterField.setText(StringUtils.trimToEmpty(repoDefinition.getNodeFilter()));
+		}
 
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
 		masterLayout.marginWidth = 5;

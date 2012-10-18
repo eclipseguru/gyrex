@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube - rework new Admin UI
  */
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
@@ -18,6 +19,7 @@ import org.eclipse.equinox.p2.metadata.MetadataFactory;
 import org.eclipse.equinox.p2.query.IQuery;
 import org.eclipse.equinox.p2.query.QueryUtil;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IListAdapter;
@@ -32,9 +34,9 @@ import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -48,7 +50,7 @@ import org.osgi.framework.InvalidSyntaxException;
 
 import org.apache.commons.lang.StringUtils;
 
-public class AddPackageDialog extends StatusDialog {
+public class EditPackageDialog extends NonBlockingStatusDialog {
 
 	private final ILabelProvider labelProvider = new P2UiLabelProvider();
 
@@ -76,15 +78,22 @@ public class AddPackageDialog extends StatusDialog {
 	}, new String[] { "Add...", "Remove" }, labelProvider);
 
 	private final IPackageManager packageManager;
+	private final PackageDefinition selectedPackage;
 
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param parent
+	 *            the parent shell
+	 * @param packageManager
+	 *            the manager to be used
+	 * @param selectedPackage
+	 *            the selected package to be edited, can be <code>null</code>
 	 */
-	public AddPackageDialog(final Shell parent, final IPackageManager packageManager) {
+	public EditPackageDialog(final Shell parent, final IPackageManager packageManager, final PackageDefinition selectedPackage) {
 		super(parent);
 		this.packageManager = packageManager;
+		this.selectedPackage = selectedPackage;
 		setTitle("New Software Package");
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	}
@@ -97,21 +106,25 @@ public class AddPackageDialog extends StatusDialog {
 //		final IQuery<IInstallableUnit> query = QueryUtil.createIUGroupQuery();
 
 		final FilteredIUSelectionDialog dialog = new FilteredIUSelectionDialog(getShell(), query);
-		final int status = dialog.open();
-		if (status == Window.OK) {
-			final Object[] result = dialog.getResult();
-			if (result != null) {
-				for (int i = 0; i < result.length; i++) {
-					if (result[i] instanceof IInstallableUnit) {
-						final IInstallableUnit iu = (IInstallableUnit) result[i];
-						final InstallableUnitReference unit = new InstallableUnitReference();
-						unit.setId(iu.getId());
-						unit.setVersion(iu.getVersion());
-						componentsField.addElement(unit);
+		dialog.openNonBlocking(new DialogCallback() {
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					final Object[] result = dialog.getResult();
+					if (result != null) {
+						for (int i = 0; i < result.length; i++) {
+							if (result[i] instanceof IInstallableUnit) {
+								final IInstallableUnit iu = (IInstallableUnit) result[i];
+								final InstallableUnitReference unit = new InstallableUnitReference();
+								unit.setId(iu.getId());
+								unit.setVersion(iu.getVersion());
+								componentsField.addElement(unit);
+							}
+						}
 					}
 				}
 			}
-		}
+		});
 	}
 
 	@Override
@@ -136,19 +149,25 @@ public class AddPackageDialog extends StatusDialog {
 		idField.setDialogFieldListener(validateListener);
 		nodeFilterField.setDialogFieldListener(validateListener);
 
-		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
-		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		final Text info = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+		info.setText("Define an ID for this software package. With the node filter you can restrict the installation for only the filtered nodes. \nManage the features to be installed in the list below.");
+		info.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, nodeFilterField, new Separator(), componentsField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(componentsField.getListControl(null));
 
+		if (selectedPackage != null) {
+			idField.setText(StringUtils.trimToEmpty(selectedPackage.getId()));
+			nodeFilterField.setText(StringUtils.trimToEmpty(selectedPackage.getNodeFilter()));
+			componentsField.setElements(selectedPackage.getComponentsToInstall());
+		}
+
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
 		masterLayout.marginWidth = 5;
 		masterLayout.marginHeight = 5;
 
-		LayoutUtil.setHorizontalSpan(warning, masterLayout.numColumns);
+		LayoutUtil.setHorizontalSpan(info, masterLayout.numColumns);
 
 		return composite;
 	}

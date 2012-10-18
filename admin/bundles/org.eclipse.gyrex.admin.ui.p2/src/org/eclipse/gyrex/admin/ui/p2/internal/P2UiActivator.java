@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube - add new image and image registry
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
@@ -20,7 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.rwt.RWT;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.Display;
 
 import org.osgi.framework.BundleContext;
 
@@ -78,7 +79,7 @@ public class P2UiActivator extends BaseBundleActivator {
 		// ImageRegistry must be session scoped in RAP
 		ImageRegistry imageRegistry = (ImageRegistry) RWT.getSessionStore().getAttribute(IMAGE_REGISTRY);
 		if (imageRegistry == null) {
-			imageRegistry = new ImageRegistry(PlatformUI.getWorkbench().getDisplay());
+			imageRegistry = new ImageRegistry(Display.getCurrent());
 			initializeImageRegistry(imageRegistry);
 			RWT.getSessionStore().setAttribute(IMAGE_REGISTRY, imageRegistry);
 		}
@@ -95,5 +96,7 @@ public class P2UiActivator extends BaseBundleActivator {
 		createImageDescriptor(P2UiImages.IMG_DISABLED_PATCH_IU, reg);
 		createImageDescriptor(P2UiImages.IMG_CATEGORY, reg);
 		createImageDescriptor(P2UiImages.IMG_PROFILE, reg);
+		createImageDescriptor(P2UiImages.IMG_VIEW_MENU, reg);
+		createImageDescriptor(P2UiImages.IMG_SEPARATOR, reg);
 	}
 }

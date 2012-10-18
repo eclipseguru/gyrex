@@ -57,8 +57,11 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.rwt.RWT;
 import org.eclipse.rwt.application.ApplicationRunner;
 import org.eclipse.rwt.engine.RWTServlet;
+import org.eclipse.swt.widgets.Display;
 
 import org.osgi.framework.BundleContext;
 
@@ -74,6 +77,8 @@ import org.slf4j.LoggerFactory;
 public class AdminUiActivator extends BaseBundleActivator {
 
 	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui"; //$NON-NLS-1$
+
+	private static final String IMAGE_REGISTRY = SYMBOLIC_NAME + "#imageRegistry";
 	private static final int DEFAULT_ADMIN_PORT = 3110;
 	private static final Logger LOG = LoggerFactory.getLogger(AdminUiActivator.class);
 
@@ -291,6 +296,17 @@ public class AdminUiActivator extends BaseBundleActivator {
 		instance = null;
 
 		stopServer();
+	}
+
+	public ImageRegistry getImageRegistry() {
+		// ImageRegistry must be session scoped in RAP
+		ImageRegistry imageRegistry = (ImageRegistry) RWT.getSessionStore().getAttribute(IMAGE_REGISTRY);
+		if (imageRegistry == null) {
+			imageRegistry = new ImageRegistry(Display.getCurrent());
+			AdminUiImages.initializeImageRegistry(imageRegistry);
+			RWT.getSessionStore().setAttribute(IMAGE_REGISTRY, imageRegistry);
+		}
+		return imageRegistry;
 	}
 
 	private void startServer() {

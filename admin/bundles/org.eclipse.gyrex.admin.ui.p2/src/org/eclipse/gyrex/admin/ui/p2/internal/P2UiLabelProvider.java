@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube - update return value for RepositoryDefinition
  */
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
@@ -110,6 +111,9 @@ public class P2UiLabelProvider extends LabelProvider {
 	private String getElementText(final RepositoryDefinition repo) {
 		final StringBuilder label = new StringBuilder();
 		label.append(repo.getId());
+		label.append(" (");
+		label.append(repo.getLocation());
+		label.append(") ");
 		return label.toString();
 	}
 

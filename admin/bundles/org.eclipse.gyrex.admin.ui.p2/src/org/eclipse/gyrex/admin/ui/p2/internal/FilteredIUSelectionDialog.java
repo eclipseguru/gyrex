@@ -8,6 +8,7 @@
  *   EclipseSource - initial API and implementation
  *   IBM - Ongoing development
  *   Gunnar Wagenknecht - adapted to Gyrex
+ *   Peter Grube - rework new Admin UI
  ******************************************************************************/
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
@@ -25,6 +26,7 @@ import org.eclipse.equinox.p2.repository.IRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredItemsSelectionDialog;
 import org.eclipse.gyrex.p2.internal.repositories.RepoUtil;
 
 import org.eclipse.core.runtime.CoreException;
@@ -45,7 +47,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -202,6 +203,7 @@ public class FilteredIUSelectionDialog extends FilteredItemsSelectionDialog {
 	protected Control createExtendedContentArea(final Composite parent) {
 		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
+
 		fShowLatestVersionOnlyButton = new Button(composite, SWT.CHECK);
 		fShowLatestVersionOnlyButton.setSelection(true);
 		fShowLatestVersionOnlyButton.setText("Show latest version only");
@@ -275,6 +277,7 @@ public class FilteredIUSelectionDialog extends FilteredItemsSelectionDialog {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Comparator getItemsComparator() {
 		return new Comparator() {
