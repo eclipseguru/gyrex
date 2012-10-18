@@ -10,6 +10,11 @@
             name="Background Tasks"
             sortKey="200">
       </page>
+      <page
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.ScheduleEntriesPage"
+            id="schedule-entries"
+            name="Schedule Entries">
+      </page>
    </extension>
 
 </plugin>

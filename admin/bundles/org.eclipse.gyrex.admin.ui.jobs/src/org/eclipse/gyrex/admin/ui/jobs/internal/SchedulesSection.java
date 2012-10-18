@@ -13,8 +13,8 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
-import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
@@ -28,7 +28,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -49,8 +48,16 @@ public class SchedulesSection {
 	private Button enableButton;
 	private Button disableButton;
 	private Button showEntriesButton;
-	private Composite stackComposite;
-	private ScheduleEntriesSection scheduleEntriesSection;
+	private final AdminPage page;
+
+	/**
+	 * Creates a new instance.
+	 * 
+	 * @param backgroundTasksPage
+	 */
+	public SchedulesSection(final AdminPage page) {
+		this.page = page;
+	}
 
 	public Composite getComposite() {
 		return schedulesPanel;
@@ -98,21 +105,10 @@ public class SchedulesSection {
 	 * @param composite
 	 */
 	public void createSchedulesControls(final Composite parent) {
-		stackComposite = new Composite(parent, SWT.NONE);
-		stackComposite.setLayout(new StackLayout());
-		final GridData gd1 = AdminUiUtil.createFillData();
-		gd1.verticalIndent = 10;
-		stackComposite.setLayoutData(gd1);
 
-		schedulesPanel = new Composite(stackComposite, SWT.NONE);
+		schedulesPanel = new Composite(parent, SWT.NONE);
 		schedulesPanel.setLayout(new GridLayout());
 		schedulesPanel.setLayoutData(AdminUiUtil.createFillData());
-
-		show(schedulesPanel);
-
-		final Infobox infobox = new Infobox(schedulesPanel);
-		infobox.addHeading("Gyrex Schedule.");
-		infobox.addParagraph("Gyrex schedule are bound to a context path e.g. an application context and they group all the schedules together, which belopng to this application context. Gyrex scheduler can be enabled and disabled to be able to switch the background tasks for a specific application context on and off.");
 
 		final Composite listAndButtonsPanel = new Composite(schedulesPanel, SWT.NONE);
 		final GridData gd = AdminUiUtil.createFillData();
@@ -175,11 +171,6 @@ public class SchedulesSection {
 		});
 	}
 
-	public void show(final Composite composite) {
-		((StackLayout) stackComposite.getLayout()).topControl = composite;
-		stackComposite.layout(true);
-	}
-
 	/**
 	 * 
 	 */
@@ -189,11 +180,13 @@ public class SchedulesSection {
 			return;
 		}
 
-		scheduleEntriesSection = new ScheduleEntriesSection(this);
-		scheduleEntriesSection.setSchedule(schedule);
-		scheduleEntriesSection.createScheduleEntriesControls(stackComposite);
-		scheduleEntriesSection.activate();
-		show(scheduleEntriesSection.getComposite());
+		page.getAdminUi().openPage(ScheduleEntriesPage.ID, new String[] { schedule.getStorageKey() });
+
+//		scheduleEntriesSection = new ScheduleEntriesSection(this);
+//		scheduleEntriesSection.setSchedule(schedule);
+//		scheduleEntriesSection.createScheduleEntriesControls(stackComposite);
+//		scheduleEntriesSection.activate();
+//		show(scheduleEntriesSection.getComposite());
 	}
 
 	private ScheduleImpl getSelectedSchedule() {

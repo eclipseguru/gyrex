@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Control;
  */
 public class BackgroundTasksPage extends FilteredAdminPage {
 
+	public static final String ID = "background-tasks";
+
 	private SchedulesSection schedulesSection;
 	private Composite pageComposite;
 
@@ -46,13 +48,13 @@ public class BackgroundTasksPage extends FilteredAdminPage {
 		if (Platform.inDevelopmentMode()) {
 			final Infobox infobox = new Infobox(pageComposite);
 			final GridData gd = AdminUiUtil.createHorzFillData();
-			gd.horizontalSpan = 3;
 			infobox.setLayoutData(gd);
 			infobox.addHeading("Schedules.");
 			infobox.addParagraph("Background tasks in Gyrex are organized into schedules. A schedule is associated to a context and defines common properties (such as timezone) for all background tasks.");
+			infobox.addParagraph("Gyrex schedule are bound to a context path e.g. an application context and they group all the schedules together, which belopng to this application context. Gyrex scheduler can be enabled and disabled to be able to switch the background tasks for a specific application context on and off.");
 		}
 
-		schedulesSection = new SchedulesSection();
+		schedulesSection = new SchedulesSection(this);
 		schedulesSection.createSchedulesControls(pageComposite);
 
 		return pageComposite;
