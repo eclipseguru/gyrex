@@ -26,6 +26,9 @@ import org.eclipse.swt.widgets.Control;
  */
 public class BackgroundTasksPage extends FilteredAdminPage {
 
+	private SchedulesSection schedulesSection;
+	private Composite pageComposite;
+
 	/**
 	 * Creates a new instance.
 	 */
@@ -37,11 +40,11 @@ public class BackgroundTasksPage extends FilteredAdminPage {
 	@Override
 	public Control createControl(final Composite parent) {
 
-		final Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(AdminUiUtil.createMainLayout(3));
+		pageComposite = new Composite(parent, SWT.NONE);
+		pageComposite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 
 		if (Platform.inDevelopmentMode()) {
-			final Infobox infobox = new Infobox(composite);
+			final Infobox infobox = new Infobox(pageComposite);
 			final GridData gd = AdminUiUtil.createHorzFillData();
 			gd.horizontalSpan = 3;
 			infobox.setLayoutData(gd);
@@ -49,6 +52,19 @@ public class BackgroundTasksPage extends FilteredAdminPage {
 			infobox.addParagraph("Background tasks in Gyrex are organized into schedules. A schedule is associated to a context and defines common properties (such as timezone) for all background tasks.");
 		}
 
-		return composite;
+		schedulesSection = new SchedulesSection();
+		schedulesSection.createSchedulesControls(pageComposite);
+
+		return pageComposite;
+	}
+
+	@Override
+	public void activate() {
+		super.activate();
+
+		if (schedulesSection != null) {
+			schedulesSection.activate();
+		}
+
 	}
 }

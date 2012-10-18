@@ -35,6 +35,8 @@ public class JobsUiActivator extends BaseBundleActivator {
 		return activator;
 	}
 
+	private BundleContext context;
+
 	/**
 	 * Creates a new instance.
 	 */
@@ -45,12 +47,13 @@ public class JobsUiActivator extends BaseBundleActivator {
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
-
+		this.context = context;
 	}
 
 	@Override
 	protected void doStop(final BundleContext context) throws Exception {
 		instance = null;
+		this.context = null;
 	}
 
 }

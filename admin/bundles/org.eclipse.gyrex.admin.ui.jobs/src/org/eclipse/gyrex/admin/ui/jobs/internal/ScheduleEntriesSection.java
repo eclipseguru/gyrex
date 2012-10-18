@@ -15,9 +15,8 @@ import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
-import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
-import org.eclipse.gyrex.jobs.schedules.ISchedule;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -28,7 +27,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -37,29 +35,38 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 
-import org.osgi.service.prefs.BackingStoreException;
+public class ScheduleEntriesSection {
 
-public class SchedulesSection {
+	/**
+	 * Creates a new instance.
+	 * 
+	 * @param previousPageSection
+	 */
+	public ScheduleEntriesSection(final SchedulesSection previousPageSection) {
+		super();
+		this.previousPageSection = previousPageSection;
+	}
 
-	private Composite schedulesPanel;
-	private ListViewer schedulesList;
+	private Composite scheduleEntriesPanel;
+	private ListViewer scheduleEntriesList;
 	private Button addButton;
 	private Button removeButton;
 	private ISelectionChangedListener updateButtonsListener;
 	private Button enableButton;
 	private Button disableButton;
-	private Button showEntriesButton;
-	private Composite stackComposite;
-	private ScheduleEntriesSection scheduleEntriesSection;
+	private ScheduleImpl schedule;
+	private Button backButton;
+
+	private final SchedulesSection previousPageSection;
 
 	public Composite getComposite() {
-		return schedulesPanel;
+		return scheduleEntriesPanel;
 	}
 
 	public void activate() {
 
-		if (schedulesList != null) {
-			schedulesList.setInput(ISchedule.class);
+		if (scheduleEntriesList != null) {
+			scheduleEntriesList.setInput(schedule);
 			updateButtonsListener = new ISelectionChangedListener() {
 
 				@Override
@@ -67,7 +74,7 @@ public class SchedulesSection {
 					updateButtons();
 				}
 			};
-			schedulesList.addSelectionChangedListener(updateButtonsListener);
+			scheduleEntriesList.addSelectionChangedListener(updateButtonsListener);
 		} else {
 		}
 
@@ -97,36 +104,36 @@ public class SchedulesSection {
 	/**
 	 * @param composite
 	 */
-	public void createSchedulesControls(final Composite parent) {
-		stackComposite = new Composite(parent, SWT.NONE);
-		stackComposite.setLayout(new StackLayout());
-		final GridData gd1 = AdminUiUtil.createFillData();
-		gd1.verticalIndent = 10;
-		stackComposite.setLayoutData(gd1);
+	public void createScheduleEntriesControls(final Composite parent) {
+		scheduleEntriesPanel = new Composite(parent, SWT.NONE);
+		scheduleEntriesPanel.setLayout(new GridLayout());
+		scheduleEntriesPanel.setLayoutData(AdminUiUtil.createFillData());
 
-		schedulesPanel = new Composite(stackComposite, SWT.NONE);
-		schedulesPanel.setLayout(new GridLayout());
-		schedulesPanel.setLayoutData(AdminUiUtil.createFillData());
+		backButton = createButton(scheduleEntriesPanel, "Back To Schedules");
+		backButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				backButtonPressed();
+			}
+		});
 
-		show(schedulesPanel);
+		final Infobox infobox = new Infobox(scheduleEntriesPanel);
+		infobox.addHeading("Gyrex Schedule Entries in Schedule " + schedule.getId());
+		infobox.addParagraph("Gyrex schedule entries can be defined here");
 
-		final Infobox infobox = new Infobox(schedulesPanel);
-		infobox.addHeading("Gyrex Schedule.");
-		infobox.addParagraph("Gyrex schedule are bound to a context path e.g. an application context and they group all the schedules together, which belopng to this application context. Gyrex scheduler can be enabled and disabled to be able to switch the background tasks for a specific application context on and off.");
-
-		final Composite listAndButtonsPanel = new Composite(schedulesPanel, SWT.NONE);
+		final Composite listAndButtonsPanel = new Composite(scheduleEntriesPanel, SWT.NONE);
 		final GridData gd = AdminUiUtil.createFillData();
 		gd.verticalIndent = 10;
 		listAndButtonsPanel.setLayoutData(gd);
 		listAndButtonsPanel.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
 
-		schedulesList = new ListViewer(listAndButtonsPanel, SWT.SINGLE | SWT.BORDER);
-		final List list = schedulesList.getList();
+		scheduleEntriesList = new ListViewer(listAndButtonsPanel, SWT.SINGLE | SWT.BORDER);
+		final List list = scheduleEntriesList.getList();
 		list.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
-		schedulesList.setContentProvider(new ArrayContentProvider());
-		schedulesList.setLabelProvider(new JobsLabelProvider());
-		schedulesList.setContentProvider(new SchedulesContentProvider());
+		scheduleEntriesList.setContentProvider(new ArrayContentProvider());
+		scheduleEntriesList.setLabelProvider(new JobsLabelProvider());
+		scheduleEntriesList.setContentProvider(new ScheduleEntriesContentProvider());
 
 		final Composite buttons = new Composite(listAndButtonsPanel, SWT.NONE);
 		buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
@@ -165,41 +172,39 @@ public class SchedulesSection {
 			}
 		});
 
-		showEntriesButton = createButton(buttons, "Show Schedule Entries");
-		showEntriesButton.setEnabled(false);
-		showEntriesButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				showEntriesButtonPressed();
-			}
-		});
-	}
-
-	public void show(final Composite composite) {
-		((StackLayout) stackComposite.getLayout()).topControl = composite;
-		stackComposite.layout(true);
 	}
 
 	/**
 	 * 
 	 */
-	protected void showEntriesButtonPressed() {
-		final ScheduleImpl schedule = getSelectedSchedule();
-		if (schedule == null) {
-			return;
-		}
-
-		scheduleEntriesSection = new ScheduleEntriesSection(this);
-		scheduleEntriesSection.setSchedule(schedule);
-		scheduleEntriesSection.createScheduleEntriesControls(stackComposite);
-		scheduleEntriesSection.activate();
-		show(scheduleEntriesSection.getComposite());
+	protected void backButtonPressed() {
+		scheduleEntriesPanel.dispose();
+		previousPageSection.show(previousPageSection.getComposite());
 	}
 
-	private ScheduleImpl getSelectedSchedule() {
-		final IStructuredSelection selection = (IStructuredSelection) schedulesList.getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ScheduleImpl)) {
-			return (ScheduleImpl) selection.getFirstElement();
+	/**
+	 * Returns the schedule.
+	 * 
+	 * @return the schedule
+	 */
+	public ScheduleImpl getSchedule() {
+		return schedule;
+	}
+
+	/**
+	 * Sets the schedule.
+	 * 
+	 * @param schedule
+	 *            the schedule to set
+	 */
+	public void setSchedule(final ScheduleImpl schedule) {
+		this.schedule = schedule;
+	}
+
+	private ScheduleEntryImpl getSelectedScheduleEntry() {
+		final IStructuredSelection selection = (IStructuredSelection) scheduleEntriesList.getSelection();
+		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ScheduleEntryImpl)) {
+			return (ScheduleEntryImpl) selection.getFirstElement();
 		}
 
 		return null;
@@ -207,23 +212,20 @@ public class SchedulesSection {
 
 	void removeButtonPressed() {
 
-		final ScheduleImpl schedule = getSelectedSchedule();
-		if (schedule == null) {
+		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
+		if (scheduleEntry == null) {
 			return;
 		}
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Remove selected Schedule", String.format("Do you really want to delete schedule %s?", schedule.getId()), new DialogCallback() {
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Remove selected Schedule entry ", String.format("Do you really want to delete schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {
 					return;
 				}
 
-				try {
-					ScheduleStore.remove(schedule.getStorageKey(), schedule.getId());
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
+				//ScheduleStore.(scheduleEntry.getStorageKey(), scheduleEntry.getId());
+				// TODO remove schedule entry
 
 				refresh();
 			}
@@ -232,24 +234,20 @@ public class SchedulesSection {
 
 	void enableButtonPressed() {
 
-		final ScheduleImpl schedule = getSelectedSchedule();
-		if ((schedule == null) || schedule.isEnabled()) {
+		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
+		if (scheduleEntry == null) {
 			return;
 		}
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Enable selected Schedule", String.format("Do you really want to enable schedule %s?", schedule.getId()), new DialogCallback() {
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Enable selected Schedule Entry ", String.format("Do you really want to enable schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {
 					return;
 				}
 
-				try {
-					schedule.setEnabled(true);
-					ScheduleStore.flush(schedule.getStorageKey(), schedule);
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
+				//scheduleEntry.setEnabled(true);
+				// TODO set enabled
 
 				refresh();
 			}
@@ -258,24 +256,20 @@ public class SchedulesSection {
 
 	void disableButtonPressed() {
 
-		final ScheduleImpl schedule = getSelectedSchedule();
-		if ((schedule == null) || !schedule.isEnabled()) {
+		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
+		if (scheduleEntry == null) {
 			return;
 		}
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(schedulesPanel), "Disable selected Schedule", String.format("Do you really want to disable schedule %s?", schedule.getId()), new DialogCallback() {
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(scheduleEntriesPanel), "Disable selected Schedule Entry ", String.format("Do you really want to disable schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
 			@Override
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK) {
 					return;
 				}
 
-				try {
-					schedule.setEnabled(false);
-					ScheduleStore.flush(schedule.getStorageKey(), schedule);
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
+				//scheduleEntry.setEnabled(false);
+				// TODO set disabled
 
 				refresh();
 			}
@@ -283,28 +277,26 @@ public class SchedulesSection {
 	}
 
 	public void refresh() {
-		schedulesList.refresh();
+		scheduleEntriesList.refresh();
 		updateButtons();
 	}
 
 	void updateButtons() {
-		final int selectedElementsCount = ((IStructuredSelection) schedulesList.getSelection()).size();
+		final int selectedElementsCount = ((IStructuredSelection) scheduleEntriesList.getSelection()).size();
 		if (selectedElementsCount == 0) {
 			addButton.setEnabled(true);
 			removeButton.setEnabled(false);
 			enableButton.setEnabled(false);
 			disableButton.setEnabled(false);
-			showEntriesButton.setEnabled(false);
 			return;
 		}
 
 		addButton.setEnabled(true);
 		removeButton.setEnabled(selectedElementsCount == 1);
-		showEntriesButton.setEnabled(selectedElementsCount == 1);
 
-		final ScheduleImpl selectedSchedule = getSelectedSchedule();
-		if (selectedSchedule != null) {
-			if (selectedSchedule.isEnabled()) {
+		final ScheduleEntryImpl selectedScheduleEntry = getSelectedScheduleEntry();
+		if (selectedScheduleEntry != null) {
+			if (selectedScheduleEntry.isEnabled()) {
 				enableButton.setEnabled(false);
 				disableButton.setEnabled(true);
 			} else {
