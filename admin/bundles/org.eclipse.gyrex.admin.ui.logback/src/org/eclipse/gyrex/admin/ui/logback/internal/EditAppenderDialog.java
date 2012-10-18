@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube        - rework to Admin UI
  */
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
@@ -39,10 +40,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.qos.logback.classic.Level;
 
-public class AddAppenderDialog extends NonBlockingStatusDialog {
-
-	/** serialVersionUID */
-	private static final long serialVersionUID = 1L;
+public class EditAppenderDialog extends NonBlockingStatusDialog {
 
 	private final SelectionButtonDialogFieldGroup typeField = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "Console", "File" }, 2);
 	private final StringDialogField nameField = new StringDialogField();
@@ -62,10 +60,17 @@ public class AddAppenderDialog extends NonBlockingStatusDialog {
 	 * 
 	 * @param parent
 	 */
-	public AddAppenderDialog(final Shell parent) {
+	public EditAppenderDialog(final Shell parent) {
 		super(parent);
 		setTitle("New Appender");
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
+	}
+
+	public EditAppenderDialog(final Shell parent, final Appender appender) {
+		super(parent);
+		setTitle("Edit Appender");
+		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
+		this.appender = appender;
 	}
 
 	@Override
@@ -104,7 +109,6 @@ public class AddAppenderDialog extends NonBlockingStatusDialog {
 		siftingPropertyNameField.setDialogFieldListener(validateListener);
 
 		compressField.setSelection(true);
-		updateEnabledFields();
 
 		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
 		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
@@ -113,6 +117,67 @@ public class AddAppenderDialog extends NonBlockingStatusDialog {
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), typeField, nameField, thresholdField, new Separator(), fileNameField, new Separator(), rotationTypeField, compressField, maxHistoryField, maxFileSizeField, new Separator(), siftingPropertyNameField, siftingPropertyDefaultField }, true);
 		LayoutUtil.setHorizontalGrabbing(fileNameField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(nameField.getTextControl(null));
+
+		if (appender != null) {
+			if (appender instanceof FileAppender) {
+				final FileAppender append = (FileAppender) appender;
+				typeField.setSelection(0, false);
+				typeField.setSelection(1, true);
+
+				nameField.setText(append.getName());
+				fileNameField.setText(append.getFileName());
+
+				if ((append.getRotationPolicy() == RotationPolicy.DAILY) || (append.getRotationPolicy() == RotationPolicy.WEEKLY) || (append.getRotationPolicy() == RotationPolicy.MONTHLY)) {
+					maxHistoryField.setText(StringUtils.trimToEmpty(append.getMaxHistory()));
+				} else if (append.getRotationPolicy() == RotationPolicy.SIZE) {
+					maxFileSizeField.setText(StringUtils.trimToEmpty(append.getMaxFileSize()));
+				}
+
+				compressField.setSelection(append.isCompressRotatedLogs());
+				siftingPropertyNameField.setText(StringUtils.trimToEmpty(append.getSiftingMdcPropertyName()));
+				siftingPropertyDefaultField.setText(StringUtils.trimToEmpty(append.getSiftingMdcPropertyDefaultValue()));
+
+				if (append.getRotationPolicy() == RotationPolicy.DAILY) {
+					rotationTypeField.setSelection(1, true);
+					rotationTypeField.setSelection(0, false);
+				} else if (append.getRotationPolicy() == RotationPolicy.WEEKLY) {
+					rotationTypeField.setSelection(2, true);
+					rotationTypeField.setSelection(0, false);
+				} else if (append.getRotationPolicy() == RotationPolicy.MONTHLY) {
+					rotationTypeField.setSelection(3, true);
+					rotationTypeField.setSelection(0, false);
+				} else if (append.getRotationPolicy() == RotationPolicy.SIZE) {
+					rotationTypeField.setSelection(4, true);
+					rotationTypeField.setSelection(0, false);
+				} else {
+					rotationTypeField.setSelection(0, true);
+				}
+			} else {
+				final ConsoleAppender append = (ConsoleAppender) appender;
+				typeField.setSelection(0, true);
+				typeField.setSelection(1, false);
+
+				nameField.setText(append.getName());
+			}
+
+			if (appender.getThreshold() == Level.DEBUG) {
+				thresholdField.setSelection(1, true);
+				thresholdField.setSelection(0, false);
+			} else if (appender.getThreshold() == Level.INFO) {
+				thresholdField.setSelection(2, true);
+				thresholdField.setSelection(0, false);
+			} else if (appender.getThreshold() == Level.WARN) {
+				thresholdField.setSelection(3, true);
+				thresholdField.setSelection(0, false);
+			} else if (appender.getThreshold() == Level.ERROR) {
+				thresholdField.setSelection(4, true);
+				thresholdField.setSelection(0, false);
+			} else {
+				thresholdField.setSelection(0, true);
+			}
+		}
+
+		updateEnabledFields();
 
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
 		masterLayout.marginWidth = 5;
@@ -135,8 +200,9 @@ public class AddAppenderDialog extends NonBlockingStatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK())
+		if (!getStatus().isOK()) {
 			return;
+		}
 
 		try {
 			if (typeField.isSelected(0)) {

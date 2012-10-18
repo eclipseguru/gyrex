@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube        - rework to Admin UI
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
@@ -20,7 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.rwt.RWT;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.Display;
 
 import org.osgi.framework.BundleContext;
 
@@ -65,7 +66,7 @@ public class LogbackUiActivator extends BaseBundleActivator {
 		// ImageRegistry must be session scoped in RAP
 		ImageRegistry imageRegistry = (ImageRegistry) RWT.getSessionStore().getAttribute(IMAGE_REGISTRY);
 		if (imageRegistry == null) {
-			imageRegistry = new ImageRegistry(PlatformUI.getWorkbench().getDisplay());
+			imageRegistry = new ImageRegistry(Display.getCurrent());
 			initializeImageRegistry(imageRegistry);
 			RWT.getSessionStore().setAttribute(IMAGE_REGISTRY, imageRegistry);
 		}

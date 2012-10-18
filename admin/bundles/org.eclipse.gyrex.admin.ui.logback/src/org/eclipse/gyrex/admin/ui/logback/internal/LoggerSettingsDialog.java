@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube        - rework to Admin UI
  */
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IListAdapter;
@@ -30,8 +32,8 @@ import org.eclipse.gyrex.logback.config.internal.model.Logger;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -44,7 +46,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.qos.logback.classic.Level;
 
-public class LoggerSettingsDialog extends StatusDialog {
+public class LoggerSettingsDialog extends NonBlockingStatusDialog {
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
@@ -108,15 +110,20 @@ public class LoggerSettingsDialog extends StatusDialog {
 
 	void addAppenderRefButtonPressed() {
 		final SelectAppenderDialog dialog = new SelectAppenderDialog(getShell(), allAvailableAppenders);
-		if (dialog.open() == Window.OK) {
-			final Appender appender = (Appender) dialog.getFirstResult();
-			if (null != appender) {
-				if (appenderRefsField.getElements().contains(appender.getName())) {
-					return;
+		dialog.openNonBlocking(new DialogCallback() {
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					final Appender appender = (Appender) dialog.getFirstResult();
+					if (null != appender) {
+						if (appenderRefsField.getElements().contains(appender.getName())) {
+							return;
+						}
+						appenderRefsField.addElement(appender.getName());
+					}
 				}
-				appenderRefsField.addElement(appender.getName());
 			}
-		}
+		});
 	}
 
 	@Override

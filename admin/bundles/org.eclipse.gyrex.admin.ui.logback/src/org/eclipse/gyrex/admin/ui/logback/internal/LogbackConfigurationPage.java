@@ -8,71 +8,59 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Peter Grube        - rework to Admin UI
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-//
-//import org.eclipse.gyrex.admin.ui.internal.forms.FormLayoutFactory;
-//import org.eclipse.gyrex.admin.ui.pages.AdminPage;
-//
-//import org.eclipse.jface.layout.GridDataFactory;
-//import org.eclipse.jface.layout.GridLayoutFactory;
-//import org.eclipse.jface.viewers.ISelectionProvider;
-//import org.eclipse.swt.layout.GridData;
-//import org.eclipse.swt.widgets.Composite;
-//import org.eclipse.ui.forms.IManagedForm;
-//import org.eclipse.ui.forms.widgets.FormToolkit;
-//
-//public class LogbackConfigurationPage extends AdminPage {
-//
-//	private LogbackSection logbackSection;
-//
-//	/**
-//	 * Creates a new instance.
-//	 */
-//	public LogbackConfigurationPage() {
-//		setTitle("Logback Configuration");
-//		setTitleToolTip("Configure and assign Logback appenders and loggers.");
-//	}
-//
-//	@Override
-//	protected void createFormContent(final IManagedForm managedForm) {
-//		final Composite body = managedForm.getForm().getBody();
-//		body.setLayout(FormLayoutFactory.createFormGridLayout(true, 1));
-//		body.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
-//
-//		final FormToolkit toolkit = managedForm.getToolkit();
-//
-//		final Composite left = toolkit.createComposite(body);
-//		left.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
-//		left.setLayout(GridLayoutFactory.fillDefaults().create());
-//
-//		logbackSection = new LogbackSection(left, this);
-//		logbackSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
-//		managedForm.addPart(logbackSection);
-//
-////		final Composite right = toolkit.createComposite(body);
-////		right.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
-////		right.setLayout(GridLayoutFactory.fillDefaults().create());
-////
-////		final DetailsSection assignmentSection = new DetailsSection(right, this);
-////		assignmentSection.getSection().setLayoutData(new GridData(GridData.FILL_BOTH));
-////		managedForm.addPart(assignmentSection);
-//
-////		final InstallStateSection installSection = new InstallStateSection(right, this);
-////		installSection.getSection().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-////		managedForm.addPart(installSection);
-//
-////		FormLayoutFactory.visualizeLayoutArea(body, SWT.COLOR_CYAN);
-////		FormLayoutFactory.visualizeLayoutArea(left, SWT.COLOR_DARK_GREEN);
-////		FormLayoutFactory.visualizeLayoutArea(right, SWT.COLOR_DARK_GREEN);
-//	}
-//
-//	@Override
-//	public ISelectionProvider getSelectionProvider() {
-//		if (null != logbackSection) {
-//			return logbackSection.getSelectionProvider();
-//		}
-//		return null;
-//	}
-//}
+import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
+import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
+import org.eclipse.gyrex.server.Platform;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+
+public class LogbackConfigurationPage extends FilteredAdminPage {
+
+	private Composite pageComposite;
+
+	/**
+	 * Creates a new instance.
+	 */
+	public LogbackConfigurationPage() {
+		setTitle("Logback Configuration");
+		setTitleToolTip("Configure and assign Logback appenders and loggers.");
+	}
+
+	@Override
+	public void activate() {
+		super.activate();
+	}
+
+	@Override
+	public Control createControl(final Composite parent) {
+		pageComposite = new Composite(parent, SWT.NONE);
+		pageComposite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
+
+		if (Platform.inDevelopmentMode()) {
+			final Infobox infobox = new Infobox(pageComposite);
+			infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+			infobox.addHeading("Logbacks in Gyrex");
+			infobox.addParagraph("Configure your Logbacks.");
+		}
+
+		final Composite description = new Composite(pageComposite, SWT.NONE);
+		final GridData gd = AdminUiUtil.createFillData();
+		gd.verticalIndent = 10;
+		description.setLayoutData(gd);
+		description.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
+
+		final LogbackSection logbackSection = new LogbackSection(description, this);
+
+		return pageComposite;
+
+	}
+
+}
