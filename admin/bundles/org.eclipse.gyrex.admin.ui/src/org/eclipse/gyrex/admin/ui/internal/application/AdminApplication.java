@@ -27,12 +27,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.Policy;
-import org.eclipse.rwt.RWT;
-import org.eclipse.rwt.events.BrowserHistoryEvent;
-import org.eclipse.rwt.events.BrowserHistoryListener;
-import org.eclipse.rwt.internal.widgets.JSExecutor;
-import org.eclipse.rwt.lifecycle.IEntryPoint;
-import org.eclipse.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
+import org.eclipse.rap.rwt.events.BrowserHistoryEvent;
+import org.eclipse.rap.rwt.events.BrowserHistoryListener;
+import org.eclipse.rap.rwt.lifecycle.IEntryPoint;
+import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
@@ -119,7 +119,10 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				JSExecutor.executeJS("window.location.href = '" + url + "'");
+				final JavaScriptExecutor service = RWT.getClient().getService(JavaScriptExecutor.class);
+				if (service != null) {
+					service.execute("window.location.href = '" + url + "'");
+				}
 			}
 		});
 	}
@@ -144,7 +147,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 		}
 
 		// initialize arguments (allows safe use within this method as well as for API contract)
-		if (args == null || args.length == 0) {
+		if ((args == null) || (args.length == 0)) {
 			args = new String[] { contribution.getId() };
 		}
 
@@ -194,7 +197,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 		final FormData data = new FormData();
 		data.top = new FormAttachment(topAttachment, 0, SWT.BOTTOM);
 		data.bottom = new FormAttachment(bottomAttachment, -10, SWT.TOP);
-		data.left = new FormAttachment(50, -CENTER_AREA_WIDTH / 2 + 10);
+		data.left = new FormAttachment(50, (-CENTER_AREA_WIDTH / 2) + 10);
 		data.width = CENTER_AREA_WIDTH - 10;
 		return data;
 	}
@@ -462,10 +465,10 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 				return;
 			}
 
-			if (page == currentPage) {
+			if (page == currentPage)
 				// don't do anything if it's the same page
 				return;
-			} else if (null != currentPage) {
+			else if (null != currentPage) {
 				// deactivate old page first
 				deactivate(currentPage);
 			}
@@ -481,13 +484,11 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 	@Override
 	public void openPage(final String pageId, final String[] args) {
-		if (StringUtils.isBlank(pageId)) {
+		if (StringUtils.isBlank(pageId))
 			throw new IllegalArgumentException("invalid page id");
-		}
 		final PageContribution contribution = AdminPageRegistry.getInstance().getPage(pageId);
-		if (contribution == null) {
+		if (contribution == null)
 			return;
-		}
 
 		final String[] argsWithPageId;
 		if (args != null) {

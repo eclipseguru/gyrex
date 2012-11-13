@@ -22,7 +22,7 @@ import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 
 import org.eclipse.jface.window.Window;
-import org.eclipse.rwt.widgets.DialogCallback;
+import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;

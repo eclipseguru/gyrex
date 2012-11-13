@@ -58,9 +58,9 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.rwt.RWT;
-import org.eclipse.rwt.application.ApplicationRunner;
-import org.eclipse.rwt.engine.RWTServlet;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.application.ApplicationRunner;
+import org.eclipse.rap.rwt.engine.RWTServlet;
 import org.eclipse.swt.widgets.Display;
 
 import org.osgi.framework.BundleContext;

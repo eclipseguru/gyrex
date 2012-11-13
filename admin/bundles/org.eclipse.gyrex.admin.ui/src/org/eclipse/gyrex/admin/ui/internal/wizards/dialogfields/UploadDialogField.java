@@ -21,10 +21,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.rwt.RWT;
-import org.eclipse.rwt.lifecycle.UICallBack;
-import org.eclipse.rwt.service.IServiceHandler;
-import org.eclipse.rwt.widgets.FileUpload;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.lifecycle.UICallBack;
+import org.eclipse.rap.rwt.service.IServiceHandler;
+import org.eclipse.rap.rwt.widgets.FileUpload;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -74,9 +74,8 @@ public class UploadDialogField extends DialogField {
 		public UploadHandler(final IUploadAdapter uploadAdapter) {
 			this.uploadAdapter = uploadAdapter;
 			handlerId = UploadHandler.class.getName() + "@" + System.identityHashCode(this);
-			if (!uploadHandlerRef.compareAndSet(null, this)) {
+			if (!uploadHandlerRef.compareAndSet(null, this))
 				throw new IllegalStateException("Concurrent upload in progress!");
-			}
 			RWT.getServiceManager().registerServiceHandler(handlerId, this);
 		}
 

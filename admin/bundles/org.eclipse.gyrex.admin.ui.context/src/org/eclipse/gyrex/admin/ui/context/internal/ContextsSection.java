@@ -26,7 +26,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.rwt.widgets.DialogCallback;
+import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -188,9 +188,8 @@ public class ContextsSection {
 	 */
 	void removeButtonPressed() {
 		final ContextDefinition contextDefinition = getSelectedContext();
-		if (contextDefinition == null) {
+		if (contextDefinition == null)
 			return;
-		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Context", String.format("Do you really want to delete the context %s?", contextDefinition.getPath() + contextDefinition.getName()), new DialogCallback() {
 			/** serialVersionUID */
@@ -198,9 +197,8 @@ public class ContextsSection {
 
 			@Override
 			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
+				if (returnCode != Window.OK)
 					return;
-				}
 				getContextRegistry().removeDefinition(contextDefinition);
 				refresh();
 			}

@@ -6,7 +6,7 @@ Bundle-Version: 1.2.0.qualifier
 Bundle-Vendor: Eclipse Gyrex
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gyrex.admin.ui;bundle-version="1.1.0",
- org.eclipse.rap.jface;bundle-version="1.5.0",
+ org.eclipse.rap.jface;bundle-version="[2.0.0,3.0.0)",
  org.eclipse.gyrex.preferences;bundle-version="1.0.0",
  org.eclipse.gyrex.http.jetty;bundle-version="1.0.0",
  org.eclipse.gyrex.common;bundle-version="1.0.0"

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.logback.config.internal.model.Appender;
 
-import org.eclipse.rwt.widgets.DialogCallback;
+import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 

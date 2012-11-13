@@ -11,7 +11,7 @@
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.rwt.RWT;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;

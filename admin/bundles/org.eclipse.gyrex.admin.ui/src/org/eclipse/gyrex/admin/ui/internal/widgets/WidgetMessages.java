@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.widgets;
 
-import org.eclipse.rwt.RWT;
-import org.eclipse.rwt.lifecycle.UICallBack;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.lifecycle.UICallBack;
 import org.eclipse.swt.widgets.Display;
 
 /**

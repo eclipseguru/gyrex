@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.common.lifecycle.IShutdownParticipant;
 
-import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -34,6 +33,7 @@ import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.core.runtime.dynamichelpers.ExtensionTracker;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionChangeHandler;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionTracker;
+import org.eclipse.osgi.framework.eventmgr.EventManager;
 
 import org.apache.commons.lang.StringUtils;
 

@@ -19,12 +19,13 @@ import java.util.Map;
 
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 
-import org.eclipse.rwt.RWT;
-import org.eclipse.rwt.application.Application;
-import org.eclipse.rwt.application.ApplicationConfiguration;
-import org.eclipse.rwt.client.WebClient;
-import org.eclipse.rwt.resources.IResource;
-import org.eclipse.rwt.resources.IResourceManager.RegisterOptions;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.application.Application;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
+import org.eclipse.rap.rwt.client.WebClient;
+import org.eclipse.rap.rwt.resources.ResourceLoader;
 
 import org.osgi.framework.Bundle;
 
@@ -32,58 +33,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
 
 public class AdminApplicationConfiguration implements ApplicationConfiguration {
-	/**
-	 *
-	 */
-	private static final class BundleImage implements IResource {
-		/** resourceName */
-		private final String resourceName;
-
-		/**
-		 * Creates a new instance.
-		 * 
-		 * @param resourceName
-		 */
-		private BundleImage(final String resourceName) {
-			this.resourceName = resourceName;
-		}
-
-		@Override
-		public String getCharset() {
-			return null;
-		}
-
-		@Override
-		public ClassLoader getLoader() {
-			return AdminUiActivator.class.getClassLoader();
-		}
-
-		@Override
-		public String getLocation() {
-			return resourceName;
-		}
-
-		@Override
-		public RegisterOptions getOptions() {
-			return RegisterOptions.NONE;
-		}
-
-		@Override
-		public boolean isExternal() {
-			return false;
-		}
-
-		@Override
-		public boolean isJSLibrary() {
-			return false;
-		}
-	}
 
 	private static String readBundleResource(final String resourceName, final String charset) {
 		final URL entry = AdminUiActivator.getInstance().getBundle().getEntry(resourceName);
-		if (entry == null) {
+		if (entry == null)
 			throw new IllegalStateException(String.format("Bundle resource '%s' not available!", resourceName));
-		}
 		InputStream in = null;
 		try {
 			in = entry.openStream();
@@ -103,7 +57,12 @@ public class AdminApplicationConfiguration implements ApplicationConfiguration {
 		brandingProps.put(WebClient.FAVICON, "img/gyrex/eclipse.ico");
 		application.addEntryPoint("/admin", AdminApplication.class, brandingProps);
 		application.addStyleSheet(RWT.DEFAULT_THEME_ID, "theme/admin.css");
-		application.addResource(new BundleImage("img/gyrex/eclipse.ico"));
+		application.addResource("img/gyrex/eclipse.ico", new ResourceLoader() {
+			@Override
+			public InputStream getResourceAsStream(final String resourceName) throws IOException {
+				return FileLocator.openStream(AdminUiActivator.getInstance().getBundle(), new Path("img/gyrex/eclipse.ico"), false);
+			}
+		});
 	}
 
 	Bundle getBundle() {

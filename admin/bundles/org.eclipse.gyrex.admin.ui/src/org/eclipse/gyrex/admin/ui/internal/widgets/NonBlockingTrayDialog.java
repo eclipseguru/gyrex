@@ -14,7 +14,7 @@ package org.eclipse.gyrex.admin.ui.internal.widgets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.dialogs.TrayDialog;
-import org.eclipse.rwt.widgets.DialogCallback;
+import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.widgets.Shell;
 
 /**
