@@ -11,6 +11,7 @@
  */
 package org.eclipse.gyrex.http.jaxrs;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Handler;
@@ -22,12 +23,16 @@ import org.eclipse.gyrex.http.application.context.IApplicationContext;
 import org.eclipse.gyrex.http.jaxrs.internal.JaxRsDebug;
 import org.eclipse.gyrex.http.jaxrs.internal.JaxRsExtensions;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+import com.sun.jersey.spi.inject.Errors.ErrorMessage;
+import com.sun.jersey.spi.inject.Errors.ErrorMessagesException;
 
 /**
  * Base class for HTTP Applications with support for JAX-RS web services.
@@ -128,7 +133,29 @@ public class JaxRsApplication extends Application {
 		installSlf4jBridgeIfNecessary();
 
 		// register
-		getApplicationContext().registerServlet(getJaxRsAlias(), new ServletContainer(jaxRsApplication), null);
+		try {
+			getApplicationContext().registerServlet(getJaxRsAlias(), new ServletContainer(jaxRsApplication), null);
+		} catch (final ErrorMessagesException e) {
+			// generate a more verbose error message if possible
+			final StrBuilder error = new StrBuilder("Error initializing JAX-RS application.");
+			for (final ErrorMessage m : e.messages) {
+				error.appendNewLine().append("> ").append(extractMessage(m));
+			}
+			// re-throw as ISE in order to re-try initialization later
+			throw new IllegalStateException(error.toString(), e);
+		}
+	}
+
+	private String extractMessage(final ErrorMessage m) {
+		try {
+			final Field f = m.getClass().getDeclaredField("message");
+			if (!f.isAccessible()) {
+				f.setAccessible(true);
+			}
+			return (String) f.get(m);
+		} catch (final Exception e) {
+			return String.format("%s (%s)", m, ExceptionUtils.getRootCauseMessage(e));
+		}
 	}
 
 	/**
