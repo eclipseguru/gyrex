@@ -14,21 +14,28 @@ package org.eclipse.gyrex.admin.ui.internal.jetty;
 import javax.servlet.Servlet;
 
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlet.ServletMapping;
 
 /**
  * {@link ServletHolder} that requires the admin role.
  */
 public class AdminServletHolder extends ServletHolder {
 
-	/** ADMIN */
 	public static final String ADMIN_ROLE = "admin";
 
-	/**
-	 * Creates a new instance.
-	 */
+	private ServletMapping servletMapping;
+
 	public AdminServletHolder(final Servlet servlet) {
 		super(servlet);
 		setRunAsRole(AdminServletHolder.ADMIN_ROLE);
+	}
+
+	public ServletMapping getServletMapping() {
+		return servletMapping;
+	}
+
+	public void setServletMapping(final ServletMapping servletMapping) {
+		this.servletMapping = servletMapping;
 	}
 
 }

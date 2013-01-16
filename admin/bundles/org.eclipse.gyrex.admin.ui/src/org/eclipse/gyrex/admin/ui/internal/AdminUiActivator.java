@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminApplicationConfiguration;
 import org.eclipse.gyrex.admin.ui.internal.jetty.AdminServletHolder;
 import org.eclipse.gyrex.admin.ui.internal.jetty.SimpleAdminLoginService;
+import org.eclipse.gyrex.admin.ui.internal.servlets.AdminServletTracker;
 import org.eclipse.gyrex.admin.ui.internal.servlets.PreferencesServlet;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
@@ -53,6 +54,7 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -183,6 +185,19 @@ public class AdminUiActivator extends BaseBundleActivator {
 		final IPath contextBase = Platform.getStateLocation(getBundle()).append("context");
 		contextHandler.setBaseResource(Resource.newResource(contextBase.toFile()));
 
+		// configure defaults for resources served by Jetty's DefaultServlet
+		if (Platform.inDevelopmentMode()) {
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "true");
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.maxCachedFiles", "0");
+		} else {
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.maxCacheSize", "2000000");
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.maxCachedFileSize", "254000");
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.maxCachedFiles", "1000");
+			contextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "true");
+		}
+
 		// initialize and start RWT application
 		adminApplicationRunner = new ApplicationRunner(new AdminApplicationConfiguration(), contextHandler.getServletContext());
 		adminApplicationRunner.start();
@@ -191,14 +206,12 @@ public class AdminUiActivator extends BaseBundleActivator {
 		contextHandler.addServlet(new AdminServletHolder(new RWTServlet()), "/admin");
 
 		// register additional static resources references in body html
-		final ServletHolder staticResources = createDefaultServlet();
+		final ServletHolder staticResources = new AdminServletHolder(new DefaultServlet());
 		staticResources.setInitParameter("resourceBase", FileLocator.resolve(FileLocator.find(getBundle(), new Path("html"), null)).toExternalForm());
 		contextHandler.addServlet(staticResources, "/static/*");
 
 		// redirect to admin
 		contextHandler.addServlet(new AdminServletHolder(new HttpServlet() {
-
-			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -208,7 +221,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 		}), "");
 
 		// serve context resources (required for RAP/RWT resources)
-		contextHandler.addServlet(createDefaultServlet(), "/*");
+		contextHandler.addServlet(new AdminServletHolder(new DefaultServlet()), "/*");
 
 		// register Logback status servlet
 		try {
@@ -223,30 +236,22 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 		// register Preferences status servlet
 		contextHandler.addServlet(new AdminServletHolder(new PreferencesServlet()), "/preferences");
+
+		// allow extension using custom servlets
+		final AdminServletTracker adminServletTracker = new AdminServletTracker(getBundle().getBundleContext(), contextHandler);
+		contextHandler.addBean(new AbstractLifeCycle() {
+			@Override
+			protected void doStart() throws Exception {
+				adminServletTracker.open();
+			}
+
+			@Override
+			protected void doStop() throws Exception {
+				adminServletTracker.close();
+			}
+		});
 	}
 
-	private ServletHolder createDefaultServlet() {
-		final ServletHolder defaultServlet = new AdminServletHolder(new DefaultServlet());
-		if (Platform.inDevelopmentMode()) {
-			defaultServlet.setInitParameter("dirAllowed", "true");
-			defaultServlet.setInitParameter("useFileMappedBuffer", "false");
-			defaultServlet.setInitParameter("maxCachedFiles", "0");
-		} else {
-			defaultServlet.setInitParameter("dirAllowed", "false");
-			defaultServlet.setInitParameter("maxCacheSize", "2000000");
-			defaultServlet.setInitParameter("maxCachedFileSize", "254000");
-			defaultServlet.setInitParameter("maxCachedFiles", "1000");
-			defaultServlet.setInitParameter("useFileMappedBuffer", "true");
-		}
-		return defaultServlet;
-	}
-
-	/**
-	 * @param password
-	 * @param contextHandler
-	 * @param realmFile
-	 * @return
-	 */
 	private SecurityHandler createSecurityHandler(final Handler baseHandler, final String username, final String password) {
 		final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
 		final ConstraintMapping authenticationContraintMapping = new ConstraintMapping();
