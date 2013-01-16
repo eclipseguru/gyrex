@@ -29,6 +29,7 @@ import org.eclipse.gyrex.admin.ui.internal.jetty.SimpleAdminLoginService;
 import org.eclipse.gyrex.admin.ui.internal.servlets.PreferencesServlet;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
+import org.eclipse.gyrex.monitoring.diagnostics.StatusTracker;
 import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -109,13 +110,13 @@ public class AdminUiActivator extends BaseBundleActivator {
 	 */
 	public static AdminUiActivator getInstance() {
 		final AdminUiActivator activator = instance;
-		if (activator == null) {
+		if (activator == null)
 			throw new IllegalStateException("inactive");
-		}
 		return activator;
 	}
 
 	private ApplicationRunner adminApplicationRunner;
+	private StatusTracker statusTracker;
 
 	/**
 	 * The constructor
@@ -145,9 +146,8 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 			final File keystoreFile = Platform.getStateLocation(AdminUiActivator.getInstance().getBundle()).append("jettycerts").toFile();
 			if (!keystoreFile.isFile()) {
-				if (!keystoreFile.getParentFile().isDirectory() && !keystoreFile.getParentFile().mkdirs()) {
+				if (!keystoreFile.getParentFile().isDirectory() && !keystoreFile.getParentFile().mkdirs())
 					throw new IllegalStateException("Error creating directory for jetty ssl certificates");
-				}
 
 				final InputStream stream = getBundle().getEntry("cert/jettycerts.jks").openStream();
 				FileUtils.copyInputStreamToFile(stream, keystoreFile);
@@ -207,7 +207,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 			}
 		}), "");
 
-		// server context resources (required for RAP/RWT resources)
+		// serve context resources (required for RAP/RWT resources)
 		contextHandler.addServlet(createDefaultServlet(), "/*");
 
 		// register Logback status servlet
@@ -272,6 +272,9 @@ public class AdminUiActivator extends BaseBundleActivator {
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
 
+		statusTracker = new StatusTracker(context);
+		statusTracker.open();
+
 		// start the admin server asynchronously
 		final Job jettyStartJob = new Job("Start Jetty Admin Server") {
 
@@ -296,6 +299,9 @@ public class AdminUiActivator extends BaseBundleActivator {
 	protected void doStop(final BundleContext context) throws Exception {
 		instance = null;
 
+		statusTracker.close();
+		statusTracker = null;
+
 		stopServer();
 	}
 
@@ -308,6 +314,13 @@ public class AdminUiActivator extends BaseBundleActivator {
 			RWT.getSessionStore().setAttribute(IMAGE_REGISTRY, imageRegistry);
 		}
 		return imageRegistry;
+	}
+
+	public IStatus getSystemStatus() {
+		final StatusTracker tracker = statusTracker;
+		if (tracker == null)
+			throw createBundleInactiveException();
+		return tracker.getSystemStatus();
 	}
 
 	private void startServer() {
@@ -339,11 +352,10 @@ public class AdminUiActivator extends BaseBundleActivator {
 			if (Boolean.getBoolean(PROPERTY_ADMIN_SECURE)) {
 				final String authenticationPhrase = System.getProperty(PROPERTY_ADMIN_AUTH);
 				final String[] segments = authenticationPhrase.split("/");
-				if (segments.length != 3) {
+				if (segments.length != 3)
 					throw new IllegalArgumentException("Illegal authentication configuration. Must be three string separated by '/'");
-				} else if (!StringUtils.equals(segments[0], "BASIC")) {
+				else if (!StringUtils.equals(segments[0], "BASIC"))
 					throw new IllegalArgumentException("Illegal authentication configuration. Only method 'BASIC' is supported. Found " + segments[0]);
-				}
 
 				server.setHandler(createSecurityHandler(contextHandler, segments[1], segments[2]));
 			} else {
