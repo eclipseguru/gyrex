@@ -5,8 +5,9 @@ Bundle-SymbolicName: org.eclipse.gyrex.admin.ui;singleton:=true
 Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: org.eclipse.gyrex.admin.ui.internal.AdminUiActivator
 Bundle-Vendor: Eclipse Gyrex
-Require-Bundle: org.eclipse.gyrex.boot;bundle-version="[1.0.0,2.0.0)",
- org.eclipse.gyrex.common;bundle-version="[1.0.0,2.0.0)",
+Require-Bundle: org.eclipse.gyrex.boot;bundle-version="[1.2.0,2.0.0)",
+ org.eclipse.gyrex.common;bundle-version="[1.2.0,2.0.0)",
+ org.eclipse.gyrex.monitoring;bundle-version="[1.2.0,2.0.0)",
  org.eclipse.rap.jface;bundle-version="[2.0.0,3.0.0)",
  org.eclipse.equinox.registry;bundle-version="[3.5.200,4.0.0)",
  org.eclipse.core.jobs;bundle-version="[3.5.200,4.0.0)",
@@ -33,6 +34,7 @@ Import-Package: ch.qos.logback.classic;version="[1.0.0,2.0.0)";resolution:=optio
  org.eclipse.jetty.server.session;version="[8.1.0,9.0.0)",
  org.eclipse.jetty.server.ssl;version="[8.1.0,9.0.0)",
  org.eclipse.jetty.servlet;version="[8.1.0,9.0.0)",
+ org.eclipse.jetty.util.component;version="8.1.8",
  org.eclipse.jetty.util.resource;version="[8.1.0,9.0.0)",
  org.eclipse.jetty.util.security;version="[8.1.0,9.0.0)",
  org.eclipse.jetty.util.ssl;version="[8.1.0,9.0.0)",
@@ -40,6 +42,8 @@ Import-Package: ch.qos.logback.classic;version="[1.0.0,2.0.0)";resolution:=optio
  org.eclipse.osgi.framework.eventmgr;version="[1.2.0,2.0.0)",
  org.eclipse.osgi.util;version="[1.1.0,2.0.0)",
  org.osgi.framework;version="[1.6.0,2.0.0)",
+ org.osgi.service.component;version="[1.2.0,2.0.0)",
+ org.osgi.util.tracker;version="[1.5.0,2.0.0)",
  org.slf4j;version="[1.6.0,2.0.0)"
 Export-Package: org.eclipse.gyrex.admin.ui.adapter;version="1.0.0";
   x-friends:="org.eclipse.gyrex.admin.ui,
@@ -108,4 +112,5 @@ Export-Package: org.eclipse.gyrex.admin.ui.adapter;version="1.0.0";
    org.eclipse.gyrex.admin.ui.persistence,
    org.eclipse.gyrex.admin.ui.logback"
 Bundle-ClassPath: .
-Service-Component: OSGI-INF/overview-item-node-shortcuts.xml
+Service-Component: OSGI-INF/overview-item-node-shortcuts.xml,
+ OSGI-INF/overview-item-system-status.xml
