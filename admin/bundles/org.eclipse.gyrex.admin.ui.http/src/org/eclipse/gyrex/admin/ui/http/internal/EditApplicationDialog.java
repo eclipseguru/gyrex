@@ -70,9 +70,6 @@ import org.apache.commons.lang.StringUtils;
 @SuppressWarnings("restriction")
 public class EditApplicationDialog extends NonBlockingStatusDialog {
 
-	/** serialVersionUID */
-	private static final long serialVersionUID = 1L;
-
 	private static final class PropertiesFieldLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		/** serialVersionUID */
@@ -86,15 +83,17 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 		@Override
 		public String getColumnText(final Object element, final int columnIndex) {
-			if (element instanceof String[]) {
+			if (element instanceof String[])
 				return ((String[]) element)[columnIndex];
-			}
 			return getText(element);
 		}
 	}
 
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+
 	private final StringDialogField idField = new StringDialogField();
-	private final ComboDialogField providerField = new ComboDialogField(SWT.DROP_DOWN);
+	private final ComboDialogField providerField = new ComboDialogField(SWT.DROP_DOWN | SWT.READ_ONLY);
 	private final Map<String, String> providerItemToIdMap = new HashMap<String, String>();
 	private final StringDialogField contextPathField = new StringDialogField();
 	private final ListDialogField propertiesField;
@@ -254,7 +253,7 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 				final Collection<ContextDefinition> contexts = ContextActivator.getInstance().getContextRegistryImpl().getDefinedContexts();
 				for (final ContextDefinition contextDefinition : contexts) {
-					if (null == patternString || StringUtils.contains(contextDefinition.getPath().toString(), patternString)) {
+					if ((null == patternString) || StringUtils.contains(contextDefinition.getPath().toString(), patternString)) {
 						resultList.add(new ContentProposal(contextDefinition.getPath().toString(), contextDefinition.toString()));
 					}
 				}
@@ -306,9 +305,8 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 
 	void editSelectedProperty() {
 		final List selectedElements = propertiesField.getSelectedElements();
-		if (selectedElements.isEmpty()) {
+		if (selectedElements.isEmpty())
 			return;
-		}
 
 		final String[] elem = (String[]) selectedElements.get(0);
 		final EditPropertyDialog dialog = new EditPropertyDialog(getParentShell(), elem[0], elem[1]);
@@ -331,9 +329,8 @@ public class EditApplicationDialog extends NonBlockingStatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 			// refresh properties
