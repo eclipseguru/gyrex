@@ -25,7 +25,7 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.client.WebClient;
-import org.eclipse.rap.rwt.resources.ResourceLoader;
+import org.eclipse.rap.rwt.service.ResourceLoader;
 
 import org.osgi.framework.Bundle;
 

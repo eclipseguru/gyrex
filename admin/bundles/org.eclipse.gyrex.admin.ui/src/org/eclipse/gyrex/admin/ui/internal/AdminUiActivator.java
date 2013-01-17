@@ -312,11 +312,11 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 	public ImageRegistry getImageRegistry() {
 		// ImageRegistry must be session scoped in RAP
-		ImageRegistry imageRegistry = (ImageRegistry) RWT.getSessionStore().getAttribute(IMAGE_REGISTRY);
+		ImageRegistry imageRegistry = (ImageRegistry) RWT.getUISession().getAttribute(IMAGE_REGISTRY);
 		if (imageRegistry == null) {
 			imageRegistry = new ImageRegistry(Display.getCurrent());
 			AdminUiImages.initializeImageRegistry(imageRegistry);
-			RWT.getSessionStore().setAttribute(IMAGE_REGISTRY, imageRegistry);
+			RWT.getUISession().setAttribute(IMAGE_REGISTRY, imageRegistry);
 		}
 		return imageRegistry;
 	}

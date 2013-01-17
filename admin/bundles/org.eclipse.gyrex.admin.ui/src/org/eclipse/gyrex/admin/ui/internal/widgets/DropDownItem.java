@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.widgets;
 
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -42,11 +42,11 @@ public abstract class DropDownItem extends Composite {
 
 		// toolbar
 		toolBar = new ToolBar(this, SWT.HORIZONTAL);
-		toolBar.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
+		toolBar.setData(RWT.CUSTOM_VARIANT, customVariant);
 
 		// tool item
 		toolItem = new ToolItem(toolBar, SWT.DROP_DOWN);
-		toolItem.setData(WidgetUtil.CUSTOM_VARIANT, customVariant);
+		toolItem.setData(RWT.CUSTOM_VARIANT, customVariant);
 		toolItem.setText(text.replace("&", "&&"));
 		toolItem.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
@@ -107,7 +107,7 @@ public abstract class DropDownItem extends Composite {
 		if (open) {
 			variant += "Open";
 		}
-		toolItem.setData(WidgetUtil.CUSTOM_VARIANT, variant);
+		toolItem.setData(RWT.CUSTOM_VARIANT, variant);
 
 	}
 

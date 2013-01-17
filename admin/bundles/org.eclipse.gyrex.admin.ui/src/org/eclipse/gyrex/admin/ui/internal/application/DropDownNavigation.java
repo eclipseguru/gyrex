@@ -20,7 +20,7 @@ import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 import org.eclipse.gyrex.admin.ui.internal.widgets.DropDownItem;
 
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
@@ -58,7 +58,7 @@ abstract class DropDownNavigation extends DropDownItem {
 
 		// menu
 		pullDownMenu = new Menu(parent.getShell(), SWT.POP_UP);
-		pullDownMenu.setData(WidgetUtil.CUSTOM_VARIANT, getCustomVariant());
+		pullDownMenu.setData(RWT.CUSTOM_VARIANT, getCustomVariant());
 
 		// build menu
 		createMenuItems(getItemLabels(pages));
@@ -67,7 +67,7 @@ abstract class DropDownNavigation extends DropDownItem {
 	private void createMenuItem(final String item) {
 		final MenuItem menuItem = new MenuItem(pullDownMenu, SWT.PUSH | SWT.LEFT);
 		menuItem.setText(item.replace("&", "&&"));
-		menuItem.setData(WidgetUtil.CUSTOM_VARIANT, getCustomVariant());
+		menuItem.setData(RWT.CUSTOM_VARIANT, getCustomVariant());
 		menuItem.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;

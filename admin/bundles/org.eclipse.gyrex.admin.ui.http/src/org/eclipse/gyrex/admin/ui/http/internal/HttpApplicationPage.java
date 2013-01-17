@@ -50,7 +50,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -217,25 +217,23 @@ public class HttpApplicationPage extends FilteredAdminPage {
 			public Image getImage(final Object element) {
 				if (element instanceof ApplicationItem) {
 					final ApplicationItem appItem = (ApplicationItem) element;
-					if (appItem.isActive()) {
+					if (appItem.isActive())
 						return activeApplication;
-					} else {
+					else
 						return inactiveApplication;
-					}
 				}
 				return super.getImage(element);
 			}
 
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof ApplicationItem) {
+				if (element instanceof ApplicationItem)
 					return ((ApplicationItem) element).getApplicationId();
-				} else if (element instanceof GroupNode) {
+				else if (element instanceof GroupNode) {
 					final Object value = ((GroupNode) element).getValue();
 					final LabelAdapter adapter = AdapterUtil.getAdapter(value, LabelAdapter.class);
-					if (null != adapter) {
+					if (null != adapter)
 						return adapter.getLabel(value);
-					}
 					return String.valueOf(value);
 				}
 				return String.valueOf(element);
@@ -253,9 +251,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof ApplicationItem) {
+				if (element instanceof ApplicationItem)
 					return HttpUiAdapter.getLabel(((ApplicationItem) element).getApplicationProviderRegistration());
-				}
 				return null;
 			}
 		});
@@ -269,9 +266,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof ApplicationItem) {
+				if (element instanceof ApplicationItem)
 					return StringUtils.join(((ApplicationItem) element).getMounts(), ", ");
-				}
 				return null;
 			}
 		});
@@ -381,11 +377,11 @@ public class HttpApplicationPage extends FilteredAdminPage {
 		content.setLayout(GridLayoutFactory.fillDefaults().create());
 
 		final FilteredTree filteredTree = new FilteredTree(content, SWT.FULL_SELECTION | SWT.SINGLE, new PatternFilter(), true);
-		filteredTree.setData(WidgetUtil.CUSTOM_VARIANT, "filter-tree");
-		filteredTree.getFilterControl().setData(WidgetUtil.CUSTOM_VARIANT, "filter-tree");
+		filteredTree.setData(RWT.CUSTOM_VARIANT, "filter-tree");
+		filteredTree.getFilterControl().setData(RWT.CUSTOM_VARIANT, "filter-tree");
 
 		final TreeViewer viewer = filteredTree.getViewer();
-		viewer.getControl().setData(WidgetUtil.CUSTOM_VARIANT, "filter-tree");
+		viewer.getControl().setData(RWT.CUSTOM_VARIANT, "filter-tree");
 
 		((GridData) viewer.getControl().getLayoutData()).minimumHeight = 200;
 		((GridData) viewer.getControl().getLayoutData()).minimumWidth = 300;
@@ -414,9 +410,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 					final Object value = ((TreeNode) element).getValue();
 					if (value instanceof ContextDefinition) {
 						final ContextDefinition contextDefinition = (ContextDefinition) value;
-						if (StringUtils.isNotBlank(contextDefinition.getName())) {
+						if (StringUtils.isNotBlank(contextDefinition.getName()))
 							return contextDefinition.getName();
-						}
 						return contextDefinition.getPath().toString();
 					}
 					return super.getText(value);
@@ -465,9 +460,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 	void editSelectedApplication() {
 
-		if (getSelectedValue() == null) {
+		if (getSelectedValue() == null)
 			return;
-		}
 		final ApplicationRegistration app = getSelectedValue().getApplicationRegistration();
 
 		final EditApplicationDialog dialog = new EditApplicationDialog(SwtUtil.getShell(editButton), getApplicationManager(), app);
@@ -495,12 +489,10 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 	@Override
 	protected String getFilterText(final String filter) {
-		if (FILTER_CONTEXT.equals(filter)) {
+		if (FILTER_CONTEXT.equals(filter))
 			return "All Contexts";
-		}
-		if (FILTER_PROVIDER.equals(filter)) {
+		if (FILTER_PROVIDER.equals(filter))
 			return "All Applications";
-		}
 		return super.getFilterText(filter);
 	}
 
@@ -520,9 +512,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 	private ApplicationItem getSelectedValue() {
 		final TreeSelection selection = (TreeSelection) treeViewer.getSelection();
-		if (!selection.isEmpty() && selection.getFirstElement() instanceof ApplicationItem) {
+		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ApplicationItem))
 			return (ApplicationItem) selection.getFirstElement();
-		}
 
 		return null;
 	}
@@ -534,9 +525,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 	void removeSelectedApplication() {
 		final ApplicationItem applicationItem = getSelectedValue();
-		if (applicationItem == null) {
+		if (applicationItem == null)
 			return;
-		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(pageComposite), "Remove Application", String.format("Do you really want to delete instance %s?", applicationItem.getApplicationId()), new DialogCallback() {
 			/** serialVersionUID */
@@ -544,9 +534,8 @@ public class HttpApplicationPage extends FilteredAdminPage {
 
 			@Override
 			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK) {
+				if (returnCode != Window.OK)
 					return;
-				}
 
 				getApplicationManager().unregister(applicationItem.getApplicationId());
 				refresh();

@@ -13,8 +13,6 @@ package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.ServletException;
@@ -22,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.lifecycle.UICallBack;
-import org.eclipse.rap.rwt.service.IServiceHandler;
+import org.eclipse.rap.rwt.service.ServerPushSession;
+import org.eclipse.rap.rwt.service.ServiceHandler;
 import org.eclipse.rap.rwt.widgets.FileUpload;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -44,7 +42,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -63,9 +60,9 @@ public class UploadDialogField extends DialogField {
 	}
 
 	/**
-	 * RAP {@link IServiceHandler} for receiving uploads.
+	 * RAP handler for receiving uploads.
 	 */
-	private final class UploadHandler implements IServiceHandler {
+	private final class UploadHandler implements ServiceHandler {
 
 		private final String handlerId;
 		private final IUploadAdapter uploadAdapter;
@@ -90,15 +87,7 @@ public class UploadDialogField extends DialogField {
 		}
 
 		public String getUploadUrl() {
-			final StringBuilder url = new StringBuilder();
-			url.append(RWT.getRequest().getContextPath());
-			url.append(RWT.getRequest().getServletPath());
-			url.append("?");
-			try {
-				url.append(IServiceHandler.REQUEST_PARAM).append("=").append(URLEncoder.encode(handlerId, CharEncoding.UTF_8));
-			} catch (final UnsupportedEncodingException e) {
-				throw new IllegalStateException("UTF-8 encosing not support?!");
-			}
+			final StringBuilder url = new StringBuilder(RWT.getServiceManager().getServiceHandlerUrl(handlerId));
 			final int relativeIndex = url.lastIndexOf("/");
 			if (relativeIndex > -1) {
 				url.delete(0, relativeIndex + 1);
@@ -107,10 +96,7 @@ public class UploadDialogField extends DialogField {
 		}
 
 		@Override
-		public void service() throws IOException, ServletException {
-			final HttpServletRequest request = RWT.getRequest();
-			final HttpServletResponse response = RWT.getResponse();
-
+		public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 			// Ignore requests to this service handler without a valid session for security reasons
 			final boolean hasSession = request.getSession(false) != null;
 			if (!hasSession) {
@@ -306,8 +292,9 @@ public class UploadDialogField extends DialogField {
 		updateEnableState();
 
 		// activate background updates
-		UICallBack.activate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+		final ServerPushSession pushSession = new ServerPushSession();
 
+		// create handler
 		final UploadHandler handler = new UploadHandler(receiver);
 		uploadControl.addDisposeListener(new DisposeListener() {
 			/** serialVersionUID */
@@ -316,7 +303,7 @@ public class UploadDialogField extends DialogField {
 			@Override
 			public void widgetDisposed(final DisposeEvent event) {
 				handler.dispose();
-				UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+				pushSession.stop();
 			}
 		});
 
@@ -334,7 +321,7 @@ public class UploadDialogField extends DialogField {
 						uploadInProgress = false;
 						setUploadButtonLabel(uploadButtonLabel);
 						updateEnableState();
-						UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+						pushSession.stop();
 					}
 				});
 			}
@@ -351,13 +338,14 @@ public class UploadDialogField extends DialogField {
 						uploadInProgress = false;
 						setUploadButtonLabel(uploadButtonLabel);
 						updateEnableState();
-						UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
+						pushSession.stop();
 					}
 				});
 			}
 		});
 
 		// start upload
+		pushSession.start();
 		uploadControl.setText("Uploading...");
 		uploadControl.submit(url);
 	}

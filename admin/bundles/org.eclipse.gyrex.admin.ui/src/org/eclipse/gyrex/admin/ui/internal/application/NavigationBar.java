@@ -18,7 +18,7 @@ import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
 import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
 
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -32,7 +32,7 @@ public abstract class NavigationBar extends Composite {
 	public NavigationBar(final Composite parent) {
 		super(parent, SWT.NONE);
 		setLayout(AdminUiUtil.createGridLayoutWithoutMargin(5, false));
-		setData(WidgetUtil.CUSTOM_VARIANT, "navigation");
+		setData(RWT.CUSTOM_VARIANT, "navigation");
 
 		// get and sort categories
 		categories = AdminPageRegistry.getInstance().getCategories();

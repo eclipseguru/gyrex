@@ -12,7 +12,6 @@
 package org.eclipse.gyrex.admin.ui.internal.widgets;
 
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.lifecycle.UICallBack;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -23,14 +22,13 @@ public class WidgetMessages {
 	private static final String BUNDLE_NAME = "org.eclipse.gyrex.admin.ui.internal.widgets.messages";//$NON-NLS-1$
 
 	public static WidgetMessages get() {
-		final Class clazz = WidgetMessages.class;
-		final Object result = RWT.NLS.getISO8859_1Encoded(BUNDLE_NAME, clazz);
-		return (WidgetMessages) result;
+		final Class<WidgetMessages> clazz = WidgetMessages.class;
+		return RWT.NLS.getISO8859_1Encoded(BUNDLE_NAME, clazz);
 	}
 
 	public static WidgetMessages get(final Display display) {
 		final WidgetMessages[] result = { null };
-		UICallBack.runNonUIThreadWithFakeContext(display, new Runnable() {
+		RWT.getUISession(display).exec(new Runnable() {
 			@Override
 			public void run() {
 				result[0] = get();

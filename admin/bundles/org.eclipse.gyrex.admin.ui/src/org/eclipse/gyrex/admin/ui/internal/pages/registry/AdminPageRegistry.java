@@ -33,7 +33,6 @@ import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.core.runtime.dynamichelpers.ExtensionTracker;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionChangeHandler;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionTracker;
-import org.eclipse.osgi.framework.eventmgr.EventManager;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A registry for contributed admin pages
  */
-public class AdminPageRegistry extends EventManager implements IExtensionChangeHandler {
+public class AdminPageRegistry implements IExtensionChangeHandler {
 
 	private static final String ELEMENT_PAGE = "page";
 	private static final String ELEMENT_CATEGORY = "category";
@@ -68,15 +67,13 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 
 	private AdminPageRegistry() {
 		final IExtensionRegistry registry = RegistryFactory.getRegistry();
-		if (null == registry) {
+		if (null == registry)
 			throw new IllegalStateException("Extension registry is not available!");
-		}
 
 		// get extension point
 		final IExtensionPoint extensionPoint = registry.getExtensionPoint(AdminUiActivator.SYMBOLIC_NAME, EP_PAGES);
-		if (null == extensionPoint) {
+		if (null == extensionPoint)
 			throw new IllegalStateException("Admin pages extension point not found!");
-		}
 
 		// register tracker
 		final IExtensionTracker tracker = new ExtensionTracker(registry);
@@ -118,9 +115,8 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 	}
 
 	public List<CategoryContribution> getCategories() {
-		if (categoriesById.isEmpty()) {
+		if (categoriesById.isEmpty())
 			return Collections.emptyList();
-		}
 		return new ArrayList<CategoryContribution>(categoriesById.values());
 	}
 
@@ -130,36 +126,31 @@ public class AdminPageRegistry extends EventManager implements IExtensionChangeH
 
 	public List<PageContribution> getPages(final CategoryContribution category) {
 		final Map<String, Set<PageContribution>> mappings = pagesByCategoryId;
-		if (mappings == null || mappings.isEmpty()) {
+		if ((mappings == null) || mappings.isEmpty())
 			return Collections.emptyList();
-		}
 		final Set<PageContribution> children = mappings.get(category.getId());
-		if (children == null || children.isEmpty()) {
+		if ((children == null) || children.isEmpty())
 			return Collections.emptyList();
-		}
 		// return a copy
 		return new ArrayList<PageContribution>(children);
 	}
 
 	public CategoryContribution getParent(final PageContribution page) {
-		if (null == page.getCategoryId()) {
+		if (null == page.getCategoryId())
 			return null;
-		}
 		// return a copy
 		return categoriesById.get(page.getCategoryId());
 	}
 
 	public boolean hasPages(final CategoryContribution category) {
-		if (category == null) {
+		if (category == null)
 			return false;
-		}
 
 		final Map<String, Set<PageContribution>> mappings = pagesByCategoryId;
-		if (mappings == null) {
+		if (mappings == null)
 			return false;
-		}
 		final Set<PageContribution> children = mappings.get(category.getId());
-		return children != null && !children.isEmpty();
+		return (children != null) && !children.isEmpty();
 	}
 
 	private void rebuildCategories() {

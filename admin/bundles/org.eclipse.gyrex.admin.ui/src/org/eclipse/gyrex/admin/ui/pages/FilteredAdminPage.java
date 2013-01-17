@@ -19,7 +19,7 @@ import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.DropDownItem;
 
 import org.eclipse.jface.dialogs.PopupDialog;
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -154,7 +154,7 @@ public abstract class FilteredAdminPage extends AdminPage {
 			protected void configureShell(final Shell shell) {
 				super.configureShell(shell);
 				shell.setLayout(new FillLayout());
-				shell.setData(WidgetUtil.CUSTOM_VARIANT, "filter-popup"); //$NON-NLS-1$
+				shell.setData(RWT.CUSTOM_VARIANT, "filter-popup"); //$NON-NLS-1$
 			}
 
 			@Override

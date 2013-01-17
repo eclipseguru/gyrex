@@ -11,7 +11,7 @@
  ******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.application;
 
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -62,7 +62,7 @@ public final class AdminUiUtil {
 	public static void createHeading(final Composite parent, final String text, final int horizontalSpan) {
 		final Label label = new Label(parent, SWT.NONE);
 		label.setText(text);
-		label.setData(WidgetUtil.CUSTOM_VARIANT, "heading");
+		label.setData(RWT.CUSTOM_VARIANT, "heading");
 		final GridData labelLayoutData = new GridData();
 		labelLayoutData.horizontalSpan = horizontalSpan;
 		label.setLayoutData(labelLayoutData);

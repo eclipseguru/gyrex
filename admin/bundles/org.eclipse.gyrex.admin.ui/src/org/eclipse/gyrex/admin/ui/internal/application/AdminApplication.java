@@ -28,11 +28,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.application.EntryPoint;
+import org.eclipse.rap.rwt.client.service.BrowserNavigation;
+import org.eclipse.rap.rwt.client.service.BrowserNavigationEvent;
+import org.eclipse.rap.rwt.client.service.BrowserNavigationListener;
 import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
-import org.eclipse.rap.rwt.events.BrowserHistoryEvent;
-import org.eclipse.rap.rwt.events.BrowserHistoryListener;
-import org.eclipse.rap.rwt.lifecycle.IEntryPoint;
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
@@ -61,8 +61,7 @@ import org.slf4j.LoggerFactory;
  * This class controls all aspects of the application's execution and is
  * contributed through the plugin.xml.
  */
-@SuppressWarnings("restriction")
-public class AdminApplication implements IEntryPoint, IAdminUi {
+public class AdminApplication implements EntryPoint, IAdminUi {
 
 	private static final String HISTORY_TOKEN_SEPARATOR = "--";
 	private static final String GYREX_WEBSITE_URL = "http://eclipse.org/gyrex/";
@@ -74,7 +73,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 	private static Label createHeadlineLabel(final Composite parent, final String text) {
 		final Label label = new Label(parent, SWT.NONE);
 		label.setText(text.replace("&", "&&"));
-		label.setData(WidgetUtil.CUSTOM_VARIANT, "pageHeadline");
+		label.setData(RWT.CUSTOM_VARIANT, "pageHeadline");
 		return label;
 	}
 
@@ -156,7 +155,10 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 		// create history entry
 		final String historyText = StringUtils.isNotBlank(page.getTitleToolTip()) ? String.format("%s - %s - Gyrex Admin", contribution.getName(), page.getTitleToolTip()) : String.format("%s - Gyrex Admin", contribution.getName());
-		RWT.getBrowserHistory().createEntry(StringUtils.join(args, HISTORY_TOKEN_SEPARATOR), historyText);
+		final BrowserNavigation browserNavigation = RWT.getClient().getService(BrowserNavigation.class);
+		if (browserNavigation != null) {
+			browserNavigation.pushState(StringUtils.join(args, HISTORY_TOKEN_SEPARATOR), historyText);
+		}
 
 		// create page
 		createPage(page, contribution, centerArea);
@@ -170,26 +172,28 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 	}
 
 	private void attachHistoryListener() {
-		RWT.getBrowserHistory().addBrowserHistoryListener(new BrowserHistoryListener() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
+		final BrowserNavigation browserNavigation = RWT.getClient().getService(BrowserNavigation.class);
+		if (browserNavigation != null) {
+			browserNavigation.addBrowserNavigationListener(new BrowserNavigationListener() {
+				private static final long serialVersionUID = 1L;
 
-			@Override
-			public void navigated(final BrowserHistoryEvent event) {
-				final String[] tokens = StringUtils.splitByWholeSeparator(event.entryId, HISTORY_TOKEN_SEPARATOR);
-				final PageContribution contribution = AdminPageRegistry.getInstance().getPage(tokens[0]);
-				if (contribution != null) {
-					openPage(contribution, tokens);
+				@Override
+				public void navigated(final BrowserNavigationEvent event) {
+					final String[] tokens = StringUtils.splitByWholeSeparator(event.getState(), HISTORY_TOKEN_SEPARATOR);
+					final PageContribution contribution = AdminPageRegistry.getInstance().getPage(tokens[0]);
+					if (contribution != null) {
+						openPage(contribution, tokens);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	private Composite createCenterArea(final Composite parent, final Control topControl, final Control bottomControl) {
 		final Composite centerArea = new Composite(parent, SWT.NONE);
 		centerArea.setLayout(new FillLayout());
 		centerArea.setLayoutData(createCenterAreaFormData(topControl, bottomControl));
-		centerArea.setData(WidgetUtil.CUSTOM_VARIANT, "centerArea");
+		centerArea.setData(RWT.CUSTOM_VARIANT, "centerArea");
 		return centerArea;
 	}
 
@@ -216,7 +220,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 		// FIXME: the separator is a hack to work around missing "border-top" (or -bottom) in RAP (bug 283872)
 		final Composite separator = new Composite(parent, SWT.NONE);
-		separator.setData(WidgetUtil.CUSTOM_VARIANT, "mainContentAreaHeaderSeparator");
+		separator.setData(RWT.CUSTOM_VARIANT, "mainContentAreaHeaderSeparator");
 		final FormData data = new FormData();
 		data.top = new FormAttachment(header, 0);
 		data.left = new FormAttachment(0, 0);
@@ -225,7 +229,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 		separator.setLayoutData(data);
 
 		final Composite composite = new Composite(parent, SWT.NONE);
-		composite.setData(WidgetUtil.CUSTOM_VARIANT, "mainContentArea");
+		composite.setData(RWT.CUSTOM_VARIANT, "mainContentArea");
 		composite.setLayout(new FormLayout());
 		composite.setLayoutData(createContentBodyFormData(separator));
 		final Composite footer = createFooter(composite);
@@ -243,7 +247,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 	private Composite createFilterContainer(final Composite parent, final Control left) {
 		final Composite filterContainer = new Composite(parent, SWT.NONE);
-		filterContainer.setData(WidgetUtil.CUSTOM_VARIANT, "filter-container");
+		filterContainer.setData(RWT.CUSTOM_VARIANT, "filter-container");
 
 		final FormData data = new FormData();
 		data.bottom = new FormAttachment(100, 5);
@@ -262,10 +266,10 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 	private Composite createFooter(final Composite contentComposite) {
 		final Composite footer = new Composite(contentComposite, SWT.NONE);
 		footer.setLayout(new FormLayout());
-		footer.setData(WidgetUtil.CUSTOM_VARIANT, "footer");
+		footer.setData(RWT.CUSTOM_VARIANT, "footer");
 		footer.setLayoutData(createFooterFormData());
 		final Label label = new Label(footer, SWT.NONE);
-		label.setData(WidgetUtil.CUSTOM_VARIANT, "footerLabel");
+		label.setData(RWT.CUSTOM_VARIANT, "footerLabel");
 		label.setText("Admin Console " + getVersion());
 		label.setLayoutData(createFooterLabelFormData(footer));
 		return footer;
@@ -289,7 +293,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 	private Composite createHeader(final Composite parent) {
 		final Composite comp = new Composite(parent, SWT.NONE);
-		comp.setData(WidgetUtil.CUSTOM_VARIANT, "header");
+		comp.setData(RWT.CUSTOM_VARIANT, "header");
 		comp.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		comp.setLayout(new FormLayout());
 		headerCenterArea = createHeaderCenterArea(comp);
@@ -301,7 +305,7 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 
 //		final Label title = new Label(headerCenterArea, SWT.NONE);
 //		title.setText("Admin Console");
-//		title.setData(WidgetUtil.CUSTOM_VARIANT, "title");
+//		title.setData(RWT.CUSTOM_VARIANT, "title");
 //		final FormData titleFormData = new FormData();
 //		titleFormData.bottom = new FormAttachment(100, -18);
 //		titleFormData.left = new FormAttachment(logo, 0);
@@ -341,14 +345,14 @@ public class AdminApplication implements IEntryPoint, IAdminUi {
 	private Shell createMainShell(final Display display) {
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
 		shell.setMaximized(true);
-		shell.setData(WidgetUtil.CUSTOM_VARIANT, "mainshell");
+		shell.setData(RWT.CUSTOM_VARIANT, "mainshell");
 		return shell;
 	}
 
 	private NavigationBar createNavigation(final Composite parent) {
 		navBar = new Composite(parent, SWT.NONE);
 		navBar.setLayoutData(createNavBarFormData());
-		navBar.setData(WidgetUtil.CUSTOM_VARIANT, "nav-bar");
+		navBar.setData(RWT.CUSTOM_VARIANT, "nav-bar");
 
 		final GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
