@@ -7,28 +7,28 @@
             adaptableType="org.eclipse.gyrex.persistence.storage.lookup.RepositoryContentTypeAssignments"
             class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
          <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
          </adapter>
       </factory>
       <factory
             adaptableType="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.RepositoryContentTypeAssignmentsByContextPath"
             class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
          <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
          </adapter>
       </factory>
       <factory
             adaptableType="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.RepositoryContentTypeAssignmentsByContextPathAndMediaType"
             class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
          <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
          </adapter>
       </factory>
       <factory
             adaptableType="org.eclipse.gyrex.persistence.storage.registry.IRepositoryDefinition"
             class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
          <adapter
-               type="org.eclipse.ui.model.IWorkbenchAdapter">
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
          </adapter>
       </factory>
    </extension>

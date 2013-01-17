@@ -18,9 +18,6 @@
                symbolicName="org.eclipse.core.runtime">
          </requireBundle>
          <requireBundle
-               symbolicName="org.eclipse.rap.ui">
-         </requireBundle>
-         <requireBundle
                symbolicName="org.eclipse.rap.rwt.osgi">
          </requireBundle>
          <requireBundle

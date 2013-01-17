@@ -11,9 +11,10 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal.zookeeper;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.dialogs.PatternFilter;
 
 /**
  *
@@ -31,21 +32,18 @@ public class PathPatternFilter extends PatternFilter {
 	@Override
 	public boolean isElementVisible(final Viewer viewer, final Object element) {
 		// always show the root input
-		if (!(element instanceof ZooKeeperData)) {
+		if (!(element instanceof ZooKeeperData))
 			return true;
-		}
 
 		// ZooKeeperData is not differentiated based on category since
 		// categories are selectable nodes.
-		if (isLeafMatch(viewer, element)) {
+		if (isLeafMatch(viewer, element))
 			return true;
-		}
 
 		final Object[] children = ((ZooKeeperData) element).getChildren();
 		// Will return true if any subnode of the element matches the search
-		if (filter(viewer, element, children).length > 0) {
+		if (filter(viewer, element, children).length > 0)
 			return true;
-		}
 		return false;
 	}
 

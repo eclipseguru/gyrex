@@ -39,11 +39,10 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 
 	@Override
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
-		if (e1 instanceof ApplicationItem && e2 instanceof ApplicationItem) {
+		if ((e1 instanceof ApplicationItem) && (e2 instanceof ApplicationItem))
 			return compareAppRegs((ApplicationItem) e1, (ApplicationItem) e2);
-		} else if (e1 instanceof GroupNode && e2 instanceof GroupNode) {
+		else if ((e1 instanceof GroupNode) && (e2 instanceof GroupNode))
 			return compareGroupingItems((GroupNode) e1, (GroupNode) e2);
-		}
 
 		// fallback to super
 		return super.compare(viewer, e1, e2);
@@ -53,11 +52,10 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 	private int compareAppRegs(final ApplicationItem n1, final ApplicationItem n2) {
 		final String t1 = StringUtils.trimToEmpty(getText(n1));
 		final String t2 = StringUtils.trimToEmpty(getText(n2));
-		if (isReverse()) {
+		if (isReverse())
 			return getComparator().compare(t2, t1);
-		} else {
+		else
 			return getComparator().compare(t1, t2);
-		}
 	}
 
 	/**
@@ -71,11 +69,10 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 		if (SortIndex.ID.equals(getIndex())) {
 			final String v1 = getLabel(e1.getValue());
 			final String v2 = getLabel(e2.getValue());
-			if (isReverse()) {
+			if (isReverse())
 				return getComparator().compare(v2, v1);
-			} else {
+			else
 				return getComparator().compare(v1, v2);
-			}
 		}
 
 		return 0;
@@ -91,10 +88,9 @@ public final class ApplicationBrowserComparator extends ViewerComparator {
 	}
 
 	private String getLabel(final Object o) {
-		final LabelAdapter adapter = AdapterUtil.getAdapter(0, LabelAdapter.class);
-		if (null != adapter) {
+		final LabelAdapter adapter = AdapterUtil.getAdapter(o, LabelAdapter.class);
+		if (null != adapter)
 			return adapter.getLabel(o);
-		}
 		return String.valueOf(o);
 	}
 

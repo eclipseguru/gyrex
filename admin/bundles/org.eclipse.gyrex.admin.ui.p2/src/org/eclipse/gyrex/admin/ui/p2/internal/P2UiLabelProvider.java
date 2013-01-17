@@ -37,8 +37,6 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -82,17 +80,15 @@ public class P2UiLabelProvider extends LabelProvider {
 
 	private String getElementText(final IProfile profile) {
 		final String name = profile.getProperty(IProfile.PROP_NAME);
-		if (name != null && name.length() > 0) {
+		if ((name != null) && (name.length() > 0))
 			return name;
-		}
 		return profile.getProfileId();
 	}
 
 	private String getElementText(final IRepository<?> repository) {
 		final String name = repository.getName();
-		if (name != null && name.length() > 0) {
+		if ((name != null) && (name.length() > 0))
 			return name;
-		}
 		return URIUtil.toUnencodedString(repository.getLocation());
 	}
 
@@ -120,40 +116,35 @@ public class P2UiLabelProvider extends LabelProvider {
 
 	@Override
 	public Image getImage(final Object element) {
-		final ImageDescriptor descriptor = getImageDescriptor(element);
+		ImageDescriptor descriptor = getImageDescriptor(element);
 		if (descriptor == null) {
 			if (element instanceof IArtifactKey) {
-				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
-			}
-			return null;
+				descriptor = P2UiImages.getImageDescriptor(P2UiImages.IMG_OBJ_ARTIFACT_KEY);
+			} else
+				return null;
 		}
 		return getResourceManager().createImage(descriptor);
 	}
 
 	private ImageDescriptor getImageDescriptor(final Object element) {
-		if (element instanceof IProfile) {
+		if (element instanceof IProfile)
 			return P2UiImages.getImageDescriptor(P2UiImages.IMG_PROFILE);
-		}
 		if (element instanceof IInstallableUnit) {
 
 			final IInstallableUnit iu = (IInstallableUnit) element;
-			if (Boolean.valueOf(iu.getProperty(InstallableUnitDescription.PROP_TYPE_PATCH))) {
+			if (Boolean.valueOf(iu.getProperty(InstallableUnitDescription.PROP_TYPE_PATCH)))
 				return P2UiImages.getImageDescriptor(P2UiImages.IMG_PATCH_IU);
-			} else if (Boolean.valueOf(iu.getProperty(InstallableUnitDescription.PROP_TYPE_CATEGORY))) {
+			else if (Boolean.valueOf(iu.getProperty(InstallableUnitDescription.PROP_TYPE_CATEGORY)))
 				return P2UiImages.getImageDescriptor(P2UiImages.IMG_CATEGORY);
-			} else {
+			else
 				return P2UiImages.getImageDescriptor(P2UiImages.IMG_IU);
-			}
 		}
-		if (element instanceof IArtifactRepository) {
+		if (element instanceof IArtifactRepository)
 			return P2UiImages.getImageDescriptor(P2UiImages.IMG_ARTIFACT_REPOSITORY);
-		}
-		if (element instanceof IMetadataRepository) {
+		if (element instanceof IMetadataRepository)
 			return P2UiImages.getImageDescriptor(P2UiImages.IMG_METADATA_REPOSITORY);
-		}
-		if (element instanceof IRequirement) {
+		if (element instanceof IRequirement)
 			return P2UiImages.getImageDescriptor(P2UiImages.IMG_IU);
-		}
 		return null;
 	}
 
@@ -166,24 +157,18 @@ public class P2UiLabelProvider extends LabelProvider {
 
 	@Override
 	public String getText(final Object element) {
-		if (element instanceof PackageDefinition) {
+		if (element instanceof PackageDefinition)
 			return getElementText((PackageDefinition) element);
-		}
-		if (element instanceof RepositoryDefinition) {
+		if (element instanceof RepositoryDefinition)
 			return getElementText((RepositoryDefinition) element);
-		}
-		if (element instanceof InstallableUnitReference) {
+		if (element instanceof InstallableUnitReference)
 			return getElementText((InstallableUnitReference) element);
-		}
-		if (element instanceof IProfile) {
+		if (element instanceof IProfile)
 			return getElementText((IProfile) element);
-		}
-		if (element instanceof IInstallableUnit) {
+		if (element instanceof IInstallableUnit)
 			return getElementText((IInstallableUnit) element);
-		}
-		if (element instanceof IRepository) {
+		if (element instanceof IRepository)
 			return getElementText((IRepository) element);
-		}
 		if (element instanceof IArtifactKey) {
 			final IArtifactKey key = (IArtifactKey) element;
 			return key.getId() + " [" + key.getClassifier() + "]"; //$NON-NLS-1$//$NON-NLS-2$

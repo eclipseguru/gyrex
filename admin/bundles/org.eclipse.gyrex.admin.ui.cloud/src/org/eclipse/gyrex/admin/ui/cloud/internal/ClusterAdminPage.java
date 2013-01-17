@@ -17,6 +17,7 @@ import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserComparator.SortIndex
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
@@ -57,7 +58,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.FilteredTree;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -137,7 +137,7 @@ public class ClusterAdminPage extends AdminPage {
 			display = null;
 		}
 
-		if (listener == null && display != null && !display.isDisposed()) {
+		if ((listener == null) && (display != null) && !display.isDisposed()) {
 			listener = new ZooKeeperGateListener() {
 
 				private void asyncRefresh() {
@@ -359,9 +359,8 @@ public class ClusterAdminPage extends AdminPage {
 
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof NodeItem) {
+				if (element instanceof NodeItem)
 					return ((NodeItem) element).getDescriptor().getId();
-				}
 				return String.valueOf(element);
 			}
 		});
@@ -377,9 +376,8 @@ public class ClusterAdminPage extends AdminPage {
 
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof NodeItem) {
+				if (element instanceof NodeItem)
 					return ((NodeItem) element).getDescriptor().getLocation();
-				}
 				return null;
 			}
 		});
@@ -392,9 +390,8 @@ public class ClusterAdminPage extends AdminPage {
 
 			@Override
 			public String getText(final Object element) {
-				if (element instanceof NodeItem) {
+				if (element instanceof NodeItem)
 					return StringUtils.join(((NodeItem) element).getDescriptor().getTags(), ", ");
-				}
 				return null;
 			}
 		});
@@ -463,9 +460,8 @@ public class ClusterAdminPage extends AdminPage {
 
 	void editSelectedNode() {
 		final Object firstElement = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
-		if (!(firstElement instanceof NodeItem)) {
+		if (!(firstElement instanceof NodeItem))
 			return;
-		}
 		final NonBlockingStatusDialog dialog = new EditNodeDialog(SwtUtil.getShell(membershipStatusField.getLabelControl(null)), getCloudManager(), ((NodeItem) firstElement).getDescriptor());
 		dialog.openNonBlocking(new DialogCallback() {
 
@@ -487,9 +483,8 @@ public class ClusterAdminPage extends AdminPage {
 
 	void manageSelectedNode() {
 		final Object firstElement = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
-		if (!(firstElement instanceof NodeItem)) {
+		if (!(firstElement instanceof NodeItem))
 			return;
-		}
 
 		getAdminUi().openPage(NodeAdminPage.ID, new String[] { ((NodeItem) firstElement).getDescriptor().getId() });
 	}

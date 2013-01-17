@@ -36,9 +36,6 @@ import org.apache.commons.lang.StringUtils;
 @SuppressWarnings("restriction")
 public final class ApplicationBrowserContentProvider implements ITreeContentProvider {
 
-	/** serialVersionUID */
-	private static final long serialVersionUID = 1L;
-
 	public static class ApplicationItem {
 
 		private final Set<String> mounts;
@@ -84,17 +81,11 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 
 		public String getProviderLabel() {
 			final String providerInfo = applicationProviderRegistration.getProviderInfo();
-			if (StringUtils.isNotBlank(providerInfo)) {
+			if (StringUtils.isNotBlank(providerInfo))
 				return providerInfo;
-			}
 			return applicationRegistration.getProviderId();
 		}
 
-		/**
-		 * Returns the active.
-		 * 
-		 * @return the active
-		 */
 		public boolean isActive() {
 			return active;
 		}
@@ -127,6 +118,9 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 		}
 
 	}
+
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -170,9 +164,8 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 
 	@Override
 	public Object[] getChildren(final Object parentElement) {
-		if (parentElement instanceof GroupNode) {
+		if (parentElement instanceof GroupNode)
 			return ((GroupNode) parentElement).getChildren().toArray();
-		}
 		return EMPTY_ARRAY;
 	}
 
@@ -223,25 +216,22 @@ public final class ApplicationBrowserContentProvider implements ITreeContentProv
 
 	@Override
 	public Object getParent(final Object element) {
-		if (element instanceof ApplicationItem) {
+		if (element instanceof ApplicationItem)
 			return ((ApplicationItem) element).getParent();
-		}
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(final Object element) {
-		if (element instanceof GroupNode) {
+		if (element instanceof GroupNode)
 			return true;
-		}
 		return false;
 	}
 
 	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-		if (null != this.viewer && this.viewer != viewer) {
+		if ((null != this.viewer) && (this.viewer != viewer))
 			throw new IllegalStateException("please use separate provider instance for different viewers");
-		}
 		this.viewer = viewer;
 		detach(oldInput);
 		attach(newInput);

@@ -11,8 +11,9 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
+
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.dialogs.PatternFilter;
 
 /**
  * template for implementation of LogbackPatternFilter

@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
+import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
 import org.eclipse.gyrex.admin.ui.persistence.internal.PersistenceUiActivator;
 import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
 import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
@@ -23,8 +25,6 @@ import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
 import org.eclipse.gyrex.persistence.storage.lookup.RepositoryContentTypeAssignments;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.ui.model.IWorkbenchAdapter;
 
 @SuppressWarnings("restriction")
 public class RepositoryContentTypeAssignmentsByContextPath {
@@ -39,9 +39,8 @@ public class RepositoryContentTypeAssignmentsByContextPath {
 	}
 
 	public Object[] getChildren() {
-		if (null != children) {
+		if (null != children)
 			return children;
-		}
 
 		final HashSet<String> unresolvedContentTypes = new HashSet<String>();
 		final List<RepositoryContentType> mediaTypes = parent.getContentTypes(contextPath, unresolvedContentTypes);
@@ -63,19 +62,13 @@ public class RepositoryContentTypeAssignmentsByContextPath {
 		// try to lookup the context definition
 		final ContextDefinition definition = getContextRegistry().getDefinition(contextPath);
 		if (null != definition) {
-			final IWorkbenchAdapter adapter = (IWorkbenchAdapter) Platform.getAdapterManager().loadAdapter(definition, IWorkbenchAdapter.class.getName());
-			if (null != adapter) {
+			final LabelAdapter adapter = AdapterUtil.getAdapter(definition, LabelAdapter.class);
+			if (null != adapter)
 				return adapter.getLabel(definition);
-			}
 		}
 		return contextPath.toString();
 	}
 
-	/**
-	 * Returns the parent.
-	 * 
-	 * @return the parent
-	 */
 	public RepositoryContentTypeAssignments getParent() {
 		return parent;
 	}

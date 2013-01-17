@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
+import java.lang.reflect.Field;
 import java.net.URL;
 
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
@@ -25,11 +26,18 @@ import org.eclipse.swt.widgets.Display;
 
 import org.osgi.framework.BundleContext;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class P2UiActivator extends BaseBundleActivator {
 
 	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui.p2";
 	private static final String IMAGE_REGISTRY = P2UiActivator.class.getName() + "#imageRegistry";
 	private static volatile P2UiActivator instance;
+
+	private static final Logger LOG = LoggerFactory.getLogger(P2UiActivator.class);
 
 	/**
 	 * Returns the instance.
@@ -86,16 +94,15 @@ public class P2UiActivator extends BaseBundleActivator {
 	}
 
 	private void initializeImageRegistry(final ImageRegistry reg) {
-		createImageDescriptor(P2UiImages.IMG_METADATA_REPOSITORY, reg);
-		createImageDescriptor(P2UiImages.IMG_ARTIFACT_REPOSITORY, reg);
-		createImageDescriptor(P2UiImages.IMG_IU, reg);
-		createImageDescriptor(P2UiImages.IMG_DISABLED_IU, reg);
-		createImageDescriptor(P2UiImages.IMG_UPDATED_IU, reg);
-		createImageDescriptor(P2UiImages.IMG_PATCH_IU, reg);
-		createImageDescriptor(P2UiImages.IMG_DISABLED_PATCH_IU, reg);
-		createImageDescriptor(P2UiImages.IMG_CATEGORY, reg);
-		createImageDescriptor(P2UiImages.IMG_PROFILE, reg);
-		createImageDescriptor(P2UiImages.IMG_VIEW_MENU, reg);
-		createImageDescriptor(P2UiImages.IMG_SEPARATOR, reg);
+		final Field[] fields = P2UiImages.class.getFields();
+		for (final Field field : fields) {
+			if (field.getName().startsWith("IMG_")) {
+				try {
+					createImageDescriptor((String) field.get(null), reg);
+				} catch (final Exception e) {
+					LOG.warn("Unable to initialize image ({}) in bundle {}. {}", field.getName(), SYMBOLIC_NAME, ExceptionUtils.getRootCauseMessage(e), e);
+				}
+			}
+		}
 	}
 }

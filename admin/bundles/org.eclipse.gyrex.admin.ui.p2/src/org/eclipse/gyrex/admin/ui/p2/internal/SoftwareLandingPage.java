@@ -21,8 +21,8 @@ import org.eclipse.gyrex.p2.internal.P2Activator;
 import org.eclipse.gyrex.p2.internal.packages.IPackageManager;
 import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
 import org.eclipse.gyrex.p2.internal.repositories.IRepositoryDefinitionManager;
+import org.eclipse.gyrex.server.Platform;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -289,18 +289,16 @@ public class SoftwareLandingPage extends AdminPage {
 
 	private PackageDefinition getSelectedPackage() {
 		final StructuredSelection selection = (StructuredSelection) packagesViewer.getSelection();
-		if (!selection.isEmpty() && selection.getFirstElement() instanceof PackageDefinition) {
+		if (!selection.isEmpty() && (selection.getFirstElement() instanceof PackageDefinition))
 			return (PackageDefinition) selection.getFirstElement();
-		}
 
 		return null;
 	}
 
 	void provisionButtonPressed() {
 		final PackageDefinition pkg = getSelectedPackage();
-		if (pkg == null) {
+		if (pkg == null)
 			return;
-		}
 
 		getPackageManager().markedForInstall(pkg);
 		refresh();
@@ -312,9 +310,8 @@ public class SoftwareLandingPage extends AdminPage {
 
 	void removeButtonPressed() {
 		final PackageDefinition pkg = getSelectedPackage();
-		if (pkg == null) {
+		if (pkg == null)
 			return;
-		}
 
 		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(removeButton), "Remove Package", "Do you really want to delete the package?", new DialogCallback() {
 			/** serialVersionUID */
@@ -332,9 +329,8 @@ public class SoftwareLandingPage extends AdminPage {
 
 	void revokeButtonPressed() {
 		final PackageDefinition pkg = getSelectedPackage();
-		if (pkg == null) {
+		if (pkg == null)
 			return;
-		}
 
 		getPackageManager().markedForUninstall(pkg);
 		refresh();
@@ -356,9 +352,8 @@ public class SoftwareLandingPage extends AdminPage {
 		markedforInstall |= getPackageManager().isMarkedForInstall(getSelectedPackage());
 		markedforUninstall |= !getPackageManager().isMarkedForInstall(getSelectedPackage());
 
-		if (markedforInstall && markedforUninstall) {
+		if (markedforInstall && markedforUninstall)
 			return;
-		}
 
 		provisionButton.setEnabled(markedforUninstall);
 		revokeButton.setEnabled(markedforInstall);

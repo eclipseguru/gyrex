@@ -11,20 +11,20 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.persistence.internal.adapters;
 
+import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
+
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.ui.model.IWorkbenchAdapter;
 
 public class AdapterFactory implements IAdapterFactory {
 
-	private static final Class[] ADAPTER_TYPES = new Class[] { IWorkbenchAdapter.class };
+	private static final Class[] ADAPTER_TYPES = new Class[] { LabelAdapter.class };
 
-	private static final IWorkbenchAdapter ADAPTER = new WorkbenchAdapterImpl();
+	private static final LabelAdapter ADAPTER = new WorkbenchAdapterImpl();
 
 	@Override
 	public Object getAdapter(final Object adaptableObject, final Class adapterType) {
-		if (IWorkbenchAdapter.class.equals(adapterType)) {
+		if (LabelAdapter.class.equals(adapterType))
 			return ADAPTER;
-		}
 		return null;
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, 2012 Gunnar Wagenknecht and others.
+ * Copyright (c) 2012 Gunnar Wagenknecht and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the terms of the
@@ -8,30 +8,21 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
- *     Peter Grube - add new separator image
  */
-package org.eclipse.gyrex.admin.ui.p2.internal;
+package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
-public class P2UiImages {
+public class JobsUiImages {
 
 	// bundle-relative icon path
 	public final static String ICON_PATH = "$nl$/icons/"; //$NON-NLS-1$
 
 	//objects
-	public final static String IMG_ARTIFACT_REPOSITORY = "obj/artifact_repo_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_METADATA_REPOSITORY = "obj/metadata_repo_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_IU = "obj/iu_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_DISABLED_IU = "obj/iu_disabled_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_UPDATED_IU = "obj/iu_update_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_PATCH_IU = "obj/iu_patch_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_DISABLED_PATCH_IU = "obj/iu_disabled_patch_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_PROFILE = "obj/profile_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_CATEGORY = "obj/category_obj.gif"; //$NON-NLS-1$
-	public final static String IMG_VIEW_MENU = "obj/view_menu.gif";
-	public final static String IMG_SEPARATOR = "obj/separator.gif";
-	public static final String IMG_OBJ_ARTIFACT_KEY = "obj/artifact_key.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJ_SCHEDULE = "obj/schedule_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJ_SCHEDULE_DISABLED = "obj/schedule_disabled_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJ_ERROR_RESULT = "obj/error_result.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJ_WARN_RESULT = "obj/warn_result.gif"; //$NON-NLS-1$
 
 	/**
 	 * Returns the image descriptor for the given image ID. Returns
@@ -42,7 +33,7 @@ public class P2UiImages {
 	 * @return the image descriptor associated with the given ID
 	 */
 	public static ImageDescriptor getImageDescriptor(final String id) {
-		return P2UiActivator.getInstance().getImageRegistry().getDescriptor(id);
+		return JobsUiActivator.getInstance().getImageRegistry().getDescriptor(id);
 	}
 
 //	/**

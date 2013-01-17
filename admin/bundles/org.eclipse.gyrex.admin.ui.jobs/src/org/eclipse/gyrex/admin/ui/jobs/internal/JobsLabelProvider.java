@@ -22,12 +22,7 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
-/**
- *
- */
 public class JobsLabelProvider extends LabelProvider {
 
 	/** serialVersionUID */
@@ -44,30 +39,25 @@ public class JobsLabelProvider extends LabelProvider {
 	}
 
 	private ImageDescriptor getElementImage(final ISchedule element) {
-		if (element.isEnabled()) {
-			return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_PROJECT);
-		}
+		if (element.isEnabled())
+			return JobsUiImages.getImageDescriptor(JobsUiImages.IMG_OBJ_SCHEDULE);
 
-		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_PROJECT_CLOSED);
+		return JobsUiImages.getImageDescriptor(JobsUiImages.IMG_OBJ_SCHEDULE_DISABLED);
 	}
 
 	private ImageDescriptor getElementImage(final JobLog element) {
-		final ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-		if (element.isError()) {
-			return sharedImages.getImageDescriptor(ISharedImages.IMG_OBJS_ERROR_TSK);
-		}
-		if (element.isWarning()) {
-			return sharedImages.getImageDescriptor(ISharedImages.IMG_OBJS_WARN_TSK);
-		}
+		if (element.isError())
+			return JobsUiImages.getImageDescriptor(JobsUiImages.IMG_OBJ_ERROR_RESULT);
+		if (element.isWarning())
+			return JobsUiImages.getImageDescriptor(JobsUiImages.IMG_OBJ_WARN_RESULT);
 		return null;
 	}
 
 	private String getElementText(final ISchedule element) {
-		if (element.isEnabled()) {
+		if (element.isEnabled())
 			return String.format("%s (%s, %d)", element.getId(), element.getTimeZone().getDisplayName(Locale.US), element.getEntries().size());
-		} else {
+		else
 			return String.format("%s (DISABLED)", element.getId());
-		}
 
 	}
 
@@ -82,19 +72,16 @@ public class JobsLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(final Object element) {
 		final ImageDescriptor descriptor = getImageDescriptor(element);
-		if (descriptor == null) {
+		if (descriptor == null)
 			return null;
-		}
 		return getResourceManager().createImage(descriptor);
 	}
 
 	private ImageDescriptor getImageDescriptor(final Object element) {
-		if (element instanceof ISchedule) {
+		if (element instanceof ISchedule)
 			return getElementImage((ISchedule) element);
-		}
-		if (element instanceof JobLog) {
+		if (element instanceof JobLog)
 			return getElementImage((JobLog) element);
-		}
 		return null;
 	}
 
@@ -107,18 +94,14 @@ public class JobsLabelProvider extends LabelProvider {
 
 	@Override
 	public String getText(final Object element) {
-		if (element instanceof ISchedule) {
+		if (element instanceof ISchedule)
 			return getElementText((ISchedule) element);
-		}
-		if (element instanceof IScheduleEntry) {
+		if (element instanceof IScheduleEntry)
 			return getElementText((IScheduleEntry) element);
-		}
-		if (element instanceof JobLog) {
+		if (element instanceof JobLog)
 			return getElementText((JobLog) element);
-		}
-		if (element instanceof RunningJob) {
+		if (element instanceof RunningJob)
 			return ((RunningJob) element).getLabel();
-		}
 
 		return super.getText(element);
 	}

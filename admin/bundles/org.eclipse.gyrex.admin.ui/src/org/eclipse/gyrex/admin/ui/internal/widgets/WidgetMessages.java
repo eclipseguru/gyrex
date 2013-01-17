@@ -65,4 +65,13 @@ public class WidgetMessages {
 
 	public String FilteredItemsSelectionDialog_taskProgressMessage;
 	public String FilteredItemsSelectionDialog_subtaskProgressMessage;
+
+	public String FilteredTree_ClearToolTip;
+	public String FilteredTree_FilterMessage;
+	public String FilteredTree_FilteredDialogTitle;
+	public String FilteredTree_AccessibleListenerClearButton;
+	public String FilteredTree_AccessibleListenerFiltered;
+
+	public String FilteredList_UpdateJobName;
+
 }

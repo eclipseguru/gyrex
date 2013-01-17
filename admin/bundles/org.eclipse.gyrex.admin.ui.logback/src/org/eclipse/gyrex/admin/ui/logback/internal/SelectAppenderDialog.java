@@ -15,11 +15,11 @@ package org.eclipse.gyrex.admin.ui.logback.internal;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
 import org.eclipse.gyrex.logback.config.internal.model.Appender;
 
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 public class SelectAppenderDialog extends ElementListSelectionDialog {
 
@@ -58,10 +58,10 @@ public class SelectAppenderDialog extends ElementListSelectionDialog {
 	 * 
 	 * @see #create()
 	 */
+	@Override
 	public void openNonBlocking(final DialogCallback callback) {
-		if (!callbackRef.compareAndSet(null, callback)) {
+		if (!callbackRef.compareAndSet(null, callback))
 			throw new IllegalStateException("Concurrent operation not supported!");
-		}
 		setBlockOnOpen(false);
 		super.open();
 	}

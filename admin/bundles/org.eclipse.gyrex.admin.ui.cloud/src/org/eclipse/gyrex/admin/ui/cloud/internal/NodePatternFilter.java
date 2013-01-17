@@ -15,9 +15,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
+import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
 
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.dialogs.PatternFilter;
 
 /**
  *
@@ -64,9 +64,8 @@ public class NodePatternFilter extends PatternFilter {
 			}
 
 			for (final String word : keywords) {
-				if (wordMatches(word)) {
+				if (wordMatches(word))
 					return true;
-				}
 			}
 		}
 

@@ -13,22 +13,17 @@ package org.eclipse.gyrex.admin.ui.persistence.internal.adapters;
 
 import java.util.List;
 
+import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
 import org.eclipse.gyrex.admin.ui.persistence.internal.PersistenceUiActivator;
 import org.eclipse.gyrex.persistence.storage.lookup.RepositoryContentTypeAssignments;
 import org.eclipse.gyrex.persistence.storage.registry.IRepositoryDefinition;
 import org.eclipse.gyrex.persistence.storage.registry.IRepositoryRegistry;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.model.IWorkbenchAdapter;
 
-/**
- *
- */
-public final class WorkbenchAdapterImpl implements IWorkbenchAdapter {
+public final class WorkbenchAdapterImpl implements LabelAdapter {
 	public static final Object[] NO_CHILDREN = new Object[0];
 
-	@Override
 	public Object[] getChildren(final Object o) {
 		if (o instanceof RepositoryContentTypeAssignments) {
 			final List<IPath> contextPaths = ((RepositoryContentTypeAssignments) o).getContextPaths();
@@ -38,48 +33,33 @@ public final class WorkbenchAdapterImpl implements IWorkbenchAdapter {
 			}
 			return children;
 		}
-		if (o instanceof RepositoryContentTypeAssignmentsByContextPath) {
+		if (o instanceof RepositoryContentTypeAssignmentsByContextPath)
 			return ((RepositoryContentTypeAssignmentsByContextPath) o).getChildren();
-		}
-		if (o instanceof RepositoryContentTypeAssignmentsByContextPathAndMediaType) {
+		if (o instanceof RepositoryContentTypeAssignmentsByContextPathAndMediaType)
 			return ((RepositoryContentTypeAssignmentsByContextPathAndMediaType) o).getChildren();
-		}
 		return NO_CHILDREN;
 	}
 
 	@Override
-	public ImageDescriptor getImageDescriptor(final Object object) {
-		return null;
-	}
-
-	@Override
 	public String getLabel(final Object o) {
-		if (o instanceof RepositoryContentTypeAssignments) {
+		if (o instanceof RepositoryContentTypeAssignments)
 			return String.format("Assignments of %s", ((RepositoryContentTypeAssignments) o).getRepositoryId());
-		}
-		if (o instanceof RepositoryContentTypeAssignmentsByContextPath) {
+		if (o instanceof RepositoryContentTypeAssignmentsByContextPath)
 			return ((RepositoryContentTypeAssignmentsByContextPath) o).getLabel();
-		}
-		if (o instanceof RepositoryContentTypeAssignmentsByContextPathAndMediaType) {
+		if (o instanceof RepositoryContentTypeAssignmentsByContextPathAndMediaType)
 			return ((RepositoryContentTypeAssignmentsByContextPathAndMediaType) o).getLabel();
-		}
-		if (o instanceof IRepositoryDefinition) {
+		if (o instanceof IRepositoryDefinition)
 			return ((IRepositoryDefinition) o).getRepositoryId();
-		}
 		return String.valueOf(o);
 	}
 
-	@Override
 	public Object getParent(final Object o) {
-		if (o instanceof RepositoryContentTypeAssignments) {
+		if (o instanceof RepositoryContentTypeAssignments)
 			return PersistenceUiActivator.getInstance().getService(IRepositoryRegistry.class).getRepositoryDefinition(((RepositoryContentTypeAssignments) o).getRepositoryId());
-		}
-		if (o instanceof RepositoryContentTypeAssignmentsByContextPath) {
+		if (o instanceof RepositoryContentTypeAssignmentsByContextPath)
 			return ((RepositoryContentTypeAssignmentsByContextPath) o).getParent();
-		}
-		if (o instanceof RepositoryContentTypeAssignmentsByContextPathAndMediaType) {
+		if (o instanceof RepositoryContentTypeAssignmentsByContextPathAndMediaType)
 			return ((RepositoryContentTypeAssignmentsByContextPathAndMediaType) o).getParent();
-		}
 		return null;
 	}
 

@@ -14,6 +14,7 @@ package org.eclipse.gyrex.admin.ui.logback.internal;
 
 import java.util.Collection;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredTree;
 import org.eclipse.gyrex.admin.ui.logback.internal.LogbackConfigContentProvider.DefaultLogger;
 import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 import org.eclipse.gyrex.logback.config.internal.LogbackConfigActivator;
@@ -44,7 +45,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.dialogs.FilteredTree;
 
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;

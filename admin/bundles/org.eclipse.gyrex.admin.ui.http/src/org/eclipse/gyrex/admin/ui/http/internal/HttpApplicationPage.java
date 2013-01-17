@@ -23,8 +23,10 @@ import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvide
 import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.GroupNode;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
 import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
@@ -62,8 +64,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.dialogs.FilteredTree;
-import org.eclipse.ui.dialogs.PatternFilter;
 
 import org.apache.commons.lang.StringUtils;
 

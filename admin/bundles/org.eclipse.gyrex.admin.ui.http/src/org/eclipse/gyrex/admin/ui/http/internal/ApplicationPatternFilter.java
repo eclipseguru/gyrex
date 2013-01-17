@@ -16,9 +16,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.ApplicationItem;
+import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
 
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.dialogs.PatternFilter;
 
 /**
  *
@@ -57,9 +57,8 @@ public class ApplicationPatternFilter extends PatternFilter {
 			keywords.add(appReg.isActive() ? "active" : "inactive");
 
 			for (final String word : keywords) {
-				if (wordMatches(word)) {
+				if (wordMatches(word))
 					return true;
-				}
 			}
 		}
 
