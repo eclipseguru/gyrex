@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -40,25 +41,25 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jetty.http.HttpSchemes;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.spdy.server.http.HTTPSPDYServerConnector;
+import org.eclipse.jetty.spdy.server.http.PushStrategy;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.rap.rwt.RWT;
@@ -128,13 +129,13 @@ public class AdminUiActivator extends BaseBundleActivator {
 	}
 
 	private void addNonSslConnector(final Server server) {
-		final SelectChannelConnector connector = new SelectChannelConnector();
+		final ServerConnector connector = new HTTPSPDYServerConnector(server);
 
 		connector.setPort(DEFAULT_ADMIN_PORT);
-		connector.setMaxIdleTime(30000);
-		connector.setLowResourcesConnections(20000);
-		connector.setLowResourcesMaxIdleTime(5000);
-		connector.setForwarded(true);
+		connector.setIdleTimeout(60000);
+		// TODO: (Jetty9?) connector.setLowResourcesConnections(20000);
+		// TODO: (Jetty9?) connector.setLowResourcesMaxIdleTime(5000);
+		// TODO: (Jetty9?) connector.setForwarded(true);
 
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=356988 for an issue
 		// with configuring the connector
@@ -160,18 +161,18 @@ public class AdminUiActivator extends BaseBundleActivator {
 			sslContextFactory.setKeyStorePassword("changeit");
 			sslContextFactory.setKeyManagerPassword("changeit");
 
-			final SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
+			final HttpConfiguration httpConfiguration = new HttpConfiguration();
+			httpConfiguration.setSendServerVersion(false);
+			httpConfiguration.setSendDateHeader(false);
+			httpConfiguration.setSecurePort(DEFAULT_ADMIN_PORT);
+
+			final ServerConnector connector = new HTTPSPDYServerConnector(server, httpConfiguration, sslContextFactory, Collections.<Short, PushStrategy> emptyMap());
 
 			connector.setPort(DEFAULT_ADMIN_PORT);
-			connector.setMaxIdleTime(30000);
-			connector.setLowResourcesConnections(20000);
-			connector.setLowResourcesMaxIdleTime(5000);
-			connector.setForwarded(true);
-
-			connector.setConfidentialPort(DEFAULT_ADMIN_PORT);
-			connector.setConfidentialScheme(HttpSchemes.HTTPS);
-			connector.setIntegralPort(DEFAULT_ADMIN_PORT);
-			connector.setIntegralScheme(HttpSchemes.HTTPS);
+			connector.setIdleTimeout(60000);
+			// TODO: (Jetty9?) connector.setLowResourcesConnections(20000);
+			// TODO: (Jetty9?) connector.setLowResourcesMaxIdleTime(5000);
+			// TODO: (Jetty9?) connector.setForwarded(true);
 
 			server.addConnector(connector);
 		} catch (final Exception e) {
@@ -339,14 +340,13 @@ public class AdminUiActivator extends BaseBundleActivator {
 			}
 
 			// tweak server
-			server.setSendServerVersion(false);
-			server.setSendDateHeader(true); // required by some (older) browsers to support caching
-			server.setGracefulShutdown(5000);
+			server.setStopAtShutdown(true);
+			server.setStopTimeout(5000);
 
 			// set thread pool
-			final QueuedThreadPool threadPool = new QueuedThreadPool(5);
-			threadPool.setName("jetty-server-admin");
-			server.setThreadPool(threadPool);
+			// TODO: (Jetty9?) final QueuedThreadPool threadPool = new QueuedThreadPool(5);
+			// TODO: (Jetty9?) threadPool.setName("jetty-server-admin");
+			// TODO: (Jetty9?) server.setThreadPool(threadPool);
 
 			// create context
 			final ServletContextHandler contextHandler = new ServletContextHandler();
