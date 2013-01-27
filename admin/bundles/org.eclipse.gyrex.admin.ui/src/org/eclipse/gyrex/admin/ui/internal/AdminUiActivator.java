@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -47,6 +46,7 @@ import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.session.HashSessionManager;
@@ -54,8 +54,6 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.spdy.server.http.HTTPSPDYServerConnector;
-import org.eclipse.jetty.spdy.server.http.PushStrategy;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.security.Constraint;
@@ -129,7 +127,11 @@ public class AdminUiActivator extends BaseBundleActivator {
 	}
 
 	private void addNonSslConnector(final Server server) {
-		final ServerConnector connector = new HTTPSPDYServerConnector(server);
+		final HttpConfiguration httpConfiguration = new HttpConfiguration();
+		httpConfiguration.setSendServerVersion(false);
+		httpConfiguration.setSendDateHeader(false);
+
+		final ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpConfiguration));
 
 		connector.setPort(DEFAULT_ADMIN_PORT);
 		connector.setIdleTimeout(60000);
@@ -166,7 +168,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 			httpConfiguration.setSendDateHeader(false);
 			httpConfiguration.setSecurePort(DEFAULT_ADMIN_PORT);
 
-			final ServerConnector connector = new HTTPSPDYServerConnector(server, httpConfiguration, sslContextFactory, Collections.<Short, PushStrategy> emptyMap());
+			final ServerConnector connector = new ServerConnector(server, sslContextFactory, new HttpConnectionFactory(httpConfiguration));
 
 			connector.setPort(DEFAULT_ADMIN_PORT);
 			connector.setIdleTimeout(60000);
@@ -353,9 +355,9 @@ public class AdminUiActivator extends BaseBundleActivator {
 			contextHandler.setSessionHandler(new SessionHandler(createSessionManager()));
 			configureContextWithServletsAndResources(contextHandler);
 
-			// enable security if configured
-			if (Boolean.getBoolean(PROPERTY_ADMIN_SECURE)) {
-				final String authenticationPhrase = System.getProperty(PROPERTY_ADMIN_AUTH);
+			// enable authentication if configured
+			final String authenticationPhrase = System.getProperty(PROPERTY_ADMIN_AUTH);
+			if (Boolean.getBoolean(PROPERTY_ADMIN_SECURE) && StringUtils.isNotBlank(authenticationPhrase)) {
 				final String[] segments = authenticationPhrase.split("/");
 				if (segments.length != 3)
 					throw new IllegalArgumentException("Illegal authentication configuration. Must be three string separated by '/'");
