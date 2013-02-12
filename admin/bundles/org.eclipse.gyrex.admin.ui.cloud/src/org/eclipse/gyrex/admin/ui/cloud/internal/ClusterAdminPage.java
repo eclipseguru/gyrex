@@ -16,6 +16,7 @@ import java.util.Iterator;
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
+import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LinkDialogField;
@@ -212,6 +213,11 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 	@Override
 	protected Control createHeader(final Composite parent) {
 		return createConnectGroup(parent);
+	}
+
+	@Override
+	protected PatternFilter createPatternFilter() {
+		return new NodePatternFilter();
 	}
 
 	void disconnectNode() {

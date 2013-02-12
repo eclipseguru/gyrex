@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 

@@ -9,10 +9,9 @@
  * Contributors:
  *     <enter-developer-name-here> - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.cloud.internal;
+package org.eclipse.gyrex.admin.ui.internal.widgets;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredTree;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -174,8 +173,12 @@ public abstract class AdminPageWithTree extends AdminPage {
 
 	protected abstract Control createHeader(Composite parent);
 
+	protected PatternFilter createPatternFilter() {
+		return new PatternFilter();
+	}
+
 	protected FilteredTree createTree(final Composite parent) {
-		final FilteredTree filteredTree = new FilteredTree(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, new NodePatternFilter(), true);
+		final FilteredTree filteredTree = new FilteredTree(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, createPatternFilter(), true);
 
 		treeViewer = filteredTree.getViewer();
 		treeViewer.getTree().setHeaderVisible(true);
