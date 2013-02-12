@@ -11,11 +11,9 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.cloud.internal.zookeeper;
 
+import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
-/**
- *
- */
-public class ZooKeeperExplorer {
+public class ZooKeeperExplorer extends AdminPage {
 //
 //	static class ViewContentProvider implements ITreeContentProvider {
 //

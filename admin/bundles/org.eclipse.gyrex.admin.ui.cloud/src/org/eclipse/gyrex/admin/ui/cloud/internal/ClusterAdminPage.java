@@ -13,49 +13,33 @@ package org.eclipse.gyrex.admin.ui.cloud.internal;
 
 import java.util.Iterator;
 
-import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserComparator.SortIndex;
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
-import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
-import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LinkDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.cloud.admin.ICloudManager;
 import org.eclipse.gyrex.cloud.admin.INodeConfigurer;
 import org.eclipse.gyrex.cloud.environment.INodeEnvironment;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
-import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.jface.util.Policy;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.IOpenListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.OpenEvent;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableLayout;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -66,116 +50,34 @@ import org.apache.commons.lang.text.StrBuilder;
 /**
  * Gyrex Cloud Configuration Page.
  */
-public class ClusterAdminPage extends AdminPage {
-
-	private final class NodeBrowserSortListener extends SelectionAdapter {
-		/** serialVersionUID */
-		private static final long serialVersionUID = 1L;
-		private final NodeBrowserComparator comparator;
-		private final TreeViewerColumn column;
-		private final SortIndex sortIndex;
-
-		private NodeBrowserSortListener(final NodeBrowserComparator comparator, final SortIndex sortIndex, final TreeViewerColumn column) {
-			this.comparator = comparator;
-			this.sortIndex = sortIndex;
-			this.column = column;
-		}
-
-		@Override
-		public void widgetSelected(final SelectionEvent e) {
-			if (comparator.getIndex() == sortIndex) {
-				comparator.setReverse(!comparator.isReverse());
-			} else {
-				comparator.setIndex(sortIndex);
-				treeViewer.getTree().setSortColumn(column.getColumn());
-			}
-			treeViewer.getTree().setSortDirection(comparator.isReverse() ? SWT.UP : SWT.DOWN);
-			treeViewer.refresh();
-		}
-	}
-
-	private ZooKeeperGateListener listener;
+public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 
 	private StringDialogField nodeIdField;
 	private LinkDialogField membershipStatusField;
-
-	private Composite composite;
-	private TreeViewer treeViewer;
 
 	private Button approveButton;
 	private Button retireButton;
 	private Button editButton;
 	private Button manageButton;
 
-	private ISelectionChangedListener updateButtonsListener;
+	public static final int ID = 0;
+	public static final int LOCATION = 1;
+	public static final int TAGS = 2;
+	public static final int STATUS = 3;
 
 	/**
 	 * Creates a new instance.
 	 */
 	public ClusterAdminPage() {
+		super(4);
 		setTitle("Cluster Configuration");
 		setTitleToolTip("Configure the cluster of nodes in the system.");
-	}
-
-	@Override
-	public void activate() {
-		super.activate();
-
-		final Display display;
-		if (treeViewer != null) {
-			treeViewer.setInput(getCloudManager());
-			updateButtonsListener = new ISelectionChangedListener() {
-
-				@Override
-				public void selectionChanged(final SelectionChangedEvent event) {
-					updateButtons();
-				}
-			};
-			treeViewer.addSelectionChangedListener(updateButtonsListener);
-			display = treeViewer.getControl().getDisplay();
-		} else {
-			display = null;
-		}
-
-		if ((listener == null) && (display != null) && !display.isDisposed()) {
-			listener = new ZooKeeperGateListener() {
-
-				private void asyncRefresh() {
-					if (!display.isDisposed()) {
-						display.asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								refresh();
-							}
-						});
-					}
-				}
-
-				@Override
-				public void gateDown(final ZooKeeperGate gate) {
-					asyncRefresh();
-				}
-
-				@Override
-				public void gateRecovering(final ZooKeeperGate gate) {
-					asyncRefresh();
-				}
-
-				@Override
-				public void gateUp(final ZooKeeperGate gate) {
-					asyncRefresh();
-				}
-			};
-			ZooKeeperGate.addConnectionMonitor(listener);
-		}
-
-		refresh();
 	}
 
 	void approveSelectedNodes() {
 		final ICloudManager cloudManager = getCloudManager();
 		final MultiStatus result = new MultiStatus(CloudUiActivator.SYMBOLIC_NAME, 0, "Some nodes could not be approved.", null);
-		for (final Iterator stream = ((IStructuredSelection) treeViewer.getSelection()).iterator(); stream.hasNext();) {
+		for (final Iterator stream = ((IStructuredSelection) getTreeViewer().getSelection()).iterator(); stream.hasNext();) {
 			final Object object = stream.next();
 			if (object instanceof NodeItem) {
 				final NodeItem nodeItem = (NodeItem) object;
@@ -192,7 +94,8 @@ public class ClusterAdminPage extends AdminPage {
 		}
 	}
 
-	private void createButtons(final Composite parent) {
+	@Override
+	protected void createButtons(final Composite parent) {
 		approveButton = new Button(parent, SWT.PUSH);
 		approveButton.setText("Approve");
 		approveButton.addSelectionListener(new SelectionAdapter() {
@@ -239,7 +142,7 @@ public class ClusterAdminPage extends AdminPage {
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				manageSelectedNode();
+				openSelectedElement();
 			}
 		});
 	}
@@ -302,147 +205,13 @@ public class ClusterAdminPage extends AdminPage {
 	}
 
 	@Override
-	public Control createControl(final Composite parent) {
-		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
-
-		final Control connectGroup = createConnectGroup(composite);
-		GridData gd = AdminUiUtil.createHorzFillData();
-		gd.verticalIndent = 10;
-		connectGroup.setLayoutData(gd);
-
-		final Composite description = new Composite(composite, SWT.NONE);
-		gd = AdminUiUtil.createFillData();
-		gd.verticalIndent = 10;
-		description.setLayoutData(gd);
-		description.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(2, false));
-
-		final Control filteredTree = createNodeBrowser(description);
-		filteredTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		final Composite buttons = new Composite(description, SWT.NONE);
-		buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
-		buttons.setLayout(new RowLayout(SWT.VERTICAL));
-		createButtons(buttons);
-
-		return composite;
-	}
-
-	private FilteredTree createNodeBrowser(final Composite parent) {
-		final FilteredTree filteredTree = new FilteredTree(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, new NodePatternFilter(), true);
-
-		treeViewer = filteredTree.getViewer();
-		treeViewer.getTree().setHeaderVisible(true);
-		final TableLayout layout = new TableLayout();
-		layout.addColumnData(new ColumnWeightData(50, 50));
-		layout.addColumnData(new ColumnWeightData(50, 50));
-		layout.addColumnData(new ColumnWeightData(60, 50));
-		layout.addColumnData(new ColumnWeightData(30, 50));
-		treeViewer.getTree().setLayout(layout);
-		treeViewer.setUseHashlookup(true);
-		treeViewer.setContentProvider(new NodeBrowserContentProvider());
-		final NodeBrowserComparator comparator = new NodeBrowserComparator();
-		treeViewer.setComparator(comparator);
-		treeViewer.addOpenListener(new IOpenListener() {
-			@Override
-			public void open(final OpenEvent event) {
-				manageSelectedNode();
-			}
-		});
-
-		final TreeViewerColumn idColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		idColumn.getColumn().setText("Node ID");
-		idColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.ID, idColumn));
-		idColumn.setLabelProvider(new ColumnLabelProvider() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(final Object element) {
-				if (element instanceof NodeItem)
-					return ((NodeItem) element).getDescriptor().getId();
-				return String.valueOf(element);
-			}
-		});
-		treeViewer.getTree().setSortColumn(idColumn.getColumn());
-		treeViewer.getTree().setSortDirection(comparator.isReverse() ? SWT.UP : SWT.DOWN);
-
-		final TreeViewerColumn locationColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		locationColumn.getColumn().setText("Location");
-		locationColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.LOCATION, locationColumn));
-		locationColumn.setLabelProvider(new ColumnLabelProvider() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(final Object element) {
-				if (element instanceof NodeItem)
-					return ((NodeItem) element).getDescriptor().getLocation();
-				return null;
-			}
-		});
-
-		final TreeViewerColumn tagsColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		tagsColumn.getColumn().setText("Tags");
-		tagsColumn.setLabelProvider(new ColumnLabelProvider() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(final Object element) {
-				if (element instanceof NodeItem)
-					return StringUtils.join(((NodeItem) element).getDescriptor().getTags(), ", ");
-				return null;
-			}
-		});
-
-		final TreeViewerColumn statusColumn = new TreeViewerColumn(treeViewer, SWT.LEFT);
-		statusColumn.getColumn().setText("Status");
-		statusColumn.getColumn().addSelectionListener(new NodeBrowserSortListener(comparator, SortIndex.STATUS, statusColumn));
-		statusColumn.setLabelProvider(new ColumnLabelProvider() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(final Object element) {
-				if (element instanceof NodeItem) {
-					final NodeItem nodeItem = (NodeItem) element;
-					final StrBuilder status = new StrBuilder();
-					if (nodeItem.isApproved()) {
-						status.append("approved");
-					} else {
-						status.append("pending");
-					}
-					if (nodeItem.isOnline()) {
-						status.appendSeparator(", ").append("online");
-					}
-					return status.toString();
-				}
-				return null;
-			}
-		});
-
-		return filteredTree;
+	protected ITreeContentProvider createContentProvider() {
+		return new NodeBrowserContentProvider();
 	}
 
 	@Override
-	public void deactivate() {
-		super.deactivate();
-
-		if (treeViewer != null) {
-			if (updateButtonsListener != null) {
-				treeViewer.removeSelectionChangedListener(updateButtonsListener);
-				updateButtonsListener = null;
-			}
-			if (treeViewer.getTree().isDisposed()) {
-				treeViewer.setInput(null);
-			}
-		}
-
-		if (listener != null) {
-			ZooKeeperGate.removeConnectionMonitor(listener);
-			listener = null;
-		}
+	protected Control createHeader(final Composite parent) {
+		return createConnectGroup(parent);
 	}
 
 	void disconnectNode() {
@@ -459,7 +228,7 @@ public class ClusterAdminPage extends AdminPage {
 	}
 
 	void editSelectedNode() {
-		final Object firstElement = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+		final Object firstElement = ((IStructuredSelection) getTreeViewer().getSelection()).getFirstElement();
 		if (!(firstElement instanceof NodeItem))
 			return;
 		final NonBlockingStatusDialog dialog = new EditNodeDialog(SwtUtil.getShell(membershipStatusField.getLabelControl(null)), getCloudManager(), ((NodeItem) firstElement).getDescriptor());
@@ -477,19 +246,99 @@ public class ClusterAdminPage extends AdminPage {
 		});
 	}
 
-	private ICloudManager getCloudManager() {
+	ICloudManager getCloudManager() {
 		return CloudUiActivator.getInstance().getCloudManager();
 	}
 
-	void manageSelectedNode() {
-		final Object firstElement = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+	@Override
+	protected String getColumnLabel(final int column) {
+		switch (column) {
+			case ID:
+				return "Node";
+			case LOCATION:
+				return "Location";
+			case TAGS:
+				return "Tags";
+			case STATUS:
+				return "Status";
+			default:
+				return String.valueOf(column);
+		}
+	}
+
+	@Override
+	protected String getElementLabel(final Object element, final int column) {
+		if (element instanceof NodeItem) {
+			final NodeItem nodeItem = (NodeItem) element;
+			switch (column) {
+				case ID:
+					return nodeItem.getDescriptor().getId();
+				case LOCATION:
+					return nodeItem.getDescriptor().getLocation();
+				case STATUS:
+					final StrBuilder status = new StrBuilder();
+					if (nodeItem.isApproved()) {
+						status.append("approved");
+					} else {
+						status.append("pending");
+					}
+					if (nodeItem.isOnline()) {
+						status.appendSeparator(", ").append("online");
+					}
+					return status.toString();
+				case TAGS:
+					return StringUtils.join(((NodeItem) element).getDescriptor().getTags(), ", ");
+				default:
+					break;
+			}
+		}
+		return String.valueOf(element);
+	}
+
+	@Override
+	protected String getElementTextForSorting(final Object element, final int column) {
+		if (element instanceof NodeItem) {
+			final NodeItem node = (NodeItem) element;
+			switch (column) {
+				case STATUS:
+					return node.isApproved() ? node.isOnline() ? "A1" : "A2" : node.isOnline() ? "P1" : "P2";
+				default:
+					// fall-through
+					break;
+			}
+		}
+		return super.getElementTextForSorting(element, column);
+	}
+
+	@Override
+	protected Object getViewerInput() {
+		return getCloudManager();
+	}
+
+	@Override
+	protected boolean isColumnSortable(final int column) {
+		switch (column) {
+			case ID:
+			case LOCATION:
+			case STATUS:
+				return true;
+			case TAGS:
+			default:
+				return false;
+		}
+	}
+
+	@Override
+	protected void openSelectedElement() {
+		final Object firstElement = ((IStructuredSelection) getTreeViewer().getSelection()).getFirstElement();
 		if (!(firstElement instanceof NodeItem))
 			return;
 
 		getAdminUi().openPage(NodeAdminPage.ID, new String[] { ((NodeItem) firstElement).getDescriptor().getId() });
 	}
 
-	void refresh() {
+	@Override
+	protected void refresh() {
 		final ICloudManager cloudManager = getCloudManager();
 		final INodeEnvironment localInfo = cloudManager.getLocalInfo();
 		final INodeConfigurer nodeConfigurer = cloudManager.getNodeConfigurer(localInfo.getNodeId());
@@ -511,15 +360,12 @@ public class ClusterAdminPage extends AdminPage {
 				membershipStatusField.setText(String.format("The node is currently not connected (using connect string '%s'). <a href=\"#disconnect\">Disconnect it.</a>", StringEscapeUtils.escapeXml(connectString)));
 			}
 		}
-
-		treeViewer.refresh();
-		updateButtons();
 	}
 
 	void retireSelectedNodes() {
 		final ICloudManager cloudManager = getCloudManager();
 		final MultiStatus result = new MultiStatus(CloudUiActivator.SYMBOLIC_NAME, 0, "Some nodes could not be retired.", null);
-		for (final Iterator stream = ((IStructuredSelection) treeViewer.getSelection()).iterator(); stream.hasNext();) {
+		for (final Iterator stream = ((IStructuredSelection) getTreeViewer().getSelection()).iterator(); stream.hasNext();) {
 			final Object object = stream.next();
 			if (object instanceof NodeItem) {
 				final NodeItem nodeItem = (NodeItem) object;
@@ -552,8 +398,9 @@ public class ClusterAdminPage extends AdminPage {
 		});
 	}
 
-	void updateButtons() {
-		final int selectedElementsCount = ((IStructuredSelection) treeViewer.getSelection()).size();
+	@Override
+	protected void updateButtons() {
+		final int selectedElementsCount = ((IStructuredSelection) getTreeViewer().getSelection()).size();
 		if (selectedElementsCount == 0) {
 			approveButton.setEnabled(false);
 			retireButton.setEnabled(false);
@@ -564,7 +411,7 @@ public class ClusterAdminPage extends AdminPage {
 
 		boolean hasApprovedNodes = false;
 		boolean hasPendingNodes = false;
-		for (final Iterator stream = ((IStructuredSelection) treeViewer.getSelection()).iterator(); stream.hasNext();) {
+		for (final Iterator stream = ((IStructuredSelection) getTreeViewer().getSelection()).iterator(); stream.hasNext();) {
 			final Object object = stream.next();
 			if (object instanceof NodeItem) {
 				final NodeItem nodeItem = (NodeItem) object;
