@@ -231,7 +231,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 			// note, we don't reference the class directly because the package import is optional
 			final Class<?> servletClass = AdminUiActivator.getInstance().getBundle().loadClass("ch.qos.logback.classic.ViewStatusMessagesServlet");
 			contextHandler.addServlet(new AdminServletHolder((Servlet) servletClass.newInstance()), "/logbackstatus");
-		} catch (final ClassNotFoundException e) {
+		} catch (final ClassNotFoundException | LinkageError e) {
 			LOG.warn("Logback status servlet not available. {}", e.getMessage(), e);
 		} catch (final Exception e) {
 			LOG.error("An error occurred while registering the Logback status servlet. {}", e.getMessage(), e);
