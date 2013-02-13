@@ -16,7 +16,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
@@ -58,9 +60,8 @@ public class ZooKeeperData {
 	}
 
 	private String asString(final byte[] data) {
-		if (null == data) {
+		if (null == data)
 			return StringUtils.EMPTY;
-		}
 
 		try {
 			return new String(data, CharEncoding.UTF_8);
@@ -89,9 +90,8 @@ public class ZooKeeperData {
 		try {
 			final byte[] data = ZooKeeperGate.get().readRecord(path, stat);
 
-			if (null == data) {
+			if (null == data)
 				return null;
-			}
 
 			// read known paths as properties
 			if (IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path)) {
@@ -109,13 +109,12 @@ public class ZooKeeperData {
 
 	public String getLabel() {
 		final Stat stat = getStat();
-		if (stat.getEphemeralOwner() != 0) {
+		if (stat.getEphemeralOwner() != 0)
 			return String.format("%s (ephemeral, v%d)", path.segmentCount() > 0 ? path.lastSegment() : "/", stat.getVersion());
-		} else if (stat.getDataLength() > 0) {
+		else if (stat.getDataLength() > 0)
 			return String.format("%s (v%d, c%d, %d bytes)", path.segmentCount() > 0 ? path.lastSegment() : "/", stat.getVersion(), stat.getCversion(), stat.getDataLength());
-		} else {
+		else
 			return String.format("%s (v%d, c%d)", path.segmentCount() > 0 ? path.lastSegment() : "/", stat.getVersion(), stat.getCversion());
-		}
 	}
 
 	/**
@@ -128,24 +127,18 @@ public class ZooKeeperData {
 	}
 
 	public Object getPropertyValue(final Object id) {
-		if (id == PROP_PATH) {
+		if (id == PROP_PATH)
 			return path;
-		}
-		if (id == PROP_VERSION) {
+		if (id == PROP_VERSION)
 			return getStat().getVersion();
-		}
-		if (id == PROP_CVERSION) {
+		if (id == PROP_CVERSION)
 			return getStat().getCversion();
-		}
-		if (id == PROP_EPHEMERAL_OWNER) {
+		if (id == PROP_EPHEMERAL_OWNER)
 			return "0x" + Long.toHexString(getStat().getEphemeralOwner());
-		}
-		if (id == PROP_DATA_LENGTH) {
+		if (id == PROP_DATA_LENGTH)
 			return getStat().getDataLength();
-		}
-		if (id == PROP_DATA) {
+		if (id == PROP_DATA)
 			return getData();
-		}
 		return null;
 	}
 
@@ -164,9 +157,25 @@ public class ZooKeeperData {
 		stat = new Stat();
 		try {
 			final Collection<String> names = ZooKeeperGate.get().readChildrenNames(path, stat);
-			final List<ZooKeeperData> children = new ArrayList<ZooKeeperData>(names.size());
-			for (final String name : names) {
-				children.add(new ZooKeeperData(path.append(name), this));
+			final List<Object> children = new ArrayList<Object>();
+			if (names.size() > 0) {
+				// use children
+				for (final String name : names) {
+					children.add(new ZooKeeperData(path.append(name), this));
+				}
+			} else {
+				// read known paths as properties
+				if (IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path)) {
+					final byte[] data = ZooKeeperGate.get().readRecord(path, stat);
+					if (null != data) {
+						final Properties prop = new Properties();
+						prop.load(new ByteArrayInputStream(data));
+						final Set<Entry<Object, Object>> entrySet = prop.entrySet();
+						for (final Entry<Object, Object> e : entrySet) {
+							children.add(String.format("%s=%s", e.getKey(), e.getValue()));
+						}
+					}
+				}
 			}
 			this.children = children.toArray();
 		} catch (final Exception e) {
