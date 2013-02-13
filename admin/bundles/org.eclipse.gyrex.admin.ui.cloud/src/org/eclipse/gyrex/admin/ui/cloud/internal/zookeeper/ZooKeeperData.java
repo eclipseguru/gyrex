@@ -94,7 +94,7 @@ public class ZooKeeperData {
 				return null;
 
 			// read known paths as properties
-			if (IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path)) {
+			if (isPropertiesBased()) {
 				final Properties prop = new Properties();
 				prop.load(new ByteArrayInputStream(data));
 				return prop;
@@ -109,6 +109,16 @@ public class ZooKeeperData {
 
 	public String getLabel() {
 		final Stat stat = getStat();
+
+		// print the first few chars if string based
+		if ((stat.getDataLength() > 0) && isStringBased()) {
+			final String data = StringUtils.left(String.valueOf(getData()), 70);
+			if (stat.getEphemeralOwner() != 0)
+				return String.format("%s (ephemeral, v%d) [%s]", path.segmentCount() > 0 ? path.lastSegment() : "/", stat.getVersion(), data);
+			else
+				return String.format("%s (v%d) [%s]", path.segmentCount() > 0 ? path.lastSegment() : "/", stat.getVersion(), data);
+		}
+
 		if (stat.getEphemeralOwner() != 0)
 			return String.format("%s (ephemeral, v%d)", path.segmentCount() > 0 ? path.lastSegment() : "/", stat.getVersion());
 		else if (stat.getDataLength() > 0)
@@ -153,6 +163,14 @@ public class ZooKeeperData {
 		return getChildren().length > 0;
 	}
 
+	private boolean isPropertiesBased() {
+		return IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path);
+	}
+
+	private boolean isStringBased() {
+		return IZooKeeperLayout.PATH_LOCKS_ROOT.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_ALL.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_ONLINE.isPrefixOf(path) || IZooKeeperLayout.PATH_GYREX_ROOT.append("jobs").isPrefixOf(path);
+	}
+
 	private void load() {
 		stat = new Stat();
 		try {
@@ -163,20 +181,21 @@ public class ZooKeeperData {
 				for (final String name : names) {
 					children.add(new ZooKeeperData(path.append(name), this));
 				}
-			} else {
-				// read known paths as properties
-				if (IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path)) {
-					final byte[] data = ZooKeeperGate.get().readRecord(path, stat);
-					if (null != data) {
-						final Properties prop = new Properties();
-						prop.load(new ByteArrayInputStream(data));
-						final Set<Entry<Object, Object>> entrySet = prop.entrySet();
-						for (final Entry<Object, Object> e : entrySet) {
-							children.add(String.format("%s=%s", e.getKey(), e.getValue()));
-						}
+			}
+
+			// append properties for well known paths
+			if (isPropertiesBased()) {
+				final byte[] data = ZooKeeperGate.get().readRecord(path, stat);
+				if (null != data) {
+					final Properties prop = new Properties();
+					prop.load(new ByteArrayInputStream(data));
+					final Set<Entry<Object, Object>> entrySet = prop.entrySet();
+					for (final Entry<Object, Object> e : entrySet) {
+						children.add(String.format("%s=%s", e.getKey(), e.getValue()));
 					}
 				}
 			}
+
 			this.children = children.toArray();
 		} catch (final Exception e) {
 			children = new String[] { ExceptionUtils.getRootCauseMessage(e) };
