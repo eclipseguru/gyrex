@@ -16,6 +16,12 @@
             id="node"
             name="Node">
       </page>
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
+            class="org.eclipse.gyrex.admin.ui.cloud.internal.zookeeper.ZooKeeperExplorer"
+            id="zookeeper-explorer"
+            name="ZooKeeper Explorer">
+      </page>
    </extension>
 
 

@@ -11,133 +11,124 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.cloud.internal.zookeeper;
 
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.admin.ui.cloud.internal.ZooKeeperBasedAdminPage;
+import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
 
-public class ZooKeeperExplorer extends AdminPage {
-//
-//	static class ViewContentProvider implements ITreeContentProvider {
-//
-//		/** serialVersionUID */
-//		private static final long serialVersionUID = 1L;
-//		private static final Object[] NO_CHILDREN = new Object[0];
-//
-//		@Override
-//		public void dispose() {
-//		}
-//
-//		@Override
-//		public Object[] getChildren(final Object parent) {
-//			return getElements(parent);
-//		}
-//
-//		@Override
-//		public Object[] getElements(final Object parent) {
-//			if (parent instanceof ZooKeeperData) {
-//				return ((ZooKeeperData) parent).getChildren();
-//			} else {
-//				return NO_CHILDREN;
-//			}
-//		}
-//
-//		@Override
-//		public Object getParent(final Object element) {
-//			if (element instanceof ZooKeeperData) {
-//				return ((ZooKeeperData) element).getParent();
-//			}
-//			return null;
-//		}
-//
-//		@Override
-//		public boolean hasChildren(final Object element) {
-//			if (element instanceof ZooKeeperData) {
-//				return ((ZooKeeperData) element).hasChildren();
-//			} else {
-//				return false;
-//			}
-//		}
-//
-//		@Override
-//		public void inputChanged(final Viewer v, final Object oldInput, final Object newInput) {
-//		}
-//	}
-//
-//	static class ViewLabelProvider extends LabelProvider {
-//
-//		/** serialVersionUID */
-//		private static final long serialVersionUID = 1L;
-//
-//		@Override
-//		public Image getImage(final Object obj) {
-//			return null;//PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-//		}
-//
-//		@Override
-//		public String getText(final Object element) {
-//			if (element instanceof ZooKeeperData) {
-//				return ((ZooKeeperData) element).getLabel();
-//			} else {
-//				return super.getText(element);
-//			}
-//		}
-//	}
-//
-//	public static final String ID = "org.eclipse.gyrex.admin.ui.cloud.view.zookeeper";
-//
-//	private FilteredTree filteredTree;
-//
-//	private IAction refreshAction;
-//
-//	private void createActions() {
-//		refreshAction = new Action() {
-//			/** serialVersionUID */
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void run() {
-//				// reset input
-//				filteredTree.getViewer().setInput(new ZooKeeperData(Path.ROOT, null));
-//			}
-//		};
-//		refreshAction.setId(ActionFactory.REFRESH.getId());
-//		refreshAction.setText("Refresh");
-//		refreshAction.setToolTipText("Refresh the tree!");
-//		refreshAction.setImageDescriptor(CloudUiActivator.getImageDescriptor("/icons/refresh.gif"));
-//		refreshAction.setDisabledImageDescriptor(CloudUiActivator.getImageDescriptor("/icons/refresh_disabled.gif"));
-//		getViewSite().getActionBars().setGlobalActionHandler(ActionFactory.REFRESH.getId(), refreshAction);
-//	}
-//
-//	@Override
-//	public void createPartControl(final Composite parent) {
-//		parent.setLayout(new GridLayout());
-//		final PathPatternFilter filter = new PathPatternFilter();
-//		filter.setIncludeLeadingWildcard(true);
-//		filteredTree = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL, filter, true);
-//
-//		final TreeViewer viewer = filteredTree.getViewer();
-//		viewer.setContentProvider(new ViewContentProvider());
-//		viewer.setLabelProvider(new ViewLabelProvider());
-//		viewer.setComparator(new ViewerComparator());
-//		viewer.setInput(new Object());
-//
-//		createActions();
-//		initToolBar();
-//		getSite().setSelectionProvider(viewer);
-//
-//		viewer.setInput(new ZooKeeperData(Path.ROOT, null));
-//	}
-//
-//	private void initToolBar() {
-//		final IActionBars bars = getViewSite().getActionBars();
-//		final IToolBarManager tm = bars.getToolBarManager();
-//
-//		if (null != refreshAction) {
-//			tm.add(refreshAction);
-//		}
-//	}
-//
-//	@Override
-//	public void setFocus() {
-//		filteredTree.setFocus();
-//	}
-//
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+
+public class ZooKeeperExplorer extends ZooKeeperBasedAdminPage {
+
+	static class ViewContentProvider implements ITreeContentProvider {
+
+		/** serialVersionUID */
+		private static final long serialVersionUID = 1L;
+		private static final Object[] NO_CHILDREN = new Object[0];
+
+		@Override
+		public void dispose() {
+		}
+
+		@Override
+		public Object[] getChildren(final Object parent) {
+			return getElements(parent);
+		}
+
+		@Override
+		public Object[] getElements(final Object parent) {
+			if (parent instanceof ZooKeeperData)
+				return ((ZooKeeperData) parent).getChildren();
+			else
+				return NO_CHILDREN;
+		}
+
+		@Override
+		public Object getParent(final Object element) {
+			if (element instanceof ZooKeeperData)
+				return ((ZooKeeperData) element).getParent();
+			return null;
+		}
+
+		@Override
+		public boolean hasChildren(final Object element) {
+			if (element instanceof ZooKeeperData)
+				return ((ZooKeeperData) element).hasChildren();
+			else
+				return false;
+		}
+
+		@Override
+		public void inputChanged(final Viewer v, final Object oldInput, final Object newInput) {
+		}
+	}
+
+	public ZooKeeperExplorer() {
+		super(0);
+		setTitle("ZooKeeper Explorer");
+		setTitleToolTip("Browse ZooKeeper data");
+	}
+
+	@Override
+	protected void createButtons(final Composite parent) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected ITreeContentProvider createContentProvider() {
+		return new ViewContentProvider();
+	}
+
+	@Override
+	protected Control createHeader(final Composite parent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected PatternFilter createPatternFilter() {
+		final PathPatternFilter filter = new PathPatternFilter();
+		filter.setIncludeLeadingWildcard(true);
+		return filter;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree#getColumnLabel(int)
+	 */
+	@Override
+	protected String getColumnLabel(final int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String getElementLabel(final Object element, final int column) {
+		if (element instanceof ZooKeeperData)
+			return ((ZooKeeperData) element).getLabel();
+		else
+			return String.valueOf(element);
+	}
+
+	@Override
+	protected Object getViewerInput() {
+		return new ZooKeeperData(Path.ROOT, null);
+	}
+
+	@Override
+	protected boolean isColumnSortable(final int column) {
+		return false;
+	}
+
+	@Override
+	protected void refresh() {
+		getTreeViewer().setInput(getViewerInput());
+	}
+
+	@Override
+	protected void updateButtons() {
+		// TODO Auto-generated method stub
+
+	}
 }
