@@ -198,6 +198,14 @@ public abstract class AdminPageWithTree extends AdminPage {
 				openSelectedElement();
 			}
 		});
+		treeViewer.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(final Object element) {
+				return getElementLabel(element, -1);
+			}
+		});
 
 		// create columns
 		final int columns = getNumberOfColumns();
