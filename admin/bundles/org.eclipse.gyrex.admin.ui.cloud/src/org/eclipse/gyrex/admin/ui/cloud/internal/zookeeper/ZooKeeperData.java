@@ -164,11 +164,11 @@ public class ZooKeeperData {
 	}
 
 	private boolean isPropertiesBased() {
-		return IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path);
+		return IZooKeeperLayout.PATH_PREFERENCES_ROOT.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_APPROVED.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_PENDING.isPrefixOf(path);
 	}
 
 	private boolean isStringBased() {
-		return IZooKeeperLayout.PATH_LOCKS_ROOT.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_ALL.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_ONLINE.isPrefixOf(path) || IZooKeeperLayout.PATH_GYREX_ROOT.append("jobs").isPrefixOf(path);
+		return IZooKeeperLayout.PATH_LOCKS_ROOT.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_ALL.isPrefixOf(path) || IZooKeeperLayout.PATH_NODES_ONLINE.isPrefixOf(path) || IZooKeeperLayout.PATH_JOBS_ROOT.isPrefixOf(path);
 	}
 
 	private void load() {
