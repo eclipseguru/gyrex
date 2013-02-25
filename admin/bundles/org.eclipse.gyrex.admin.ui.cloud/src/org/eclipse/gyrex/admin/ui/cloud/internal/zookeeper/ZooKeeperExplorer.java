@@ -73,7 +73,7 @@ public class ZooKeeperExplorer extends ZooKeeperBasedAdminPage {
 
 	@Override
 	protected void createButtons(final Composite parent) {
-		// TODO Auto-generated method stub
+		// no buttons
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class ZooKeeperExplorer extends ZooKeeperBasedAdminPage {
 
 	@Override
 	protected Control createHeader(final Composite parent) {
-		// TODO Auto-generated method stub
+		// no header
 		return null;
 	}
 
@@ -94,12 +94,9 @@ public class ZooKeeperExplorer extends ZooKeeperBasedAdminPage {
 		return filter;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree#getColumnLabel(int)
-	 */
 	@Override
 	protected String getColumnLabel(final int column) {
-		// TODO Auto-generated method stub
+		// no columns
 		return null;
 	}
 
@@ -128,7 +125,6 @@ public class ZooKeeperExplorer extends ZooKeeperBasedAdminPage {
 
 	@Override
 	protected void updateButtons() {
-		// TODO Auto-generated method stub
-
+		// no buttons
 	}
 }
