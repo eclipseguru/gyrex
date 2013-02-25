@@ -79,6 +79,7 @@ Export-Package: org.eclipse.gyrex.admin.ui.adapter;version="1.0.0";
  org.eclipse.gyrex.admin.ui.internal.pages;x-internal:=true,
  org.eclipse.gyrex.admin.ui.internal.pages.overview;x-internal:=true,
  org.eclipse.gyrex.admin.ui.internal.pages.registry;x-internal:=true,
+ org.eclipse.gyrex.admin.ui.internal.preferences;x-internal:=true,
  org.eclipse.gyrex.admin.ui.internal.servlets;x-internal:=true,
  org.eclipse.gyrex.admin.ui.internal.widgets;
   x-friends:="org.eclipse.gyrex.admin.ui,

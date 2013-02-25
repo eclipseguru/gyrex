@@ -47,5 +47,10 @@
             name="Applications"
             sortKey="2000">
       </category>
+      <page
+            class="org.eclipse.gyrex.admin.ui.internal.preferences.PreferencesExplorer"
+            id="preferences-explorer"
+            name="Preferences Explorer">
+      </page>
    </extension>
 </plugin>

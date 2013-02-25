@@ -27,7 +27,6 @@ import org.eclipse.gyrex.admin.ui.internal.application.AdminApplicationConfigura
 import org.eclipse.gyrex.admin.ui.internal.jetty.AdminServletHolder;
 import org.eclipse.gyrex.admin.ui.internal.jetty.SimpleAdminLoginService;
 import org.eclipse.gyrex.admin.ui.internal.servlets.AdminServletTracker;
-import org.eclipse.gyrex.admin.ui.internal.servlets.PreferencesServlet;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.monitoring.diagnostics.StatusTracker;
@@ -236,9 +235,6 @@ public class AdminUiActivator extends BaseBundleActivator {
 		} catch (final Exception e) {
 			LOG.error("An error occurred while registering the Logback status servlet. {}", e.getMessage(), e);
 		}
-
-		// register Preferences status servlet
-		contextHandler.addServlet(new AdminServletHolder(new PreferencesServlet()), "/preferences");
 
 		// allow extension using custom servlets
 		final AdminServletTracker adminServletTracker = new AdminServletTracker(getBundle().getBundleContext(), contextHandler);
