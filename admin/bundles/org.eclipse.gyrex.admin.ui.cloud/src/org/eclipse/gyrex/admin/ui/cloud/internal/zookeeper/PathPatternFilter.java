@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.Viewer;
 
 /**
- *
+ * {@link IPath} based {@link PatternFilter} for {@link ZooKeeperData}.
  */
 public class PathPatternFilter extends PatternFilter {
 
