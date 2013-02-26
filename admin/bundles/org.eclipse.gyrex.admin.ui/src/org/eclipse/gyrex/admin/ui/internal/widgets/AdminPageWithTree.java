@@ -15,6 +15,7 @@ import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnLayoutData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -183,10 +184,6 @@ public abstract class AdminPageWithTree extends AdminPage {
 		treeViewer = filteredTree.getViewer();
 		treeViewer.getTree().setHeaderVisible(true);
 		final TableLayout layout = new TableLayout();
-		layout.addColumnData(new ColumnWeightData(50, 50));
-		layout.addColumnData(new ColumnWeightData(50, 50));
-		layout.addColumnData(new ColumnWeightData(60, 50));
-		layout.addColumnData(new ColumnWeightData(30, 50));
 		treeViewer.getTree().setLayout(layout);
 		treeViewer.setUseHashlookup(true);
 		treeViewer.setContentProvider(createContentProvider());
@@ -223,6 +220,11 @@ public abstract class AdminPageWithTree extends AdminPage {
 				}
 			});
 
+			final ColumnLayoutData layoutData = getColumnLayoutData(column);
+			if (layoutData != null) {
+				layout.addColumnData(layoutData);
+			}
+
 			if (isColumnSortable(column)) {
 				viewerColumn.getColumn().addSelectionListener(new ChangeSortColumnListener(comparator, column, viewerColumn));
 				treeViewer.getTree().setSortColumn(viewerColumn.getColumn());
@@ -249,6 +251,10 @@ public abstract class AdminPageWithTree extends AdminPage {
 	}
 
 	protected abstract String getColumnLabel(final int column);
+
+	protected ColumnLayoutData getColumnLayoutData(final int column) {
+		return new ColumnWeightData((numberOfColumns / (column + 1)) * 10, 50);
+	}
 
 	protected abstract String getElementLabel(final Object element, final int column);
 
