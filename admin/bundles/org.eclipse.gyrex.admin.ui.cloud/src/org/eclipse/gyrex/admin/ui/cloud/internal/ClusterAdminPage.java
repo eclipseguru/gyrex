@@ -95,8 +95,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 
 	@Override
 	protected void createButtons(final Composite parent) {
-		approveButton = new Button(parent, SWT.PUSH);
-		approveButton.setText("Approve");
+		approveButton = createButton(parent, "Approve");
 		approveButton.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
@@ -107,8 +106,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 			}
 		});
 
-		retireButton = new Button(parent, SWT.PUSH);
-		retireButton.setText("Retire");
+		retireButton = createButton(parent, "Retire");
 		retireButton.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
@@ -121,8 +119,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 
 		createButtonSeparator(parent);
 
-		editButton = new Button(parent, SWT.PUSH);
-		editButton.setText("Edit..");
+		editButton = createButton(parent, "Edit..");
 		editButton.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
@@ -133,8 +130,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 			}
 		});
 
-		manageButton = new Button(parent, SWT.PUSH);
-		manageButton.setText("Manage");
+		manageButton = createButton(parent, "Manage");
 		manageButton.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
