@@ -14,6 +14,7 @@ package org.eclipse.gyrex.admin.ui.internal.widgets;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnLayoutData;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -31,8 +32,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -143,6 +142,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 	protected Button createButton(final Composite parent, final String buttonLabel) {
 		final Button b = new Button(parent, SWT.NONE);
 		b.setText(buttonLabel);
+		b.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		return b;
 	}
 
@@ -151,8 +151,8 @@ public abstract class AdminPageWithTree extends AdminPage {
 	protected Label createButtonSeparator(final Composite parent) {
 		final Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
 		separator.setVisible(false);
-		final RowData gd = new RowData();
-		gd.height = 4;
+		final GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		gd.heightHint = 4;
 		separator.setLayoutData(gd);
 		return separator;
 	}
@@ -184,7 +184,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 
 		final Composite buttons = new Composite(treeContainerWithButtons, SWT.NONE);
 		buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
-		buttons.setLayout(new RowLayout(SWT.VERTICAL));
+		buttons.setLayout(GridLayoutFactory.fillDefaults().create());
 		createButtons(buttons);
 
 		return composite;
