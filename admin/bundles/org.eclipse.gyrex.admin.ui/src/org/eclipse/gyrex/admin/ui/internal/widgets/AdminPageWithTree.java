@@ -136,7 +136,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 		};
 		treeViewer.addSelectionChangedListener(updateButtonsListener);
 
-		refresh();
+		internalRefresh();
 	}
 
 	protected Button createButton(final Composite parent, final String buttonLabel) {
