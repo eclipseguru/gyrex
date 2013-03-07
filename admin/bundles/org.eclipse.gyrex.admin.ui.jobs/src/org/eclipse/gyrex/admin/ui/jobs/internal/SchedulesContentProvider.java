@@ -12,64 +12,114 @@
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
-import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
-import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.context.definitions.ContextDefinition;
+import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
+import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
+import org.eclipse.gyrex.jobs.schedules.manager.IScheduleManager;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import org.osgi.service.prefs.BackingStoreException;
-
-/**
- * 
- */
-public class SchedulesContentProvider implements IStructuredContentProvider {
+public class SchedulesContentProvider implements ITreeContentProvider {
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-	 */
+	private static final Object[] EMPTY_ARRAY = new Object[0];
+
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
+		// no-op
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-	 */
+	@Override
+	public Object[] getChildren(final Object parentElement) {
+		if (parentElement instanceof ContextDefinition)
+			return getSchedules(((ContextDefinition) parentElement).getPath());
+		return EMPTY_ARRAY;
+	}
+
+	private IRuntimeContext getContext(final IPath contextPath) {
+		return JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(contextPath);
+	}
+
 	@Override
 	public Object[] getElements(final Object inputElement) {
+		if (inputElement instanceof IRuntimeContextDefinitionManager) {
+			final IRuntimeContextDefinitionManager contextRegistry = (IRuntimeContextDefinitionManager) inputElement;
+			final List<ContextDefinition> definedContexts = contextRegistry.getDefinedContexts();
+			final List<ContextDefinition> result = new ArrayList<>(definedContexts.size());
+			for (final ContextDefinition contextDefinition : definedContexts) {
+				if (hasSchedules(contextDefinition.getPath())) {
+					result.add(contextDefinition);
+				}
+			}
+			return result.toArray();
+		}
 
+		return EMPTY_ARRAY;
+	}
+
+	@Override
+	public Object getParent(final Object element) {
+		return null;
+	}
+
+	private Object[] getSchedules(final IPath contextPath) {
 		try {
-			final String[] schedulesStorageKeys = ScheduleStore.getSchedules();
-			final ArrayList<ISchedule> schedules = new ArrayList<ISchedule>(schedulesStorageKeys.length);
-			for (final String key : schedulesStorageKeys) {
-				final ScheduleImpl schedule = ScheduleStore.load(key, ScheduleManagerImpl.getExternalId(key), false);
-				if (null != schedule) {
+			final IRuntimeContext context = getContext(contextPath);
+			if (context == null)
+				return EMPTY_ARRAY;
+
+			final IScheduleManager scheduleManager = context.get(IScheduleManager.class);
+			if (scheduleManager == null)
+				return EMPTY_ARRAY;
+
+			final Collection<String> scheduleIds = scheduleManager.getSchedules();
+			final List<ISchedule> schedules = new ArrayList<>(scheduleIds.size());
+			for (final String id : scheduleIds) {
+				final ISchedule schedule = scheduleManager.getSchedule(id);
+				if (schedule != null) {
 					schedules.add(schedule);
 				}
 			}
 			return schedules.toArray();
-		} catch (final BackingStoreException e) {
+		} catch (final Exception e) {
 			final String[] errorresponse = { e.getMessage() };
 			return errorresponse;
 		}
-
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-	 */
+	@Override
+	public boolean hasChildren(final Object element) {
+		return (element instanceof ContextDefinition) && hasSchedules(((ContextDefinition) element).getPath());
+	}
+
+	private boolean hasSchedules(final IPath contextPath) {
+		try {
+			final IRuntimeContext context = getContext(contextPath);
+			if (context == null)
+				return false;
+
+			final IScheduleManager scheduleManager = context.get(IScheduleManager.class);
+			if (scheduleManager == null)
+				return false;
+
+			return !scheduleManager.getSchedules().isEmpty();
+		} catch (final Exception e) {
+			return false;
+		}
+	}
+
 	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-		// TODO Auto-generated method stub
-
+		// no-op
 	}
 
 }

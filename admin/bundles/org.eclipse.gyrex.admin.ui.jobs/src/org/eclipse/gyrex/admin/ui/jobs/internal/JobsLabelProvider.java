@@ -13,6 +13,7 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.Locale;
 
+import org.eclipse.gyrex.context.definitions.ContextDefinition;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 import org.eclipse.gyrex.jobs.schedules.IScheduleEntry;
 
@@ -102,6 +103,8 @@ public class JobsLabelProvider extends LabelProvider {
 			return getElementText((JobLog) element);
 		if (element instanceof RunningJob)
 			return ((RunningJob) element).getLabel();
+		if (element instanceof ContextDefinition)
+			return ((ContextDefinition) element).getPath().toString();
 
 		return super.getText(element);
 	}
