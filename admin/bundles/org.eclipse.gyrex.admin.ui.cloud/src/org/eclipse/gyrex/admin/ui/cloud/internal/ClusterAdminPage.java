@@ -37,11 +37,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -146,15 +144,6 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 				openSelectedElement();
 			}
 		});
-	}
-
-	private Label createButtonSeparator(final Composite parent) {
-		final Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
-		separator.setVisible(false);
-		final RowData gd = new RowData();
-		gd.height = 4;
-		separator.setLayoutData(gd);
-		return separator;
 	}
 
 	private Control createConnectGroup(final Composite parent) {

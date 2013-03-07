@@ -31,9 +31,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -137,7 +140,22 @@ public abstract class AdminPageWithTree extends AdminPage {
 		refresh();
 	}
 
+	protected Button createButton(final Composite parent, final String buttonLabel) {
+		final Button b = new Button(parent, SWT.NONE);
+		b.setText(buttonLabel);
+		return b;
+	}
+
 	protected abstract void createButtons(final Composite parent);
+
+	protected Label createButtonSeparator(final Composite parent) {
+		final Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separator.setVisible(false);
+		final RowData gd = new RowData();
+		gd.height = 4;
+		separator.setLayoutData(gd);
+		return separator;
+	}
 
 	protected abstract ITreeContentProvider createContentProvider();
 
