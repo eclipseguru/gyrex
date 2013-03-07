@@ -11,7 +11,7 @@
  */
 package org.eclipse.gyrex.admin.ui.context.internal;
 
-import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
+import org.eclipse.gyrex.context.definitions.ContextDefinition;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -20,9 +20,6 @@ import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-/**
- *
- */
 public class ContextUiLabelProvider extends LabelProvider {
 
 	/** serialVersionUID */
@@ -42,9 +39,8 @@ public class ContextUiLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(final Object element) {
 		final ImageDescriptor descriptor = getImageDescriptor(element);
-		if (descriptor == null) {
+		if (descriptor == null)
 			return null;
-		}
 		return getResourceManager().createImage(descriptor);
 	}
 

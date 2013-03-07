@@ -15,9 +15,9 @@ import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.context.definitions.ContextDefinition;
+import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
 import org.eclipse.gyrex.context.internal.ContextActivator;
-import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
-import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
 
 import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
@@ -154,7 +154,7 @@ public class ContextsSection {
 	 * 
 	 * @return the context registry
 	 */
-	private ContextRegistryImpl getContextRegistry() {
+	private IRuntimeContextDefinitionManager getContextRegistry() {
 		return ContextActivator.getInstance().getContextRegistryImpl();
 	}
 
@@ -199,10 +199,22 @@ public class ContextsSection {
 			public void dialogClosed(final int returnCode) {
 				if (returnCode != Window.OK)
 					return;
-				getContextRegistry().removeDefinition(contextDefinition);
+
+				try {
+					getContextRegistry().removeDefinition(contextDefinition.getPath());
+				} catch (final Exception e) {
+					NonBlockingMessageDialogs.openError(SwtUtil.getShell(pageComposite), "Error", e.getMessage(), new DialogCallback() {
+						/** serialVersionUID */
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void dialogClosed(final int returnCode) {
+							refresh();
+						}
+					});
+				}
 				refresh();
 			}
-
 		});
 	}
 }

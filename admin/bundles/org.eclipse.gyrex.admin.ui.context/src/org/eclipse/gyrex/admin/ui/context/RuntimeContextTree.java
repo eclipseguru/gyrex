@@ -9,30 +9,25 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.http.internal;
+package org.eclipse.gyrex.admin.ui.context;
 
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
-import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
-import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
+import org.eclipse.gyrex.admin.ui.context.internal.ContextUiActivator;
+import org.eclipse.gyrex.context.definitions.ContextDefinition;
+import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.TreeNode;
 
-/**
- * 
- */
-@SuppressWarnings("restriction")
 public class RuntimeContextTree {
 
 	private static TreeNode findParent(final TreeNode parent, final TreeNode next) {
-		if (!getPath(parent).isPrefixOf(getPath(next))) {
+		if (!getPath(parent).isPrefixOf(getPath(next)))
 			return null;
-		}
 
 		final TreeNode[] children = parent.getChildren();
 		if (null == children) {
@@ -44,9 +39,8 @@ public class RuntimeContextTree {
 		// need to make sure that the node is not a child of any existing children
 		for (final TreeNode child : children) {
 			final TreeNode result = findParent(child, next);
-			if (null != result) {
+			if (null != result)
 				return result;
-			}
 		}
 
 		// 'next' is a sibling of existing children
@@ -62,7 +56,7 @@ public class RuntimeContextTree {
 	}
 
 	public static TreeNode[] getTree() {
-		final ContextRegistryImpl registry = (ContextRegistryImpl) HttpUiActivator.getInstance().getService(IRuntimeContextRegistry.class);
+		final IRuntimeContextDefinitionManager registry = ContextUiActivator.getInstance().getService(IRuntimeContextDefinitionManager.class);
 
 		// collect based on path name (ascending; makes tree building easier)
 		final SortedMap<IPath, TreeNode> nodes = new TreeMap<IPath, TreeNode>(new Comparator<IPath>() {
@@ -78,9 +72,8 @@ public class RuntimeContextTree {
 		}
 
 		// the root is first
-		if (!nodes.firstKey().isRoot()) {
+		if (!nodes.firstKey().isRoot())
 			throw new IllegalStateException("sort error");
-		}
 
 		// wire tree together (starting at root)
 		final TreeNode root = nodes.remove(nodes.firstKey());
@@ -88,9 +81,8 @@ public class RuntimeContextTree {
 			final TreeNode next = (TreeNode) stream.next();
 			stream.remove();
 			final TreeNode parent = findParent(root, next);
-			if (null == parent) {
+			if (null == parent)
 				throw new IllegalStateException("build tree error");
-			}
 		}
 
 		return new TreeNode[] { root };

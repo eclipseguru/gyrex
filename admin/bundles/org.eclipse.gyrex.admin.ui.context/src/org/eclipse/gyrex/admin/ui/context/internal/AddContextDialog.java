@@ -17,8 +17,8 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldList
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
-import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
-import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
+import org.eclipse.gyrex.context.definitions.ContextDefinition;
+import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -49,7 +49,7 @@ public class AddContextDialog extends NonBlockingStatusDialog {
 	private final StringDialogField nameField = new StringDialogField();
 
 	/** The registry impl. */
-	private final ContextRegistryImpl registryImpl;
+	private final IRuntimeContextDefinitionManager registryImpl;
 
 	/**
 	 * Creates a new instance.
@@ -59,7 +59,7 @@ public class AddContextDialog extends NonBlockingStatusDialog {
 	 * @param registryImpl
 	 *            the registry impl
 	 */
-	public AddContextDialog(final Shell parent, final ContextRegistryImpl registryImpl) {
+	public AddContextDialog(final Shell parent, final IRuntimeContextDefinitionManager registryImpl) {
 		super(parent);
 		this.registryImpl = registryImpl;
 		setTitle("New Software Repository");
@@ -111,9 +111,8 @@ public class AddContextDialog extends NonBlockingStatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 			final ContextDefinition contextDefinition = new ContextDefinition(new Path(pathField.getText()).makeAbsolute().addTrailingSeparator());

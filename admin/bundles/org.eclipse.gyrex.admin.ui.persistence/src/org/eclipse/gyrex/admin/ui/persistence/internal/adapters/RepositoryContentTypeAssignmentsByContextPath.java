@@ -18,7 +18,7 @@ import java.util.List;
 import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
 import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
 import org.eclipse.gyrex.admin.ui.persistence.internal.PersistenceUiActivator;
-import org.eclipse.gyrex.context.internal.registry.ContextDefinition;
+import org.eclipse.gyrex.context.definitions.ContextDefinition;
 import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
 import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
 import org.eclipse.gyrex.persistence.storage.content.RepositoryContentType;
