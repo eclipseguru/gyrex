@@ -480,9 +480,8 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 			currentPage = page;
 			navigation.selectNavigationEntry(contribution);
 			activate(page, contribution, args);
-		} catch (final CoreException e) {
-			Policy.getStatusHandler().show(e.getStatus(), "Error Opening Page");
-			return;
+		} catch (final Exception | LinkageError | AssertionError e) {
+			Policy.getStatusHandler().show(e instanceof CoreException ? ((CoreException) e).getStatus() : new Status(IStatus.ERROR, AdminUiActivator.SYMBOLIC_NAME, String.format("Unable to open page '%s (id %s)'. Please check the server logs.", contribution.getName(), contribution.getId()), e), "Error Opening Page");
 		}
 	}
 
