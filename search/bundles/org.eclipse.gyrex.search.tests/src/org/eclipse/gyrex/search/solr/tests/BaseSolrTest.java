@@ -16,7 +16,6 @@ package org.eclipse.gyrex.search.solr.tests;
 import static junit.framework.Assert.assertNotNull;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
@@ -37,10 +36,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
 
-import org.osgi.service.prefs.BackingStoreException;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.core.CoreContainer;
@@ -55,7 +51,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 
 	protected static final String TEST_REPO_ID = BaseSolrTest.class.getSimpleName().toLowerCase();
 
-	static void initDocumentManager(final IRuntimeContext context) throws BackingStoreException, IOException, SolrServerException {
+	static void initDocumentManager(final IRuntimeContext context) throws Exception {
 		DefaultRepositoryLookupStrategy.getDefault().setRepository(context, ISolrSearchConstants.SEARCH_CONTENT_TYPE, TEST_REPO_ID);
 		IRepositoryPreferences preferences;
 		try {
