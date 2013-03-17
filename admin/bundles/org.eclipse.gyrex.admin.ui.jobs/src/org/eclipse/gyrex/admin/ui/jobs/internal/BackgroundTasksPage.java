@@ -28,8 +28,11 @@ import org.eclipse.gyrex.jobs.schedules.ISchedule;
 import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
@@ -139,7 +142,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 
 		createButtonSeparator(parent);
 
-		showEntriesButton = createButton(parent, "Show Schedule Entries");
+		showEntriesButton = createButton(parent, "Edit Schedule");
 		showEntriesButton.setEnabled(false);
 		showEntriesButton.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
@@ -148,6 +151,17 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				showEntriesButtonPressed();
+			}
+		});
+
+		getTreeViewer().addOpenListener(new IOpenListener() {
+
+			@Override
+			public void open(final OpenEvent event) {
+				final ScheduleImpl schedule = getFirstSelectedSchedule(event.getSelection());
+				if (schedule != null) {
+					openScheduleEntriesPage(schedule);
+				}
 			}
 		});
 	}
@@ -276,12 +290,18 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		return StringUtils.EMPTY;
 	}
 
-	private ScheduleImpl getSelectedSchedule() {
-		final IStructuredSelection selection = (IStructuredSelection) getTreeViewer().getSelection();
-		if (!selection.isEmpty() && (selection.getFirstElement() instanceof ScheduleImpl))
-			return (ScheduleImpl) selection.getFirstElement();
+	ScheduleImpl getFirstSelectedSchedule(final ISelection selection) {
+		if (selection instanceof IStructuredSelection) {
+			final IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+			if (!selection.isEmpty() && (structuredSelection.getFirstElement() instanceof ScheduleImpl))
+				return (ScheduleImpl) structuredSelection.getFirstElement();
+		}
 
 		return null;
+	}
+
+	private ScheduleImpl getSelectedSchedule() {
+		return getFirstSelectedSchedule(getTreeViewer().getSelection());
 	}
 
 	@Override
@@ -292,6 +312,10 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	@Override
 	protected boolean isColumnSortable(final int column) {
 		return column == COLUMN_ID;
+	}
+
+	void openScheduleEntriesPage(final ScheduleImpl schedule) {
+		getAdminUi().openPage(ScheduleEntriesPage.ID, new String[] { schedule.getStorageKey() });
 	}
 
 	@Override
@@ -345,7 +369,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		if (schedule == null)
 			return;
 
-		getAdminUi().openPage(ScheduleEntriesPage.ID, new String[] { schedule.getStorageKey() });
+		openScheduleEntriesPage(schedule);
 	}
 
 	@Override
