@@ -175,7 +175,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	protected Control createHeader(final Composite parent) {
 		if (Platform.inDevelopmentMode()) {
 			final Infobox infobox = new Infobox(parent);
-			infobox.addHeading("Schedules.");
+			infobox.addHeading("Schedules");
 			infobox.addParagraph("Background tasks in Gyrex are organized into schedules. A schedule is associated to a context and defines common properties (such as timezone) for all background tasks.");
 			infobox.addParagraph("Schedules define the jobs to execute as schedule entries. Schedule entries can be triggered using cron expressions or by the successful execution of a preceding entry within the same schedule. Both a schedule as well as individual schedule entries can be enabled or disabled.");
 			return infobox;
