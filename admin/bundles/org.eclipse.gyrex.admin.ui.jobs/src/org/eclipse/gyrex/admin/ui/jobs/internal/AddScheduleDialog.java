@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, 2012 Andreas Mihm and others.
+ * Copyright (c) 2011, 2012 AGETO Service GmbH and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the terms of the
@@ -101,9 +101,8 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 

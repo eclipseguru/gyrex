@@ -315,7 +315,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	}
 
 	void openScheduleEntriesPage(final ScheduleImpl schedule) {
-		getAdminUi().openPage(ScheduleEntriesPage.ID, new String[] { schedule.getStorageKey() });
+		getAdminUi().openPage(ScheduleEntriesPage.ID, schedule.getContextPath().toString(), schedule.getId());
 	}
 
 	@Override
