@@ -487,7 +487,7 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 	}
 
 	@Override
-	public void openPage(final String pageId, final String[] args) {
+	public void openPage(final String pageId, final String... args) {
 		if (StringUtils.isBlank(pageId))
 			throw new IllegalArgumentException("invalid page id");
 		final PageContribution contribution = AdminPageRegistry.getInstance().getPage(pageId);

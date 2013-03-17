@@ -14,9 +14,11 @@ import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 
 public class Infobox extends Composite {
 
@@ -35,6 +37,14 @@ public class Infobox extends Composite {
 		final Label label = new Label(contentComp, SWT.NONE);
 		label.setText(text.replace("&", "&&"));
 		label.setData(RWT.CUSTOM_VARIANT, "infobox-heading");
+	}
+
+	public void addLink(final String text, final SelectionListener selectionListener) {
+		final Link link = new Link(contentComp, SWT.WRAP);
+		link.setData(RWT.CUSTOM_VARIANT, "infobox");
+		link.setText(text);
+		link.setLayoutData(AdminUiUtil.createFillData());
+		link.addSelectionListener(selectionListener);
 	}
 
 	public void addParagraph(final String text) {

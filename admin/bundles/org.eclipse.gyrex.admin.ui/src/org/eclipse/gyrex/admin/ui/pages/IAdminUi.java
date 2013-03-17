@@ -22,6 +22,6 @@ public interface IAdminUi {
 	 * @param pageId
 	 * @param args
 	 */
-	void openPage(String pageId, String[] args);
+	void openPage(String pageId, String... args);
 
 }
