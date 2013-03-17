@@ -272,12 +272,12 @@ Text[MULTI].error:focused {
 
 Label.text-xxlarge {
   font: bold 42px Helvetica, Verdana, sans-serif;
-  color: #bdbdbd;
+  color: #34332F;
 }
 
 Label.text-large {
   font: bold 18px Helvetica, Verdana, sans-serif;
-  color: #e5e5e5;
+  color: #bdbdbd;
 }
 
 Label.line-separator {
