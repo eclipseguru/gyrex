@@ -16,13 +16,18 @@ import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
+import org.eclipse.gyrex.jobs.IJob;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.internal.util.ContextHashUtil;
+import org.eclipse.gyrex.jobs.manager.IJobManager;
 import org.eclipse.gyrex.server.Platform;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -192,7 +197,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 			case COLUMN_TYPE:
 				return "Task";
 			case COLUMN_CRON:
-				return "Cron Expression";
+				return "Cron Exp.";
 			case COLUMN_PRECEDINGS:
 				return "Precedings";
 			case COLUMN_LAST_RESULT:
@@ -217,7 +222,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				case COLUMN_PRECEDINGS:
 					return StringUtils.join(entry.getPrecedingEntries(), ", ");
 				case COLUMN_LAST_RESULT:
-					return null;
+					return getLastResult(entry);
 
 				default:
 					return null;
@@ -225,6 +230,32 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 		}
 
 		return null;
+	}
+
+	String getLastResult(final ScheduleEntryImpl entry) {
+		final IRuntimeContext ctx = JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(schedule.getContextPath());
+		if (ctx != null) {
+			final IJobManager jobManager = ctx.get(IJobManager.class);
+			if (jobManager != null) {
+				final IJob job = jobManager.getJob(entry.getJobId());
+				if (job != null) {
+					final IStatus result = job.getLastResult();
+					if (result != null) {
+						if (result.isOK())
+							return "OK";
+						else if (result.matches(IStatus.CANCEL))
+							return "aborted";
+						else if (result.matches(IStatus.ERROR))
+							return "failed";
+						else if (result.matches(IStatus.WARNING))
+							return "with warnings";
+						else if (result.matches(IStatus.INFO))
+							return "OK";
+					}
+				}
+			}
+		}
+		return "n/a";
 	}
 
 	public ScheduleImpl getSchedule() {
