@@ -19,20 +19,27 @@ import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.context.definitions.ContextDefinition;
 import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
+import org.eclipse.gyrex.jobs.JobState;
+import org.eclipse.gyrex.jobs.internal.manager.JobHungDetectionHelper;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
+import org.eclipse.gyrex.jobs.internal.storage.CloudPreferncesJobStorage;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 import org.eclipse.gyrex.server.Platform;
 
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -52,10 +59,14 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	private Button disableButton;
 	private Button showEntriesButton;
 
+	private Label schedulesMetricLabel;
+	private Label jobsRunningLabel;
+	private Label jobsWaitingMetricLabel;
+
 	public BackgroundTasksPage() {
 		super(3);
 		setTitle("Background Tasks");
-		setTitleToolTip("Configure schedules for executing background tasks.");
+		setTitleToolTip("Browse and manage schedules for executing background tasks.");
 	}
 
 	void addButtonPressed() {
@@ -76,6 +87,9 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 
 	@Override
 	protected void createButtons(final Composite parent) {
+		createMetricInfoArea(parent);
+		createButtonSeparator(parent);
+
 		addButton = createButton(parent, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
@@ -149,11 +163,26 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 			final Infobox infobox = new Infobox(parent);
 			infobox.addHeading("Schedules.");
 			infobox.addParagraph("Background tasks in Gyrex are organized into schedules. A schedule is associated to a context and defines common properties (such as timezone) for all background tasks.");
-			infobox.addParagraph("Gyrex schedule are bound to a context path e.g. an application context and they group all the schedules together, which belopng to this application context. Gyrex scheduler can be enabled and disabled to be able to switch the background tasks for a specific application context on and off.");
+			infobox.addParagraph("Schedules define the jobs to execute as schedule entries. Schedule entries can be triggered using cron expressions or by the successful execution of a preceding entry within the same schedule. Both a schedule as well as individual schedule entries can be enabled or disabled.");
 			return infobox;
 		}
 
 		return null;
+	}
+
+	private void createMetricInfoArea(final Composite parent) {
+		final Composite area = new Composite(parent, SWT.NONE);
+		area.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		area.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).create());
+
+		schedulesMetricLabel = createMetricText(area, "Schedules");
+		schedulesMetricLabel.setText("0");
+		createMetricSeparator(area);
+		jobsRunningLabel = createMetricText(area, "Running Jobs");
+		jobsRunningLabel.setText("0");
+		createMetricSeparator(area);
+		jobsWaitingMetricLabel = createMetricText(area, "Waiting Jobs");
+		jobsWaitingMetricLabel.setText("0");
 	}
 
 	void disableButtonPressed() {
@@ -263,6 +292,27 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	@Override
 	protected boolean isColumnSortable(final int column) {
 		return column == COLUMN_ID;
+	}
+
+	@Override
+	protected void refresh() {
+		try {
+			schedulesMetricLabel.setText(String.valueOf(ScheduleStore.getSchedules().length));
+		} catch (final Exception e) {
+			schedulesMetricLabel.setText("n/a");
+		}
+
+		try {
+			jobsRunningLabel.setText(String.valueOf(JobHungDetectionHelper.getNumberOfActiveJobs()));
+		} catch (final Exception e) {
+			jobsRunningLabel.setText("n/a");
+		}
+
+		try {
+			jobsWaitingMetricLabel.setText(String.valueOf(CloudPreferncesJobStorage.getAllJobStorageKeysByState(JobState.WAITING).size()));
+		} catch (final Exception e) {
+			jobsWaitingMetricLabel.setText("n/a");
+		}
 	}
 
 	void removeButtonPressed() {
