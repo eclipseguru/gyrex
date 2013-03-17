@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -191,6 +192,27 @@ public abstract class AdminPageWithTree extends AdminPage {
 	}
 
 	protected abstract Control createHeader(Composite parent);
+
+	protected void createMetricSeparator(final Composite area) {
+		final Label separator = new Label(area, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separator.setData(RWT.CUSTOM_VARIANT, "line-separator");
+		final GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		gd.heightHint = 24;
+		separator.setLayoutData(gd);
+	}
+
+	protected Label createMetricText(final Composite parent, final String description) {
+		final Label metricLabel = new Label(parent, SWT.NONE);
+		metricLabel.setData(RWT.CUSTOM_VARIANT, "text-xxlarge");
+		metricLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+
+		final Label descLabel = new Label(parent, SWT.NONE);
+		descLabel.setText(description);
+		descLabel.setData(RWT.CUSTOM_VARIANT, "text-large");
+		descLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+
+		return metricLabel;
+	}
 
 	protected PatternFilter createPatternFilter() {
 		return new PatternFilter();

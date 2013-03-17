@@ -269,3 +269,19 @@ Text[MULTI].error:focused {
   border: 1px solid red;
   box-shadow: 0 0 5px red;
 }
+
+Label.text-xxlarge {
+  font: bold 42px Helvetica, Verdana, sans-serif;
+  color: #bdbdbd;
+}
+
+Label.text-large {
+  font: bold 18px Helvetica, Verdana, sans-serif;
+  color: #e5e5e5;
+}
+
+Label.line-separator {
+  color: #e5e5e5;
+}
+
+

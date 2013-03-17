@@ -55,6 +55,7 @@ public class AdminApplicationConfiguration implements ApplicationConfiguration {
 		brandingProps.put(WebClient.PAGE_TITLE, "Gyrex Admin");
 		brandingProps.put(WebClient.BODY_HTML, readBundleResource("html/body.html", CharEncoding.UTF_8));
 		brandingProps.put(WebClient.FAVICON, "img/gyrex/eclipse.ico");
+		brandingProps.put(WebClient.HEAD_HTML, "<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,600' rel='stylesheet' type='text/css'>");
 		application.addEntryPoint("/admin", AdminApplication.class, brandingProps);
 		application.addStyleSheet(RWT.DEFAULT_THEME_ID, "theme/admin.css");
 		application.addResource("img/gyrex/eclipse.ico", new ResourceLoader() {

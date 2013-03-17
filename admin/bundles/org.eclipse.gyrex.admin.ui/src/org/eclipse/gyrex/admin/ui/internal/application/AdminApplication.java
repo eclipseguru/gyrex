@@ -268,6 +268,7 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 		footer.setLayout(new FormLayout());
 		footer.setData(RWT.CUSTOM_VARIANT, "footer");
 		footer.setLayoutData(createFooterFormData());
+		footer.setBackgroundMode(SWT.INHERIT_FORCE);
 		final Label label = new Label(footer, SWT.NONE);
 		label.setData(RWT.CUSTOM_VARIANT, "footerLabel");
 		label.setText("Admin Console " + getVersion());
