@@ -242,7 +242,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 
 			@Override
 			public String getText(final Object element) {
-				return getElementLabel(element, -1);
+				return StringUtils.trimToEmpty(getElementLabel(element, -1));
 			}
 		});
 
@@ -258,7 +258,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 
 				@Override
 				public String getText(final Object element) {
-					return getElementLabel(element, column);
+					return StringUtils.trimToEmpty(getElementLabel(element, column));
 				}
 			});
 
