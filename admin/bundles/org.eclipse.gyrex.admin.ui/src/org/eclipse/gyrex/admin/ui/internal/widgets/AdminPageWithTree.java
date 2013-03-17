@@ -223,6 +223,8 @@ public abstract class AdminPageWithTree extends AdminPage {
 
 		treeViewer = filteredTree.getViewer();
 		treeViewer.getTree().setHeaderVisible(true);
+		treeViewer.getTree().setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+
 		final TableLayout layout = new TableLayout();
 		treeViewer.getTree().setLayout(layout);
 		treeViewer.setUseHashlookup(true);
