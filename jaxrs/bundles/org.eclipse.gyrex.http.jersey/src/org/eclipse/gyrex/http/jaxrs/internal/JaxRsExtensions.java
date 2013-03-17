@@ -19,11 +19,15 @@ import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.ContextApplicationContextI
 import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.ContextRuntimeContextInjectableProvider;
 import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.InjectApplicationContextInjectableProvider;
 import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.InjectRuntimeContextInjectableProvider;
+import org.eclipse.gyrex.server.Platform;
 
 import org.osgi.framework.FrameworkUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.jersey.api.wadl.config.WadlGeneratorConfig;
+import com.sun.jersey.server.wadl.generators.WadlGeneratorJAXBGrammarGenerator;
 
 /**
  * Utility class to enable certain JAX-RS extensions.
@@ -46,12 +50,23 @@ public class JaxRsExtensions {
 		}
 	}
 
+	public static void addWadlSupport(final Set<Object> singletons) {
+//		return generator( WadlGeneratorApplicationDoc.class ) 
+//      .prop( "applicationDocsStream", "application-doc.xml" ) 
+//    .generator( WadlGeneratorGrammarsSupport.class ) 
+//      .prop( "grammarsStream", "application-grammars.xml" ) 
+//    .generator( WadlGeneratorResourceDocSupport.class ) 
+//      .prop( "resourceDocStream", "resourcedoc.xml" ) .
+//      generator(WadlGeneratorJAXBGrammarGenerator.class).descriptions();
+		singletons.add(WadlGeneratorConfig.generator(WadlGeneratorJAXBGrammarGenerator.class).build());
+	}
+
 	private static Object createMoxyJsonProvider() {
 		// use reflection to avoid dependency
 		try {
 			final Class<?> providerClass = JaxRsExtensions.class.getClassLoader().loadClass("org.eclipse.persistence.jaxb.rs.MOXyJsonProvider");
 			final Object moxyJsonProvider = providerClass.newInstance();
-			if (JaxRsDebug.debug) {
+			if (JaxRsDebug.debug || Platform.inDevelopmentMode()) {
 				try {
 					providerClass.getMethod("setFormattedOutput", Boolean.TYPE).invoke(moxyJsonProvider, Boolean.TRUE);
 				} catch (final Exception e) {

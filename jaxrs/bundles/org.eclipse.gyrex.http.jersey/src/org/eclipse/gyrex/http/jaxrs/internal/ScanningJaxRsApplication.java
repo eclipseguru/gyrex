@@ -16,6 +16,7 @@ import org.eclipse.gyrex.http.jaxrs.JaxRsApplication;
 import org.eclipse.gyrex.http.jaxrs.JaxRsApplicationProviderComponent;
 import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.ContextServiceInjectableProvider;
 import org.eclipse.gyrex.http.jaxrs.jersey.spi.inject.InjectServiceInjectableProvider;
+import org.eclipse.gyrex.server.Platform;
 
 import org.osgi.framework.Bundle;
 
@@ -57,6 +58,11 @@ public final class ScanningJaxRsApplication extends JaxRsApplication {
 
 		// add support for EclipseLink MOXy if available
 		JaxRsExtensions.addJsonProviderIfPossible(resourceConfig.getSingletons());
+
+		// add support for WADL generation
+		if (Platform.inDevelopmentMode()) {
+			JaxRsExtensions.addWadlSupport(resourceConfig.getSingletons());
+		}
 
 		// done
 		return resourceConfig;
