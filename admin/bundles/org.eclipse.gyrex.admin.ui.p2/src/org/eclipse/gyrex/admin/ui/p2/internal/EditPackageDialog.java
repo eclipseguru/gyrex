@@ -80,7 +80,7 @@ public class EditPackageDialog extends NonBlockingStatusDialog {
 	}, new String[] { "Add...", "Remove" }, labelProvider);
 
 	private final IPackageManager packageManager;
-	private final PackageDefinition selectedPackage;
+	private final PackageDefinition packageToEdit;
 
 	/**
 	 * Creates a new instance.
@@ -89,14 +89,15 @@ public class EditPackageDialog extends NonBlockingStatusDialog {
 	 *            the parent shell
 	 * @param packageManager
 	 *            the manager to be used
-	 * @param selectedPackage
+	 * @param packageToEdit
 	 *            the selected package to be edited, can be <code>null</code>
+	 *            for creating a new package
 	 */
-	public EditPackageDialog(final Shell parent, final IPackageManager packageManager, final PackageDefinition selectedPackage) {
+	public EditPackageDialog(final Shell parent, final IPackageManager packageManager, final PackageDefinition packageToEdit) {
 		super(parent);
 		this.packageManager = packageManager;
-		this.selectedPackage = selectedPackage;
-		setTitle("New Software Package");
+		this.packageToEdit = packageToEdit;
+		setTitle(null == packageToEdit ? "Add Software Package" : "Edit Software Package");
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	}
 
@@ -135,7 +136,7 @@ public class EditPackageDialog extends NonBlockingStatusDialog {
 	@Override
 	protected Control createDialogArea(final Composite parent) {
 		final Composite composite = (Composite) super.createDialogArea(parent);
-		final GridData gd = (GridData) composite.getLayoutData();
+		GridData gd = (GridData) composite.getLayoutData();
 		gd.minimumHeight = convertVerticalDLUsToPixels(200);
 		gd.minimumWidth = convertHorizontalDLUsToPixels(400);
 
@@ -155,17 +156,24 @@ public class EditPackageDialog extends NonBlockingStatusDialog {
 		nodeFilterField.setDialogFieldListener(validateListener);
 
 		final Text info = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		info.setText("Define an ID for this software package. With the node filter you can restrict the installation for only the filtered nodes. \nManage the features to be installed in the list below.");
-		info.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		if (packageToEdit == null) {
+			info.setText("Software packages are identified in the system using a unique id. Please define one below. An optional node filter allows to restrict the installation of packages to only those cluster nodes matching the filter. \n\nComponents to install should be added in the list below.");
+		} else {
+			info.setText("The optional node filter allows to restrict the installation of packages to only those cluster nodes matching the filter. Components to install should be added in the list below.");
+		}
+		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+		gd.widthHint = convertHorizontalDLUsToPixels(380);
+		info.setLayoutData(gd);
 
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, nodeFilterField, new Separator(), componentsField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(componentsField.getListControl(null));
 
-		if (selectedPackage != null) {
-			idField.setText(StringUtils.trimToEmpty(selectedPackage.getId()));
-			nodeFilterField.setText(StringUtils.trimToEmpty(selectedPackage.getNodeFilter()));
-			componentsField.setElements(selectedPackage.getComponentsToInstall());
+		if (packageToEdit != null) {
+			idField.setText(StringUtils.trimToEmpty(packageToEdit.getId()));
+			idField.getTextControl(null).setEditable(false);
+			nodeFilterField.setText(StringUtils.trimToEmpty(packageToEdit.getNodeFilter()));
+			componentsField.setElements(packageToEdit.getComponentsToInstall());
 		}
 
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
@@ -215,9 +223,15 @@ public class EditPackageDialog extends NonBlockingStatusDialog {
 
 	void validate() {
 		final String id = idField.getText();
-		if (StringUtils.isNotBlank(id) && !IdHelper.isValidId(id)) {
-			setError("The entered connector id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
-			return;
+		if (StringUtils.isNotBlank(id)) {
+			if (!IdHelper.isValidId(id)) {
+				setError("The entered connector id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
+				return;
+			}
+			if ((packageToEdit == null) && (null != packageManager.getPackage(id))) {
+				setError("A package with the specified id already exists!");
+				return;
+			}
 		}
 
 		final String nodeFilter = nodeFilterField.getText();
