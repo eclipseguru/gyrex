@@ -18,8 +18,10 @@ import java.util.TimeZone;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IStringButtonAdapter;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringButtonDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
 import org.eclipse.gyrex.context.IRuntimeContext;
@@ -40,22 +42,28 @@ import org.eclipse.swt.widgets.Text;
 
 import org.apache.commons.lang.StringUtils;
 
-public class AddScheduleDialog extends NonBlockingStatusDialog {
+public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 	private final StringDialogField idField = new StringDialogField();
-	private final StringDialogField contextField = new StringDialogField();
-	private final StringDialogField timeZoneField = new StringDialogField();
+	private final StringButtonDialogField jobTypeField = new StringButtonDialogField(new IStringButtonAdapter() {
 
-	/**
-	 * Creates a new instance.
-	 * 
-	 * @param parent
-	 */
-	public AddScheduleDialog(final Shell parent) {
+		@Override
+		public void changeControlPressed(final DialogField field) {
+			openJobTypeSelectionDialog();
+		}
+	}) {
+		@Override
+		protected Text createTextControl(final Composite parent) {
+			return new Text(parent, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+		}
+	};
+	private final StringDialogField cronExpressionField = new StringDialogField();
+
+	public AddScheduleEntryDialog(final Shell parent) {
 		super(parent);
-		setTitle("New Schedule");
+		setTitle("New Schedule Entry");
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	}
 
@@ -67,8 +75,8 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 		gd.minimumWidth = convertHorizontalDLUsToPixels(400);
 
 		idField.setLabelText("Id");
-		contextField.setLabelText("Context Path");
-		timeZoneField.setLabelText("TimeZone");
+		jobTypeField.setLabelText("Task");
+		cronExpressionField.setLabelText("Cron Expression");
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
@@ -78,19 +86,17 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 		};
 
 		idField.setDialogFieldListener(validateListener);
-		contextField.setDialogFieldListener(validateListener);
-
-		contextField.setContentProposalProcessor(new ContextPathProposals());
-		timeZoneField.setContentProposalProcessor(new TimeZoneProposals());
+		jobTypeField.setDialogFieldListener(validateListener);
+		cronExpressionField.setDialogFieldListener(validateListener);
 
 		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
 		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
 		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, contextField, timeZoneField }, false);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, jobTypeField, cronExpressionField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
-		LayoutUtil.setHorizontalGrabbing(contextField.getTextControl(null));
-		LayoutUtil.setHorizontalGrabbing(timeZoneField.getTextControl(null));
+		LayoutUtil.setHorizontalGrabbing(jobTypeField.getTextControl(null));
+		LayoutUtil.setHorizontalGrabbing(cronExpressionField.getTextControl(null));
 
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
 		masterLayout.marginWidth = 5;
@@ -109,15 +115,15 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 
 		try {
 
-			final String contextPath = contextField.getText();
+			final String contextPath = jobTypeField.getText();
 
 			final IRuntimeContext context = JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(new Path(contextPath).makeAbsolute().addTrailingSeparator());
 			if (context != null) {
 				final IScheduleManager scheduleManager = context.get(IScheduleManager.class);
 				final IScheduleWorkingCopy schedule = scheduleManager.createSchedule(idField.getText());
 
-				if (StringUtils.isNotBlank(timeZoneField.getText())) {
-					schedule.setTimeZone(TimeZone.getTimeZone(timeZoneField.getText()));
+				if (StringUtils.isNotBlank(cronExpressionField.getText())) {
+					schedule.setTimeZone(TimeZone.getTimeZone(cronExpressionField.getText()));
 				}
 
 				scheduleManager.updateSchedule(schedule);
@@ -132,6 +138,11 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 		}
 
 		super.okPressed();
+	}
+
+	void openJobTypeSelectionDialog() {
+		// TODO Auto-generated method stub
+
 	}
 
 	void setError(final String message) {
@@ -154,7 +165,7 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 			return;
 		}
 
-		final String context = contextField.getText();
+		final String context = jobTypeField.getText();
 		if (StringUtils.isNotBlank(context)) {
 			try {
 				new URI(context);
@@ -164,7 +175,7 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 			}
 		}
 
-		final String timeZone = timeZoneField.getText();
+		final String timeZone = cronExpressionField.getText();
 		if (StringUtils.isNotBlank(timeZone)) {
 			// TODO validate timezone
 		}

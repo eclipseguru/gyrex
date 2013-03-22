@@ -29,6 +29,8 @@ import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.window.Window;
@@ -71,7 +73,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	void addButtonPressed() {
-		final AddScheduleDialog dialog = new AddScheduleDialog(SwtUtil.getShell(getTreeViewer().getTree()));
+		final AddScheduleEntryDialog dialog = new AddScheduleEntryDialog(SwtUtil.getShell(getTreeViewer().getTree()));
 		dialog.openNonBlocking(new DialogCallback() {
 
 			/** serialVersionUID */
@@ -90,10 +92,45 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	@Override
 	protected void createButtons(final Composite parent) {
 		addButton = createButton(parent, "Add..");
+		addButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				addButtonPressed();
+			}
+		});
 		removeButton = createButton(parent, "Remove");
+		removeButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				removeButtonPressed();
+			}
+		});
+
 		createButtonSeparator(parent);
+
 		enableButton = createButton(parent, "Enable");
+		enableButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				enableButtonPressed();
+			}
+		});
+
 		disableButton = createButton(parent, "Disable");
+		disableButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				disableButtonPressed();
+			}
+		});
 
 	}
 
@@ -140,53 +177,36 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 		return composite;
 	}
 
-	/**
-	 * @param composite
-	 */
 	void disableButtonPressed() {
-
 		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
 		if (scheduleEntry == null)
 			return;
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(getTreeViewer().getTree()), "Disable selected Schedule Entry ", String.format("Do you really want to disable schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
+		try {
+			scheduleEntry.setEnabled(false);
+			scheduleEntry.getSchedule().save();
+		} catch (final BackingStoreException e) {
+			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
+		}
 
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK)
-					return;
-
-				//scheduleEntry.setEnabled(false);
-				// TODO set disabled
-
-				refresh();
-			}
-		});
+		getTreeViewer().refresh(scheduleEntry);
+		updateButtons();
 	}
 
 	void enableButtonPressed() {
-
 		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
 		if (scheduleEntry == null)
 			return;
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(getTreeViewer().getTree()), "Enable selected Schedule Entry ", String.format("Do you really want to enable schedule entry %s?", scheduleEntry.getId()), new DialogCallback() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
+		try {
+			scheduleEntry.setEnabled(true);
+			scheduleEntry.getSchedule().save();
+		} catch (final BackingStoreException e) {
+			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
+		}
 
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK)
-					return;
-
-				//scheduleEntry.setEnabled(true);
-				// TODO set enabled
-
-				refresh();
-			}
-		});
+		getTreeViewer().refresh(scheduleEntry);
+		updateButtons();
 	}
 
 	@Override
@@ -299,10 +319,15 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				if (returnCode != Window.OK)
 					return;
 
-				//ScheduleStore.(scheduleEntry.getStorageKey(), scheduleEntry.getId());
-				// TODO remove schedule entry
+				try {
+					scheduleEntry.getSchedule().removeEntry(scheduleEntry.getId());
+					scheduleEntry.getSchedule().save();
+				} catch (final BackingStoreException e) {
+					Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
+				}
 
 				refresh();
+				updateButtons();
 			}
 		});
 	}

@@ -27,7 +27,10 @@ import org.eclipse.gyrex.jobs.internal.storage.CloudPreferncesJobStorage;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 import org.eclipse.gyrex.server.Platform;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -90,9 +93,6 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 
 	@Override
 	protected void createButtons(final Composite parent) {
-		createMetricInfoArea(parent);
-		createButtonSeparator(parent);
-
 		addButton = createButton(parent, "Add");
 		addButton.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
@@ -173,21 +173,25 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 
 	@Override
 	protected Control createHeader(final Composite parent) {
+		final Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(GridLayoutFactory.fillDefaults().create());
+
+		createMetricInfoArea(composite);
+
 		if (Platform.inDevelopmentMode()) {
-			final Infobox infobox = new Infobox(parent);
+			final Infobox infobox = new Infobox(composite);
 			infobox.addHeading("Schedules");
 			infobox.addParagraph("Background tasks in Gyrex are organized into schedules. A schedule is associated to a context and defines common properties (such as timezone) for all background tasks.");
 			infobox.addParagraph("Schedules define the jobs to execute as schedule entries. Schedule entries can be triggered using cron expressions or by the successful execution of a preceding entry within the same schedule. Both a schedule as well as individual schedule entries can be enabled or disabled.");
-			return infobox;
 		}
 
-		return null;
+		return composite;
 	}
 
 	private void createMetricInfoArea(final Composite parent) {
 		final Composite area = new Composite(parent, SWT.NONE);
 		area.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		area.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).create());
+		area.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).numColumns(6).create());
 
 		schedulesMetricLabel = createMetricText(area, "Schedules");
 		schedulesMetricLabel.setText("0");
@@ -204,26 +208,15 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		if ((schedule == null) || !schedule.isEnabled())
 			return;
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(getTreeViewer().getTree()), "Disable selected Schedule", String.format("Do you really want to disable schedule %s?", schedule.getId()), new DialogCallback() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
+		try {
+			schedule.setEnabled(false);
+			ScheduleStore.flush(schedule.getStorageKey(), schedule);
+		} catch (final BackingStoreException e) {
+			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
+		}
 
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK)
-					return;
-
-				try {
-					schedule.setEnabled(false);
-					ScheduleStore.flush(schedule.getStorageKey(), schedule);
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
-
-				refresh();
-				updateButtons();
-			}
-		});
+		getTreeViewer().refresh(schedule);
+		updateButtons();
 	}
 
 	void enableButtonPressed() {
@@ -231,26 +224,15 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		if ((schedule == null) || schedule.isEnabled())
 			return;
 
-		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(getTreeViewer().getTree()), "Enable selected Schedule", String.format("Do you really want to enable schedule %s?", schedule.getId()), new DialogCallback() {
-			/** serialVersionUID */
-			private static final long serialVersionUID = 1L;
+		try {
+			schedule.setEnabled(true);
+			ScheduleStore.flush(schedule.getStorageKey(), schedule);
+		} catch (final BackingStoreException e) {
+			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
+		}
 
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode != Window.OK)
-					return;
-
-				try {
-					schedule.setEnabled(true);
-					ScheduleStore.flush(schedule.getStorageKey(), schedule);
-				} catch (final BackingStoreException e) {
-					e.printStackTrace();
-				}
-
-				refresh();
-				updateButtons();
-			}
-		});
+		getTreeViewer().refresh(schedule);
+		updateButtons();
 	}
 
 	@Override
@@ -320,23 +302,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 
 	@Override
 	protected void refresh() {
-		try {
-			schedulesMetricLabel.setText(String.valueOf(ScheduleStore.getSchedules().length));
-		} catch (final Exception e) {
-			schedulesMetricLabel.setText("n/a");
-		}
-
-		try {
-			jobsRunningLabel.setText(String.valueOf(JobHungDetectionHelper.getNumberOfActiveJobs()));
-		} catch (final Exception e) {
-			jobsRunningLabel.setText("n/a");
-		}
-
-		try {
-			jobsWaitingMetricLabel.setText(String.valueOf(CloudPreferncesJobStorage.getAllJobStorageKeysByState(JobState.WAITING).size()));
-		} catch (final Exception e) {
-			jobsWaitingMetricLabel.setText("n/a");
-		}
+		getTreeViewer().setInput(getViewerInput());
 	}
 
 	void removeButtonPressed() {
@@ -381,22 +347,43 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 			enableButton.setEnabled(false);
 			disableButton.setEnabled(false);
 			showEntriesButton.setEnabled(false);
-			return;
+		} else {
+			addButton.setEnabled(true);
+			removeButton.setEnabled(selectedElementsCount == 1);
+			showEntriesButton.setEnabled(selectedElementsCount == 1);
+
+			final ScheduleImpl selectedSchedule = getSelectedSchedule();
+			if (selectedSchedule != null) {
+				if (selectedSchedule.isEnabled()) {
+					enableButton.setEnabled(false);
+					disableButton.setEnabled(true);
+				} else {
+					enableButton.setEnabled(true);
+					disableButton.setEnabled(false);
+				}
+			}
 		}
 
-		addButton.setEnabled(true);
-		removeButton.setEnabled(selectedElementsCount == 1);
-		showEntriesButton.setEnabled(selectedElementsCount == 1);
+		updateMetrics();
+	}
 
-		final ScheduleImpl selectedSchedule = getSelectedSchedule();
-		if (selectedSchedule != null) {
-			if (selectedSchedule.isEnabled()) {
-				enableButton.setEnabled(false);
-				disableButton.setEnabled(true);
-			} else {
-				enableButton.setEnabled(true);
-				disableButton.setEnabled(false);
-			}
+	private void updateMetrics() {
+		try {
+			schedulesMetricLabel.setText(String.valueOf(ScheduleStore.getSchedules().length));
+		} catch (final Exception e) {
+			schedulesMetricLabel.setText("n/a");
+		}
+
+		try {
+			jobsRunningLabel.setText(String.valueOf(JobHungDetectionHelper.getNumberOfActiveJobs()));
+		} catch (final Exception e) {
+			jobsRunningLabel.setText("n/a");
+		}
+
+		try {
+			jobsWaitingMetricLabel.setText(String.valueOf(CloudPreferncesJobStorage.getAllJobStorageKeysByState(JobState.WAITING).size()));
+		} catch (final Exception e) {
+			jobsWaitingMetricLabel.setText("n/a");
 		}
 	}
 }

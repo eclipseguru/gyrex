@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2013 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -194,19 +194,22 @@ public abstract class AdminPageWithTree extends AdminPage {
 	protected abstract Control createHeader(Composite parent);
 
 	protected void createMetricSeparator(final Composite area) {
-		final Label separator = new Label(area, SWT.SEPARATOR | SWT.HORIZONTAL);
+		final Label separator = new Label(area, SWT.SEPARATOR | SWT.VERTICAL);
 		separator.setData(RWT.CUSTOM_VARIANT, "line-separator");
-		final GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		gd.heightHint = 24;
+		final GridData gd = new GridData(SWT.CENTER, SWT.FILL, false, false);
+		gd.widthHint = 24;
 		separator.setLayoutData(gd);
 	}
 
 	protected Label createMetricText(final Composite parent, final String description) {
-		final Label metricLabel = new Label(parent, SWT.NONE);
+		final Composite metricParent = new Composite(parent, SWT.NONE);
+		metricParent.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).create());
+
+		final Label metricLabel = new Label(metricParent, SWT.NONE);
 		metricLabel.setData(RWT.CUSTOM_VARIANT, "text-xxlarge");
 		metricLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
-		final Label descLabel = new Label(parent, SWT.NONE);
+		final Label descLabel = new Label(metricParent, SWT.NONE);
 		descLabel.setText(description);
 		descLabel.setData(RWT.CUSTOM_VARIANT, "text-large");
 		descLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
