@@ -336,7 +336,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 
 		nodeIdField.setText(localInfo.getNodeId());
 		if (localInfo.inStandaloneMode()) {
-			membershipStatusField.setText("The node operates standalone using an embedded ZooKeeper server. <a href=\"#connect\">Connect</a> it now.");
+			membershipStatusField.setText("The node operates standalone using an embedded ZooKeeper server. <a href=\"#connect\">Connect it now.</a>");
 		} else {
 			String serverInfo;
 			try {
