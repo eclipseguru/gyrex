@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -63,6 +65,20 @@ public class NonBlockingStatusDialog extends StatusDialog {
 		return closed;
 	}
 
+	@Override
+	protected void initializeBounds() {
+		super.initializeBounds();
+		final Shell shell = getParentShell();
+		if (shell != null) {
+			// center dialog
+			final Rectangle displayBounds = shell.getDisplay().getBounds();
+			final Point size = getShell().getSize();
+			final int x = (displayBounds.width - size.x) / 2;
+			final int y = (displayBounds.height - size.y) / 2;
+			getShell().setLocation(x, y);
+		}
+	}
+
 	/**
 	 * Opens this window, creating it first if it has not yet been created.
 	 * <p>
@@ -75,9 +91,8 @@ public class NonBlockingStatusDialog extends StatusDialog {
 	 * @see #create()
 	 */
 	public void openNonBlocking(final DialogCallback callback) {
-		if (!callbackRef.compareAndSet(null, callback)) {
+		if (!callbackRef.compareAndSet(null, callback))
 			throw new IllegalStateException("Concurrent operation not supported!");
-		}
 		setBlockOnOpen(false);
 		super.open();
 	}
