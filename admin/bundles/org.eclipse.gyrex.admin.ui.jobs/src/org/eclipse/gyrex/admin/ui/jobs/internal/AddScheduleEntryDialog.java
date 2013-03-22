@@ -19,10 +19,13 @@ import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IStringButtonAdapter;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.ITreeListAdapter;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringButtonDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.TreeListDialogField;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
@@ -33,6 +36,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -54,12 +58,59 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 			openJobTypeSelectionDialog();
 		}
 	}) {
+
 		@Override
 		protected Text createTextControl(final Composite parent) {
 			return new Text(parent, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
 		}
+
 	};
+
+	private final SelectionButtonDialogField scheduleCheckBox = new SelectionButtonDialogField(SWT.CHECK);
 	private final StringDialogField cronExpressionField = new StringDialogField();
+	private final SelectionButtonDialogField dependsCheckBox = new SelectionButtonDialogField(SWT.CHECK);
+	private final TreeListDialogField preceedingEntriesTree = new TreeListDialogField(new ITreeListAdapter() {
+
+		@Override
+		public void customButtonPressed(final TreeListDialogField field, final int index) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void doubleClicked(final TreeListDialogField field) {
+			// no-op
+		}
+
+		@Override
+		public Object[] getChildren(final TreeListDialogField field, final Object element) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object getParent(final TreeListDialogField field, final Object element) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean hasChildren(final TreeListDialogField field, final Object element) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void keyPressed(final TreeListDialogField field, final KeyEvent event) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void selectionChanged(final TreeListDialogField field) {
+			// TODO Auto-generated method stub
+
+		}
+	}, new String[] { "Add...", "Remove" }, null);
 
 	public AddScheduleEntryDialog(final Shell parent) {
 		super(parent);
@@ -76,7 +127,9 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 		idField.setLabelText("Id");
 		jobTypeField.setLabelText("Task");
+		scheduleCheckBox.setLabelText("Execute at specific times:");
 		cronExpressionField.setLabelText("Cron Expression");
+		dependsCheckBox.setLabelText("Execute after other tasks:");
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
