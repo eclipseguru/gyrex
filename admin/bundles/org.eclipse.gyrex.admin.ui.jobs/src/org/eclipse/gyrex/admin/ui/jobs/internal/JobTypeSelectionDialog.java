@@ -12,6 +12,7 @@
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.Comparator;
+import java.util.Map.Entry;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredItemsSelectionDialog;
 import org.eclipse.gyrex.jobs.internal.JobsActivator;
@@ -24,9 +25,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+
+import org.osgi.framework.ServiceReference;
 
 /**
  *
@@ -38,7 +42,17 @@ public class JobTypeSelectionDialog extends FilteredItemsSelectionDialog {
 
 	public JobTypeSelectionDialog(final Shell shell) {
 		super(shell);
-		// TODO Auto-generated constructor stub
+		setListLabelProvider(new LabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(final Object element) {
+				if (element instanceof JobType)
+					return ((JobType) element).getName();
+
+				return super.getText(element);
+			}
+		});
 	}
 
 	@Override
@@ -70,10 +84,10 @@ public class JobTypeSelectionDialog extends FilteredItemsSelectionDialog {
 	@Override
 	protected void fillContentProvider(final AbstractContentProvider contentProvider, final ItemsFilter itemsFilter, final IProgressMonitor progressMonitor) throws CoreException {
 		final JobProviderRegistry registry = JobsActivator.getInstance().getJobProviderRegistry();
-		for (final String providerId : registry.getProviders()) {
-			final JobProvider provider = registry.getProvider(providerId);
+		for (final Entry<ServiceReference<JobProvider>, JobProvider> e : registry.getTracked().entrySet()) {
+			final JobProvider provider = e.getValue();
 			for (final String typeId : provider.getProvidedTypeIds()) {
-				contentProvider.add(new JobType(typeId, provider), itemsFilter);
+				contentProvider.add(new JobType(typeId, provider, e.getKey()), itemsFilter);
 			}
 		}
 	}

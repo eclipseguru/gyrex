@@ -73,10 +73,8 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	void addButtonPressed() {
-		final AddScheduleEntryDialog dialog = new AddScheduleEntryDialog(SwtUtil.getShell(getTreeViewer().getTree()));
+		final AddScheduleEntryDialog dialog = new AddScheduleEntryDialog(SwtUtil.getShell(getTreeViewer().getTree()), getSchedule());
 		dialog.openNonBlocking(new DialogCallback() {
-
-			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
 
 			@Override

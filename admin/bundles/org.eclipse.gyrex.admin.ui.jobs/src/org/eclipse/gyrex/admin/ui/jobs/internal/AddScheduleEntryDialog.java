@@ -11,10 +11,13 @@
  */
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.TimeZone;
 
+import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
+import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
@@ -29,12 +32,18 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.TreeListDialogFi
 import org.eclipse.gyrex.common.identifiers.IdHelper;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
+import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
+import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
+import org.eclipse.gyrex.jobs.schedules.IScheduleEntry;
 import org.eclipse.gyrex.jobs.schedules.manager.IScheduleManager;
 import org.eclipse.gyrex.jobs.schedules.manager.IScheduleWorkingCopy;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
+import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
@@ -48,7 +57,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
-	/** serialVersionUID */
+	private static final Object[] NO_CHILDREN = new Object[0];
 	private static final long serialVersionUID = 1L;
 	private final StringDialogField idField = new StringDialogField();
 	private final StringButtonDialogField jobTypeField = new StringButtonDialogField(new IStringButtonAdapter() {
@@ -73,7 +82,31 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 		@Override
 		public void customButtonPressed(final TreeListDialogField field, final int index) {
-			// TODO Auto-generated method stub
+			if (index == 0) {
+				final ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new LabelProvider());
+				dialog.setTitle("Select Entry");
+				dialog.setMessage("&Select an entry that will trigger a run:");
+				final List<IScheduleEntry> entries = new ArrayList<>(getSchedule().getEntries());
+				entries.remove(getEntry());
+				if (!entries.isEmpty()) {
+					dialog.setElements(entries.toArray());
+					dialog.openNonBlocking(new DialogCallback() {
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void dialogClosed(final int returnCode) {
+							if (returnCode == Window.OK) {
+								final Object firstResult = dialog.getFirstResult();
+								if (firstResult instanceof ScheduleEntryImpl) {
+									field.addElement(firstResult);
+								}
+							}
+						}
+					});
+				} else {
+					NonBlockingMessageDialogs.openInformation(getShell(), "No Entries", "Sorry but there are no other entries in this schedule defined.\n\nIn order to build task chains you need to define at least two or more entries within the same schedule.", null);
+				}
+			}
 		}
 
 		@Override
@@ -83,20 +116,33 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 		@Override
 		public Object[] getChildren(final TreeListDialogField field, final Object element) {
-			// TODO Auto-generated method stub
-			return null;
+			if (element instanceof ScheduleEntryImpl) {
+				final ScheduleEntryImpl entry = (ScheduleEntryImpl) element;
+				final Collection<String> precedingEntries = entry.getPrecedingEntries();
+				if (!precedingEntries.isEmpty()) {
+					final List<Object> result = new ArrayList<>(precedingEntries.size());
+					for (final String entryId : precedingEntries) {
+						try {
+							result.add(getSchedule().getEntry(entryId));
+						} catch (final Exception e) {
+							result.add(entryId + " (" + e.getMessage() + ")");
+						}
+					}
+					return result.toArray();
+				}
+
+			}
+			return NO_CHILDREN;
 		}
 
 		@Override
 		public Object getParent(final TreeListDialogField field, final Object element) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public boolean hasChildren(final TreeListDialogField field, final Object element) {
-			// TODO Auto-generated method stub
-			return false;
+			return (element instanceof ScheduleEntryImpl) && !((ScheduleEntryImpl) element).getPrecedingEntries().isEmpty();
 		}
 
 		@Override
@@ -110,10 +156,18 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 			// TODO Auto-generated method stub
 
 		}
-	}, new String[] { "Add...", "Remove" }, null);
+	}, new String[] { "Add...", "Remove" }, new LabelProvider());
+	{
+		preceedingEntriesTree.setRemoveButtonIndex(1);
+	}
 
-	public AddScheduleEntryDialog(final Shell parent) {
+	private JobType jobType;
+	private final ScheduleImpl schedule;
+	private ScheduleEntryImpl entry;
+
+	public AddScheduleEntryDialog(final Shell parent, final ScheduleImpl schedule) {
 		super(parent);
+		this.schedule = schedule;
 		setTitle("New Schedule Entry");
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	}
@@ -127,9 +181,14 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 		idField.setLabelText("Id");
 		jobTypeField.setLabelText("Task");
-		scheduleCheckBox.setLabelText("Execute at specific times:");
-		cronExpressionField.setLabelText("Cron Expression");
-		dependsCheckBox.setLabelText("Execute after other tasks:");
+		jobTypeField.setButtonLabel("Browse...");
+		scheduleCheckBox.setLabelText("Run at specific times (cron expression):");
+		cronExpressionField.setLabelText("");
+		dependsCheckBox.setLabelText("Run whenever one of the folloing entries run successfully:");
+		preceedingEntriesTree.setLabelText("");
+
+		scheduleCheckBox.attachDialogField(cronExpressionField);
+		dependsCheckBox.attachDialogField(preceedingEntriesTree);
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
@@ -146,7 +205,7 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
 		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, jobTypeField, cronExpressionField }, false);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, jobTypeField, new Separator(), scheduleCheckBox, cronExpressionField, new Separator(), dependsCheckBox, preceedingEntriesTree }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(jobTypeField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(cronExpressionField.getTextControl(null));
@@ -158,6 +217,14 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 		LayoutUtil.setHorizontalSpan(warning, masterLayout.numColumns);
 
 		return composite;
+	}
+
+	public ScheduleEntryImpl getEntry() {
+		return entry;
+	}
+
+	public ScheduleImpl getSchedule() {
+		return schedule;
 	}
 
 	@Override
@@ -194,7 +261,19 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 	}
 
 	void openJobTypeSelectionDialog() {
-		// TODO Auto-generated method stub
+		final JobTypeSelectionDialog dialog = new JobTypeSelectionDialog(getShell());
+		dialog.openNonBlocking(new DialogCallback() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					final JobType jobType = (JobType) dialog.getFirstResult();
+					setJobType(jobType);
+				}
+
+			}
+		});
 
 	}
 
@@ -205,6 +284,12 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 	void setInfo(final String message) {
 		updateStatus(new Status(IStatus.INFO, JobsUiActivator.SYMBOLIC_NAME, message));
+	}
+
+	public void setJobType(final JobType jobType) {
+		this.jobType = jobType;
+		jobTypeField.setText(jobType == null ? "" : jobType.getName());
+		validate();
 	}
 
 	void setWarning(final String message) {
@@ -218,16 +303,6 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 			return;
 		}
 
-		final String context = jobTypeField.getText();
-		if (StringUtils.isNotBlank(context)) {
-			try {
-				new URI(context);
-			} catch (final URISyntaxException e) {
-				setError("The entered URL. Please use valid URI syntax. " + e.getMessage());
-				return;
-			}
-		}
-
 		final String timeZone = cronExpressionField.getText();
 		if (StringUtils.isNotBlank(timeZone)) {
 			// TODO validate timezone
@@ -238,8 +313,8 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 			return;
 		}
 
-		if (StringUtils.isBlank(context)) {
-			setInfo("Please enter a context path.");
+		if ((jobType == null) || StringUtils.isBlank(jobTypeField.getText())) {
+			setInfo("Please select a job type.");
 			return;
 		}
 
