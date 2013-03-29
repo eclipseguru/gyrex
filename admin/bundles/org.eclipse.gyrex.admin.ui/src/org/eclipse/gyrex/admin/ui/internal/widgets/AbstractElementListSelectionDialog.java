@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Sebastian Davids <sdavids@gmx.de> - Fix for bug 19346 - Dialog
  *     font should be activated and used by other components.
- *     Gunnar Wagenknecht - fork for Gyrex Admin UI 
+ *     Gunnar Wagenknecht - fork for Gyrex Admin UI
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.widgets;
 
@@ -146,7 +146,7 @@ public abstract class AbstractElementListSelectionDialog extends SelectionStatus
 		data.verticalAlignment = GridData.FILL;
 		list.setLayoutData(data);
 		list.setFont(parent.getFont());
-		list.setFilter((fFilter == null ? "" : fFilter)); //$NON-NLS-1$		
+		list.setFilter((fFilter == null ? "" : fFilter)); //$NON-NLS-1$
 
 		list.addSelectionListener(new SelectionListener() {
 			@Override
@@ -186,7 +186,7 @@ public abstract class AbstractElementListSelectionDialog extends SelectionStatus
 		};
 		text.addListener(SWT.Modify, listener);
 
-// RAP [rh] missing Key events        
+// RAP [rh] missing Key events
 //        text.addKeyListener(new KeyListener() {
 //            public void keyPressed(KeyEvent e) {
 //                if (e.keyCode == SWT.ARROW_DOWN) {
@@ -322,7 +322,7 @@ public abstract class AbstractElementListSelectionDialog extends SelectionStatus
 		validateCurrentSelection();
 	}
 
-	// 3515	
+	// 3515
 	private void handleWidgetSelected() {
 		final Object[] newSelection = fFilteredList.getSelection();
 
@@ -347,16 +347,6 @@ public abstract class AbstractElementListSelectionDialog extends SelectionStatus
 	 */
 	public boolean isCaseIgnored() {
 		return fIgnoreCase;
-	}
-
-	/*
-	 *  (non-Javadoc)
-	 * @see org.eclipse.jface.window.Window#open()
-	 */
-	@Override
-	public int open() {
-		super.open();
-		return getReturnCode();
 	}
 
 	/**

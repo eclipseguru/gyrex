@@ -13,7 +13,13 @@ package org.eclipse.gyrex.admin.ui.internal.widgets;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.widgets.Shell;
 
@@ -63,6 +69,16 @@ public abstract class NonBlockingTrayDialog extends TrayDialog {
 		return closed;
 	}
 
+	@Override
+	public final int open() {
+		try {
+			return super.open();
+		} catch (final Exception | LinkageError | AssertionError e) {
+			Policy.getStatusHandler().show(e instanceof CoreException ? ((CoreException) e).getStatus() : new Status(IStatus.ERROR, AdminUiActivator.SYMBOLIC_NAME, "Unable to open dialog. Please check the server logs.", e), "Error Opening Dialog");
+			return CANCEL;
+		}
+	}
+
 	/**
 	 * Opens this window, creating it first if it has not yet been created.
 	 * <p>
@@ -75,11 +91,9 @@ public abstract class NonBlockingTrayDialog extends TrayDialog {
 	 * @see #create()
 	 */
 	public void openNonBlocking(final DialogCallback callback) {
-		if (!callbackRef.compareAndSet(null, callback)) {
+		if (!callbackRef.compareAndSet(null, callback))
 			throw new IllegalStateException("Concurrent operation not supported!");
-		}
 		setBlockOnOpen(false);
-		super.open();
+		open();
 	}
-
 }

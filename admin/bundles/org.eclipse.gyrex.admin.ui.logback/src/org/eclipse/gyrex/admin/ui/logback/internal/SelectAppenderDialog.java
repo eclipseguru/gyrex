@@ -13,17 +13,13 @@
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
 import org.eclipse.gyrex.logback.config.internal.model.Appender;
 
-import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.widgets.Shell;
 
 public class SelectAppenderDialog extends ElementListSelectionDialog {
-
-	private final AtomicReference<DialogCallback> callbackRef = new AtomicReference<DialogCallback>();
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
@@ -34,36 +30,4 @@ public class SelectAppenderDialog extends ElementListSelectionDialog {
 		setMessage("&Select an appender to add to your logger:");
 		setElements(appenders.toArray());
 	}
-
-	@Override
-	public boolean close() {
-		final boolean closed = super.close();
-		if (closed) {
-			final DialogCallback callback = callbackRef.getAndSet(null);
-			if (null != callback) {
-				callback.dialogClosed(getReturnCode());
-			}
-		}
-		return closed;
-	}
-
-	/**
-	 * Opens this window, creating it first if it has not yet been created.
-	 * <p>
-	 * The window will be configured to not block on open. The specified
-	 * callback will be set and (if not <code>null</code>) will be called when
-	 * the windows is closed. Clients may use {@link #getReturnCode()} to obtain
-	 * the return code that {@link #open()} returns in blocking mode.
-	 * </p>
-	 * 
-	 * @see #create()
-	 */
-	@Override
-	public void openNonBlocking(final DialogCallback callback) {
-		if (!callbackRef.compareAndSet(null, callback))
-			throw new IllegalStateException("Concurrent operation not supported!");
-		setBlockOnOpen(false);
-		super.open();
-	}
-
 }
