@@ -26,7 +26,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.ILogger;
 import org.eclipse.jface.util.Policy;
+import org.eclipse.jface.util.StatusHandler;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
 import org.eclipse.rap.rwt.client.service.BrowserNavigation;
@@ -418,8 +420,8 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 
 	@Override
 	public int createUI() {
-
 		final Display display = new Display();
+		setupJFacePolicy();
 		final Shell shell = createMainShell(display);
 		shell.setLayout(new FillLayout());
 		final ScrolledComposite scrolledArea = createScrolledArea(shell);
@@ -504,5 +506,30 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 		}
 
 		openPage(contribution, argsWithPageId);
+	}
+
+	private void setupJFacePolicy() {
+		Policy.setLog(new ILogger() {
+
+			@Override
+			public void log(final IStatus status) {
+				if (status.matches(IStatus.CANCEL) || status.matches(IStatus.ERROR)) {
+					LOG.error(status.getMessage(), status.getException());
+				} else if (status.matches(IStatus.WARNING)) {
+					LOG.warn(status.getMessage(), status.getException());
+				} else {
+					LOG.info(status.getMessage(), status.getException());
+				}
+			}
+		});
+		final StatusHandler defaultStatusHandler = Policy.getStatusHandler();
+		Policy.setStatusHandler(new StatusHandler() {
+
+			@Override
+			public void show(final IStatus status, final String title) {
+				Policy.getLog().log(status);
+				defaultStatusHandler.show(status, title);
+			}
+		});
 	}
 }
