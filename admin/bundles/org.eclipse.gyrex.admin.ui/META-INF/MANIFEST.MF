@@ -91,6 +91,16 @@ Export-Package: org.eclipse.gyrex.admin.ui.adapter;version="1.0.0";
    org.eclipse.gyrex.admin.ui.logback,
    org.eclipse.gyrex.admin.ui.p2,
    org.eclipse.gyrex.admin.ui.persistence",
+ org.eclipse.gyrex.admin.ui.internal.wizards;
+  x-friends:="org.eclipse.gyrex.admin.ui,
+   org.eclipse.gyrex.admin.ui.cloud,
+   org.eclipse.gyrex.admin.ui.context,
+   org.eclipse.gyrex.admin.ui.http,
+   org.eclipse.gyrex.admin.ui.http.jetty,
+   org.eclipse.gyrex.admin.ui.jobs,
+   org.eclipse.gyrex.admin.ui.logback,
+   org.eclipse.gyrex.admin.ui.p2,
+   org.eclipse.gyrex.admin.ui.persistence",
  org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
   x-friends:="org.eclipse.gyrex.admin.ui,
    org.eclipse.gyrex.admin.ui.cloud,
