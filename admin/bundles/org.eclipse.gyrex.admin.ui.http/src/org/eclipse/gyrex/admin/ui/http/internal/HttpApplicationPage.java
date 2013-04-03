@@ -72,9 +72,10 @@ public class HttpApplicationPage extends AdminPageWithTree {
 
 	void activateSelectedApplications() {
 		final List<ApplicationItem> selectedAppRegs = getSelectedAppRegs();
-		for (final ApplicationItem appRegItem : selectedAppRegs) {
-			final ApplicationRegistration app = appRegItem.getApplicationRegistration();
+		for (final ApplicationItem item : selectedAppRegs) {
+			final ApplicationRegistration app = item.getApplicationRegistration();
 			getApplicationManager().activate(app.getApplicationId());
+			item.setActive(true);
 			getTreeViewer().refresh(app, true);
 		}
 	}
@@ -200,9 +201,10 @@ public class HttpApplicationPage extends AdminPageWithTree {
 
 	void deactivateSelectedApplications() {
 		final List<ApplicationItem> selectedAppRegs = getSelectedAppRegs();
-		for (final ApplicationItem appRegItem : selectedAppRegs) {
-			final ApplicationRegistration app = appRegItem.getApplicationRegistration();
+		for (final ApplicationItem item : selectedAppRegs) {
+			final ApplicationRegistration app = item.getApplicationRegistration();
 			getApplicationManager().deactivate(app.getApplicationId());
+			item.setActive(false);
 			getTreeViewer().refresh(app, true);
 		}
 	}
