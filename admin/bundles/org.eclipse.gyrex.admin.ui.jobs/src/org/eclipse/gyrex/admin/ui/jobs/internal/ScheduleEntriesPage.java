@@ -16,6 +16,7 @@ import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.admin.ui.internal.wizards.NonBlockingWizardDialog;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
 import org.eclipse.gyrex.jobs.IJob;
@@ -73,7 +74,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	void addButtonPressed() {
-		final AddScheduleEntryDialog dialog = new AddScheduleEntryDialog(SwtUtil.getShell(getTreeViewer().getTree()), getSchedule());
+		final NonBlockingWizardDialog dialog = new NonBlockingWizardDialog(SwtUtil.getShell(getTreeViewer().getTree()), new ScheduleEntryWizard(getSchedule(), getSelectedScheduleEntry()));
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 
@@ -84,7 +85,6 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				}
 			}
 		});
-
 	}
 
 	@Override

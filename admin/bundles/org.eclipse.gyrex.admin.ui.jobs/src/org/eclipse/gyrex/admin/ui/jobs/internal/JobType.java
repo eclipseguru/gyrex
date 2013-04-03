@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
+import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
+import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardAdapter;
 import org.eclipse.gyrex.jobs.provider.JobProvider;
 
 import org.osgi.framework.Constants;
@@ -19,7 +21,7 @@ import org.osgi.framework.ServiceReference;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Use by content providers to represent a job type
+ * Use by content providers to represent a job type.
  */
 public class JobType {
 
@@ -47,4 +49,7 @@ public class JobType {
 		return id;
 	}
 
+	public JobConfigurationWizardAdapter getWizardAdapter() {
+		return AdapterUtil.getAdapter(provider, JobConfigurationWizardAdapter.class);
+	}
 }

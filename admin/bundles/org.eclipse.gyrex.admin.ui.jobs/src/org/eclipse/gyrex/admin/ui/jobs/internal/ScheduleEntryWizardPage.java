@@ -1,24 +1,22 @@
-/**
- * Copyright (c) 2011, 2012 AGETO Service GmbH and others.
+/*******************************************************************************
+ * Copyright (c) 2013 AGETO Service GmbH and others.
  * All rights reserved.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License v1.0 which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *     Andreas Mihm - initial API and implementation
- */
+ *     <enter-developer-name-here> - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
-import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IStringButtonAdapter;
@@ -30,35 +28,30 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringButtonDial
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.TreeListDialogField;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
-import org.eclipse.gyrex.context.IRuntimeContext;
-import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.schedules.IScheduleEntry;
-import org.eclipse.gyrex.jobs.schedules.manager.IScheduleManager;
-import org.eclipse.gyrex.jobs.schedules.manager.IScheduleWorkingCopy;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import org.apache.commons.lang.StringUtils;
 
-public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
+public class ScheduleEntryWizardPage extends WizardPage {
 
 	private static final Object[] NO_CHILDREN = new Object[0];
 	private static final long serialVersionUID = 1L;
+
 	private final StringDialogField idField = new StringDialogField();
 	private final StringButtonDialogField jobTypeField = new StringButtonDialogField(new IStringButtonAdapter() {
 
@@ -163,21 +156,23 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 	private JobType jobType;
 	private final ScheduleImpl schedule;
-	private ScheduleEntryImpl entry;
+	private final ScheduleEntryImpl entry;
 
-	public AddScheduleEntryDialog(final Shell parent, final ScheduleImpl schedule) {
-		super(parent);
+	public ScheduleEntryWizardPage(final ScheduleImpl schedule, final ScheduleEntryImpl entry) {
+		super(ScheduleEntryWizardPage.class.getSimpleName());
+		setTitle(null != entry ? "Edit Schedule Task" : "Add Task to Schedule");
+		setDescription(null != entry ? "Modify scheduling options of a task." : "Add a new task to a schedule.");
+		setPageComplete(false);
 		this.schedule = schedule;
-		setTitle("New Schedule Entry");
-		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
+		this.entry = entry;
 	}
 
 	@Override
-	protected Control createDialogArea(final Composite parent) {
-		final Composite composite = (Composite) super.createDialogArea(parent);
-		final GridData gd = (GridData) composite.getLayoutData();
-		gd.minimumHeight = convertVerticalDLUsToPixels(200);
-		gd.minimumWidth = convertHorizontalDLUsToPixels(400);
+	public void createControl(final Composite parent) {
+		final Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(GridLayoutFactory.fillDefaults().create());
+		composite.setLayoutData(GridDataFactory.fillDefaults().minSize(convertVerticalDLUsToPixels(200), convertHorizontalDLUsToPixels(400)).create());
+		setControl(composite);
 
 		idField.setLabelText("Id");
 		jobTypeField.setLabelText("Task");
@@ -215,49 +210,47 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 		masterLayout.marginHeight = 5;
 
 		LayoutUtil.setHorizontalSpan(warning, masterLayout.numColumns);
+	}
 
-		return composite;
+	public String getCronExpression() {
+		return cronExpressionField.getText();
 	}
 
 	public ScheduleEntryImpl getEntry() {
 		return entry;
 	}
 
+	public String getEntryId() {
+		return idField.getText();
+	}
+
+	public String getJobTypeId() {
+		return jobType != null ? jobType.id : null;
+	}
+
+	public String[] getPreceedingEntryIds() {
+		final List<Object> elements = preceedingEntriesTree.getElements();
+		final String[] result = new String[elements.size()];
+		for (int i = 0; i < elements.size(); i++) {
+			result[i] = ((ScheduleEntryImpl) elements.get(i)).getId();
+		}
+		return result;
+	}
+
 	public ScheduleImpl getSchedule() {
 		return schedule;
 	}
 
-	@Override
-	protected void okPressed() {
-		validate();
-		if (!getStatus().isOK())
-			return;
+	ScheduleEntryWizard getScheduleEntryWizard() {
+		return (ScheduleEntryWizard) getWizard();
+	}
 
-		try {
+	public boolean isScheduleUsingCronExpression() {
+		return scheduleCheckBox.isSelected();
+	}
 
-			final String contextPath = jobTypeField.getText();
-
-			final IRuntimeContext context = JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(new Path(contextPath).makeAbsolute().addTrailingSeparator());
-			if (context != null) {
-				final IScheduleManager scheduleManager = context.get(IScheduleManager.class);
-				final IScheduleWorkingCopy schedule = scheduleManager.createSchedule(idField.getText());
-
-				if (StringUtils.isNotBlank(cronExpressionField.getText())) {
-					schedule.setTimeZone(TimeZone.getTimeZone(cronExpressionField.getText()));
-				}
-
-				scheduleManager.updateSchedule(schedule);
-
-			} else {
-				//context not found
-				setError("Entered context path is not valid!");
-			}
-		} catch (final Exception e) {
-			setError(e.getMessage());
-			return;
-		}
-
-		super.okPressed();
+	public boolean isScheduleUsingPreceedingEntries() {
+		return dependsCheckBox.isSelected();
 	}
 
 	void openJobTypeSelectionDialog() {
@@ -277,47 +270,63 @@ public class AddScheduleEntryDialog extends NonBlockingStatusDialog {
 
 	}
 
-	void setError(final String message) {
-		updateStatus(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, message));
-		getShell().pack(true);
-	}
-
-	void setInfo(final String message) {
-		updateStatus(new Status(IStatus.INFO, JobsUiActivator.SYMBOLIC_NAME, message));
-	}
-
 	public void setJobType(final JobType jobType) {
+		if (jobType == this.jobType)
+			return;
+
 		this.jobType = jobType;
-		jobTypeField.setText(jobType == null ? "" : jobType.getName());
+
+		if (jobType != null) {
+			jobTypeField.setText(jobType.getName());
+			getScheduleEntryWizard().initializeCurrentJobConfigurationSession(jobType.id, jobType.getWizardAdapter());
+		} else {
+			jobTypeField.setText(StringUtils.EMPTY);
+			getScheduleEntryWizard().clearCurrentJobConfigurationSession();
+		}
+
 		validate();
 	}
 
-	void setWarning(final String message) {
-		updateStatus(new Status(IStatus.WARNING, JobsUiActivator.SYMBOLIC_NAME, message));
-	}
-
 	void validate() {
-		final String id = idField.getText();
+		final String id = getEntryId();
 		if (StringUtils.isNotBlank(id) && !IdHelper.isValidId(id)) {
-			setError("The entered schedule id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
+			setErrorMessage("The entered schedule id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
+			setPageComplete(false);
 			return;
-		}
-
-		final String timeZone = cronExpressionField.getText();
-		if (StringUtils.isNotBlank(timeZone)) {
-			// TODO validate timezone
 		}
 
 		if (StringUtils.isBlank(id)) {
-			setInfo("Please enter a schedule id.");
+			setMessage("Please enter a schedule id.", INFORMATION);
+			setPageComplete(false);
 			return;
 		}
 
-		if ((jobType == null) || StringUtils.isBlank(jobTypeField.getText())) {
-			setInfo("Please select a job type.");
+		if ((jobType == null) || StringUtils.isBlank(getJobTypeId())) {
+			setMessage("Please select a job type.", INFORMATION);
+			setPageComplete(false);
 			return;
 		}
 
-		updateStatus(Status.OK_STATUS);
+		if (isScheduleUsingCronExpression()) {
+			final String cronExpression = getCronExpression();
+			if (StringUtils.isNotBlank(cronExpression)) {
+				// TODO validate cron expression
+			} else {
+				setMessage("Please enter a schedule id.", INFORMATION);
+				setPageComplete(false);
+				return;
+			}
+		}
+
+		if (isScheduleUsingPreceedingEntries()) {
+			if (preceedingEntriesTree.getElements().isEmpty()) {
+				setMessage("Please select an entry this task depends on.", INFORMATION);
+				setPageComplete(false);
+				return;
+			}
+		}
+
+		setMessage(null);
+		setPageComplete(true);
 	}
 }
