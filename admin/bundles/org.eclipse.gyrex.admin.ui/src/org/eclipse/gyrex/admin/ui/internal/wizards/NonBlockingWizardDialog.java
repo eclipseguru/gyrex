@@ -55,16 +55,36 @@ public class NonBlockingWizardDialog extends WizardDialog {
 		super(parentShell, newWizard);
 	}
 
+	private void callDialogCallback() {
+		final DialogCallback callback = callbackRef.getAndSet(null);
+		if (null != callback) {
+			callback.dialogClosed(getReturnCode());
+		}
+	}
+
+	@Override
+	protected void cancelPressed() {
+		super.cancelPressed();
+		if ((getShell() == null) || getShell().isDisposed()) {
+			callDialogCallback();
+		}
+	}
+
 	@Override
 	public boolean close() {
 		final boolean closed = super.close();
 		if (closed) {
-			final DialogCallback callback = callbackRef.getAndSet(null);
-			if (null != callback) {
-				callback.dialogClosed(getReturnCode());
-			}
+			callDialogCallback();
 		}
 		return closed;
+	}
+
+	@Override
+	protected void finishPressed() {
+		super.finishPressed();
+		if ((getShell() == null) || getShell().isDisposed()) {
+			callDialogCallback();
+		}
 	}
 
 	@Override
