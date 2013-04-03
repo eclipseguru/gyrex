@@ -298,7 +298,13 @@ public abstract class AdminPageWithTree extends AdminPage {
 	protected abstract String getColumnLabel(final int column);
 
 	protected ColumnLayoutData getColumnLayoutData(final int column) {
-		return new ColumnWeightData((numberOfColumns / (column + 1)) * 10, 50);
+		switch (column) {
+			case 0:
+			case 1:
+				return new ColumnWeightData(30, 50);
+			default:
+				return new ColumnWeightData(10, 50);
+		}
 	}
 
 	protected abstract String getElementLabel(final Object element, final int column);
