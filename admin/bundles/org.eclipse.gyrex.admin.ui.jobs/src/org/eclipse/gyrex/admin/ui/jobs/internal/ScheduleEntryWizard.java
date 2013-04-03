@@ -105,7 +105,7 @@ public class ScheduleEntryWizard extends Wizard {
 
 		// lazy initialize pages
 		if (null == session.getPages()) {
-			final IWizardPage[] pages = wizardAdapter.createPages(session);
+			final IWizardPage[] pages = wizardAdapter != null ? wizardAdapter.createPages(session) : null;
 			if (pages != null) {
 				session.setPages(pages);
 				for (final IWizardPage page : pages) {
@@ -119,7 +119,9 @@ public class ScheduleEntryWizard extends Wizard {
 		}
 
 		currentSession = session;
-		getContainer().updateButtons();
+		if (null != getContainer().getCurrentPage()) {
+			getContainer().updateButtons();
+		}
 	}
 
 	@Override

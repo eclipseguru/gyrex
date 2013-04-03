@@ -61,6 +61,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	private static final int COLUMN_LAST_RESULT = 4;
 
 	private Button addButton;
+	private Button editButton;
 	private Button removeButton;
 	private Button enableButton;
 	private Button disableButton;
@@ -74,28 +75,27 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	void addButtonPressed() {
-		final NonBlockingWizardDialog dialog = new NonBlockingWizardDialog(SwtUtil.getShell(getTreeViewer().getTree()), new ScheduleEntryWizard(getSchedule(), getSelectedScheduleEntry()));
-		dialog.openNonBlocking(new DialogCallback() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode == Window.OK) {
-					refresh();
-				}
-			}
-		});
+		editOrAddScheduleEntry(null);
 	}
 
 	@Override
 	protected void createButtons(final Composite parent) {
-		addButton = createButton(parent, "Add..");
+		addButton = createButton(parent, "New...");
 		addButton.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				addButtonPressed();
+			}
+		});
+		editButton = createButton(parent, "Edit...");
+		editButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				editButtonPressed();
 			}
 		});
 		removeButton = createButton(parent, "Remove");
@@ -189,6 +189,24 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 
 		getTreeViewer().refresh(scheduleEntry);
 		updateButtons();
+	}
+
+	void editButtonPressed() {
+		editOrAddScheduleEntry(getSelectedScheduleEntry());
+	}
+
+	private void editOrAddScheduleEntry(final ScheduleEntryImpl entryToEdit) {
+		final NonBlockingWizardDialog dialog = new NonBlockingWizardDialog(SwtUtil.getShell(getTreeViewer().getTree()), new ScheduleEntryWizard(getSchedule(), entryToEdit));
+		dialog.openNonBlocking(new DialogCallback() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					refresh();
+				}
+			}
+		});
 	}
 
 	void enableButtonPressed() {
@@ -302,6 +320,21 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 		getAdminUi().openPage(BackgroundTasksPage.ID);
 	}
 
+	@Override
+	protected void openSelectedElement() {
+		editOrAddScheduleEntry(getSelectedScheduleEntry());
+	}
+
+	@Override
+	protected void refresh() {
+		try {
+			getSchedule().load();
+		} catch (final BackingStoreException e) {
+			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Error loading schedule.", e), "Error");
+		}
+		getTreeViewer().refresh();
+	}
+
 	void removeButtonPressed() {
 
 		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
@@ -318,9 +351,10 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 					return;
 
 				try {
-					scheduleEntry.getSchedule().removeEntry(scheduleEntry.getId());
-					scheduleEntry.getSchedule().save();
-				} catch (final BackingStoreException e) {
+					final ScheduleImpl schedule = scheduleEntry.getSchedule();
+					schedule.removeEntry(scheduleEntry.getId());
+					schedule.save();
+				} catch (final Exception | LinkageError | AssertionError e) {
 					Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
 				}
 
@@ -349,7 +383,6 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				throw new UnhandledException(e);
 			}
 		}
-
 	}
 
 	public void setSchedule(final ScheduleImpl schedule) {
@@ -363,6 +396,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 		final int selectedElementsCount = ((IStructuredSelection) getTreeViewer().getSelection()).size();
 		if (selectedElementsCount == 0) {
 			addButton.setEnabled(true);
+			editButton.setEnabled(false);
 			removeButton.setEnabled(false);
 			enableButton.setEnabled(false);
 			disableButton.setEnabled(false);
@@ -370,6 +404,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 		}
 
 		addButton.setEnabled(true);
+		editButton.setEnabled(selectedElementsCount == 1);
 		removeButton.setEnabled(selectedElementsCount == 1);
 
 		final ScheduleEntryImpl selectedScheduleEntry = getSelectedScheduleEntry();

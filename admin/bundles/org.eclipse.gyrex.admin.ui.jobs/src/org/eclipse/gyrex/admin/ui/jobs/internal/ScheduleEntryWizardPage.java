@@ -14,6 +14,7 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
@@ -29,10 +30,14 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringButtonDial
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.TreeListDialogField;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
+import org.eclipse.gyrex.jobs.internal.JobsActivator;
+import org.eclipse.gyrex.jobs.internal.registry.JobProviderRegistry;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
+import org.eclipse.gyrex.jobs.provider.JobProvider;
 import org.eclipse.gyrex.jobs.schedules.IScheduleEntry;
 
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -44,6 +49,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import org.osgi.framework.ServiceReference;
+
 import org.apache.commons.lang.StringUtils;
 
 public class ScheduleEntryWizardPage extends WizardPage {
@@ -51,7 +58,20 @@ public class ScheduleEntryWizardPage extends WizardPage {
 	private static final Object[] NO_CHILDREN = new Object[0];
 	private static final long serialVersionUID = 1L;
 
+	static JobType findJobType(final String jobTypeId) {
+		final JobProviderRegistry registry = JobsActivator.getInstance().getJobProviderRegistry();
+		for (final Entry<ServiceReference<JobProvider>, JobProvider> e : registry.getTracked().entrySet()) {
+			final JobProvider provider = e.getValue();
+			for (final String typeId : provider.getProvidedTypeIds()) {
+				if (jobTypeId.equals(typeId))
+					return new JobType(jobTypeId, provider, e.getKey());
+			}
+		}
+		return null;
+	}
+
 	private final StringDialogField idField = new StringDialogField();
+
 	private final StringButtonDialogField jobTypeField = new StringButtonDialogField(new IStringButtonAdapter() {
 
 		@Override
@@ -66,11 +86,10 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		}
 
 	};
-
 	private final SelectionButtonDialogField scheduleCheckBox = new SelectionButtonDialogField(SWT.CHECK);
 	private final StringDialogField cronExpressionField = new StringDialogField();
-	private final DescriptionDialogField cronMakerLinkField = new DescriptionDialogField();
 
+	private final DescriptionDialogField cronMakerLinkField = new DescriptionDialogField();
 	private final SelectionButtonDialogField dependsCheckBox = new SelectionButtonDialogField(SWT.CHECK);
 	private final TreeListDialogField preceedingEntriesTree = new TreeListDialogField(new ITreeListAdapter() {
 
@@ -151,12 +170,13 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 		}
 	}, new String[] { "Add...", "Remove" }, new LabelProvider());
+
 	{
 		preceedingEntriesTree.setRemoveButtonIndex(1);
 	}
-
 	private JobType jobType;
 	private final ScheduleImpl schedule;
+
 	private final ScheduleEntryImpl entry;
 
 	public ScheduleEntryWizardPage(final ScheduleImpl schedule, final ScheduleEntryImpl entry) {
@@ -199,7 +219,10 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 		idField.setDialogFieldListener(validateListener);
 		jobTypeField.setDialogFieldListener(validateListener);
+		scheduleCheckBox.setDialogFieldListener(validateListener);
 		cronExpressionField.setDialogFieldListener(validateListener);
+		dependsCheckBox.setDialogFieldListener(validateListener);
+		preceedingEntriesTree.setDialogFieldListener(validateListener);
 
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, jobTypeField, new Separator(), scheduleCheckBox, cronExpressionField, cronMakerLinkField, new Separator(), dependsCheckBox, preceedingEntriesTree }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
@@ -207,6 +230,27 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		LayoutUtil.setHorizontalGrabbing(cronExpressionField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(cronMakerLinkField.getDescriptionControl(null));
 		LayoutUtil.setHorizontalGrabbing(preceedingEntriesTree.getTreeControl(null));
+
+		if (null != getEntry()) {
+			idField.setEnabled(false);
+			jobTypeField.setEnabled(false);
+			idField.setText(getEntry().getId());
+			setJobType(findJobType(getEntry().getJobTypeId()));
+			if (null != getEntry().getCronExpression()) {
+				scheduleCheckBox.setSelection(true);
+				cronExpressionField.setText(getEntry().getCronExpression());
+			}
+			if (!getEntry().getPrecedingEntries().isEmpty()) {
+				dependsCheckBox.setSelection(true);
+				for (final String entryId : getEntry().getPrecedingEntries()) {
+					try {
+						preceedingEntriesTree.addElement(getSchedule().getEntry(entryId));
+					} catch (final IllegalStateException e) {
+						preceedingEntriesTree.addElement(entryId);
+					}
+				}
+			}
+		}
 
 	}
 
@@ -292,12 +336,12 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		final String id = getEntryId();
 		if (StringUtils.isNotBlank(id)) {
 			if (!IdHelper.isValidId(id)) {
-				setErrorMessage("The entered entry id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
+				setMessage("The entered entry id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.", IMessageProvider.ERROR);
 				setPageComplete(false);
 				return;
 			}
 			if ((null == getEntry()) && getSchedule().hasEntry(id)) {
-				setErrorMessage(String.format("Schedule '%s' already contains an entry with the specified id.", getSchedule().getId()));
+				setMessage(String.format("Schedule '%s' already contains an entry with the specified id.", getSchedule().getId()), IMessageProvider.ERROR);
 				setPageComplete(false);
 				return;
 			}
@@ -321,7 +365,7 @@ public class ScheduleEntryWizardPage extends WizardPage {
 				try {
 					ScheduleEntryImpl.validateCronExpression(cronExpression);
 				} catch (final IllegalArgumentException e) {
-					setErrorMessage("The cron expression is invalid. " + e.getMessage());
+					setMessage("The cron expression is invalid. " + e.getMessage(), IMessageProvider.ERROR);
 					setPageComplete(false);
 					return;
 				}
@@ -340,7 +384,6 @@ public class ScheduleEntryWizardPage extends WizardPage {
 			}
 		}
 
-		setErrorMessage(null);
 		setMessage(null);
 		setPageComplete(true);
 	}
