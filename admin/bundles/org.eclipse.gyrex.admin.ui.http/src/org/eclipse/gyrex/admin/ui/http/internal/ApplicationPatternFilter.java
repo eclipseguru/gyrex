@@ -15,7 +15,6 @@ package org.eclipse.gyrex.admin.ui.http.internal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.eclipse.gyrex.admin.ui.http.internal.ApplicationBrowserContentProvider.ApplicationItem;
 import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
 
 import org.eclipse.jface.viewers.Viewer;

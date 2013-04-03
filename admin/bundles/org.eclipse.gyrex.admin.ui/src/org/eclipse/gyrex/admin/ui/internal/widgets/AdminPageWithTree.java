@@ -32,6 +32,7 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -110,6 +111,8 @@ public abstract class AdminPageWithTree extends AdminPage {
 		}
 
 	}
+
+	protected static final int NO_COLUMN = -1;
 
 	private final int numberOfColumns;
 
@@ -244,8 +247,13 @@ public abstract class AdminPageWithTree extends AdminPage {
 			private static final long serialVersionUID = 1L;
 
 			@Override
+			public Image getImage(final Object element) {
+				return getElementImage(element, NO_COLUMN);
+			}
+
+			@Override
 			public String getText(final Object element) {
-				return StringUtils.trimToEmpty(getElementLabel(element, -1));
+				return StringUtils.trimToEmpty(getElementLabel(element, NO_COLUMN));
 			}
 		});
 
@@ -258,6 +266,11 @@ public abstract class AdminPageWithTree extends AdminPage {
 			viewerColumn.setLabelProvider(new ColumnLabelProvider() {
 				/** serialVersionUID */
 				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Image getImage(final Object element) {
+					return getElementImage(element, column);
+				}
 
 				@Override
 				public String getText(final Object element) {
@@ -305,6 +318,10 @@ public abstract class AdminPageWithTree extends AdminPage {
 			default:
 				return new ColumnWeightData(10, 50);
 		}
+	}
+
+	protected Image getElementImage(final Object element, final int column) {
+		return null;
 	}
 
 	protected abstract String getElementLabel(final Object element, final int column);
