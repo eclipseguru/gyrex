@@ -154,6 +154,9 @@ public class ScheduleEntryWizard extends Wizard {
 			entry.setPrecedingEntries();
 		}
 
+		// set parameter from current session
+		entry.setJobParameter(currentSession.getParameter());
+
 		try {
 			schedule.save();
 			return true;
