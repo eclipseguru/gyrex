@@ -94,7 +94,13 @@ public class ScheduleEntryWizard extends Wizard {
 
 	void initializeCurrentJobConfigurationSession(final String id, final JobConfigurationWizardAdapter wizardAdapter) {
 		if (!sessionsByJobTypeId.containsKey(id)) {
-			sessionsByJobTypeId.put(id, new JobConfigurationWizardSession(id));
+			final JobConfigurationWizardSession session = new JobConfigurationWizardSession(id);
+			if (entry != null) {
+				// clone job parameter into new session
+				// (subsequent modifications MUST NOT be reflected into the entry or other sessions)
+				session.getParameter().putAll(entry.getJobParameter());
+			}
+			sessionsByJobTypeId.put(id, session);
 		}
 
 		final JobConfigurationWizardSession session = sessionsByJobTypeId.get(id);
