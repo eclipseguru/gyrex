@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DescriptionDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IStringButtonAdapter;
@@ -40,7 +41,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -69,6 +69,8 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 	private final SelectionButtonDialogField scheduleCheckBox = new SelectionButtonDialogField(SWT.CHECK);
 	private final StringDialogField cronExpressionField = new StringDialogField();
+	private final DescriptionDialogField cronMakerLinkField = new DescriptionDialogField();
+
 	private final SelectionButtonDialogField dependsCheckBox = new SelectionButtonDialogField(SWT.CHECK);
 	private final TreeListDialogField preceedingEntriesTree = new TreeListDialogField(new ITreeListAdapter() {
 
@@ -176,13 +178,17 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		idField.setLabelText("Entry Id:");
 		jobTypeField.setLabelText("Task: ");
 		jobTypeField.setButtonLabel("Browse...");
+
 		scheduleCheckBox.setLabelText("Run at specific times (cron expression):");
 		cronExpressionField.setLabelText("");
+		cronMakerLinkField.setLabelText("");
+		cronMakerLinkField.setText("<small>Tip: Use <a href=\"http://cronmaker.com/\" target=\"_blank\">CronMaker</a> to generate cron expressions (but drop the seconds).</small>");
+
 		dependsCheckBox.setLabelText("Run whenever one of the folloing entries run successfully:");
 		preceedingEntriesTree.setLabelText("");
 
-		scheduleCheckBox.attachDialogField(cronExpressionField);
-		dependsCheckBox.attachDialogField(preceedingEntriesTree);
+		scheduleCheckBox.setAttachedDialogFields(cronExpressionField, cronMakerLinkField);
+		dependsCheckBox.setAttachedDialogFields(preceedingEntriesTree);
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
@@ -195,14 +201,13 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		jobTypeField.setDialogFieldListener(validateListener);
 		cronExpressionField.setDialogFieldListener(validateListener);
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, jobTypeField, new Separator(), scheduleCheckBox, cronExpressionField, new Separator(), dependsCheckBox, preceedingEntriesTree }, false);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, jobTypeField, new Separator(), scheduleCheckBox, cronExpressionField, cronMakerLinkField, new Separator(), dependsCheckBox, preceedingEntriesTree }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(jobTypeField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(cronExpressionField.getTextControl(null));
+		LayoutUtil.setHorizontalGrabbing(cronMakerLinkField.getDescriptionControl(null));
+		LayoutUtil.setHorizontalGrabbing(preceedingEntriesTree.getTreeControl(null));
 
-		final GridLayout masterLayout = (GridLayout) composite.getLayout();
-		masterLayout.marginWidth = 5;
-		masterLayout.marginHeight = 5;
 	}
 
 	public String getCronExpression() {
@@ -285,20 +290,27 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 	void validate() {
 		final String id = getEntryId();
-		if (StringUtils.isNotBlank(id) && !IdHelper.isValidId(id)) {
-			setErrorMessage("The entered entry id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
-			setPageComplete(false);
-			return;
+		if (StringUtils.isNotBlank(id)) {
+			if (!IdHelper.isValidId(id)) {
+				setErrorMessage("The entered entry id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
+				setPageComplete(false);
+				return;
+			}
+			if ((null == getEntry()) && getSchedule().hasEntry(id)) {
+				setErrorMessage(String.format("Schedule '%s' already contains an entry with the specified id.", getSchedule().getId()));
+				setPageComplete(false);
+				return;
+			}
 		}
 
 		if (StringUtils.isBlank(id)) {
-			setMessage("Please enter an entry id.", INFORMATION);
+			setMessage("Please enter an entry identifier.", INFORMATION);
 			setPageComplete(false);
 			return;
 		}
 
 		if ((jobType == null) || StringUtils.isBlank(getJobTypeId())) {
-			setMessage("Please select a job type.", INFORMATION);
+			setMessage("Please select a task.", INFORMATION);
 			setPageComplete(false);
 			return;
 		}
@@ -328,6 +340,7 @@ public class ScheduleEntryWizardPage extends WizardPage {
 			}
 		}
 
+		setErrorMessage(null);
 		setMessage(null);
 		setPageComplete(true);
 	}

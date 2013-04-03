@@ -20,10 +20,19 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 /**
- * Base class of all dialog fields. Dialog fields manage controls together with
- * the model, independed from the creation time of the widgets. - support for
- * automated layouting. - enable / disable, set focus a concept of the base
- * class. DialogField have a label.
+ * Base class of all dialog fields.
+ * <p>
+ * Dialog fields manage controls together with the model, independent from the
+ * creation time of the widgets.
+ * </p>
+ * <ul>
+ * <li>support for automated layouting</li>,
+ * <li>enable / disable</li>,
+ * <li>set focus a concept of the base class</li>
+ * </ul>
+ * <p>
+ * DialogFields have a label.
+ * </p>
  */
 public class DialogField {
 
@@ -126,7 +135,7 @@ public class DialogField {
 			fLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			fLabel.setFont(parent.getFont());
 			fLabel.setEnabled(fEnabled);
-			if (fLabelText != null && !"".equals(fLabelText)) { //$NON-NLS-1$
+			if ((fLabelText != null) && !"".equals(fLabelText)) { //$NON-NLS-1$
 				fLabel.setText(fLabelText);
 			} else {
 				// XXX: to avoid a 16 pixel wide empty label - revisit
@@ -156,7 +165,7 @@ public class DialogField {
 	 * Tests is the control is not <code>null</code> and not disposed.
 	 */
 	protected final boolean isOkToUse(final Control control) {
-		return control != null && Display.getCurrent() != null && !control.isDisposed();
+		return (control != null) && (Display.getCurrent() != null) && !control.isDisposed();
 	}
 
 	/**

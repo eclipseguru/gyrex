@@ -27,7 +27,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.apache.commons.lang.StringUtils;
@@ -140,10 +139,6 @@ public class ExternalProcessWizardPage extends WizardPage {
 		LayoutUtil.setHorizontalGrabbing(environmentTable.getListControl(null));
 		LayoutUtil.setHorizontalGrabbing(workingDirectoryField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(expectedReturnCodeField.getTextControl(null));
-
-		final GridLayout masterLayout = (GridLayout) composite.getLayout();
-		masterLayout.marginWidth = 5;
-		masterLayout.marginHeight = 5;
 	}
 
 	public String getCommand() {
