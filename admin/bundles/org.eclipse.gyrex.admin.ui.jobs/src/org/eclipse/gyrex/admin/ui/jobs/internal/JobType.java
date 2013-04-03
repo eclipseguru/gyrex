@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 <enter-company-name-here> and others.
+ * Copyright (c) 2013 AGETO Service GmbH and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,7 +7,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *     <enter-developer-name-here> - initial API and implementation
+ *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
@@ -40,12 +40,19 @@ public class JobType {
 	}
 
 	public String getName() {
+		final String name = provider.getName(id);
+		if (StringUtils.isNotBlank(name))
+			return name;
+
+		// fallback to service description
 		final Object serviceDescription = serviceReference.getProperty(Constants.SERVICE_DESCRIPTION);
 		if (serviceDescription instanceof String) {
 			final String desc = (String) serviceDescription;
 			if (StringUtils.isNotBlank(desc))
 				return desc;
 		}
+
+		// fallback to id
 		return id;
 	}
 

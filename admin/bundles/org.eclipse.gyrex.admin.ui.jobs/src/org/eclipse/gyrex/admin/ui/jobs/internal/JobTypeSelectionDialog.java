@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 <enter-company-name-here> and others.
+ * Copyright (c) 2013 AGETO Service GmbH and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,7 +7,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *     <enter-developer-name-here> - initial API and implementation
+ *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -53,6 +54,7 @@ public class JobTypeSelectionDialog extends FilteredItemsSelectionDialog {
 				return super.getText(element);
 			}
 		});
+		setInitialPattern("*");
 	}
 
 	@Override
@@ -127,6 +129,12 @@ public class JobTypeSelectionDialog extends FilteredItemsSelectionDialog {
 				return id1.compareTo(id2);
 			}
 		};
+	}
+
+	@Override
+	public void openNonBlocking(final DialogCallback callback) {
+		super.openNonBlocking(callback);
+		refresh();
 	}
 
 	@Override

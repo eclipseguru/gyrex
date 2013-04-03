@@ -7,7 +7,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *     <enter-developer-name-here> - initial API and implementation
+ *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
@@ -40,7 +40,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -174,8 +173,8 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		composite.setLayoutData(GridDataFactory.fillDefaults().minSize(convertVerticalDLUsToPixels(200), convertHorizontalDLUsToPixels(400)).create());
 		setControl(composite);
 
-		idField.setLabelText("Id");
-		jobTypeField.setLabelText("Task");
+		idField.setLabelText("Entry Id:");
+		jobTypeField.setLabelText("Task: ");
 		jobTypeField.setButtonLabel("Browse...");
 		scheduleCheckBox.setLabelText("Run at specific times (cron expression):");
 		cronExpressionField.setLabelText("");
@@ -196,10 +195,6 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		jobTypeField.setDialogFieldListener(validateListener);
 		cronExpressionField.setDialogFieldListener(validateListener);
 
-		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
-		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, jobTypeField, new Separator(), scheduleCheckBox, cronExpressionField, new Separator(), dependsCheckBox, preceedingEntriesTree }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(jobTypeField.getTextControl(null));
@@ -208,8 +203,6 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
 		masterLayout.marginWidth = 5;
 		masterLayout.marginHeight = 5;
-
-		LayoutUtil.setHorizontalSpan(warning, masterLayout.numColumns);
 	}
 
 	public String getCronExpression() {
@@ -255,6 +248,9 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 	void openJobTypeSelectionDialog() {
 		final JobTypeSelectionDialog dialog = new JobTypeSelectionDialog(getShell());
+		if (jobType != null) {
+			dialog.setInitialPattern(jobType.getName());
+		}
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 
@@ -290,13 +286,13 @@ public class ScheduleEntryWizardPage extends WizardPage {
 	void validate() {
 		final String id = getEntryId();
 		if (StringUtils.isNotBlank(id) && !IdHelper.isValidId(id)) {
-			setErrorMessage("The entered schedule id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
+			setErrorMessage("The entered entry id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.");
 			setPageComplete(false);
 			return;
 		}
 
 		if (StringUtils.isBlank(id)) {
-			setMessage("Please enter a schedule id.", INFORMATION);
+			setMessage("Please enter an entry id.", INFORMATION);
 			setPageComplete(false);
 			return;
 		}
@@ -310,9 +306,15 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		if (isScheduleUsingCronExpression()) {
 			final String cronExpression = getCronExpression();
 			if (StringUtils.isNotBlank(cronExpression)) {
-				// TODO validate cron expression
+				try {
+					ScheduleEntryImpl.validateCronExpression(cronExpression);
+				} catch (final IllegalArgumentException e) {
+					setErrorMessage("The cron expression is invalid. " + e.getMessage());
+					setPageComplete(false);
+					return;
+				}
 			} else {
-				setMessage("Please enter a schedule id.", INFORMATION);
+				setMessage("Please enter a cron expression.", INFORMATION);
 				setPageComplete(false);
 				return;
 			}

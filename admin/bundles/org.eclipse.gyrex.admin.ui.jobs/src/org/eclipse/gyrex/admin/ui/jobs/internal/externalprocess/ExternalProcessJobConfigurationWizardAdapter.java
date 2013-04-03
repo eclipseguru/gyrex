@@ -9,24 +9,18 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.jobs.configuration.wizard;
+package org.eclipse.gyrex.admin.ui.jobs.internal.externalprocess;
 
-import org.eclipse.gyrex.jobs.provider.JobProvider;
+import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardAdapter;
+import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardSession;
 
 import org.eclipse.jface.wizard.IWizardPage;
 
-/**
- * Adapter to allow {@link JobProvider job providers} to participate in the
- * wizard driven job configuration user interface.
- */
-public abstract class JobConfigurationWizardAdapter {
+public class ExternalProcessJobConfigurationWizardAdapter extends JobConfigurationWizardAdapter {
 
-	/**
-	 * Creates and returns the job configuration specific wizard pages for the
-	 * specified session.
-	 * 
-	 * @param session
-	 */
-	public abstract IWizardPage[] createPages(JobConfigurationWizardSession session);
+	@Override
+	public IWizardPage[] createPages(final JobConfigurationWizardSession session) {
+		return new IWizardPage[] { new ExternalProcessWizardPage(session) };
+	}
 
 }

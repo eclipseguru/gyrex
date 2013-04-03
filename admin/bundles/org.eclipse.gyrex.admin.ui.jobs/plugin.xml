@@ -16,5 +16,15 @@
             name="Schedule Entries">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.gyrex.jobs.internal.externalprocess.ExternalProcessJobProvider"
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.externalprocess.AdapterFactory">
+         <adapter
+               type="org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardAdapter">
+         </adapter>
+      </factory>
+   </extension>
 
 </plugin>
