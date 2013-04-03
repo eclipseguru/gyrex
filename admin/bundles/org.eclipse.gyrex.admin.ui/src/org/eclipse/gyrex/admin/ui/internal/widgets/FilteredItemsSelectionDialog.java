@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.admin.ui.internal.AdminUiImages;
@@ -74,7 +73,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ViewForm;
@@ -325,7 +323,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 		 */
 		@Override
@@ -334,7 +332,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 		 */
 		@Override
@@ -444,7 +442,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
 		 *      java.lang.Object, java.lang.Object)
 		 */
@@ -634,7 +632,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.ILazyContentProvider#updateElement(int)
 		 */
 		@Override
@@ -703,7 +701,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.Viewer#getControl()
 		 */
 		@Override
@@ -713,7 +711,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.Viewer#getSelection()
 		 */
 		@Override
@@ -724,7 +722,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.ContentViewer#handleLabelProviderChanged(org.eclipse.jface.viewers.LabelProviderChangedEvent)
 		 */
 		@Override
@@ -736,7 +734,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.Viewer#inputChanged(java.lang.Object,
 		 *      java.lang.Object)
 		 */
@@ -755,7 +753,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.Viewer#refresh()
 		 */
 		@Override
@@ -789,7 +787,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.Viewer#setSelection(org.eclipse.jface.viewers.ISelection,
 		 *      boolean)
 		 */
@@ -831,7 +829,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 		 */
 		@Override
@@ -979,7 +977,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 		 */
 		@Override
@@ -1020,7 +1018,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.ProgressMonitorWrapper#beginTask(java.lang.String,
 		 *      int)
 		 */
@@ -1036,7 +1034,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.ProgressMonitorWrapper#done()
 		 */
 		@Override
@@ -1065,7 +1063,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.ProgressMonitorWrapper#internalWorked(double)
 		 */
 		@Override
@@ -1084,7 +1082,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.ProgressMonitorWrapper#setCanceled(boolean)
 		 */
 		@Override
@@ -1095,7 +1093,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.ProgressMonitorWrapper#setTaskName(java.lang.String)
 		 */
 		@Override
@@ -1107,7 +1105,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.ProgressMonitorWrapper#subTask(java.lang.String)
 		 */
 		@Override
@@ -1118,7 +1116,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.core.runtime.ProgressMonitorWrapper#worked(int)
 		 */
 		@Override
@@ -1136,7 +1134,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
 		@Override
@@ -1317,7 +1315,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 	}
 
-	// RAP [rh] StyledCellLabelProvider not supported	
+	// RAP [rh] StyledCellLabelProvider not supported
 //	private class ItemsListLabelProvider extends StyledCellLabelProvider
 	private class ItemsListLabelProvider extends CellLabelProvider implements ILabelProviderListener {
 		/** serialVersionUID */
@@ -1355,7 +1353,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
 		 */
 		@Override
@@ -1365,7 +1363,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
 		 */
 		@Override
@@ -1412,7 +1410,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			return provider.getImage(element);
 		}
 
-// RAP [rh] IStyledLabelProvider not supported		
+// RAP [rh] IStyledLabelProvider not supported
 //		private StyledString getStyledText(Object element,
 //				IStyledLabelProvider provider) {
 //			StyledString string = provider.getStyledText(element);
@@ -1447,7 +1445,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			final GC gc = new GC(list.getTable());
 			gc.setFont(list.getTable().getFont());
 
-//RAP [rh] GC#getAdvanceWidth missing			
+//RAP [rh] GC#getAdvanceWidth missing
 //			int fSeparatorWidth = gc.getAdvanceWidth('-');
 			final int fSeparatorWidth = gc.getCharWidth('-');
 			final int fMessageLength = gc.textExtent(separatorLabel).x;
@@ -1799,7 +1797,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.action.Action#run()
 		 */
 		@Override
@@ -1848,7 +1846,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see java.util.LinkedList#add(java.lang.Object)
 				 */
 				@Override
@@ -2004,8 +2002,6 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 
-	private final AtomicReference<DialogCallback> callbackRef = new AtomicReference<DialogCallback>();
-
 	private static final String DIALOG_BOUNDS_SETTINGS = "DialogBoundsSettings"; //$NON-NLS-1$
 
 //	private static final String SHOW_STATUS_LINE = "ShowStatusLine"; //no use in gyrex
@@ -2034,7 +2030,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 */
 	public static final int FULL_SELECTION = 2;
 
-	// RAP [rh] display used to access NLS messages	
+	// RAP [rh] display used to access NLS messages
 	private final Display display;
 
 	private Text pattern;
@@ -2124,7 +2120,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 */
 	public FilteredItemsSelectionDialog(final Shell shell, final boolean multi) {
 		super(shell);
-// RAP [rh] store display to access NLS messages		
+// RAP [rh] store display to access NLS messages
 		display = shell.getDisplay();
 		this.multi = multi;
 		filterHistoryJob = new FilterHistoryJob();
@@ -2182,7 +2178,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 //[gyrex]	we don't need handler and services
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jface.window.Window#close()
 	 */
 	@Override
@@ -2204,19 +2200,12 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		}
 //		storeDialog(getDialogSettings());
 
-		final boolean closed = super.close();
-		if (closed) {
-			final DialogCallback callback = callbackRef.getAndSet(null);
-			if (null != callback) {
-				callback.dialogClosed(getReturnCode());
-			}
-		}
-		return closed;
+		return super.close();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ui.dialogs.SelectionStatusDialog#computeResult()
 	 */
 	@SuppressWarnings("unchecked")
@@ -2243,7 +2232,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jface.window.Window#create()
 	 */
 	@Override
@@ -2254,7 +2243,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
@@ -2286,7 +2275,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		pattern.setLayoutData(gd);
 
-// RAP [rh] wor around "unused variable" compile error    
+// RAP [rh] wor around "unused variable" compile error
 //		final Label listLabel = createLabels(content);
 		createLabels(content);
 
@@ -2320,7 +2309,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 			}
 		});
 
-// RAP [rh] Key events missing		
+// RAP [rh] Key events missing
 //		pattern.addKeyListener(new KeyAdapter() {
 //			public void keyPressed(KeyEvent e) {
 //				if (e.keyCode == SWT.ARROW_DOWN) {
@@ -2471,7 +2460,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 		final Label headerLabel = new Label(header, SWT.NONE);
 		headerLabel.setText((getMessage() != null) && (getMessage().trim().length() > 0) ? getMessage() : WidgetMessages.get().FilteredItemsSelectionDialog_patternLabel);
-// RAP [rh] Traverse events missing		
+// RAP [rh] Traverse events missing
 //		headerLabel.addTraverseListener(new TraverseListener() {
 //			public void keyTraversed(TraverseEvent e) {
 //				if (e.detail == SWT.TRAVERSE_MNEMONIC && e.doit) {
@@ -2666,7 +2655,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jface.window.Dialog#getDialogBoundsSettings()
 	 */
 	@Override
@@ -2915,26 +2904,6 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	}
 
 	/**
-	 * Opens this window, creating it first if it has not yet been created.
-	 * <p>
-	 * The window will be configured to not block on open. The specified
-	 * callback will be set and (if not <code>null</code>) will be called when
-	 * the windows is closed. Clients may use {@link #getReturnCode()} to obtain
-	 * the return code that {@link #open()} returns in blocking mode.
-	 * </p>
-	 * 
-	 * @see #create()
-	 */
-	@Override
-	public void openNonBlocking(final DialogCallback callback) {
-		if (!callbackRef.compareAndSet(null, callback))
-			throw new IllegalStateException("Concurrent operation not supported!");
-
-		setBlockOnOpen(false);
-		super.open();
-	}
-
-	/**
 	 * Refreshes the dialog - has to be called in UI thread.
 	 */
 	@SuppressWarnings("unchecked")
@@ -3081,7 +3050,7 @@ public abstract class FilteredItemsSelectionDialog extends SelectionStatusDialog
 	 * Schedule refresh job.
 	 */
 	public void scheduleRefresh() {
-// RAP [rh] fake context	  
+// RAP [rh] fake context
 		RWT.getUISession(display).exec(new Runnable() {
 			@Override
 			public void run() {
