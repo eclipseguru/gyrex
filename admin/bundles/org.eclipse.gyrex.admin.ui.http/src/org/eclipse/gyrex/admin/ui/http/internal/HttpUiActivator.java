@@ -21,7 +21,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import org.osgi.framework.BundleContext;
 
-@SuppressWarnings("restriction")
 public class HttpUiActivator extends BaseBundleActivator {
 
 	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui.http";
@@ -52,9 +51,8 @@ public class HttpUiActivator extends BaseBundleActivator {
 	 */
 	public static HttpUiActivator getInstance() {
 		final HttpUiActivator activator = instance;
-		if (activator == null) {
+		if (activator == null)
 			throw new IllegalStateException("inactive");
-		}
 		return activator;
 	}
 

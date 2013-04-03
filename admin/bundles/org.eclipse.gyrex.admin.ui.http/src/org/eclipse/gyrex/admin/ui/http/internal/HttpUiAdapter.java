@@ -20,15 +20,13 @@ import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistrati
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
-@SuppressWarnings("restriction")
 public class HttpUiAdapter {
 
 	public static String getLabel(final Object object) {
 		if (object instanceof ApplicationProviderRegistration) {
 			final ApplicationProviderRegistration applicationProviderRegistration = (ApplicationProviderRegistration) object;
-			if (StringUtils.isNotBlank(applicationProviderRegistration.getProviderInfo())) {
+			if (StringUtils.isNotBlank(applicationProviderRegistration.getProviderInfo()))
 				return applicationProviderRegistration.getProviderInfo();
-			}
 			return applicationProviderRegistration.getProviderId();
 		}
 		if (object instanceof ApplicationRegistration) {
