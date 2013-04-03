@@ -296,7 +296,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	private String getName(final ScheduleEntryImpl entry) {
-		final String name = JobsActivator.getInstance().getJobProviderRegistry().getName(entry.getId());
+		final String name = JobsActivator.getInstance().getJobProviderRegistry().getName(entry.getJobTypeId());
 		if (StringUtils.isNotBlank(name))
 			return name;
 		return "unknown (" + entry.getJobTypeId() + ")";
