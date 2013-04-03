@@ -41,25 +41,6 @@ public class SelectionButtonDialogField extends DialogField {
 		fButtonStyle = buttonStyle;
 	}
 
-	/**
-	 * Attaches a field to the selection state of the selection button. The
-	 * attached field will be disabled if the selection button is not selected.
-	 */
-	public void attachDialogField(final DialogField dialogField) {
-		attachDialogFields(new DialogField[] { dialogField });
-	}
-
-	/**
-	 * Attaches fields to the selection state of the selection button. The
-	 * attached fields will be disabled if the selection button is not selected.
-	 */
-	public void attachDialogFields(final DialogField[] dialogFields) {
-		fAttachedDialogFields = dialogFields;
-		for (final DialogField dialogField : dialogFields) {
-			dialogField.setEnabled(fIsSelected);
-		}
-	}
-
 	private void changeValue(final boolean newState) {
 		if (fIsSelected != newState) {
 			fIsSelected = newState;
@@ -77,8 +58,6 @@ public class SelectionButtonDialogField extends DialogField {
 			dialogFieldChanged();
 		}
 	}
-
-	// ------- layout helpers
 
 	/*
 	 * @see DialogField#doFillIntoGrid
@@ -100,13 +79,13 @@ public class SelectionButtonDialogField extends DialogField {
 		return new Control[] { button };
 	}
 
+	// ------- layout helpers
+
 	private void doWidgetSelected(final SelectionEvent e) {
 		if (isOkToUse(fButton)) {
 			changeValue(fButton.getSelection());
 		}
 	}
-
-	// ------- ui creation
 
 	/*
 	 * @see DialogField#getNumberOfControls
@@ -115,6 +94,8 @@ public class SelectionButtonDialogField extends DialogField {
 	public int getNumberOfControls() {
 		return 1;
 	}
+
+	// ------- ui creation
 
 	/**
 	 * Returns the selection button widget. When called the first time, the
@@ -158,9 +139,8 @@ public class SelectionButtonDialogField extends DialogField {
 	public boolean isAttached(final DialogField editor) {
 		if (fAttachedDialogFields != null) {
 			for (final DialogField fAttachedDialogField : fAttachedDialogFields) {
-				if (fAttachedDialogField == editor) {
+				if (fAttachedDialogField == editor)
 					return true;
-				}
 			}
 		}
 		return false;
@@ -173,8 +153,6 @@ public class SelectionButtonDialogField extends DialogField {
 		return fIsSelected;
 	}
 
-	// ------ model access
-
 	/*(non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField#refresh()
 	 */
@@ -183,6 +161,22 @@ public class SelectionButtonDialogField extends DialogField {
 		super.refresh();
 		if (isOkToUse(fButton)) {
 			fButton.setSelection(fIsSelected);
+		}
+	}
+
+	// ------ model access
+
+	/**
+	 * Attaches fields to the selection state of the selection button. The
+	 * attached fields will be disabled if the selection button is not selected.
+	 */
+	public void setAttachedDialogFields(final DialogField... dialogFields) {
+		if (dialogFields == null)
+			return;
+
+		fAttachedDialogFields = dialogFields;
+		for (final DialogField dialogField : dialogFields) {
+			dialogField.setEnabled(fIsSelected);
 		}
 	}
 

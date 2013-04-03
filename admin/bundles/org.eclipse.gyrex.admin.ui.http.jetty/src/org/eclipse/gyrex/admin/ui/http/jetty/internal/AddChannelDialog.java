@@ -144,7 +144,7 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 			}
 		});
 
-		secureField.attachDialogField(certificateIdField);
+		secureField.setAttachedDialogFields(certificateIdField);
 
 		final Infobox infobox = new Infobox(composite);
 		infobox.setLayoutData(AdminUiUtil.createHorzFillData());
