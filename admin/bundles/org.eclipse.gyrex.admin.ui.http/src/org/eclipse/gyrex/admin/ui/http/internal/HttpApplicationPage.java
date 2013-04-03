@@ -76,7 +76,7 @@ public class HttpApplicationPage extends AdminPageWithTree {
 			final ApplicationRegistration app = item.getApplicationRegistration();
 			getApplicationManager().activate(app.getApplicationId());
 			item.setActive(true);
-			getTreeViewer().refresh(app, true);
+			getTreeViewer().refresh(item, true);
 		}
 		updateButtons();
 	}
@@ -206,7 +206,7 @@ public class HttpApplicationPage extends AdminPageWithTree {
 			final ApplicationRegistration app = item.getApplicationRegistration();
 			getApplicationManager().deactivate(app.getApplicationId());
 			item.setActive(false);
-			getTreeViewer().refresh(app);
+			getTreeViewer().refresh(item);
 		}
 		updateButtons();
 	}
