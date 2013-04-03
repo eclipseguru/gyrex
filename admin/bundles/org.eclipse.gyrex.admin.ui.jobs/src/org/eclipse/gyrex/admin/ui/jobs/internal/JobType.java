@@ -15,9 +15,6 @@ import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
 import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardAdapter;
 import org.eclipse.gyrex.jobs.provider.JobProvider;
 
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
-
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -25,14 +22,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public class JobType {
 
-	final String id;
+	final String id, name;
 	final JobProvider provider;
-	private final ServiceReference<JobProvider> serviceReference;
 
-	public JobType(final String id, final JobProvider provider, final ServiceReference<JobProvider> serviceReference) {
+	public JobType(final String id, final String name, final JobProvider provider) {
 		this.id = id;
+		this.name = name;
 		this.provider = provider;
-		this.serviceReference = serviceReference;
 	}
 
 	public String getId() {
@@ -40,18 +36,8 @@ public class JobType {
 	}
 
 	public String getName() {
-		final String name = provider.getName(id);
 		if (StringUtils.isNotBlank(name))
 			return name;
-
-		// fallback to service description
-		final Object serviceDescription = serviceReference.getProperty(Constants.SERVICE_DESCRIPTION);
-		if (serviceDescription instanceof String) {
-			final String desc = (String) serviceDescription;
-			if (StringUtils.isNotBlank(desc))
-				return desc;
-		}
-
 		// fallback to id
 		return id;
 	}

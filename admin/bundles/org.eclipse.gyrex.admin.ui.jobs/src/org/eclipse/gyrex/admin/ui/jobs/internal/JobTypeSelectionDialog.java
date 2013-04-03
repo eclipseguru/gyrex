@@ -89,7 +89,7 @@ public class JobTypeSelectionDialog extends FilteredItemsSelectionDialog {
 		for (final Entry<ServiceReference<JobProvider>, JobProvider> e : registry.getTracked().entrySet()) {
 			final JobProvider provider = e.getValue();
 			for (final String typeId : provider.getProvidedTypeIds()) {
-				contentProvider.add(new JobType(typeId, provider, e.getKey()), itemsFilter);
+				contentProvider.add(new JobType(typeId, registry.getName(typeId), provider), itemsFilter);
 			}
 		}
 	}

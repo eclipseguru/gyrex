@@ -130,6 +130,18 @@ public class LayoutUtil {
 	}
 
 	/**
+	 * Sets the margin of a control. Assumes that GridLayout is used.
+	 */
+	public static void setMargin(final Composite composite, final int margin) {
+		final Object l = composite.getLayout();
+		if (l instanceof GridLayout) {
+			final GridLayout gl = (GridLayout) l;
+			gl.marginHeight = margin;
+			gl.marginWidth = margin;
+		}
+	}
+
+	/**
 	 * Sets the vertical grabbing of a control to true. Assumes that GridData is
 	 * used.
 	 * 
@@ -153,5 +165,4 @@ public class LayoutUtil {
 			((GridData) ld).widthHint = widthHint;
 		}
 	}
-
 }

@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.configuration.wizard;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jface.wizard.IWizardPage;
@@ -22,7 +22,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 public final class JobConfigurationWizardSession {
 
 	private final String jobTypeId;
-	private final Map<String, String> parameter;
+	private Map<String, String> parameter;
 	private IWizardPage[] pages;
 
 	/**
@@ -35,7 +35,6 @@ public final class JobConfigurationWizardSession {
 	 */
 	public JobConfigurationWizardSession(final String jobTypeId) {
 		this.jobTypeId = jobTypeId;
-		parameter = new HashMap<>();
 	}
 
 	public boolean canFinish() {
@@ -77,6 +76,10 @@ public final class JobConfigurationWizardSession {
 	 * @return the parameter map
 	 */
 	public final Map<String, String> getParameter() {
+		if (parameter == null) {
+			parameter = new LinkedHashMap<>();
+		}
+
 		return parameter;
 	}
 
@@ -89,5 +92,15 @@ public final class JobConfigurationWizardSession {
 	 */
 	public final void setPages(final IWizardPage[] pages) {
 		this.pages = pages;
+	}
+
+	/**
+	 * Sets the parameter.
+	 * 
+	 * @param parameter
+	 *            the parameter to set
+	 */
+	public void setParameter(final Map<String, String> parameter) {
+		this.parameter = (parameter instanceof LinkedHashMap) ? parameter : new LinkedHashMap<>(parameter);
 	}
 }

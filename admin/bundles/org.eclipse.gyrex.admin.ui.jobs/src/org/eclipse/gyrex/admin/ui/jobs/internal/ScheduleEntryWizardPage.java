@@ -14,7 +14,6 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
@@ -49,8 +48,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-import org.osgi.framework.ServiceReference;
-
 import org.apache.commons.lang.StringUtils;
 
 public class ScheduleEntryWizardPage extends WizardPage {
@@ -60,13 +57,9 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 	static JobType findJobType(final String jobTypeId) {
 		final JobProviderRegistry registry = JobsActivator.getInstance().getJobProviderRegistry();
-		for (final Entry<ServiceReference<JobProvider>, JobProvider> e : registry.getTracked().entrySet()) {
-			final JobProvider provider = e.getValue();
-			for (final String typeId : provider.getProvidedTypeIds()) {
-				if (jobTypeId.equals(typeId))
-					return new JobType(jobTypeId, provider, e.getKey());
-			}
-		}
+		final JobProvider provider = registry.getProvider(jobTypeId);
+		if (provider != null)
+			return new JobType(jobTypeId, registry.getName(jobTypeId), provider);
 		return null;
 	}
 

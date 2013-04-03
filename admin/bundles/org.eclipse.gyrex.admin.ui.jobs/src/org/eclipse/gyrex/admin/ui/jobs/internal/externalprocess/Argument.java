@@ -11,30 +11,24 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal.externalprocess;
 
-public class Variable {
-
-	private String name;
+public class Argument {
 
 	private String value;
 
-	public Variable(final String name, final String value) {
-		this.name = name;
+	public Argument(final String value) {
 		this.value = value;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public String getValue() {
 		return value;
 	}
 
-	public void setName(final String name) {
-		this.name = name;
-	}
-
 	public void setValue(final String value) {
 		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(value);
 	}
 }

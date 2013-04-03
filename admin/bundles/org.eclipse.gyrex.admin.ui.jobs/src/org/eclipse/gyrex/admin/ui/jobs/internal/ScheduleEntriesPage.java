@@ -20,6 +20,7 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.NonBlockingWizardDialog;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
 import org.eclipse.gyrex.jobs.IJob;
+import org.eclipse.gyrex.jobs.internal.JobsActivator;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
@@ -252,7 +253,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				case COLUMN_ID:
 					return entry.getId();
 				case COLUMN_TYPE:
-					return entry.getJobTypeId();
+					return getName(entry);
 				case COLUMN_CRON:
 					return entry.getCronExpression();
 				case COLUMN_PRECEDINGS:
@@ -292,6 +293,13 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 			}
 		}
 		return "n/a";
+	}
+
+	private String getName(final ScheduleEntryImpl entry) {
+		final String name = JobsActivator.getInstance().getJobProviderRegistry().getName(entry.getId());
+		if (StringUtils.isNotBlank(name))
+			return name;
+		return "unknown (" + entry.getJobTypeId() + ")";
 	}
 
 	public ScheduleImpl getSchedule() {

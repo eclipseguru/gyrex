@@ -11,6 +11,12 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal.externalprocess;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IListAdapter;
@@ -21,8 +27,9 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.SelectionButtonD
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardSession;
-import org.eclipse.gyrex.jobs.internal.externalprocess.ExternalProcessJobProvider;
+import org.eclipse.gyrex.jobs.internal.externalprocess.ExternalProcessJobParameter;
 
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -36,10 +43,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 public class ExternalProcessWizardPage extends WizardPage {
 
-	private static final Object[] NO_CHILDREN = new Object[0];
 	private static final long serialVersionUID = 1L;
 
 	final StringDialogField commandField = new StringDialogField();
@@ -120,8 +127,8 @@ public class ExternalProcessWizardPage extends WizardPage {
 					break;
 
 				case 1:
-					if (StringUtils.equals(element.getValue(), ExternalProcessJobProvider.ENV_VALUE_INHERIT)) {
-						cell.setText("inherited");
+					if (StringUtils.equals(element.getValue(), ExternalProcessJobParameter.ENV_VALUE_INHERIT)) {
+						cell.setText(System.getenv(element.getName()) + " (inherited)");
 						cell.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
 					} else {
 						cell.setText(element.getValue());
@@ -186,30 +193,78 @@ public class ExternalProcessWizardPage extends WizardPage {
 		LayoutUtil.setHorizontalGrabbing(environmentTable.getListControl(null));
 		LayoutUtil.setHorizontalGrabbing(workingDirectoryField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(expectedReturnCodeField.getTextControl(null));
+
+		// initialize from existing parameter
+		readParameterFromSession();
 	}
 
 	public String getCommand() {
 		return StringUtils.trimToNull(commandField.getText());
 	}
 
-	void openAddArgumentDialog() {
-		// TODO Auto-generated method stub
+	private String getWorkingDir() {
+		return workingDirectoryField.getText();
+	}
 
+	void openAddArgumentDialog() {
+		final AddEditArgumentDialog dialog = new AddEditArgumentDialog(getShell());
+		dialog.openNonBlocking(new DialogCallback() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if ((returnCode == Window.OK) && StringUtils.isNotBlank(dialog.getValue())) {
+					argumentsList.addElement(new Argument(dialog.getValue()));
+				}
+			}
+		});
 	}
 
 	void openAddVariableDialog() {
-		// TODO Auto-generated method stub
+		final AddEditEnvironmentVariableDialog dialog = new AddEditEnvironmentVariableDialog(getShell());
+		dialog.openNonBlocking(new DialogCallback() {
+			private static final long serialVersionUID = 1L;
 
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if ((returnCode == Window.OK) && StringUtils.isNotBlank(dialog.getName())) {
+					environmentTable.addElement(new Variable(dialog.getName(), dialog.getValue()));
+				}
+			}
+		});
 	}
 
 	void openEditArgumentDialog() {
-		// TODO Auto-generated method stub
+		final Argument a = (Argument) argumentsList.getSelectedElements().iterator().next();
+		final AddEditArgumentDialog dialog = new AddEditArgumentDialog(getShell(), a.getValue());
+		dialog.openNonBlocking(new DialogCallback() {
+			private static final long serialVersionUID = 1L;
 
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if ((returnCode == Window.OK) && StringUtils.isNotBlank(dialog.getValue())) {
+					a.setValue(dialog.getValue());
+					argumentsList.refresh();
+				}
+			}
+		});
 	}
 
 	void openEditVariableDialog() {
-		// TODO Auto-generated method stub
+		final Variable v = (Variable) environmentTable.getSelectedElements().iterator().next();
+		final AddEditEnvironmentVariableDialog dialog = new AddEditEnvironmentVariableDialog(getShell(), v.getName(), v.getValue());
+		dialog.openNonBlocking(new DialogCallback() {
+			private static final long serialVersionUID = 1L;
 
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if ((returnCode == Window.OK) && StringUtils.isNotBlank(dialog.getName())) {
+					v.setName(dialog.getName());
+					v.setValue(dialog.getValue());
+					environmentTable.refresh();
+				}
+			}
+		});
 	}
 
 	void openSelectVariableDialog() {
@@ -221,12 +276,86 @@ public class ExternalProcessWizardPage extends WizardPage {
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
 					for (final String name : dialog.getVariables()) {
-						environmentTable.addElement(new Variable(name, ExternalProcessJobProvider.ENV_VALUE_INHERIT));
+						environmentTable.addElement(new Variable(name, ExternalProcessJobParameter.ENV_VALUE_INHERIT));
 					}
 					environmentTable.refresh();
 				}
 			}
 		});
+	}
+
+	private void readParameterFromSession() {
+		final ExternalProcessJobParameter p = ExternalProcessJobParameter.fromParameter(session.getParameter(), false);
+		if (StringUtils.isNotBlank(p.getCommand())) {
+			commandField.setText(StringUtils.trimToEmpty(p.getCommand()));
+		}
+
+		if (p.getArguments() != null) {
+			argumentsList.removeAllElements();
+			for (final String value : p.getArguments()) {
+				argumentsList.addElement(new Argument(value));
+			}
+			argumentsList.selectElements(null);
+		}
+
+		if (p.getExpectedReturnCode() != null) {
+			expectedReturnCodeField.setText(String.valueOf(p.getExpectedReturnCode().intValue()));
+		}
+
+		if (p.getClearEnvironment() != null) {
+			clearEnvironmentCheckBox.setSelection(p.getClearEnvironment().booleanValue());
+		}
+
+		if (p.getEnvironment() != null) {
+			environmentTable.removeAllElements();
+			for (final Entry<String, String> e : p.getEnvironment().entrySet()) {
+				environmentTable.addElement(new Variable(e.getKey(), e.getValue()));
+			}
+			environmentTable.selectElements(null);
+		}
+
+		if (StringUtils.isNotBlank(p.getWorkingDir())) {
+			workingDirectoryField.setText(StringUtils.trimToEmpty(p.getWorkingDir()));
+		}
+	}
+
+	private void saveParameterToSession() {
+		final ExternalProcessJobParameter p = new ExternalProcessJobParameter();
+
+		p.setCommand(StringUtils.trimToNull(getCommand()));
+		p.setWorkingDir(StringUtils.trimToNull(getWorkingDir()));
+		p.setClearEnvironment(clearEnvironmentCheckBox.isSelected());
+
+		if (StringUtils.isBlank(expectedReturnCodeField.getText())) {
+			p.setExpectedReturnCode(null);
+		} else {
+			p.setExpectedReturnCode(NumberUtils.toInt(expectedReturnCodeField.getText()));
+		}
+
+		final List<Object> arguments = argumentsList.getElements();
+		if (!arguments.isEmpty()) {
+			final List<String> result = new ArrayList<>(arguments.size());
+			for (final Object object : arguments) {
+				result.add(((Argument) object).getValue());
+			}
+			p.setArguments(result);
+		} else {
+			p.setArguments(null);
+		}
+
+		final List<Object> variables = environmentTable.getElements();
+		if (!variables.isEmpty()) {
+			final Map<String, String> result = new LinkedHashMap<>();
+			for (final Object variable : variables) {
+				final Variable v = (Variable) variable;
+				result.put(v.getName(), v.getValue());
+			}
+			p.setEnvironment(result);
+		} else {
+			p.setEnvironment(null);
+		}
+
+		session.setParameter(p.toParameter());
 	}
 
 	void validate() {
@@ -236,6 +365,19 @@ public class ExternalProcessWizardPage extends WizardPage {
 			setPageComplete(false);
 			return;
 		}
+
+		final String returnCode = expectedReturnCodeField.getText();
+		if (StringUtils.isNotBlank(returnCode)) {
+			try {
+				Integer.parseInt(returnCode);
+			} catch (final NumberFormatException e) {
+				setMessage("The entered return code must be an integer number.", IMessageProvider.ERROR);
+				setPageComplete(false);
+				return;
+			}
+		}
+
+		saveParameterToSession();
 
 		setMessage(null);
 		setPageComplete(true);

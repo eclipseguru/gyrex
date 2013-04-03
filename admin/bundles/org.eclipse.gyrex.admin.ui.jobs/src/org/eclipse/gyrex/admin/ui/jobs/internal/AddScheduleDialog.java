@@ -32,11 +32,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -83,20 +81,12 @@ public class AddScheduleDialog extends NonBlockingStatusDialog {
 		contextField.setContentProposalProcessor(new ContextPathProposals());
 		timeZoneField.setContentProposalProcessor(new TimeZoneProposals());
 
-		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
-		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, contextField, timeZoneField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(contextField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(timeZoneField.getTextControl(null));
 
-		final GridLayout masterLayout = (GridLayout) composite.getLayout();
-		masterLayout.marginWidth = 5;
-		masterLayout.marginHeight = 5;
-
-		LayoutUtil.setHorizontalSpan(warning, masterLayout.numColumns);
+		LayoutUtil.setMargin(composite, 5);
 
 		return composite;
 	}
