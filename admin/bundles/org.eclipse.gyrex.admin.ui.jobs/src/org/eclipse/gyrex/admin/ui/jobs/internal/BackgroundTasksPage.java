@@ -11,8 +11,6 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
-import java.util.Locale;
-
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
@@ -24,6 +22,7 @@ import org.eclipse.gyrex.jobs.internal.manager.JobHungDetectionHelper;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.internal.storage.CloudPreferncesJobStorage;
+import org.eclipse.gyrex.jobs.manager.IJobManager;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 import org.eclipse.gyrex.server.Platform;
 
@@ -41,6 +40,7 @@ import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -57,7 +57,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 
 	private static final int COLUMN_ID = 0;
 	private static final int COLUMN_TIMEZONE = 1;
-	private static final int COLUMN_STATE = 2;
+	private static final int COLUMN_QUEUE = 2;
 
 	private Button addButton;
 	private Button removeButton;
@@ -211,11 +211,12 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		try {
 			schedule.setEnabled(false);
 			ScheduleStore.flush(schedule.getStorageKey(), schedule);
+			schedule.load();
 		} catch (final BackingStoreException e) {
 			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
 		}
 
-		getTreeViewer().refresh(schedule);
+		getTreeViewer().refresh(schedule, true);
 		updateButtons();
 	}
 
@@ -227,11 +228,12 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		try {
 			schedule.setEnabled(true);
 			ScheduleStore.flush(schedule.getStorageKey(), schedule);
+			schedule.load();
 		} catch (final BackingStoreException e) {
 			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
 		}
 
-		getTreeViewer().refresh(schedule);
+		getTreeViewer().refresh(schedule, true);
 		updateButtons();
 	}
 
@@ -242,12 +244,23 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 				return "Schedule";
 			case COLUMN_TIMEZONE:
 				return "Time Zone";
-			case COLUMN_STATE:
-				return "State";
+			case COLUMN_QUEUE:
+				return "Queue";
 
 			default:
 				return StringUtils.EMPTY;
 		}
+	}
+
+	@Override
+	protected Image getElementImage(final Object element, final int column) {
+		if ((element instanceof ISchedule) && (column == COLUMN_ID)) {
+			if (((ISchedule) element).isEnabled())
+				return JobsUiImages.getImage(JobsUiImages.IMG_OBJ_SCHEDULE);
+			else
+				return JobsUiImages.getImage(JobsUiImages.IMG_OBJ_SCHEDULE_DISABLED);
+		}
+		return null;
 	}
 
 	@Override
@@ -261,16 +274,16 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 				case COLUMN_ID:
 					return schedule.getId();
 				case COLUMN_TIMEZONE:
-					return schedule.getTimeZone().getDisplayName(Locale.US);
-				case COLUMN_STATE:
-					return schedule.isEnabled() ? "enabled" : "disabled";
+					return schedule.getTimeZone().getID();
+				case COLUMN_QUEUE:
+					return getQueueName(schedule);
 
 				default:
 					break;
 			}
 		}
 		return StringUtils.EMPTY;
-	}
+	};
 
 	ScheduleImpl getFirstSelectedSchedule(final ISelection selection) {
 		if (selection instanceof IStructuredSelection) {
@@ -280,6 +293,20 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		}
 
 		return null;
+	}
+
+	private String getQueueName(final ISchedule schedule) {
+		if (schedule.getQueueId() == null)
+			return "Default Queue";
+		switch (schedule.getQueueId()) {
+			case IJobManager.DEFAULT_QUEUE:
+				return "Default Queue";
+			case IJobManager.PRIORITY_QUEUE:
+				return "Priority Queue";
+
+			default:
+				return schedule.getQueueId();
+		}
 	}
 
 	private ScheduleImpl getSelectedSchedule() {

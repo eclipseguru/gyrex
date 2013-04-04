@@ -12,6 +12,7 @@
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 
 public class JobsUiImages {
 
@@ -23,6 +24,21 @@ public class JobsUiImages {
 	public static final String IMG_OBJ_SCHEDULE_DISABLED = "obj/schedule_disabled_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJ_ERROR_RESULT = "obj/error_result.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJ_WARN_RESULT = "obj/warn_result.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJ_ACTIVE = "obj/active.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJ_INACTIVE = "obj/inactive.gif"; //$NON-NLS-1$
+
+	/**
+	 * Returns the image for the given image ID. Returns <code>null</code> if
+	 * there is no such image.
+	 * 
+	 * @param id
+	 *            the identifier for the image to retrieve
+	 * @return the image associated with the given ID. This image is managed in
+	 *         an image registry and should not be freed by the client.
+	 */
+	public static Image getImage(final String id) {
+		return JobsUiActivator.getInstance().getImageRegistry().get(id);
+	}
 
 	/**
 	 * Returns the image descriptor for the given image ID. Returns
@@ -35,18 +51,5 @@ public class JobsUiImages {
 	public static ImageDescriptor getImageDescriptor(final String id) {
 		return JobsUiActivator.getInstance().getImageRegistry().getDescriptor(id);
 	}
-
-//	/**
-//	 * Returns the image for the given image ID. Returns <code>null</code> if
-//	 * there is no such image.
-//	 *
-//	 * @param id
-//	 *            the identifier for the image to retrieve
-//	 * @return the image associated with the given ID. This image is managed in
-//	 *         an image registry and should not be freed by the client.
-//	 */
-//	public static Image getImage(String id) {
-//		return P2UiActivator.getInstance().getImageRegistry().get(id);
-//	}
 
 }

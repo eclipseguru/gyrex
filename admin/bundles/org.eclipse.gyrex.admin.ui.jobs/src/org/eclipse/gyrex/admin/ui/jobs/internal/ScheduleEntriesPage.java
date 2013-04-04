@@ -40,6 +40,7 @@ import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -246,6 +247,20 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	@Override
+	protected Image getElementImage(final Object element, final int column) {
+		if ((element instanceof ScheduleEntryImpl)) {
+			if (column == COLUMN_ID)
+				if (((ScheduleEntryImpl) element).isEnabled())
+					return JobsUiImages.getImage(JobsUiImages.IMG_OBJ_ACTIVE);
+				else
+					return JobsUiImages.getImage(JobsUiImages.IMG_OBJ_INACTIVE);
+			else if (column == COLUMN_LAST_RESULT)
+				return getLastResultImage((ScheduleEntryImpl) element);
+		}
+		return null;
+	}
+
+	@Override
 	protected String getElementLabel(final Object element, final int column) {
 		if (element instanceof ScheduleEntryImpl) {
 			final ScheduleEntryImpl entry = (ScheduleEntryImpl) element;
@@ -259,7 +274,10 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				case COLUMN_PRECEDINGS:
 					return StringUtils.join(entry.getPrecedingEntries(), ", ");
 				case COLUMN_LAST_RESULT:
-					return getLastResult(entry);
+					if (null == getLastResultImage(entry))
+						return getLastResult(entry);
+					else
+						return null;
 
 				default:
 					return null;
@@ -293,6 +311,32 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 			}
 		}
 		return "n/a";
+	};
+
+	private Image getLastResultImage(final ScheduleEntryImpl entry) {
+		final IRuntimeContext ctx = JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(schedule.getContextPath());
+		if (ctx != null) {
+			final IJobManager jobManager = ctx.get(IJobManager.class);
+			if (jobManager != null) {
+				final IJob job = jobManager.getJob(entry.getJobId());
+				if (job != null) {
+					final IStatus result = job.getLastResult();
+					if (result != null) {
+						if (result.isOK())
+							return null;
+						else if (result.matches(IStatus.CANCEL))
+							return null;
+						else if (result.matches(IStatus.ERROR))
+							return JobsUiImages.getImage(JobsUiImages.IMG_OBJ_ERROR_RESULT);
+						else if (result.matches(IStatus.WARNING))
+							return JobsUiImages.getImage(JobsUiImages.IMG_OBJ_WARN_RESULT);
+						else if (result.matches(IStatus.INFO))
+							return null;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	private String getName(final ScheduleEntryImpl entry) {
