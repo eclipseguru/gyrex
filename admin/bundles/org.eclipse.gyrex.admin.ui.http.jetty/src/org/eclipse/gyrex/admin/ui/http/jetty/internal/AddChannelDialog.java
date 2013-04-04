@@ -114,7 +114,7 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 
 				final Collection<ICertificate> certificates = jettyManager.getCertificates();
 				for (final ICertificate certificate : certificates) {
-					if (null == patternString || StringUtils.contains(certificate.getId(), patternString)) {
+					if ((null == patternString) || StringUtils.contains(certificate.getId(), patternString)) {
 						resultList.add(new ContentProposal(certificate.getId(), certificate.getInfo()));
 					}
 				}
@@ -135,8 +135,8 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 
 				final Collection<ChannelDescriptor> channels = jettyManager.getChannels();
 				for (final ChannelDescriptor channel : channels) {
-					if (channel.isSecure() && (null == patternString || StringUtils.contains(channel.getId(), patternString))) {
-						resultList.add(new ContentProposal(channel.getId(), String.format("%s (%d)", channel.getId(), channel.toString())));
+					if (channel.isSecure() && ((null == patternString) || StringUtils.contains(channel.getId(), patternString))) {
+						resultList.add(new ContentProposal(channel.getId(), String.format("%s (%s)", channel.getId(), channel.toString())));
 					}
 				}
 
@@ -164,15 +164,14 @@ public class AddChannelDialog extends NonBlockingStatusDialog {
 	}
 
 	private boolean isWithinRange(final int port, final int lower, final int higher) {
-		return port >= lower && port <= higher;
+		return (port >= lower) && (port <= higher);
 	}
 
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 			final ChannelDescriptor channelDescriptor = new ChannelDescriptor();
