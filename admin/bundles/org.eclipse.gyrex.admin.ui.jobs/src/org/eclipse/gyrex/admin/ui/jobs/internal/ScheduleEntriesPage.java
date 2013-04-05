@@ -198,6 +198,11 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	private void editOrAddScheduleEntry(final ScheduleEntryImpl entryToEdit) {
+		if (schedule.isEnabled()) {
+			NonBlockingMessageDialogs.openInformation(SwtUtil.getShell(getTreeViewer().getTree()), "Active Schedule", "The schedule is enabled and cannot be modified. Please disable it first!", null);
+			return;
+		}
+
 		final NonBlockingWizardDialog dialog = new NonBlockingWizardDialog(SwtUtil.getShell(getTreeViewer().getTree()), new ScheduleEntryWizard(getSchedule(), entryToEdit));
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
@@ -445,6 +450,16 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 
 	@Override
 	protected void updateButtons() {
+		if (getSchedule().isEnabled()) {
+			// disable all buttons when schedule is enabled
+			addButton.setEnabled(false);
+			editButton.setEnabled(false);
+			removeButton.setEnabled(false);
+			enableButton.setEnabled(false);
+			disableButton.setEnabled(false);
+			return;
+		}
+
 		final int selectedElementsCount = ((IStructuredSelection) getTreeViewer().getSelection()).size();
 		if (selectedElementsCount == 0) {
 			addButton.setEnabled(true);

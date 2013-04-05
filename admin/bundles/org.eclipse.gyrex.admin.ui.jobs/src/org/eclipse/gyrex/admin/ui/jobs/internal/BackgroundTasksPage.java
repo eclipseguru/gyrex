@@ -375,11 +375,11 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 			disableButton.setEnabled(false);
 			showEntriesButton.setEnabled(false);
 		} else {
-			addButton.setEnabled(true);
-			removeButton.setEnabled(selectedElementsCount == 1);
-			showEntriesButton.setEnabled(selectedElementsCount == 1);
-
 			final ScheduleImpl selectedSchedule = getSelectedSchedule();
+			addButton.setEnabled(true);
+			removeButton.setEnabled((selectedElementsCount == 1) && !selectedSchedule.isEnabled());
+			showEntriesButton.setEnabled((selectedElementsCount == 1) && !selectedSchedule.isEnabled());
+
 			if (selectedSchedule != null) {
 				if (selectedSchedule.isEnabled()) {
 					enableButton.setEnabled(false);
