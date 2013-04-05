@@ -174,7 +174,7 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 	public ScheduleEntryWizardPage(final ScheduleImpl schedule, final ScheduleEntryImpl entry) {
 		super(ScheduleEntryWizardPage.class.getSimpleName());
-		setTitle(null != entry ? "Edit Schedule Task" : "Add Task to Schedule");
+		setTitle("Schedule Task");
 		setDescription(null != entry ? "Modify scheduling options of a task." : "Add a new task to a schedule.");
 		setPageComplete(false);
 		this.schedule = schedule;

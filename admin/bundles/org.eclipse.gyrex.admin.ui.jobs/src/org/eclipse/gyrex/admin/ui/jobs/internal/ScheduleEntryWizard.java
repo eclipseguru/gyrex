@@ -16,8 +16,10 @@ import java.util.Map;
 
 import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardAdapter;
 import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardSession;
+import org.eclipse.gyrex.common.identifiers.IdHelper;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
+import org.eclipse.gyrex.jobs.manager.IJobManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -46,10 +48,13 @@ public class ScheduleEntryWizard extends Wizard {
 
 	private JobConfigurationWizardSession currentSession;
 
+	private final ExclusiveLockWizardPage exclusiveLockPage;
+
 	public ScheduleEntryWizard(final ScheduleImpl schedule, final ScheduleEntryImpl entry) {
 		this.schedule = schedule;
 		this.entry = entry;
 		scheduleEntryPage = new ScheduleEntryWizardPage(schedule, entry);
+		exclusiveLockPage = new ExclusiveLockWizardPage(schedule, entry);
 
 		// force previous and next buttons (we don't know about potential job type pages)
 		setForcePreviousAndNextButtons(true);
@@ -58,6 +63,7 @@ public class ScheduleEntryWizard extends Wizard {
 	@Override
 	public void addPages() {
 		addPage(scheduleEntryPage);
+		addPage(exclusiveLockPage);
 	}
 
 	@Override
@@ -72,16 +78,75 @@ public class ScheduleEntryWizard extends Wizard {
 
 	@Override
 	public IWizardPage getNextPage(final IWizardPage page) {
+		// REMINDER: this logic is inverted in #getPreviousPage
+		// the flow is as follows
+		//   first: scheduleEntryPage
+		//    2-..: job type specific pages
+		//    last: exclusiveLockPage
+		final IWizardPage[] sessionPages = null != currentSession ? currentSession.getPages() : NO_PAGES;
 		if (page == scheduleEntryPage) {
-			if (currentSession != null) {
-				final IWizardPage[] sessionPages = currentSession.getPages();
-				if (sessionPages.length > 0)
-					return sessionPages[0];
+			if (sessionPages.length > 0)
+				// show first job type page after scheduleEntryPage
+				return sessionPages[0];
+			else
+				// or go to exclusiveLockPage right away if there are no job type pages
+				return exclusiveLockPage;
+		}
+
+		if (page == exclusiveLockPage)
+			// no next page for the first page
+			return null;
+
+		// find the current job type page
+		for (int i = 0; i < sessionPages.length; i++) {
+			if (page == sessionPages[i]) {
+				if ((i + 1) < sessionPages.length)
+					// show next job type page
+					return sessionPages[i + 1];
+				else
+					// no next job type page; go to exclusiveLockPage
+					return exclusiveLockPage;
+			}
+		}
+		// no next page
+		return null;
+	}
+
+	@Override
+	public IWizardPage getPreviousPage(final IWizardPage page) {
+		// REMINDER: this logic is inverted in #getPreviousPage
+		// the flow is as follows
+		//   first: scheduleEntryPage
+		//    2-..: job type specific pages
+		//    last: exclusiveLockPage
+		final IWizardPage[] sessionPages = null != currentSession ? currentSession.getPages() : NO_PAGES;
+		if (page == exclusiveLockPage) {
+			if (sessionPages.length > 0)
+				// show last job type page before exclusiveLockPage
+				return sessionPages[sessionPages.length - 1];
+			else
+				// or go to scheduleEntryPage right away if there are no job type pages
+				return scheduleEntryPage;
+		}
+
+		if (page == scheduleEntryPage)
+			// no previous page for the first page
+			return null;
+
+		// find the current job type page
+		for (int i = sessionPages.length - 1; i >= 0; i--) {
+			if (page == sessionPages[i]) {
+				if ((i - 1) >= 0)
+					// show previous job type page
+					return sessionPages[i - 1];
+				else
+					// no previous job type page; go to scheduleEntryPage
+					return scheduleEntryPage;
 			}
 		}
 
-		// default order
-		return super.getNextPage(page);
+		// no previous page
+		return null;
 	}
 
 	public ScheduleImpl getSchedule() {
@@ -154,10 +219,19 @@ public class ScheduleEntryWizard extends Wizard {
 			entry.setPrecedingEntries();
 		}
 
-		// set parameter from current session
-		entry.setJobParameter(currentSession.getParameter());
+		// get parameter from current session (as copy)
+		final Map<String, String> parameter = new HashMap<>(currentSession.getParameter());
+
+		// add lock id
+		if (IdHelper.isValidId(exclusiveLockPage.getLockId())) {
+			parameter.put(IJobManager.LOCK_ID, exclusiveLockPage.getLockId());
+		}
+
+		// set parameter
+		entry.setJobParameter(parameter);
 
 		try {
+			// save schedule
 			schedule.save();
 			return true;
 		} catch (final BackingStoreException e) {

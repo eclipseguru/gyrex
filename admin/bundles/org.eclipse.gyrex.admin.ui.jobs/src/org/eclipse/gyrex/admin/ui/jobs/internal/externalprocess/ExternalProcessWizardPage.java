@@ -152,7 +152,7 @@ public class ExternalProcessWizardPage extends WizardPage {
 	public ExternalProcessWizardPage(final JobConfigurationWizardSession session) {
 		super(ExternalProcessWizardPage.class.getSimpleName());
 		this.session = session;
-		setTitle("Configure External Process");
+		setTitle("External Process");
 		setDescription("Provide details for the external process to launch.");
 		setPageComplete(false);
 	}
