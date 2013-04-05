@@ -13,6 +13,8 @@ package org.eclipse.gyrex.admin.ui.jobs.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
@@ -52,6 +54,20 @@ import org.apache.commons.lang.StringUtils;
 
 public class ScheduleEntryWizardPage extends WizardPage {
 
+	/**
+	 *
+	 */
+	private final class ScheduleEntryLabelProvider extends LabelProvider {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getText(final Object element) {
+			if (element instanceof ScheduleEntryImpl)
+				return ((ScheduleEntryImpl) element).getId();
+			return super.getText(element);
+		}
+	}
+
 	private static final Object[] NO_CHILDREN = new Object[0];
 	private static final long serialVersionUID = 1L;
 
@@ -89,7 +105,7 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		@Override
 		public void customButtonPressed(final TreeListDialogField field, final int index) {
 			if (index == 0) {
-				final ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new LabelProvider());
+				final ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new ScheduleEntryLabelProvider());
 				dialog.setTitle("Select Entry");
 				dialog.setMessage("&Select an entry that will trigger a run:");
 				final List<IScheduleEntry> entries = new ArrayList<>(getSchedule().getEntries());
@@ -162,7 +178,7 @@ public class ScheduleEntryWizardPage extends WizardPage {
 			// TODO Auto-generated method stub
 
 		}
-	}, new String[] { "Add...", "Remove" }, new LabelProvider());
+	}, new String[] { "Add...", "Remove" }, new ScheduleEntryLabelProvider());
 
 	{
 		preceedingEntriesTree.setRemoveButtonIndex(1);
@@ -374,6 +390,22 @@ public class ScheduleEntryWizardPage extends WizardPage {
 				setMessage("Please select an entry this task depends on.", INFORMATION);
 				setPageComplete(false);
 				return;
+			}
+
+			// check for loops
+			if (entry != null) {
+				final String[] preceedingEntryIds = getPreceedingEntryIds();
+				for (final String preceedingEntryId : preceedingEntryIds) {
+					final LinkedList<String> sequence = new LinkedList<>();
+					sequence.add(entry.getId());
+					try {
+						ScheduleImpl.checkExecutionSequenceForLoops(entry, sequence, Collections.singletonList(preceedingEntryId));
+					} catch (final IllegalArgumentException e) {
+						setMessage(String.format("Preceeding entry %s will produce a loop. Please remove it!", preceedingEntryId), ERROR);
+						setPageComplete(false);
+						return;
+					}
+				}
 			}
 		}
 
