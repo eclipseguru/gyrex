@@ -22,6 +22,7 @@ import org.eclipse.gyrex.jobs.internal.manager.JobHungDetectionHelper;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.internal.storage.CloudPreferncesJobStorage;
+import org.eclipse.gyrex.jobs.internal.worker.WorkerEngine;
 import org.eclipse.gyrex.jobs.manager.IJobManager;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
 import org.eclipse.gyrex.server.Platform;
@@ -68,6 +69,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	private Label schedulesMetricLabel;
 	private Label jobsRunningLabel;
 	private Label jobsWaitingMetricLabel;
+	private Label processingStateMetricLabel;
 
 	public BackgroundTasksPage() {
 		super(3);
@@ -191,7 +193,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	private void createMetricInfoArea(final Composite parent) {
 		final Composite area = new Composite(parent, SWT.NONE);
 		area.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		area.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).numColumns(6).create());
+		area.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).numColumns(8).create());
 
 		schedulesMetricLabel = createMetricText(area, "Schedules");
 		schedulesMetricLabel.setText("0");
@@ -201,6 +203,10 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 		createMetricSeparator(area);
 		jobsWaitingMetricLabel = createMetricText(area, "Waiting Jobs");
 		jobsWaitingMetricLabel.setText("0");
+		createMetricSeparator(area);
+		processingStateMetricLabel = createMetricText(area, "Worker Engine");
+		processingStateMetricLabel.setText("?");
+
 	}
 
 	void disableButtonPressed() {
@@ -411,6 +417,12 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 			jobsWaitingMetricLabel.setText(String.valueOf(CloudPreferncesJobStorage.getAllJobStorageKeysByState(JobState.WAITING).size()));
 		} catch (final Exception e) {
 			jobsWaitingMetricLabel.setText("n/a");
+		}
+
+		try {
+			processingStateMetricLabel.setText(WorkerEngine.isSuspended() ? "Off" : "On");
+		} catch (final Exception e) {
+			processingStateMetricLabel.setText("n/a");
 		}
 	}
 }
