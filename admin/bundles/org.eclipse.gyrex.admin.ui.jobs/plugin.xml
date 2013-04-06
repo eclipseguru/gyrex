@@ -15,6 +15,11 @@
             id="schedule-entries"
             name="Schedule Entries">
       </page>
+      <page
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.ManageJobQueuePage"
+            id="job-queue"
+            name="Job Queue Contents">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.adapters">
