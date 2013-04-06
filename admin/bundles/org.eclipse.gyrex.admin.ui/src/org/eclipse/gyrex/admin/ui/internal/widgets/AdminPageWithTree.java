@@ -208,14 +208,14 @@ public abstract class AdminPageWithTree extends AdminPage {
 		final Composite metricParent = new Composite(parent, SWT.NONE);
 		metricParent.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).create());
 
-		final Label metricLabel = new Label(metricParent, SWT.NONE);
+		final Label metricLabel = new Label(metricParent, SWT.RIGHT);
 		metricLabel.setData(RWT.CUSTOM_VARIANT, "text-xxlarge");
-		metricLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+		metricLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		final Label descLabel = new Label(metricParent, SWT.NONE);
+		final Label descLabel = new Label(metricParent, SWT.RIGHT);
 		descLabel.setText(description);
 		descLabel.setData(RWT.CUSTOM_VARIANT, "text-large");
-		descLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+		descLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		return metricLabel;
 	}
