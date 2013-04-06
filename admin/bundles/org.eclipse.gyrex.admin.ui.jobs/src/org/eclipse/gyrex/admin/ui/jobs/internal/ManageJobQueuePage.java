@@ -55,6 +55,7 @@ public class ManageJobQueuePage extends AdminPageWithTree {
 
 	public ManageJobQueuePage() {
 		super(5);
+		setTitle("Job Queue Contents");
 	}
 
 	@Override

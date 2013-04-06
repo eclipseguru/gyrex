@@ -444,7 +444,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 
 	public void setSchedule(final ScheduleImpl schedule) {
 		this.schedule = schedule;
-		setTitle("Schedule Entries of " + schedule.getId());
+		setTitle("Schedule Entries of Schedule " + schedule.getId());
 
 	}
 
