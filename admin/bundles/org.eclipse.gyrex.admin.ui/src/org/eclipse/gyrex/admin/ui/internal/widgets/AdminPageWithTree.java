@@ -83,6 +83,12 @@ public abstract class AdminPageWithTree extends AdminPage {
 		@Override
 		@SuppressWarnings("unchecked")
 		public int compare(final Viewer viewer, final Object e1, final Object e2) {
+			final int c1 = getElementCategory(e1, getColumn());
+			final int c2 = getElementCategory(e2, getColumn());
+
+			if (c1 != c2)
+				return c1 - c2;
+
 			final String t1 = StringUtils.trimToEmpty(getElementLabel(e1, getColumn()));
 			final String t2 = StringUtils.trimToEmpty(getElementLabel(e2, getColumn()));
 			if (isReverse())
@@ -318,6 +324,10 @@ public abstract class AdminPageWithTree extends AdminPage {
 			default:
 				return new ColumnWeightData(10, 50);
 		}
+	}
+
+	protected int getElementCategory(final Object element, final int column) {
+		return 0;
 	}
 
 	protected Image getElementImage(final Object element, final int column) {
