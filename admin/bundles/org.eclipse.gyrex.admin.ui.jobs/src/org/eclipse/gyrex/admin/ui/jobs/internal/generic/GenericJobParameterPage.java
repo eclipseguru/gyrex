@@ -111,14 +111,12 @@ public class GenericJobParameterPage extends WizardPage {
 		setControl(composite);
 
 		parameterTable.setLabelText("Job Parameter:");
-		parameterTable.setViewerComparator(new ViewerComparator(new Comparator<Parameter>() {
+		parameterTable.setViewerComparator(new ViewerComparator(new Comparator<Object>() {
 			@Override
-			public int compare(final Parameter o1, final Parameter o2) {
-				String n1 = o1.getName();
-				if (n1 == null) {
-					n1 = "";
-				}
-				return n1.compareTo(o2.getName());
+			public int compare(final Object o1, final Object o2) {
+				final String n1 = (o1 instanceof Parameter) ? ((Parameter) o1).getName() : String.valueOf(o1);
+				final String n2 = (o2 instanceof Parameter) ? ((Parameter) o2).getName() : String.valueOf(o2);
+				return n1.compareTo(n2);
 			}
 		}));
 
