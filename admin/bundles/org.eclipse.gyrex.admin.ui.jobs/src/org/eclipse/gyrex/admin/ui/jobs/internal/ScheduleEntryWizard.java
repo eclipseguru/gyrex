@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardAdapter;
 import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardSession;
+import org.eclipse.gyrex.admin.ui.jobs.internal.generic.GenericJobParameterPage;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
@@ -172,7 +173,7 @@ public class ScheduleEntryWizard extends Wizard {
 
 		// lazy initialize pages
 		if (null == session.getPages()) {
-			final IWizardPage[] pages = wizardAdapter != null ? wizardAdapter.createPages(session) : null;
+			final IWizardPage[] pages = wizardAdapter != null ? wizardAdapter.createPages(session) : new IWizardPage[] { new GenericJobParameterPage(session) };
 			if (pages != null) {
 				session.setPages(pages);
 				for (final IWizardPage page : pages) {
