@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Label;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class AdminPageWithTree extends AdminPage {
+
 	private final class ChangeSortColumnListener extends SelectionAdapter {
 		/** serialVersionUID */
 		private static final long serialVersionUID = 1L;
