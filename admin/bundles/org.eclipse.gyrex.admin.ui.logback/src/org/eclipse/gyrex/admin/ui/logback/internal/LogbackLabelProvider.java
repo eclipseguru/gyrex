@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import org.eclipse.gyrex.admin.ui.logback.internal.LogbackConfigContentProvider.DefaultLogger;
 import org.eclipse.gyrex.logback.config.internal.model.Appender;
 import org.eclipse.gyrex.logback.config.internal.model.ConsoleAppender;
 import org.eclipse.gyrex.logback.config.internal.model.FileAppender;
@@ -45,30 +44,25 @@ public class LogbackLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(final Object element) {
 		final ImageDescriptor descriptor = getImageDescriptor(element);
-		if (descriptor != null) {
+		if (descriptor != null)
 			return getResourceManager().createImage(descriptor);
-		}
 		return super.getImage(element);
 	}
 
 	private ImageDescriptor getImageDescriptor(final Object element) {
-		if (element instanceof ConsoleAppender) {
+		if (element instanceof ConsoleAppender)
 			return LogbackUiImages.getImageDescriptor(LogbackUiImages.IMG_CONSOLE_APPENDER);
-		}
 		if (element instanceof Appender) {
 			final Appender appender = (Appender) element;
-			if (appender.canSift() && appender.isSeparateLogOutputsPerMdcProperty()) {
+			if (appender.canSift() && appender.isSeparateLogOutputsPerMdcProperty())
 				return LogbackUiImages.getImageDescriptor(LogbackUiImages.IMG_SIFTING_APPENDER);
-			}
 			return LogbackUiImages.getImageDescriptor(LogbackUiImages.IMG_APPENDER);
 		}
-		if (element instanceof Logger) {
+		if (element instanceof Logger)
 			return LogbackUiImages.getImageDescriptor(LogbackUiImages.IMG_LOGGER);
-		}
-		if (element instanceof DefaultLogger) {
-//			return LogbackUiImages.getImageDescriptor(LogbackUiImages.IMG_LOGGER);
+		if (element instanceof DefaultLogger)
+			//			return LogbackUiImages.getImageDescriptor(LogbackUiImages.IMG_LOGGER);
 			return null;
-		}
 		return null;
 	}
 
@@ -81,9 +75,8 @@ public class LogbackLabelProvider extends LabelProvider {
 
 	@Override
 	public String getText(final Object element) {
-		if (element instanceof LogbackConfig) {
+		if (element instanceof LogbackConfig)
 			return "Loback Configuration";
-		}
 		if (element instanceof FileAppender) {
 			final FileAppender fileAppender = (FileAppender) element;
 			final StrBuilder text = new StrBuilder();
@@ -97,9 +90,8 @@ public class LogbackLabelProvider extends LabelProvider {
 			}
 			return text.toString();
 		}
-		if (element instanceof Appender) {
+		if (element instanceof Appender)
 			return ((Appender) element).getName();
-		}
 		if (element instanceof Logger) {
 			final Logger logger = (Logger) element;
 			final StrBuilder text = new StrBuilder();
@@ -110,12 +102,12 @@ public class LogbackLabelProvider extends LabelProvider {
 			}
 			return text.toString();
 		}
-		if (element instanceof DefaultLogger) {
+		if (element instanceof DefaultLogger)
 			return String.format("Default Level: %s", ((DefaultLogger) element).getLevel());
-		}
-		if (element instanceof LoggerAppenderRef) {
-			return ((LoggerAppenderRef) element).getAppenderRef();
-		}
+		if (element instanceof DefaultLogger)
+			return String.format("Default Log Level: %s", ((DefaultLogger) element).getLevel());
+		if (element instanceof AppenderReference)
+			return ((AppenderReference) element).getAppenderRef();
 		return String.valueOf(element);
 	}
 }

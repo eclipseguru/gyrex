@@ -11,14 +11,13 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import org.eclipse.gyrex.admin.ui.logback.internal.LogbackConfigContentProvider.DefaultLogger;
 import org.eclipse.gyrex.logback.config.internal.model.Appender;
 import org.eclipse.gyrex.logback.config.internal.model.LogbackConfig;
 import org.eclipse.gyrex.logback.config.internal.model.Logger;
 
 import org.eclipse.jface.viewers.ViewerComparator;
 
-public class LogbackViewerComperator extends ViewerComparator {
+public class LogbackViewerComparator extends ViewerComparator {
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;

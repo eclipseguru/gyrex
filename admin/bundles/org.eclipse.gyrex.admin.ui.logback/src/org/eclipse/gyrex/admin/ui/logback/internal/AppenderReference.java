@@ -11,40 +11,21 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import org.eclipse.gyrex.logback.config.internal.model.Logger;
+public class AppenderReference {
 
-public class LoggerAppenderRef {
-
-	private final Logger logger;
+	private final Object parent;
 	private final String appenderRef;
 
-	/**
-	 * Creates a new instance.
-	 * 
-	 * @param logger
-	 * @param string
-	 */
-	public LoggerAppenderRef(final Logger logger, final String appenderRef) {
-		this.logger = logger;
+	public AppenderReference(final Object parent, final String appenderRef) {
+		this.parent = parent;
 		this.appenderRef = appenderRef;
 	}
 
-	/**
-	 * Returns the appenderRef.
-	 * 
-	 * @return the appenderRef
-	 */
 	public String getAppenderRef() {
 		return appenderRef;
 	}
 
-	/**
-	 * Returns the logger.
-	 * 
-	 * @return the logger
-	 */
-	public Logger getLogger() {
-		return logger;
+	public Object getParent() {
+		return parent;
 	}
-
 }

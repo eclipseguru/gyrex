@@ -11,40 +11,26 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.gyrex.logback.config.internal.model.Appender;
 import org.eclipse.gyrex.logback.config.internal.model.LogbackConfig;
 import org.eclipse.gyrex.logback.config.internal.model.Logger;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import ch.qos.logback.classic.Level;
-
 public class LogbackConfigContentProvider implements ITreeContentProvider {
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 
-	public static class DefaultLogger {
-
-		private final LogbackConfig config;
-
-		public DefaultLogger(final LogbackConfig logbackConfig) {
-			config = logbackConfig;
-		}
-
-		public List<String> getAppenderReferences() {
-			return config.getDefaultAppenders();
-		}
-
-		public Level getLevel() {
-			return config.getDefaultLevel();
-		}
-
-	}
-
 	public static final Object[] NO_CHILDREN = new Object[0];
+
+	private AppendersGroup appendersGroup;
+
+	private LoggersGroup loggersGroup;
+
+	private DefaultLogger defaultLogger;
 
 	@Override
 	public void dispose() {
@@ -53,24 +39,17 @@ public class LogbackConfigContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getChildren(final Object o) {
-		if (o instanceof LogbackConfig) {
-			final LogbackConfig logbackConfig = (LogbackConfig) o;
-			final List<Object> children = new ArrayList<Object>();
-			children.addAll(logbackConfig.getAppenders().values());
-			children.addAll(logbackConfig.getLoggers().values());
-			children.add(new DefaultLogger(logbackConfig));
-			return children.toArray(new Object[children.size()]);
-		} else if (o instanceof Logger) {
+		if (o instanceof LogbackConfig)
+			return new Object[] { appendersGroup, loggersGroup, defaultLogger };
+		else if (o == appendersGroup)
+			return appendersGroup.getAppenders().values().toArray();
+		else if (o == loggersGroup)
+			return loggersGroup.getLoggers().values().toArray();
+		else if (o == defaultLogger)
+			return toAppenderReferences(defaultLogger, defaultLogger.getAppenderReferences());
+		else if (o instanceof Logger) {
 			final Logger logger = (Logger) o;
-			final List<String> appenderReferences = logger.getAppenderReferences();
-			final Object[] children = new Object[appenderReferences.size()];
-			for (int i = 0; i < children.length; i++) {
-				children[i] = new LoggerAppenderRef(logger, appenderReferences.get(i));
-			}
-			return children;
-		} else if (o instanceof DefaultLogger) {
-			final DefaultLogger logger = (DefaultLogger) o;
-			return logger.getAppenderReferences().toArray();
+			return toAppenderReferences(logger, logger.getAppenderReferences());
 		}
 		return NO_CHILDREN;
 	}
@@ -82,7 +61,14 @@ public class LogbackConfigContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(final Object element) {
-		// TODO Auto-generated method stub
+		if (element instanceof AppenderReference)
+			return ((AppenderReference) element).getParent();
+		if (element instanceof Logger)
+			return loggersGroup;
+		if (element instanceof Appender)
+			return appendersGroup;
+		if ((element == appendersGroup) || (element == loggersGroup) || (element == defaultLogger))
+			return defaultLogger.getConfig();
 		return null;
 	}
 
@@ -93,7 +79,20 @@ public class LogbackConfigContentProvider implements ITreeContentProvider {
 
 	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-		// empty
+		if (newInput instanceof LogbackConfig) {
+			final LogbackConfig logbackConfig = (LogbackConfig) newInput;
+			appendersGroup = new AppendersGroup(logbackConfig);
+			loggersGroup = new LoggersGroup(logbackConfig);
+			defaultLogger = new DefaultLogger(logbackConfig);
+		}
+	}
+
+	private Object[] toAppenderReferences(final Object parent, final List<String> appenderReferences) {
+		final Object[] children = new Object[appenderReferences.size()];
+		for (int i = 0; i < children.length; i++) {
+			children[i] = new AppenderReference(parent, appenderReferences.get(i));
+		}
+		return children;
 	}
 
 }
