@@ -22,7 +22,6 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.ListDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.ListDialogField.ColumnsDescription;
 import org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardSession;
-import org.eclipse.gyrex.admin.ui.jobs.internal.externalprocess.AddEditEnvironmentVariableDialog;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -137,7 +136,7 @@ public class GenericJobParameterPage extends WizardPage {
 	}
 
 	void openAddParameterDialog() {
-		final AddEditEnvironmentVariableDialog dialog = new AddEditEnvironmentVariableDialog(getShell());
+		final AddEditParameterDialog dialog = new AddEditParameterDialog(getShell(), null, parameterTable.getElements());
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 
@@ -152,7 +151,7 @@ public class GenericJobParameterPage extends WizardPage {
 
 	void openEditParameterDialog() {
 		final Parameter v = (Parameter) parameterTable.getSelectedElements().iterator().next();
-		final AddEditEnvironmentVariableDialog dialog = new AddEditEnvironmentVariableDialog(getShell(), v.getName(), v.getValue());
+		final AddEditParameterDialog dialog = new AddEditParameterDialog(getShell(), v, parameterTable.getElements());
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 

@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal.generic;
 
+import java.util.List;
+
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
@@ -35,19 +37,25 @@ public class AddEditParameterDialog extends NonBlockingStatusDialog {
 	private static final long serialVersionUID = 1L;
 	private final StringDialogField nameField = new StringDialogField();
 	private final StringDialogField valueField = new StringDialogField();
-	private final boolean isEdit;
+	private final List<Object> parameters;
+	private final Parameter parameterToEdit;
 
 	public AddEditParameterDialog(final Shell parent) {
 		this(parent, null, null);
 	}
 
-	public AddEditParameterDialog(final Shell parent, final String name, final String value) {
+	public AddEditParameterDialog(final Shell parent, final Parameter parameter, final List<Object> parameters) {
 		super(parent);
-		isEdit = name != null;
-		setTitle(isEdit ? "Edit Parameter" : "New Parameter");
+		parameterToEdit = parameter;
+		this.parameters = parameters;
 		setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
-		nameField.setText(StringUtils.trimToEmpty(name));
-		valueField.setText(StringUtils.trimToEmpty(value));
+		if (parameterToEdit != null) {
+			setTitle("Edit Parameter");
+			nameField.setText(StringUtils.trimToEmpty(parameter.getName()));
+			valueField.setText(StringUtils.trimToEmpty(parameter.getValue()));
+		} else {
+			setTitle("New Parameter");
+		}
 	}
 
 	@Override
@@ -100,7 +108,7 @@ public class AddEditParameterDialog extends NonBlockingStatusDialog {
 	public void openNonBlocking(final DialogCallback callback) {
 		super.openNonBlocking(callback);
 
-		if (isEdit) {
+		if (parameterToEdit != null) {
 			valueField.getTextControl(null).setSelection(0);
 			valueField.setFocus();
 		} else {
@@ -130,6 +138,18 @@ public class AddEditParameterDialog extends NonBlockingStatusDialog {
 		if (StringUtils.isBlank(getValue())) {
 			setInfo("Please enter a value.");
 			return;
+		}
+
+		if (parameters != null) {
+			for (final Object parameter : parameters) {
+				if (parameter != parameterToEdit) {
+					if (StringUtils.equals(((Parameter) parameter).getName(), getName())) {
+						setError("A parameter with the specified name already exists. Please use a different name.");
+						return;
+					}
+				}
+
+			}
 		}
 
 		updateStatus(Status.OK_STATUS);
