@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal.generic;
 
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -72,6 +71,14 @@ public class GenericJobParameterPage extends WizardPage {
 		private static final long serialVersionUID = 1L;
 
 		@Override
+		public String getText(final Object element) {
+			if (element instanceof Parameter)
+				return ((Parameter) element).getName();
+
+			return element == null ? "" : element.toString();//$NON-NLS-1$
+		}
+
+		@Override
 		public void update(final ViewerCell cell) {
 			final Parameter element = (Parameter) cell.getElement();
 			switch (cell.getColumnIndex()) {
@@ -111,14 +118,7 @@ public class GenericJobParameterPage extends WizardPage {
 		setControl(composite);
 
 		parameterTable.setLabelText("Job Parameter:");
-		parameterTable.setViewerComparator(new ViewerComparator(new Comparator<Object>() {
-			@Override
-			public int compare(final Object o1, final Object o2) {
-				final String n1 = (o1 instanceof Parameter) ? ((Parameter) o1).getName() : String.valueOf(o1);
-				final String n2 = (o2 instanceof Parameter) ? ((Parameter) o2).getName() : String.valueOf(o2);
-				return n1.compareTo(n2);
-			}
-		}));
+		parameterTable.setViewerComparator(new ViewerComparator());
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
