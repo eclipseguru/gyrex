@@ -11,11 +11,11 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import org.eclipse.gyrex.logback.config.internal.model.Appender;
-import org.eclipse.gyrex.logback.config.internal.model.ConsoleAppender;
-import org.eclipse.gyrex.logback.config.internal.model.FileAppender;
-import org.eclipse.gyrex.logback.config.internal.model.LogbackConfig;
-import org.eclipse.gyrex.logback.config.internal.model.Logger;
+import org.eclipse.gyrex.logback.config.model.Appender;
+import org.eclipse.gyrex.logback.config.model.ConsoleAppender;
+import org.eclipse.gyrex.logback.config.model.FileAppender;
+import org.eclipse.gyrex.logback.config.model.LogbackConfig;
+import org.eclipse.gyrex.logback.config.model.Logger;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;

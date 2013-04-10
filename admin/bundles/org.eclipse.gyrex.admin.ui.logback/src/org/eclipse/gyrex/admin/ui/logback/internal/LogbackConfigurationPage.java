@@ -21,10 +21,10 @@ import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.logback.config.internal.LogbackConfigActivator;
 import org.eclipse.gyrex.logback.config.internal.PreferenceBasedLogbackConfigStore;
-import org.eclipse.gyrex.logback.config.internal.model.Appender;
-import org.eclipse.gyrex.logback.config.internal.model.FileAppender;
-import org.eclipse.gyrex.logback.config.internal.model.LogbackConfig;
-import org.eclipse.gyrex.logback.config.internal.model.Logger;
+import org.eclipse.gyrex.logback.config.model.Appender;
+import org.eclipse.gyrex.logback.config.model.FileAppender;
+import org.eclipse.gyrex.logback.config.model.LogbackConfig;
+import org.eclipse.gyrex.logback.config.model.Logger;
 import org.eclipse.gyrex.preferences.CloudScope;
 import org.eclipse.gyrex.server.Platform;
 
@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import org.apache.commons.lang.text.StrBuilder;
@@ -349,7 +348,7 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 				} else {
 					currentInput = new LogbackConfig();
 				}
-			} catch (final BackingStoreException e) {
+			} catch (final Exception | LinkageError | AssertionError e) {
 				Policy.getStatusHandler().show(new Status(IStatus.ERROR, LogbackUiActivator.SYMBOLIC_NAME, "Error loading Logback configuration.", e), "Error");
 				currentInput = new LogbackConfig();
 			}
@@ -402,7 +401,7 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 				// also touch last modified
 				node.putLong("lastModified", System.currentTimeMillis());
 				node.flush();
-			} catch (final BackingStoreException e) {
+			} catch (final Exception | LinkageError | AssertionError e) {
 				Policy.getStatusHandler().show(new Status(IStatus.ERROR, LogbackUiActivator.SYMBOLIC_NAME, "Error saving Logback configuration.", e), "Error");
 				return;
 			}

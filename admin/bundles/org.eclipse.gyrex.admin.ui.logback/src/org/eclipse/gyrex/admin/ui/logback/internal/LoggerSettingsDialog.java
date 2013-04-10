@@ -27,8 +27,8 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.SelectionButtonD
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
-import org.eclipse.gyrex.logback.config.internal.model.Appender;
-import org.eclipse.gyrex.logback.config.internal.model.Logger;
+import org.eclipse.gyrex.logback.config.model.Appender;
+import org.eclipse.gyrex.logback.config.model.Logger;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

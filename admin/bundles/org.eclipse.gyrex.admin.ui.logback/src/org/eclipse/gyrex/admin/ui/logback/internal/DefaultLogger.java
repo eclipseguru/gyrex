@@ -13,7 +13,7 @@ package org.eclipse.gyrex.admin.ui.logback.internal;
 
 import java.util.List;
 
-import org.eclipse.gyrex.logback.config.internal.model.LogbackConfig;
+import org.eclipse.gyrex.logback.config.model.LogbackConfig;
 
 import ch.qos.logback.classic.Level;
 

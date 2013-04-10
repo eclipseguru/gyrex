@@ -13,8 +13,8 @@ package org.eclipse.gyrex.admin.ui.logback.internal;
 
 import java.util.Map;
 
-import org.eclipse.gyrex.logback.config.internal.model.LogbackConfig;
-import org.eclipse.gyrex.logback.config.internal.model.Logger;
+import org.eclipse.gyrex.logback.config.model.LogbackConfig;
+import org.eclipse.gyrex.logback.config.model.Logger;
 
 public class LoggersGroup {
 	private final LogbackConfig config;

@@ -15,7 +15,7 @@ package org.eclipse.gyrex.admin.ui.logback.internal;
 import java.util.Collection;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.ElementListSelectionDialog;
-import org.eclipse.gyrex.logback.config.internal.model.Appender;
+import org.eclipse.gyrex.logback.config.model.Appender;
 
 import org.eclipse.swt.widgets.Shell;
 
