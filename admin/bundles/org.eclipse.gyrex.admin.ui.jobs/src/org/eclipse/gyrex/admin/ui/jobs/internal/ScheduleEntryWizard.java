@@ -65,7 +65,7 @@ public class ScheduleEntryWizard extends Wizard {
 
 	@Override
 	public boolean canFinish() {
-		return scheduleEntryPage.isPageComplete() && (currentSession != null) && currentSession.canFinish();
+		return scheduleEntryPage.isPageComplete() && exclusiveLockPage.isPageComplete() && (currentSession != null) && currentSession.canFinish();
 	}
 
 	void clearCurrentJobConfigurationSession() {
