@@ -106,7 +106,9 @@ public class GenericJobParameterPage extends WizardPage {
 		this.session = session;
 		setTitle("Task Parameter");
 		setDescription("Configure the task by modifying its launch parameter.");
-		setPageComplete(false);
+
+		// this page does not have any required fields
+		setPageComplete(true);
 	}
 
 	@Override
