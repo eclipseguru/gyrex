@@ -104,8 +104,8 @@ public class GenericJobParameterPage extends WizardPage {
 	public GenericJobParameterPage(final JobConfigurationWizardSession session) {
 		super(GenericJobParameterPage.class.getSimpleName());
 		this.session = session;
-		setTitle("External Process");
-		setDescription("Provide details for the external process to launch.");
+		setTitle("Task Parameter");
+		setDescription("Configure the task by modifying its launch parameter.");
 		setPageComplete(false);
 	}
 
@@ -116,7 +116,7 @@ public class GenericJobParameterPage extends WizardPage {
 		composite.setLayoutData(GridDataFactory.fillDefaults().minSize(convertVerticalDLUsToPixels(200), convertHorizontalDLUsToPixels(400)).create());
 		setControl(composite);
 
-		parameterTable.setLabelText("Job Parameter:");
+		parameterTable.setLabelText(String.format("Parameter for %s:", session.getJobTypeName()));
 		parameterTable.setViewerComparator(new ViewerComparator());
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {

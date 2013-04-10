@@ -154,9 +154,9 @@ public class ScheduleEntryWizard extends Wizard {
 		return entry;
 	}
 
-	void initializeCurrentJobConfigurationSession(final String id, final JobConfigurationWizardAdapter wizardAdapter) {
+	void initializeCurrentJobConfigurationSession(final String id, final String name, final JobConfigurationWizardAdapter wizardAdapter) {
 		if (!sessionsByJobTypeId.containsKey(id)) {
-			final JobConfigurationWizardSession session = new JobConfigurationWizardSession(id);
+			final JobConfigurationWizardSession session = new JobConfigurationWizardSession(id, name);
 			if (entry != null) {
 				// clone job parameter into new session
 				// (subsequent modifications MUST NOT be reflected into the entry or other sessions)

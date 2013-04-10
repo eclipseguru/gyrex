@@ -332,7 +332,7 @@ public class ScheduleEntryWizardPage extends WizardPage {
 
 		if (jobType != null) {
 			jobTypeField.setText(jobType.getName());
-			getScheduleEntryWizard().initializeCurrentJobConfigurationSession(jobType.id, jobType.getWizardAdapter());
+			getScheduleEntryWizard().initializeCurrentJobConfigurationSession(jobType.id, jobType.getName(), jobType.getWizardAdapter());
 		} else {
 			jobTypeField.setText(StringUtils.EMPTY);
 			getScheduleEntryWizard().clearCurrentJobConfigurationSession();

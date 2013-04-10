@@ -14,6 +14,8 @@ package org.eclipse.gyrex.admin.ui.jobs.configuration.wizard;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.gyrex.jobs.provider.JobProvider;
+
 import org.eclipse.jface.wizard.IWizardPage;
 
 /**
@@ -24,17 +26,21 @@ public final class JobConfigurationWizardSession {
 	private final String jobTypeId;
 	private Map<String, String> parameter;
 	private IWizardPage[] pages;
+	private final String jobTypeName;
 
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param jobTypeId
 	 *            the job type id
+	 * @param jobTypeName
+	 *            the job type name
 	 * @noreference This constructor is not intended to be referenced by
 	 *              clients.
 	 */
-	public JobConfigurationWizardSession(final String jobTypeId) {
+	public JobConfigurationWizardSession(final String jobTypeId, final String jobTypeName) {
 		this.jobTypeId = jobTypeId;
+		this.jobTypeName = jobTypeName;
 	}
 
 	public boolean canFinish() {
@@ -59,6 +65,16 @@ public final class JobConfigurationWizardSession {
 	 */
 	public final String getJobTypeId() {
 		return jobTypeId;
+	}
+
+	/**
+	 * Returns a human readable name of the job type.
+	 * 
+	 * @return the job type name
+	 * @see JobProvider#getName(String)
+	 */
+	public String getJobTypeName() {
+		return jobTypeName;
 	}
 
 	/**
