@@ -320,8 +320,11 @@ public abstract class AdminPageWithTree extends AdminPage {
 
 			if (isColumnSortable(column)) {
 				viewerColumn.getColumn().addSelectionListener(new ChangeSortColumnListener(comparator, column, viewerColumn));
-				treeViewer.getTree().setSortColumn(viewerColumn.getColumn());
-				treeViewer.getTree().setSortDirection(comparator.isReverse() ? SWT.UP : SWT.DOWN);
+				if (treeViewer.getTree().getSortColumn() == null) {
+					// make the fist sortable column the active sort column
+					treeViewer.getTree().setSortColumn(viewerColumn.getColumn());
+					treeViewer.getTree().setSortDirection(comparator.isReverse() ? SWT.UP : SWT.DOWN);
+				}
 			}
 		}
 
