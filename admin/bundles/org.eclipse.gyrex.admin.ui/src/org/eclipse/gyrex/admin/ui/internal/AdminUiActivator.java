@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -99,8 +98,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(final String path) {
-		final URL entry = instance.getBundle().getEntry(path);
-		return ImageDescriptor.createFromURL(entry);
+		return ImageDescriptor.createFromURL(FileLocator.find(instance.getBundle(), new Path(path), null));
 	}
 
 	/**
