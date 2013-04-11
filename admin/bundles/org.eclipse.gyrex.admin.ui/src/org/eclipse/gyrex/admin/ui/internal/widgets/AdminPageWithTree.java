@@ -388,7 +388,9 @@ public abstract class AdminPageWithTree extends AdminPage {
 		updateButtons();
 	}
 
-	protected abstract boolean isColumnSortable(final int column);
+	protected boolean isColumnSortable(final int column) {
+		return true;
+	}
 
 	protected void openSelectedElement() {
 		// no-op
