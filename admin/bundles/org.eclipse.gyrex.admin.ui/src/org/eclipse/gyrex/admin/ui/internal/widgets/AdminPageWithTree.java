@@ -234,7 +234,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 
 				@Override
 				protected boolean isLeafMatch(final Viewer viewer, final Object element) {
-					return wordMatches(getElementLabel(element, NO_COLUMN));
+					return wordMatches(getElementTextForFiltering(element, NO_COLUMN));
 				}
 
 			};
@@ -247,7 +247,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 				@Override
 				protected boolean isLeafMatch(final Viewer viewer, final Object element) {
 					for (int i = 0; i < getNumberOfColumns(); i++) {
-						if (wordMatches(getElementLabel(element, i)))
+						if (wordMatches(getElementTextForFiltering(element, i)))
 							return true;
 					}
 					return false;
@@ -367,6 +367,10 @@ public abstract class AdminPageWithTree extends AdminPage {
 	}
 
 	protected abstract String getElementLabel(final Object element, final int column);
+
+	protected String getElementTextForFiltering(final Object element, final int column) {
+		return getElementLabel(element, column);
+	}
 
 	protected String getElementTextForSorting(final Object element, final int column) {
 		return getElementLabel(element, column);
