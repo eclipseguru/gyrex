@@ -228,7 +228,35 @@ public abstract class AdminPageWithTree extends AdminPage {
 	}
 
 	protected PatternFilter createPatternFilter() {
-		return new PatternFilter();
+		if (getNumberOfColumns() == 0) {
+			final PatternFilter patternFilter = new PatternFilter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected boolean isLeafMatch(final Viewer viewer, final Object element) {
+					return wordMatches(getElementLabel(element, NO_COLUMN));
+				}
+
+			};
+			patternFilter.setIncludeLeadingWildcard(true);
+			return patternFilter;
+		} else {
+			final PatternFilter patternFilter = new PatternFilter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected boolean isLeafMatch(final Viewer viewer, final Object element) {
+					for (int i = 0; i < getNumberOfColumns(); i++) {
+						if (wordMatches(getElementLabel(element, i)))
+							return true;
+					}
+					return false;
+				}
+
+			};
+			patternFilter.setIncludeLeadingWildcard(true);
+			return patternFilter;
+		}
 	}
 
 	protected FilteredTree createTree(final Composite parent) {
