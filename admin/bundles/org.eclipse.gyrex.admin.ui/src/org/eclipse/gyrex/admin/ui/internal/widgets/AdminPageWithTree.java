@@ -309,7 +309,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 				treeViewer.removeSelectionChangedListener(updateButtonsListener);
 				updateButtonsListener = null;
 			}
-			if (treeViewer.getTree().isDisposed()) {
+			if (!treeViewer.getTree().isDisposed()) {
 				treeViewer.setInput(null);
 			}
 		}
