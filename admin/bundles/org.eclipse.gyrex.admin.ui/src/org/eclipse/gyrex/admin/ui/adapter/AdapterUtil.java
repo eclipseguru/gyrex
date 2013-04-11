@@ -22,21 +22,26 @@ import org.eclipse.core.runtime.IAdapterManager;
 public class AdapterUtil {
 
 	public static <T> T getAdapter(final Object adaptable, final Class<T> adapterType) {
-		// try adaptable first
+		if (adaptable == null)
+			return null;
+
+		// check for direct implementation first
+		if (adapterType.isInstance(adaptable))
+			return adapterType.cast(adaptable);
+
+		// try adaptable
 		if (adaptable instanceof IAdaptable) {
 			final T adapter = adapterType.cast(((IAdaptable) adaptable).getAdapter(adapterType));
-			if (null != adapter) {
+			if (null != adapter)
 				return adapter;
-			}
 		}
 
 		// check Adapter manager if an adapter is loadable
 		final IAdapterManager manager = AdminUiActivator.getInstance().getService(IAdapterManager.class);
 		if (manager.hasAdapter(adaptable, adapterType.getName())) {
 			final Object adapter = manager.loadAdapter(adaptable, adapterType.getName());
-			if (adapterType.isInstance(adapter)) {
+			if (adapterType.isInstance(adapter))
 				return adapterType.cast(adapter);
-			}
 		}
 
 		return null;
