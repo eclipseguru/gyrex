@@ -6,10 +6,20 @@
 	  <page
             categoryId="org.eclipse.gyrex.admin.ui.categories.system"
             class="org.eclipse.gyrex.admin.ui.logback.internal.LogbackConfigurationPage"
-            id="logbackConfiguration"
+            id="logback-configuration"
             keywords="logbacks"
             name="Logback"
             sortKey="400">
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.gyrex.logback.config.internal.CommonLogbackAppenders"
+            class="org.eclipse.gyrex.admin.ui.logback.internal.commonapenders.AdapterFactory">
+         <adapter
+               type="org.eclipse.gyrex.admin.ui.logback.configuration.wizard.AppenderConfigurationWizardAdapter">
+         </adapter>
+      </factory>
    </extension>
 </plugin>

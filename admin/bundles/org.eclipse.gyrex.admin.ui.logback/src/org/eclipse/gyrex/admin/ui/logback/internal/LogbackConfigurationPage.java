@@ -17,8 +17,10 @@ import java.util.Collection;
 import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
 import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
+import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
+import org.eclipse.gyrex.admin.ui.internal.wizards.NonBlockingWizardDialog;
 import org.eclipse.gyrex.logback.config.internal.LogbackConfigActivator;
 import org.eclipse.gyrex.logback.config.internal.PreferenceBasedLogbackConfigStore;
 import org.eclipse.gyrex.logback.config.model.Appender;
@@ -72,22 +74,6 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 		super.activate();
 	}
 
-	void addAppenderButtonPressed() {
-		final EditAppenderDialog dialog = new EditAppenderDialog(getShell());
-		dialog.openNonBlocking(new DialogCallback() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode == Window.OK) {
-					currentInput.addAppender(dialog.getAppender());
-					getTreeViewer().refresh();
-				}
-			}
-
-		});
-	}
-
 	void addLoggerButtonPressed() {
 		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), currentInput.getAppenders().values());
 		dialog.openNonBlocking(new DialogCallback() {
@@ -111,7 +97,7 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				addAppenderButtonPressed();
+				openAppenderWizard(null);
 			}
 		});
 
@@ -188,21 +174,6 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 		return null;
 	}
 
-	void editAppenderButtonPressed() {
-		final EditAppenderDialog dialog = new EditAppenderDialog(getShell(), getSelectedAppenderElement());
-		dialog.openNonBlocking(new DialogCallback() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void dialogClosed(final int returnCode) {
-				if (returnCode == Window.OK) {
-					currentInput.addAppender(dialog.getAppender());
-					getTreeViewer().refresh();
-				}
-			}
-		});
-	}
-
 	void editDefaultLoggerButtonPressed() {
 		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), currentInput.getDefaultLevel(), currentInput.getDefaultAppenders(), currentInput.getAppenders().values());
 		dialog.openNonBlocking(new DialogCallback() {
@@ -238,20 +209,6 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 				}
 			}
 		});
-	}
-
-	void editSelectedElement() {
-		final Object selectedElement = getFirstSelectedElement();
-		if (selectedElement == null)
-			return;
-
-		if (selectedElement instanceof Logger) {
-			editLoggerButtonPressed();
-		} else if (selectedElement instanceof DefaultLogger) {
-			editDefaultLoggerButtonPressed();
-		} else if (selectedElement instanceof Appender) {
-			editAppenderButtonPressed();
-		}
 	}
 
 	private String getAppenderName(final Appender element) {
@@ -328,10 +285,6 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 		return ((IStructuredSelection) getTreeViewer().getSelection()).getFirstElement();
 	}
 
-	private Appender getSelectedAppenderElement() {
-		return (Appender) getFirstSelectedElement();
-	}
-
 	private Shell getShell() {
 		return getTreeViewer().getTree().getShell();
 	}
@@ -356,13 +309,42 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 		return currentInput;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree#isColumnSortable(int)
-	 */
 	@Override
 	protected boolean isColumnSortable(final int column) {
-		// TODO Auto-generated method stub
-		return false;
+		return column == COLUMN_NAME;
+	}
+
+	void openAppenderWizard(final Appender appenderToEdit) {
+		final NonBlockingWizardDialog dialog = new NonBlockingWizardDialog(SwtUtil.getShell(getTreeViewer().getTree()), new AddEditAppenderWizard(currentInput, appenderToEdit));
+		dialog.openNonBlocking(new DialogCallback() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode == Window.OK) {
+					if (appenderToEdit == null) {
+
+					}
+					getTreeViewer().refresh(appenderToEdit);
+				}
+			}
+
+		});
+	}
+
+	@Override
+	protected void openSelectedElement() {
+		final Object selectedElement = getFirstSelectedElement();
+		if (selectedElement == null)
+			return;
+
+		if (selectedElement instanceof Logger) {
+			editLoggerButtonPressed();
+		} else if (selectedElement instanceof DefaultLogger) {
+			editDefaultLoggerButtonPressed();
+		} else if (selectedElement instanceof Appender) {
+			openAppenderWizard((Appender) selectedElement);
+		}
 	}
 
 	void removeButtonPressed() {
