@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 <enter-company-name-here> and others.
+ * Copyright (c) 2013 AGETO Service GmbH and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,17 +7,19 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
- *     <enter-developer-name-here> - initial API and implementation
+ *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal.commonapenders;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DescriptionDialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
-import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.SelectionButtonDialogField;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.SelectionButtonDialogFieldGroup;
+import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.admin.ui.logback.configuration.wizard.AppenderConfigurationWizardSession;
 import org.eclipse.gyrex.logback.config.model.Appender;
@@ -29,16 +31,22 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import ch.qos.logback.core.joran.spi.ConsoleTarget;
+
 /**
- * Wizard pager for {@link ConsoleAppender}.
+ * Wizard page for {@link ConsoleAppender}.
  */
 public class ConsoleAppenderWizardPage extends WizardPage {
+
+	private static final int INDEX_STD_ERR = 1;
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 
-	private final SelectionButtonDialogField useCustomPatternCheckBox = new SelectionButtonDialogField(SWT.CHECK);
 	private final StringDialogField patternField = new StringDialogField();
+	private final DescriptionDialogField patternDescriptionField = new DescriptionDialogField();
+
+	SelectionButtonDialogFieldGroup targetGroup = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "STDOUT", "STDERR" }, 2);
 
 	private final ConsoleAppender appender;
 
@@ -62,8 +70,10 @@ public class ConsoleAppenderWizardPage extends WizardPage {
 		composite.setLayoutData(GridDataFactory.fillDefaults().minSize(convertVerticalDLUsToPixels(200), convertHorizontalDLUsToPixels(400)).create());
 		setControl(composite);
 
-		useCustomPatternCheckBox.setLabelText("Use a custom message pattern:");
-		patternField.setLabelText("");
+		targetGroup.setLabelText("Output to:");
+
+		patternField.setLabelText("Pattern:");
+		patternDescriptionField.setText("<small>Please have a look at <a href=\"\"></a> for possible patterns or leave empty for a system default.</small>");
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
@@ -72,38 +82,36 @@ public class ConsoleAppenderWizardPage extends WizardPage {
 			}
 		};
 
-		useCustomPatternCheckBox.setDialogFieldListener(validateListener);
+		patternDescriptionField.setDialogFieldListener(validateListener);
 		patternField.setDialogFieldListener(validateListener);
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { useCustomPatternCheckBox, patternField }, false);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { targetGroup, new Separator(), patternField, patternDescriptionField }, false);
+		LayoutUtil.setHorizontalGrabbing(targetGroup.getSelectionButtonsGroup(null));
 		LayoutUtil.setHorizontalGrabbing(patternField.getTextControl(null));
-
-		useCustomPatternCheckBox.setAttachedDialogFields(patternField);
+		LayoutUtil.setHorizontalGrabbing(patternDescriptionField.getDescriptionControl(null));
 
 		if (appender != null) {
 			if (isNotBlank(appender.getPattern())) {
-				useCustomPatternCheckBox.setSelection(true);
 				patternField.setText(appender.getPattern());
+			}
+			if (appender.getTarget() == ConsoleTarget.SystemErr) {
+				targetGroup.setSelection(INDEX_STD_ERR, true);
 			}
 		}
 	}
 
-	private String getPattern() {
+	public String getPattern() {
 		return patternField.getText();
 	}
 
+	private ConsoleTarget getTarget() {
+		return targetGroup.isSelected(INDEX_STD_ERR) ? ConsoleTarget.SystemErr : ConsoleTarget.SystemOut;
+	}
+
 	void validate() {
-		if (useCustomPatternCheckBox.isSelected()) {
-			final String pattern = getPattern();
-			if (isBlank(pattern)) {
-				setMessage("Please enter a pattern.", INFORMATION);
-				setPageComplete(false);
-				return;
-			}
-			appender.setPattern(pattern);
-		} else {
-			appender.setPattern(null);
-		}
+		final String pattern = getPattern();
+		appender.setPattern(isBlank(pattern) ? null : pattern);
+		appender.setTarget(getTarget());
 
 		setMessage(null);
 		setPageComplete(true);
