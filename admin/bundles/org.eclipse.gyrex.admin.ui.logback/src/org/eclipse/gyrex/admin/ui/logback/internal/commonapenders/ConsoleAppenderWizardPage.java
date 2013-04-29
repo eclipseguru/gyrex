@@ -73,7 +73,7 @@ public class ConsoleAppenderWizardPage extends WizardPage {
 		targetGroup.setLabelText("Output to:");
 
 		patternField.setLabelText("Pattern:");
-		patternDescriptionField.setText("<small>Please have a look at <a href=\"\"></a> for possible patterns or leave empty for a system default.</small>");
+		patternDescriptionField.setText("<small>Please have a look at <a href=\"http://logback.qos.ch/\">the Logback documentation</a> for possible patterns or leave empty for a system default.</small>");
 
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
