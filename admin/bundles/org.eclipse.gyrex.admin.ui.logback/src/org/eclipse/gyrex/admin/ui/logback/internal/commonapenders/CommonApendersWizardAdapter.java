@@ -26,10 +26,10 @@ public class CommonApendersWizardAdapter extends AppenderConfigurationWizardAdap
 	public IWizardPage[] createPages(final AppenderConfigurationWizardSession session) {
 		switch (session.getAppenderTypeId()) {
 			case "console":
-				return new IWizardPage[] { new ConsoleAppenderWizardPage(session) };
+				return new IWizardPage[] { new ConsoleAppenderWizardPage(session), new AppenderThresholdWizardPage(session) };
 
 			case "file":
-				return new IWizardPage[] { new FileAppenderWizardPage(session) };
+				return new IWizardPage[] { new FileAppenderWizardPage(session), new AppenderThresholdWizardPage(session) };
 
 			default:
 				break;
