@@ -23,15 +23,8 @@ import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
 import org.osgi.service.prefs.BackingStoreException;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.impl.LBHttpSolrServer;
-import org.apache.solr.core.CoreContainer;
-import org.apache.solr.core.SolrCore;
 
 /**
  * A repository provider for Solr repositories.
@@ -60,27 +53,9 @@ public class SolrRepositoryProvider extends RepositoryProvider {
 
 	/**
 	 * Creates a new instance.
-	 * 
-	 * @param coreContainer
-	 * @param adminCore
-	 * @param repositoryTypeId
 	 */
 	public SolrRepositoryProvider() {
 		super(ISolrRepositoryConstants.PROVIDER_ID, SolrServerRepository.class);
-	}
-
-	private SolrServer createLoadBalancedReadServer(final String[] readUrls) throws MalformedURLException {
-		// need to set some better defaults (to mimic what's in CommonsHttpSolrServer)
-		final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-		connectionManager.getParams().setDefaultMaxConnectionsPerHost(200);
-		connectionManager.getParams().setMaxTotalConnections(200 * readUrls.length);
-
-		// create load balancing server
-		final LBHttpSolrServer solrServerForRead = new LBHttpSolrServer(new HttpClient(connectionManager), readUrls);
-		solrServerForRead.setConnectionTimeout(1000);
-		solrServerForRead.setConnectionManagerTimeout(1000);
-		solrServerForRead.setSoTimeout(5000);
-		return solrServerForRead;
 	}
 
 	@Override
@@ -93,34 +68,34 @@ public class SolrRepositoryProvider extends RepositoryProvider {
 		final SolrServerType serverType = typeStr == null ? SolrServerType.EMBEDDED : SolrServerType.valueOf(typeStr);
 		switch (serverType) {
 			case EMBEDDED:
-				final SolrServer embeddedServer = getEmbeddedServer(repositoryId);
+				final SolrServer embeddedServer = SolrServerFactory.createEmbeddedServer(repositoryId);
 				return new SolrServer[] { embeddedServer, embeddedServer };
 
 			case REMOTE:
 				final String masterUrlString = repositoryPreferences.get(PREF_KEY_SERVER_URL, null);
 				try {
 					// master server first
-					final CommonsHttpSolrServer masterServer = new CommonsHttpSolrServer(masterUrlString);
+					final SolrServer masterServer = SolrServerFactory.createDefaultSolrServer(masterUrlString);
 
 					// read servers
 					final SolrServer readServer;
 					final String[] readUrlKeys = repositoryPreferences.getKeys(PREF_KEY_SERVER_READ_URLS);
 					if ((null == readUrlKeys) || (readUrlKeys.length == 0)) {
-						readServer = createSingleReadServer(masterUrlString);
+						readServer = SolrServerFactory.createReadOptimizedServer(masterUrlString);
 					} else if (readUrlKeys.length == 1) {
-						readServer = createSingleReadServer(repositoryPreferences.get(PREF_KEY_SERVER_READ_URLS + "//" + readUrlKeys[0], null));
+						readServer = SolrServerFactory.createReadOptimizedServer(repositoryPreferences.get(PREF_KEY_SERVER_READ_URLS + "//" + readUrlKeys[0], null));
 					} else {
 						// need to convert positions to URLs
 						final String[] urls = new String[readUrlKeys.length];
 						try {
 							for (int i = 0; i < readUrlKeys.length; i++) {
 								final int pos = NumberUtils.toInt(readUrlKeys[i], -1);
-								urls[pos] = repositoryPreferences.get(PREF_KEY_SERVER_READ_URLS + "//" + readUrlKeys[0], null);
+								urls[pos] = repositoryPreferences.get(PREF_KEY_SERVER_READ_URLS + "//" + readUrlKeys[i], null);
 							}
 						} catch (final IndexOutOfBoundsException e) {
 							throw new IllegalStateException(String.format("Unable to read replica urls for repository %s. %s", repositoryId, e.getMessage()), e);
 						}
-						readServer = createLoadBalancedReadServer(urls);
+						readServer = SolrServerFactory.createLoadBalancingReadOptimizedServer(urls);
 					}
 
 					// done
@@ -134,27 +109,6 @@ public class SolrRepositoryProvider extends RepositoryProvider {
 			default:
 				throw new IllegalStateException(String.format("Repository %s not configured correctly. Unsupported server type %s", repositoryId, typeStr));
 		}
-	}
-
-	private SolrServer createSingleReadServer(final String urlString) throws MalformedURLException {
-		final CommonsHttpSolrServer solrServerForRead = new CommonsHttpSolrServer(urlString);
-		solrServerForRead.setConnectionTimeout(1000);
-		solrServerForRead.setConnectionManagerTimeout(1000l);
-		solrServerForRead.setSoTimeout(5000);
-		return solrServerForRead;
-	}
-
-	private SolrServer getEmbeddedServer(final String repositoryId) {
-		// compute the core name
-		final String coreName = SolrActivator.getEmbeddedSolrCoreName(repositoryId);
-		// check core
-		final CoreContainer coreContainer = SolrActivator.getInstance().getEmbeddedCoreContainer();
-		final SolrCore core = coreContainer.getCore(coreName);
-		if (null == core) {
-			throw new IllegalStateException("Solr core '" + coreName + "' not found");
-		}
-		core.close();
-		return new EmbeddedSolrServer(coreContainer, coreName);
 	}
 
 }
