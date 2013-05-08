@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Konrad Schergaut - Fixing Bug 407535
  *******************************************************************************/
 package org.eclipse.gyrex.persistence.solr.internal;
 
@@ -35,35 +36,57 @@ public class SolrServerFactory {
 	private static final Logger LOG = LoggerFactory.getLogger(SolrServerFactory.class);
 
 	private static Constructor<?> commonsHttpSolrServerConstructor;
+	private static Constructor<?> httpSolrServerConstructor;
 	static {
 		final Bundle bundle = SolrActivator.getInstance().getBundle();
 
+		boolean assumeSolr4 = false;
+
 		try {
 			commonsHttpSolrServerConstructor = bundle.loadClass("org.apache.solr.client.solrj.impl.CommonsHttpSolrServer").getConstructor(String.class);
+		} catch (final ClassNotFoundException e) {
+			assumeSolr4 = true;
 		} catch (Exception | AssertionError | LinkageError e) {
 			LOG.debug("Error loading SolrJ CommonsHttpSolrServer!", e);
+		}
+
+		if (assumeSolr4) {
+			try {
+				httpSolrServerConstructor = bundle.loadClass("org.apache.solr.client.solrj.impl.HttpSolrServer").getConstructor(String.class);
+			} catch (Exception | AssertionError | LinkageError e) {
+				LOG.debug("Error loading SolrJ HttpSolrServer!", e);
+			}
 		}
 	}
 
 	public static SolrServer createDefaultSolrServer(final String urlString) throws MalformedURLException {
 		// try CommonsHttpSolrServer
 		if (commonsHttpSolrServerConstructor != null) {
-			try {
-				return (SolrServer) commonsHttpSolrServerConstructor.newInstance(urlString);
-			} catch (final InvocationTargetException e) {
-				final Throwable t = e.getTargetException();
-				if (t instanceof MalformedURLException) {
-					throw (MalformedURLException) t;
-				} else {
-					throw new IllegalStateException("Unhandled exception creating SolrJ server instance. " + t.getMessage(), t);
-				}
-			} catch (final Exception | LinkageError | AssertionError e) {
-				throw new IllegalStateException("Error creating SolrJ server instance. " + e.getMessage(), e);
-			}
+			return createDefaultSolrServer(urlString, commonsHttpSolrServerConstructor);
+		}
+
+		// try HttpSolrServer
+		if (httpSolrServerConstructor != null) {
+			return createDefaultSolrServer(urlString, httpSolrServerConstructor);
 		}
 
 		// give up
 		throw new IllegalStateException("No compatible SolrJ API available!");
+	}
+
+	private static SolrServer createDefaultSolrServer(final String urlString, final Constructor<?> serverConstructor) throws MalformedURLException {
+		try {
+			return (SolrServer) serverConstructor.newInstance(urlString);
+		} catch (final InvocationTargetException e) {
+			final Throwable t = e.getTargetException();
+			if (t instanceof MalformedURLException) {
+				throw (MalformedURLException) t;
+			} else {
+				throw new IllegalStateException("Unhandled exception creating SolrJ server instance. " + t.getMessage(), t);
+			}
+		} catch (final Exception | LinkageError | AssertionError e) {
+			throw new IllegalStateException("Error creating SolrJ server instance. " + e.getMessage(), e);
+		}
 	}
 
 	public static SolrServer createEmbeddedServer(final String repositoryId) {
