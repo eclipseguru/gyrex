@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Konrad Schergaut - Bug 407535
  *******************************************************************************/
 package org.eclipse.gyrex.persistence.solr.internal;
 
@@ -35,31 +36,32 @@ public class SolrServerFactory {
 	private static final Logger LOG = LoggerFactory.getLogger(SolrServerFactory.class);
 
 	private static Constructor<?> commonsHttpSolrServerConstructor;
+	private static Constructor<?> httpSolrServerConstructor;
 	static {
 		final Bundle bundle = SolrActivator.getInstance().getBundle();
 
 		try {
 			commonsHttpSolrServerConstructor = bundle.loadClass("org.apache.solr.client.solrj.impl.CommonsHttpSolrServer").getConstructor(String.class);
 		} catch (Exception | AssertionError | LinkageError e) {
-			LOG.debug("Error loading SolrJ CommonsHttpSolrServer!", e);
+			LOG.debug("Error loading SolrJ 3 CommonsHttpSolrServer!", e);
+		}
+
+		try {
+			httpSolrServerConstructor = bundle.loadClass("org.apache.solr.client.solrj.impl.HttpSolrServer").getConstructor(String.class);
+		} catch (Exception | AssertionError | LinkageError e) {
+			LOG.debug("Error loading SolrJ 4 HttpSolrServer!", e);
 		}
 	}
 
 	public static SolrServer createDefaultSolrServer(final String urlString) throws MalformedURLException {
+		// try HttpSolrServer
+		if (httpSolrServerConstructor != null) {
+			return createSolrServer(urlString, httpSolrServerConstructor);
+		}
+
 		// try CommonsHttpSolrServer
 		if (commonsHttpSolrServerConstructor != null) {
-			try {
-				return (SolrServer) commonsHttpSolrServerConstructor.newInstance(urlString);
-			} catch (final InvocationTargetException e) {
-				final Throwable t = e.getTargetException();
-				if (t instanceof MalformedURLException) {
-					throw (MalformedURLException) t;
-				} else {
-					throw new IllegalStateException("Unhandled exception creating SolrJ server instance. " + t.getMessage(), t);
-				}
-			} catch (final Exception | LinkageError | AssertionError e) {
-				throw new IllegalStateException("Error creating SolrJ server instance. " + e.getMessage(), e);
-			}
+			return createSolrServer(urlString, commonsHttpSolrServerConstructor);
 		}
 
 		// give up
@@ -92,6 +94,21 @@ public class SolrServerFactory {
 		return solrServerForRead;
 	}
 
+	private static SolrServer createSolrServer(final String urlString, final Constructor<?> solrServerConstructor) throws MalformedURLException {
+		try {
+			return (SolrServer) solrServerConstructor.newInstance(urlString);
+		} catch (final InvocationTargetException e) {
+			final Throwable t = e.getTargetException();
+			if (t instanceof MalformedURLException) {
+				throw (MalformedURLException) t;
+			} else {
+				throw new IllegalStateException("Unhandled exception creating SolrJ server instance. " + t.getMessage(), t);
+			}
+		} catch (final Exception | LinkageError | AssertionError e) {
+			throw new IllegalStateException("Error creating SolrJ server instance. " + e.getMessage(), e);
+		}
+	}
+
 	private static void optimizeForRead(final SolrServer solrServerForRead) {
 		try {
 			BeanUtils.setProperty(solrServerForRead, "connectionTimeout", new Integer(1000));
@@ -102,4 +119,7 @@ public class SolrServerFactory {
 		}
 	}
 
+	private SolrServerFactory() {
+		// empty
+	}
 }
