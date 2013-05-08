@@ -107,6 +107,10 @@ public class SolrServerWithMetrics extends SolrServer {
 		}
 	}
 
+	public void shutdown() {
+		// no-op
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder toString = new StringBuilder();
