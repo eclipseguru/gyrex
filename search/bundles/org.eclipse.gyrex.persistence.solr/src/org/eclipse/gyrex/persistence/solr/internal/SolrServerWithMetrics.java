@@ -24,7 +24,6 @@ import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.impl.LBHttpSolrServer;
 import org.apache.solr.client.solrj.request.AbstractUpdateRequest;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
@@ -112,9 +111,14 @@ public class SolrServerWithMetrics extends SolrServer {
 	public String toString() {
 		final StringBuilder toString = new StringBuilder();
 		toString.append(server.getClass().getSimpleName()).append(" {");
-		if (server instanceof CommonsHttpSolrServer) {
-			toString.append(((CommonsHttpSolrServer) server).getBaseURL());
-		} else if (server instanceof EmbeddedSolrServer) {
+
+		try {
+			toString.append(server.getClass().getMethod("getBaseURL").invoke(server));
+		} catch (final Exception e) {
+			// ignore (might not be there)
+		}
+
+		if (server instanceof EmbeddedSolrServer) {
 			try {
 				toString.append(EmbeddedSolrServer.class.getDeclaredField("coreName").get(server));
 			} catch (final Exception e) {
