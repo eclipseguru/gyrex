@@ -115,6 +115,8 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 	private ApplicationRunner adminApplicationRunner;
 	private StatusTracker statusTracker;
+	private int adminPort;
+	private String adminHost;
 
 	/**
 	 * The constructor
@@ -130,7 +132,10 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 		final ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpConfiguration));
 
-		connector.setPort(DEFAULT_ADMIN_PORT);
+		connector.setPort(adminPort);
+		if (null != adminHost) {
+			connector.setHost(adminHost);
+		}
 		connector.setIdleTimeout(60000);
 		// TODO: (Jetty9?) connector.setLowResourcesConnections(20000);
 		// TODO: (Jetty9?) connector.setLowResourcesMaxIdleTime(5000);
@@ -163,11 +168,14 @@ public class AdminUiActivator extends BaseBundleActivator {
 			final HttpConfiguration httpConfiguration = new HttpConfiguration();
 			httpConfiguration.setSendServerVersion(false);
 			httpConfiguration.setSendDateHeader(false);
-			httpConfiguration.setSecurePort(DEFAULT_ADMIN_PORT);
+			httpConfiguration.setSecurePort(adminPort);
 
 			final ServerConnector connector = new ServerConnector(server, sslContextFactory, new HttpConnectionFactory(httpConfiguration));
 
-			connector.setPort(DEFAULT_ADMIN_PORT);
+			connector.setPort(adminPort);
+			if (null != adminHost) {
+				connector.setHost(adminHost);
+			}
 			connector.setIdleTimeout(60000);
 			// TODO: (Jetty9?) connector.setLowResourcesConnections(20000);
 			// TODO: (Jetty9?) connector.setLowResourcesMaxIdleTime(5000);
@@ -273,6 +281,14 @@ public class AdminUiActivator extends BaseBundleActivator {
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
+
+		try {
+			// set to default admin port if null or not a number
+			adminPort = Integer.valueOf(context.getProperty("gyrex.admin.http.port"));
+		} catch (final NumberFormatException nfe) {
+			adminPort = DEFAULT_ADMIN_PORT;
+		}
+		adminHost = context.getProperty("gyrex.admin.http.host");
 
 		statusTracker = new StatusTracker(context);
 		statusTracker.open();
