@@ -2,3 +2,7 @@ bin/
 *~
 *.rej
 *.bak
+.DS_Store
+.Trashes
+*.swp
+*.lock
