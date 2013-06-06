@@ -157,7 +157,8 @@ public class ApplicationContext implements IApplicationContext {
 		if (applicationHandler.getServletHandler().isStarted() || applicationHandler.getServletHandler().isStarting()) {
 			try {
 				holder.start();
-				holder.initialize();
+				// FIXME: re-enable for Jetty > 9.0.0
+//				holder.initialize();
 			} catch (final Exception e) {
 				// attempt a clean unregister
 				try {
