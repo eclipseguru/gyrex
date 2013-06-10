@@ -198,7 +198,7 @@
 
 		<!-- use eclipse.jarProcessor directly instead of the "pack" on p2.process.artifacts so that we
 		     can specify the file to pack instead of doing everything -->
-		<eclipse.jarProcessor inputFolder="${repoDir}" pack="true" >
+		<eclipse.jarProcessor inputFolder="${repoDir}" pack="false" >
 			<file dir="${repoDir}" includesfile="${includesFile}" />
 		</eclipse.jarProcessor>
 
