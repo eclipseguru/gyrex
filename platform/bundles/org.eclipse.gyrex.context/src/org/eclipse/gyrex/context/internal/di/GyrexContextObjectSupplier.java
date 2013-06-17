@@ -59,6 +59,7 @@ public class GyrexContextObjectSupplier extends BaseContextObjectSupplier {
 			// ignore unknown annotation types
 			return null;
 
+		// extensibility: search for an ExtendedObjectResolver OSGi service that can handle the annotation
 		final BundleContext bundleContext = ContextActivator.getInstance().getBundle().getBundleContext();
 		final String filter = '(' + ExtendedObjectResolver.ANNOTATION_PROPERTY + '=' + annotation.annotationType().getName() + ')';
 		try {

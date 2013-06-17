@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -109,42 +109,43 @@ public abstract class BaseContextObjectSupplier extends PrimaryObjectSupplier {
 	 * allows to enable dynamic injection (not recommended at this point, see
 	 * http://dev.eclipse.org/mhonarc/lists/e4-dev/msg05749.html)
 	 */
-	/* For reference:
-	 * 
+	/* <pre>
+	 * For reference:
+	 *
 	 * I have a few questions about inject usage and dynamic injection. I'm
-	 * using the injector directly with without the context.
-	 * 
+	 * using the injector directly without the context.
+	 *
 	 * In my PrimaryObjectSupplier#get implementation I'm registering some
 	 * listener somewhere then track is true (i.e. dynamic injection is
 	 * enabled). The listeners gets notified of updates which might change the
 	 * injection condition. The listener is somewhat associated with the
 	 * injected argument. It wraps the passed in requestor so that it can
 	 * notify the requestor when a re-injection is necessary.
-	 * 
+	 *
 	 * A change in the condition may mean the an argument becomes invalid so
 	 * that it's no-longer suitable of injection. This may lead to a situation
 	 * where no replacement argument for injection is available. How are those
 	 * intended to be addressed? Currently, IRequestor#resolveArguments logs a
 	 * silent message but does not throw any exception. Is it possible to force
 	 * an exception in that case?
-	 * 
+	 *
 	 * Is it possible to really un-inject an object, i.e. set all injected
 	 * fields explicitly to null even if they are not optional? The JavaDoc of
 	 * uninject states that it only works with optional arguments.
-	 * 
+	 *
 	 * How can I remove/dispose listeners that are no longer needed? I noticed
 	 * that there seems to be a gap. At some point, I call IInjector#make. This
 	 * creates an object that may have dynamic injected arguments (updated when
 	 * they change). When the object is no longer needed, the code no longer
 	 * references it. Will there be references to it from the IRequestor or
 	 * will it be garbage collected at some time?
-	 * 
+	 *
 	 * Assuming it will be garbage collected ... how do I then discover that I
 	 * no longer need the listeners? Is that what IRequestor#isValid is for? If
 	 * yes then this may lead to a situation where the listeners won't be
 	 * removed when the system doesn't change and the listeners aren't
 	 * triggered. I'm wondering if there is a better story for this. Any ideas?
-	 * 
+	 *
 	 * Thanks! Any help is really appreciated.
 	 * </pre>
 	 */
@@ -246,14 +247,38 @@ public abstract class BaseContextObjectSupplier extends PrimaryObjectSupplier {
 		return getClass(descriptor.getDesiredType());
 	}
 
+	/**
+	 * Called by
+	 * {@link #get(IObjectDescriptor[], Object[], IRequestor, boolean, boolean, boolean)}
+	 * to obtain an object of the specified type qualified with a given
+	 * annotation.
+	 * <p>
+	 * When this method is called, neither a a context object nor an OSGi
+	 * service was available in the system to satisfy the dependency for
+	 * injection. Thus, implementors may perform other types of resolution to
+	 * either create or find an object suitable for injection.
+	 * </p>
+	 * <p>
+	 * TODO: this lookup is currently not dynamic; the life-cycle of any object
+	 * returned is expected to be similar to a "singleton".
+	 * </p>
+	 * 
+	 * @param type
+	 *            the requested type
+	 * @param annotation
+	 *            the qualifying annotation
+	 * @return an object of the requested type (i.e. must be assignable to type,
+	 *         maybe <code>null</code>)
+	 */
 	protected abstract Object getQualifiedObjected(Class<?> type, Annotation annotation);
 
 	private Object getService(final Class<?> key, final IObjectDescriptor descriptor, final IRequestor requestor, final boolean initial, final boolean track, final boolean group) {
 		// look for @Service annotation
+		// TODO: add support for other (non-Gyrex) OSGi DI annotations here
 		final DynamicService serviceAnnotation = descriptor.getQualifier(DynamicService.class);
 		if (null == serviceAnnotation) {
 			if (ContextDebug.injection) {
-				LOG.debug("No @Service annotation present on ({}).", descriptor);
+				LOG.debug("No @DynamicService annotation present on ({}).", descriptor);
 			}
 			return null;
 		}
@@ -279,7 +304,6 @@ public abstract class BaseContextObjectSupplier extends PrimaryObjectSupplier {
 		// verify that the bundle requesting the service has the necessary permissions to use it
 		// (stack-based permission checks will only check the DI engine stack; thus we need
 		// to verify manually, similar to section 112.9.3 of DS spec with DCR)
-
 		if (!bundleContext.getBundle().hasPermission(new ServicePermission(serviceInterface.getName(), "get"))) {
 			if (ContextDebug.injection) {
 				LOG.debug("Bundle ({}) does not have permissions to get service ({}) for requestor ({}).", new Object[] { bundleContext.getBundle(), serviceInterface, requestor });
@@ -296,6 +320,14 @@ public abstract class BaseContextObjectSupplier extends PrimaryObjectSupplier {
 			proxy = trackService(bundleContext, serviceInterface, filter);
 		} catch (final InvalidSyntaxException e) {
 			throw new InjectionException(String.format("Error parsing filter '%s' specified in annotation at %s. %s", filter, descriptor, e.getMessage()), e);
+		}
+
+		// abort if proxy not available (bug 410938)
+		if (proxy == null) {
+			if (ContextDebug.injection) {
+				LOG.debug("OSGI service lookup disabled in supplier ({}) for service ({}).", new Object[] { this, serviceInterface });
+			}
+			return null;
 		}
 
 		// test for collection / list
@@ -348,5 +380,24 @@ public abstract class BaseContextObjectSupplier extends PrimaryObjectSupplier {
 		// no-op
 	}
 
+	/**
+	 * Called by
+	 * {@link #get(IObjectDescriptor[], Object[], IRequestor, boolean, boolean, boolean)}
+	 * to obtain an instance of an OSGi service that can be injected as a
+	 * dependency.
+	 * <p>
+	 * Sub-classes that do not wish to support the lookup of OSGi services
+	 * should return <code>null</code> here. Otherwise, all implementors are
+	 * expected to return a proxy that is capable of acquiring the specified
+	 * service if necessary.
+	 * </p>
+	 * 
+	 * @param bundleContext
+	 * @param serviceInterface
+	 * @param filter
+	 * @return the service proxy to be used for injection (maybe
+	 *         <code>null</code> if not supported)
+	 * @throws InvalidSyntaxException
+	 */
 	protected abstract IServiceProxy<?> trackService(BundleContext bundleContext, Class<?> serviceInterface, String filter) throws InvalidSyntaxException;
 }
