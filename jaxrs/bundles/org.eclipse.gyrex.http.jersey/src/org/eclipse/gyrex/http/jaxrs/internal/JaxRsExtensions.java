@@ -26,6 +26,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.wadl.config.WadlGeneratorConfig;
 import com.sun.jersey.server.wadl.generators.WadlGeneratorJAXBGrammarGenerator;
 
@@ -50,15 +51,16 @@ public class JaxRsExtensions {
 		}
 	}
 
-	public static void addWadlSupport(final Set<Object> singletons) {
-//		return generator( WadlGeneratorApplicationDoc.class ) 
-//      .prop( "applicationDocsStream", "application-doc.xml" ) 
-//    .generator( WadlGeneratorGrammarsSupport.class ) 
-//      .prop( "grammarsStream", "application-grammars.xml" ) 
-//    .generator( WadlGeneratorResourceDocSupport.class ) 
+	public static void addWadlSupport(final ResourceConfig resourceConfig) {
+//		return generator( WadlGeneratorApplicationDoc.class )
+//      .prop( "applicationDocsStream", "application-doc.xml" )
+//    .generator( WadlGeneratorGrammarsSupport.class )
+//      .prop( "grammarsStream", "application-grammars.xml" )
+//    .generator( WadlGeneratorResourceDocSupport.class )
 //      .prop( "resourceDocStream", "resourcedoc.xml" ) .
 //      generator(WadlGeneratorJAXBGrammarGenerator.class).descriptions();
-		singletons.add(WadlGeneratorConfig.generator(WadlGeneratorJAXBGrammarGenerator.class).build());
+		resourceConfig.getSingletons().add(WadlGeneratorConfig.generator(WadlGeneratorJAXBGrammarGenerator.class).build());
+		resourceConfig.getClasses().add(WadlResource.class);
 	}
 
 	private static Object createMoxyJsonProvider() {

@@ -89,6 +89,9 @@ public class JaxRsApplication extends Application {
 		// add support for EclipseLink MOXy if available
 		JaxRsExtensions.addJsonProviderIfPossible(resourceConfig.getSingletons());
 
+		// add support for WADL generation
+		JaxRsExtensions.addWadlSupport(resourceConfig);
+
 		// add init properties
 		resourceConfig.getProperties().putAll(getApplicationContext().getInitProperties());
 
