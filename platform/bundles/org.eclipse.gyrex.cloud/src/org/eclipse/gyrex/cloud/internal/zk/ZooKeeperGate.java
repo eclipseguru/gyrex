@@ -585,7 +585,11 @@ public class ZooKeeperGate {
 		return connectString;
 	}
 
-	long getLastStateChangeTimestamp() {
+	/**
+	 * @noreference This method is not intended to be referenced by clients.
+	 * @return the timestamp of the last ZooKeeperGate state change
+	 */
+	public final long getLastStateChangeTimestamp() {
 		return keeperStateRef.getLastStateChangeTimestamp();
 	}
 

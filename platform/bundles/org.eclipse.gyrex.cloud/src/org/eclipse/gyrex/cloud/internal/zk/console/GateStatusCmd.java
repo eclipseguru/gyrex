@@ -9,8 +9,10 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.cloud.internal.zk;
+package org.eclipse.gyrex.cloud.internal.zk.console;
 
+import org.eclipse.gyrex.cloud.internal.zk.GateDownException;
+import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 import org.eclipse.gyrex.common.console.Command;
 
 import org.apache.commons.lang.time.DateFormatUtils;
