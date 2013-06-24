@@ -10,6 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - API rework (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=337184)
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
+ *     Konrad Schergaut - extended Java-Doc for usage with Solr Cloud.
  *******************************************************************************/
 package org.eclipse.gyrex.persistence.solr.config;
 
@@ -38,6 +39,8 @@ public interface ISolrRepositoryConfigurer {
 
 	/**
 	 * Calls {@link IRepositoryPreferences#flush()}.
+	 * 
+	 * @throws BackingStoreException
 	 */
 	void flush() throws BackingStoreException;
 
@@ -49,7 +52,9 @@ public interface ISolrRepositoryConfigurer {
 	 *            the server type
 	 * @param serverUrl
 	 *            the server url - should be <code>null</code> for
-	 *            {@link SolrServerType#EMBEDDED}
+	 *            {@link SolrServerType#EMBEDDED}.<br/>
+	 *            Refers to the SolrCloud ZooKeeperServer for
+	 *            {@link SolrServerType#CLOUD}.
 	 * @throws IllegalArgumentException
 	 *             if any of the parameters is invalid
 	 */

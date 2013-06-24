@@ -10,6 +10,7 @@
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - API rework (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=337184)
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
+ *     Konrad Schergaut - Setting SolrCloud-based properties. (https://bugs.eclipse.org/bugs/show_bug.cgi?id=411016)
  *******************************************************************************/
 package org.eclipse.gyrex.persistence.solr.internal;
 
@@ -48,7 +49,11 @@ public class SolrRepositoryConfigurer implements ISolrRepositoryConfigurer {
 	public void setProperties(final SolrServerType serverType, final String serverUrl) throws IllegalArgumentException {
 		repositoryDefinition.getRepositoryPreferences().put(SolrRepositoryProvider.PREF_KEY_SERVER_TYPE, serverType.toString(), false);
 		if (serverUrl != null) {
-			repositoryDefinition.getRepositoryPreferences().put(SolrRepositoryProvider.PREF_KEY_SERVER_URL, serverUrl, false);
+			if (serverType == SolrServerType.REMOTE) {
+				repositoryDefinition.getRepositoryPreferences().put(SolrRepositoryProvider.PREF_KEY_SERVER_URL, serverUrl, false);
+			} else if (serverType == SolrServerType.CLOUD) {
+				repositoryDefinition.getRepositoryPreferences().put(SolrRepositoryProvider.PREF_KEY_ZK_HOSTS, serverUrl, false);
+			}
 		} else {
 			repositoryDefinition.getRepositoryPreferences().remove(SolrRepositoryProvider.PREF_KEY_SERVER_URL);
 		}

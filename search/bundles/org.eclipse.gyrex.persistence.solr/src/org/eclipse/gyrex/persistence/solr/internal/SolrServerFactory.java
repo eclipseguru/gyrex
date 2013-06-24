@@ -9,11 +9,13 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     Konrad Schergaut - Bug 407535
+ *     Konrad Schergaut - introducing handling for cloud solr server (https://bugs.eclipse.org/bugs/show_bug.cgi?id=411016)
  *******************************************************************************/
 package org.eclipse.gyrex.persistence.solr.internal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 
 import org.osgi.framework.Bundle;
@@ -37,6 +39,7 @@ public class SolrServerFactory {
 
 	private static Constructor<?> commonsHttpSolrServerConstructor;
 	private static Constructor<?> httpSolrServerConstructor;
+	private static Constructor<?> cloudSolrServerConstructor;
 	static {
 		final Bundle bundle = SolrActivator.getInstance().getBundle();
 
@@ -51,6 +54,27 @@ public class SolrServerFactory {
 		} catch (Exception | AssertionError | LinkageError e) {
 			LOG.debug("Error loading SolrJ 4 HttpSolrServer!", e);
 		}
+
+		try {
+			cloudSolrServerConstructor = bundle.loadClass("org.apache.solr.client.solrj.impl.CloudSolrServer").getConstructor(String.class);
+		} catch (Exception | AssertionError | LinkageError e) {
+			LOG.debug("Error loading SolrJ 4 CloudSolrServer!", e);
+		}
+	}
+
+	public static SolrServer createCloudSolrServer(final String zkHost, final String collection) throws MalformedURLException {
+		// try CommonsHttpSolrServer
+		if (cloudSolrServerConstructor != null) {
+			final SolrServer server = createSolrServer(zkHost, cloudSolrServerConstructor);
+			try {
+				final Method defaultCollectionSetter = server.getClass().getMethod("setDefaultCollection", String.class);
+				defaultCollectionSetter.invoke(server, collection);
+			} catch (final Exception e) {
+				throw new IllegalStateException("No CloudSolrServer available!", e);
+			}
+			return server;
+		}
+		throw new IllegalStateException("No CloudSolrServer available!");
 	}
 
 	public static SolrServer createDefaultSolrServer(final String urlString) throws MalformedURLException {

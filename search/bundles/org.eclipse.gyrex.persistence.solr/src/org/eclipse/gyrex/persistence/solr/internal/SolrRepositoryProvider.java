@@ -9,6 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     Mike Tschierschke - rework of the SolrRepository concept (https://bugs.eclipse.org/bugs/show_bug.cgi?id=337404)
+ *     Konrad Schergaut - Repository creation for Solr cloud repositories (https://bugs.eclipse.org/bugs/show_bug.cgi?id=411016)
  *******************************************************************************/
 package org.eclipse.gyrex.persistence.solr.internal;
 
@@ -23,6 +24,7 @@ import org.eclipse.gyrex.persistence.storage.settings.IRepositoryPreferences;
 
 import org.osgi.service.prefs.BackingStoreException;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.solr.client.solrj.SolrServer;
 
@@ -43,6 +45,14 @@ public class SolrRepositoryProvider extends RepositoryProvider {
 	 * <code>serverUrl</code>)
 	 */
 	public static final String PREF_KEY_SERVER_URL = "serverUrl";
+
+	/**
+	 * preference key for zk Host ensemble to be used with
+	 * {@link SolrServerType#CLOUD cloud} Solr servers (value
+	 * <code>zkHosts</code>).<br/>
+	 * The value might be a csv-list equivalent to SolrCloud setup.
+	 */
+	public static final String PREF_KEY_ZK_HOSTS = "zkHosts";
 
 	/**
 	 * preference key for a Solr base URL to be used with
@@ -104,6 +114,14 @@ public class SolrRepositoryProvider extends RepositoryProvider {
 					throw new IllegalStateException(String.format("Repository %s not configured correctly. Server URL '%s' is invalid.  %s", repositoryId, masterUrlString, e.getMessage()));
 				} catch (final BackingStoreException e) {
 					throw new IllegalStateException(String.format("Unable to read repository settings for repository %s. %s", repositoryId, e.getMessage()), e);
+				}
+			case CLOUD:
+				final String zkHost = repositoryPreferences.get(PREF_KEY_ZK_HOSTS, null);
+				try {
+					final SolrServer cloudSolrServer = SolrServerFactory.createCloudSolrServer(zkHost, repositoryId);
+					return new SolrServer[] { cloudSolrServer, cloudSolrServer };
+				} catch (final MalformedURLException e) {
+					throw new IllegalStateException(String.format("Repository %s not configured correctly. Zookeeper Host(s) '%s' invalid.  %s", repositoryId, zkHost, ExceptionUtils.getRootCauseMessage(e)));
 				}
 
 			default:

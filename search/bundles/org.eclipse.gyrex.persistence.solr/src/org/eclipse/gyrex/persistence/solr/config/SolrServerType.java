@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Konrad Schergaut - added CLOUD solr server.
  *******************************************************************************/
 package org.eclipse.gyrex.persistence.solr.config;
 
@@ -21,5 +22,8 @@ public enum SolrServerType {
 	EMBEDDED,
 
 	/** a Solr instance running remotely */
-	REMOTE
+	REMOTE,
+
+	/** a Solr Cloud instance running remotely */
+	CLOUD
 }
