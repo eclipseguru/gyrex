@@ -1,0 +1,8 @@
+The is the main Gyrex build aggregator. It masters the aggregation
+of several Gyrex Git repositories into on build for producing the
+various interesting artifacts.
+
+Plese have a look at:
+  http://wiki.eclipse.org/Gyrex/Contributor_Guide#Builds
+
+  
