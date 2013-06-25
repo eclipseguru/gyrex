@@ -46,16 +46,16 @@ if [ "$BUILD_TYPE" = "N" ]; then
 elif [ "$BUILD_TYPE" = "I" ]; then
 	echo '# customization for integration builds' >> $buildLocalProps
 	echo skipSign=true >> $buildLocalProps
-	echo publishRepoStream=1.2/integration >> $buildLocalProps
+	echo publishRepoStream=1.3/integration >> $buildLocalProps
 elif [ "$BUILD_TYPE" = "M" ]; then
 	echo '# customization for maintenance builds' >> $buildLocalProps
-	echo publishRepoStream=1.1/maintenance >> $buildLocalProps
+	echo publishRepoStream=1.2/maintenance >> $buildLocalProps
 elif [ "$BUILD_TYPE" = "S" ]; then
 	echo '# customization for stable builds' >> $buildLocalProps
-	echo publishRepoStream=1.2/milestones >> $buildLocalProps
+	echo publishRepoStream=1.3/milestones >> $buildLocalProps
 elif [ "$BUILD_TYPE" = "R" ]; then
 	echo '# customization for release builds' >> $buildLocalProps
-	echo publishRepoStream=1.1 >> $buildLocalProps
+	echo publishRepoStream=1.3 >> $buildLocalProps
 fi
 echo '' >> $buildLocalProps
 echo "# generated `date`" >> $buildLocalProps
