@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.eclipse.gyrex.products</groupId>
+  <artifactId>gyrex-server</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>eclipse-repository</packaging>
+
+  <parent>
+    <groupId>org.eclipse.gyrex.releng</groupId>
+    <artifactId>gyrex-maven-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../mavenparent/</relativePath>
+  </parent>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-director-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- install products using p2 director -->
+            <id>materialize-products</id>
+            <goals>
+              <goal>materialize-products</goal>
+            </goals>
+          </execution>
+          <execution>
+            <!-- create product archives -->
+            <id>archive-products</id>
+            <goals>
+              <goal>archive-products</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <profile>GyrexServer</profile>
+          <products>
+            <product>
+              <id>org.eclipse.gyrex.products.server</id>
+              <!-- define name of resulting archive files (without extension) -->
+              <archiveFileName>gyrex-${project.version}</archiveFileName>
+              <!-- define folder name within archive file (remove if it should not be in a folder) -->
+              <rootFolder>gyrex</rootFolder>
+            </product>
+          </products>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
