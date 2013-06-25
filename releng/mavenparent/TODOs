@@ -1,0 +1,7 @@
+
+
+Integrate Tests:
+http://assenkolov.blogspot.de/2011/02/staged-maven-build-in-hudson-with.html
+
+The "stage" using "profiles" concept seems to be good for compile/checkin vs. integration tests
+
