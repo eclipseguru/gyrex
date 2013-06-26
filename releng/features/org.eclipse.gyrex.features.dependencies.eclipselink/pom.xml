@@ -11,5 +11,30 @@
     <artifactId>gyrex-features</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <!-- do not generate source for missing source bundles -->
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-source-feature-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>source-feature</id>
+            <phase>package</phase>
+            <goals>
+              <goal>source-feature</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludes>
+            <plugin id="org.eclipse.gemini.jpa" />
+            <plugin id="osgi.enterprise" />
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
