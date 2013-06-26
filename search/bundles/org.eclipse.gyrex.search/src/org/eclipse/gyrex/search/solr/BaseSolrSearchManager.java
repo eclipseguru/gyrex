@@ -117,9 +117,6 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 	/**
 	 * Commits everything to the underlying Solr repository.
 	 * 
-	 * @param collection
-	 *            the collection (maybe <code>null</code> for the default
-	 *            collection)
 	 * @param waitFlush
 	 *            <code>true</code> if the method should block till all changes
 	 *            have been committed, <code>false</code> otherwise
@@ -158,7 +155,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 	private SolrInputDocument createSolrDoc(final IDocument document) {
 		final SolrInputDocument solrDoc = new SolrInputDocument();
 		final Collection<IDocumentAttribute<?>> attributes = document.getAttributes().values();
-		for (final IDocumentAttribute attr : attributes) {
+		for (final IDocumentAttribute<?> attr : attributes) {
 			final Collection<?> values = attr.getValues();
 			for (final Object value : values) {
 				solrDoc.addField(attr.getId(), value);
@@ -232,6 +229,9 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 
 			// enable facetting
 			for (final IFacet facet : facets.values()) {
+				if (!facet.isEnabled()) {
+					continue;
+				}
 				final String facetField = facet.getAttributeId();
 				final FacetSelectionStrategy selectionStrategy = facet.getSelectionStrategy();
 				if ((null != selectionStrategy) && (selectionStrategy == FacetSelectionStrategy.MULTI)) {
@@ -243,6 +243,9 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 
 			// facet filters
 			for (final IFacetFilter facetFilter : query.getFacetFilters()) {
+				if (!facetFilter.getFacet().isEnabled()) {
+					continue;
+				}
 				solrQuery.addFilterQuery(((FacetFilter) facetFilter).toFilterQuery());
 			}
 
@@ -450,9 +453,6 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 	/**
 	 * Optimizes and commits everything to the underlying Solr repository.
 	 * 
-	 * @param collection
-	 *            the collection (maybe <code>null</code> for the default
-	 *            collection)
 	 * @param waitFlush
 	 *            <code>true</code> if the method should block till all changes
 	 *            have been committed, <code>false</code> otherwise
@@ -530,7 +530,7 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 	 * target="_blank">versioning</a> guidelines.
 	 * </p>
 	 * 
-	 * @param query
+	 * @param solrQuery
 	 *            the <code>SolrQuery</code> object
 	 * @return the <code>QueryResponse</code> object
 	 */
@@ -590,14 +590,11 @@ public abstract class BaseSolrSearchManager extends BaseModelManager<org.eclipse
 	 * Allows to temporarily disabled commits from the manager.
 	 * <p>
 	 * When disabled, the manager will never commit any changes
-	 * {@link ISearchManager#publish(Iterable) submitted} to the underlying Solr
-	 * repository. Instead, {@link #commit(boolean, boolean)} must be called
-	 * manually in order to apply changes to the Solr repository.
+	 * {@link ISearchManager#publishDocuments(Collection) submitted} to the
+	 * underlying Solr repository. Instead, {@link #commit(boolean, boolean)}
+	 * must be called manually in order to apply changes to the Solr repository.
 	 * </p>
 	 * 
-	 * @param collection
-	 *            the collection (maybe <code>null</code> for the default
-	 *            collection)
 	 * @param enabled
 	 *            <code>true</code> if the manager is allowed to commit changes,
 	 *            <code>false</code> otherwise

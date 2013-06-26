@@ -52,7 +52,7 @@ public interface ISearchManager extends IModelManager {
 	 * Creates and returns a new transient document.
 	 * <p>
 	 * The document will not be contained in the repository until it has been
-	 * {@link #publish(Collection) published}.
+	 * {@link #publishDocuments(Collection) published}.
 	 * </p>
 	 * 
 	 * @param attributeId
@@ -66,7 +66,7 @@ public interface ISearchManager extends IModelManager {
 	 * Creates a transient facet for the specified attribute id.
 	 * <p>
 	 * The facet will not be contained in the map returned by
-	 * {@link #getFacets()} until it has been {@link #save(IFacet) saved}.
+	 * {@link #getFacets()} until it has been {@link #saveFacet(IFacet) saved}.
 	 * </p>
 	 * 
 	 * @param attributeId
