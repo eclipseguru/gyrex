@@ -16,103 +16,13 @@
 
   <build>
     <plugins>
-      <!-- <plugin> -->
-      <!-- <artifactId>maven-antrun-plugin</artifactId> -->
-      <!-- <executions> -->
-      <!-- <execution> -->
-      <!-- <id>unpack-content-jar</id> -->
-      <!-- <phase>package</phase> -->
-      <!-- <configuration> -->
-      <!-- <tasks> -->
-      <!-- <unjar src="target/repository/content.jar" dest="target/repository"/> -->
-      <!-- <delete file="target/repository/content.jar"/> -->
-      <!-- </tasks> -->
-      <!-- </configuration> -->
-      <!-- <goals> -->
-      <!-- <goal>run</goal> -->
-      <!-- </goals> -->
-      <!-- </execution> -->
-      <!-- </executions> -->
-      <!-- </plugin> -->
-      <!-- <plugin> -->
-      <!-- <groupId>org.codehaus.mojo</groupId> -->
-      <!-- <artifactId>xml-maven-plugin</artifactId> -->
-      <!-- <version>1.0</version> -->
-      <!-- <executions> -->
-      <!-- <execution> -->
-      <!-- <id>generate-extra-iu</id> -->
-      <!-- <phase>package</phase> -->
-      <!-- <goals> -->
-      <!-- <goal>transform</goal> -->
-      <!-- </goals> -->
-      <!-- </execution> -->
-      <!-- </executions> -->
-      <!-- <configuration> -->
-      <!-- <transformationSets> -->
-      <!-- <transformationSet> -->
-      <!-- <dir>target/repository</dir> -->
-      <!-- <includes> -->
-      <!-- <include>content.xml</include> -->
-      <!-- </includes> -->
-      <!-- <stylesheet>cp-content.xsl</stylesheet> -->
-      <!-- </transformationSet> -->
-      <!-- </transformationSets> -->
-      <!-- </configuration> -->
-      <!-- </plugin> -->
-      <!-- <plugin> -->
-      <!-- <artifactId>maven-resources-plugin</artifactId> -->
-      <!-- <version>2.6</version> -->
-      <!-- <executions> -->
-      <!-- <execution> -->
-      <!-- <id>copy-extra-iu</id> -->
-      <!-- <phase>package</phase> -->
-      <!-- <goals> -->
-      <!-- <goal>copy-resources</goal> -->
-      <!-- </goals> -->
-      <!-- <configuration> -->
-      <!-- <outputDirectory>${basedir}/target/repository</outputDirectory> -->
-      <!-- <resources> -->
-      <!-- <resource> -->
-      <!-- <directory>${basedir}/target/generated-resources/xml/xslt</directory> -->
-      <!-- <includes> -->
-      <!-- <include>content.xml</include> -->
-      <!-- </includes> -->
-      <!-- </resource> -->
-      <!-- </resosurces> -->
-      <!-- </configuration> -->
-      <!-- </execution> -->
-      <!-- </executions> -->
-      <!-- </plugin> -->
       <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-p2-extras-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>mirror-build</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>mirror</goal>
-            </goals>
-            <configuration>
-              <source>
-                <repository>
-                  <!-- mirror meta data of target platform used for this build -->
-                  <url>${project.baseUri}../products/target/targetPlatformRepository</url>
-                  <layout>p2-metadata</layout>
-                </repository>
-                <repository>
-                  <!-- mirror products -->
-                  <url>${project.baseUri}/../products/target/repository</url>
-                  <layout>p2</layout>
-                </repository>
-              </source>
-              <destination>${project.build.directory}/repository</destination>
-              <includeOptional>false</includeOptional>
-              <includeNonGreedy>false</includeNonGreedy>
-              <latestVersionOnly>true</latestVersionOnly>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-repository-plugin</artifactId>
+        <configuration>
+          <repositoryName>Gyrex Repository (Build ${buildLabel})</repositoryName>
+          <finalName>gyrex-${buildId}-repo</finalName>
+        </configuration>
       </plugin>
     </plugins>
   </build>

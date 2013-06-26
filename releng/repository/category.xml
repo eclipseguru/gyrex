@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
     <feature
-        uri="../features/org.eclipse.gyrex.features.master/target/org.eclipse.gyrex.features.master-1.2.0-SNAPSHOT.jar"
         id="org.eclipse.gyrex.features.master"
         version="0.0.0">
     </feature>
