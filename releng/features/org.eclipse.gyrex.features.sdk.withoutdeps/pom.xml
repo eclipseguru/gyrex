@@ -12,24 +12,4 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <!-- do not generate source for this feature -->
-          <groupId>org.eclipse.tycho.extras</groupId>
-          <artifactId>tycho-source-feature-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>source-feature</id>
-              <phase>NOOP</phase>
-              <goals>
-                <goal>source-feature</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 </project>
