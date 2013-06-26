@@ -12,4 +12,17 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
+  <build>
+    <plugins>
+      <plugin>
+        <!-- ignore missing bin.includes in this feature -->
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-packaging-plugin</artifactId>
+        <configuration>
+          <strictBinIncludes>false</strictBinIncludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
