@@ -18,6 +18,14 @@
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-repository-plugin</artifactId>
+        <configuration>
+          <!-- don't create the full repo zip here -->
+          <createArtifactRepository>false</createArtifactRepository>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-p2-director-plugin</artifactId>
         <executions>
           <execution>
@@ -36,13 +44,11 @@
           </execution>
         </executions>
         <configuration>
-          <profile>GyrexServer</profile>
+          <profile>GyrexServerProfile</profile>
           <products>
             <product>
               <id>org.eclipse.gyrex.products.server</id>
-              <!-- define name of resulting archive files (without extension) -->
-              <archiveFileName>gyrex-${project.version}</archiveFileName>
-              <!-- define folder name within archive file (remove if it should not be in a folder) -->
+              <archiveFileName>gyrex-${buildId}</archiveFileName>
               <rootFolder>gyrex</rootFolder>
             </product>
           </products>
