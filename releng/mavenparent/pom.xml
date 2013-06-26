@@ -13,10 +13,16 @@
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <buildType>I</buildType>
     <buildId>${buildType}${buildTimestamp}</buildId>
+    <buildLabel>${buildType}-${buildId}-${buildTimestamp}</buildLabel>
 
     <tycho.version>0.18.0</tycho.version>
     <tycho-extras.version>0.18.0</tycho-extras.version>
     <tycho-snapshots-repo.url>https://oss.sonatype.org/content/repositories/public/</tycho-snapshots-repo.url>
+    
+    <cbi-plugins.version>1.0.3</cbi-plugins.version>
+    
+    <eclipserun-repo.url>http://download.eclipse.org/eclipse/updates/4.3/R-4.3-201306052000/</eclipserun-repo.url>
+    <comparator-repo.url>http://download.eclipse.org/gyrex/1.2/</comparator-repo.url>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -182,6 +188,11 @@
         <plugin>
           <groupId>org.eclipse.tycho.extras</groupId>
           <artifactId>tycho-custom-bundle-plugin</artifactId>
+          <version>${tycho-extras.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho.extras</groupId>
+          <artifactId>tycho-p2-extras-plugin</artifactId>
           <version>${tycho-extras.version}</version>
         </plugin>
         <plugin>
