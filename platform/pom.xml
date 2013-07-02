@@ -14,7 +14,11 @@
 	<!-- assume the releng repo has been cloned into the same top folder -->
 	<relativePath>../gyrex-releng/mavenparent/</relativePath>
   </parent>
-  
+
+  <properties>
+    <tycho.scmUrl>scm:git:https://git.eclipse.org/r/p/gyrex/gyrex-platform.git</tycho.scmUrl>
+  </properties>
+
   <modules>
     <module>bundles</module>
   </modules>
