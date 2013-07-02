@@ -15,6 +15,10 @@
 	<relativePath>../gyrex-releng/mavenparent/</relativePath>
   </parent>
   
+  <properties>
+    <tycho.scmUrl>scm:git:https://git.eclipse.org/r/p/gyrex/addons/gyrex-search.git</tycho.scmUrl>
+  </properties>
+    
   <modules>
     <module>bundles</module>
   </modules>
