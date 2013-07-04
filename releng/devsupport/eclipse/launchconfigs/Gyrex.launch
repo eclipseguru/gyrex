@@ -25,6 +25,7 @@
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
 </listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}&#13;&#10;-console&#13;&#10;-consoleLog"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
@@ -34,11 +35,13 @@
 <booleanAttribute key="restart" value="true"/>
 <stringAttribute key="selectedPlugin" value="org.eclipse.gyrex.preferences"/>
 <setAttribute key="selected_features">
+<setEntry value="org.eclipse.gyrex.features.addons.jersey.jaxrs:default"/>
 <setEntry value="org.eclipse.gyrex.features.addons.mongodb:default"/>
 <setEntry value="org.eclipse.gyrex.features.admin:default"/>
 <setEntry value="org.eclipse.gyrex.features.dependencies.admin:default"/>
 <setEntry value="org.eclipse.gyrex.features.dependencies.commons:default"/>
 <setEntry value="org.eclipse.gyrex.features.dependencies.eclipselink:default"/>
+<setEntry value="org.eclipse.gyrex.features.dependencies.jersey:default"/>
 <setEntry value="org.eclipse.gyrex.features.dependencies.mongodb:default"/>
 <setEntry value="org.eclipse.gyrex.features.dependencies.persistence:default"/>
 <setEntry value="org.eclipse.gyrex.features.dependencies.processing:default"/>
