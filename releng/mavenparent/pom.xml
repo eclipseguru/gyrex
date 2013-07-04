@@ -48,6 +48,30 @@
 
   <profiles>
     <profile>
+      <!-- default buildType when running in Hudson -->
+      <id>default-buildType</id>
+      <properties>
+        <buildType>${env.BUILD_TYPE}</buildType>
+      </properties>
+      <activation>
+        <property>
+          <name>env.BUILD_TYPE</name>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <!-- default buildId when running in Hudson -->
+      <id>default-buildId</id>
+      <properties>
+        <buildId>${env.BUILD_IDENTIFIER}</buildId>
+      </properties>
+      <activation>
+        <property>
+          <name>env.BUILD_IDENTIFIER</name>
+        </property>
+      </activation>
+    </profile>
+    <profile>
       <!-- profile used for signing the build on build.eclipse.org -->
       <id>eclipse-sign</id>
       <build>
