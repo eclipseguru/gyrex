@@ -1,0 +1,5 @@
+This folder contains the Maven module for publish build results
+to the Gyrex website.
+
+Note: it only makes sense to execute this on Eclipse.org infrastructure.
+Therefore, a profile is used to trigger the execution only when specified.

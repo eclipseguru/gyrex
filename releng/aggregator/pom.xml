@@ -20,9 +20,6 @@
 
     <!-- build the parent -->
     <module>../mavenparent</module>
-    
-    <!-- capture build variable -->
-    <module>resources</module>
 
     <!-- build the target platform -->
     <module>../targetplatform</module>
@@ -44,6 +41,9 @@
 
     <!-- assemble the p2 repository -->
     <module>../repository</module>
+    
+    <!-- publish the build results -->
+    <module>../publisher</module>
 
   </modules>
 
