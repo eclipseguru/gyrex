@@ -157,6 +157,26 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <!-- build using JRE for Bundle Runtime Execution Environment -->
+      <id>bree-libs</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.tycho</groupId>
+              <artifactId>tycho-compiler-plugin</artifactId>
+              <version>${tycho.version}</version>
+              <configuration>
+                <!-- Note, BREE libraries and toolchain.xml must be setup 
+                  for this to work (it's done on Eclipse Hudson) -->
+                <useJDK>BREE</useJDK>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
   </profiles>
 
 
