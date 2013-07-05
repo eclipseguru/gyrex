@@ -18,7 +18,7 @@
   <profiles>
     <profile>
       <!-- participate in signing so that the executables are signed -->
-      <id>eclipse-sign</id>
+      <id>eclipse-sign-executables</id>
       <build>
         <plugins>
           <plugin>
