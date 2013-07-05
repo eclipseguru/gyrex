@@ -10,7 +10,8 @@
 
   <!-- common settings for all modules -->
   <properties>
-    <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
+    <!-- FIXME: this is not UTC (https://jira.codehaus.org/browse/MNG-5452) -->
+    <maven.build.timestamp.format>yyyyMMddHHmmZ</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <buildType>I</buildType>
     <buildId>${buildType}${buildTimestamp}</buildId>
