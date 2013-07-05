@@ -13,24 +13,10 @@
 
   <description>Publishes Gyrex build results on Eclipse.org</description>
 
-  <!-- define builder home and work dir -->
-  <dirname file="${ant.file.publish-gyrex-buildresults}" property="builder" />
-  <property name="buildDirectory" location="${builder}/target/publisher" />
-
-  <!-- load properties from the outer Maven build -->
-  <property name="build-variables.properties" location="${builder}/target/classes/build-variables.properties" />
-  <available property="build-variables.properties.exists" file="${build-variables.properties}" />
-  <fail unless="build-variables.properties.exists" message="build-variables.properties not found; do not invoke directly but only from outer Maven build" />
-  <property file="${build-variables.properties}" />
-
-  <!-- define where the build results are located -->
-  <property name="buildResultsRepo" location="${builder}/../repository/target" />
-  <property name="buildResultsProducts" location="${builder}/products/target/products" />
-
   <!-- ==================================================================================
           target: main
          ================================================================================== -->
-  <target name="main" description="Publishes the build results">
+  <target name="main" description="Publishes the build results" depends="init-variables">
     <fail unless="publishRepoStream" message="property publishRepoStream not set" />
 
     <!-- print build information -->
@@ -61,6 +47,39 @@
     <antcall target="publishToDownloadArea" />
   </target>
 
+  <!-- load variables from outer Maven build -->
+  <target name="init-variables">
+    <!-- define builder home and work dir -->
+    <dirname file="${ant.file.publish-gyrex-buildresults}" property="builder" />
+    <property name="buildDirectory" location="${builder}/target/publisher" />
+
+    <!-- check for properties from the outer Maven build -->
+    <property name="build-variables.properties" location="${builder}/target/classes/build-variables.properties" />
+    <available property="build-variables.properties.exists" file="${build-variables.properties}" />
+    <fail unless="build-variables.properties.exists" message="build-variables.properties not found; do not invoke directly but only from outer Maven build" />
+
+    <!-- load properties from the outer Maven build -->
+    <loadproperties srcFile="${build-variables.properties}">
+      <filterchain>
+        <!-- do not read lines containing unresolved variables; might cause expand recursion in Ant -->
+        <linecontains negate="true">
+          <contains value="${" />
+        </linecontains>
+      </filterchain>
+    </loadproperties>
+
+    <!-- define where the build results are located -->
+    <property name="buildResultsRepo" location="${builder}/../repository/target" />
+    <property name="buildResultsProducts" location="${builder}/../products/target/products" />
+
+    <!-- the artifacts to publish -->
+    <property name="productArchiveNameWin64" value="gyrex-${buildId}-win32.win32.x86_64.zip" />
+    <property name="productArchiveNameLinux64" value="gyrex-${buildId}-linux.gtk.x86_64.tar.gz" />
+    <property name="productArchiveNameMac64" value="gyrex-${buildId}-macosx.cocoa.x86_64.tar.gz" />
+    <property name="repositoryArchiveName" value="gyrex-${buildId}-repo.zip" />
+  </target>
+
+
   <!-- generates additional publishing files -->
   <target name="generateAddtionalFilesToPublish">
     <fail unless="publishRepoStream" message="property publishRepoStream not set" />
@@ -88,8 +107,10 @@
         <filter token="BUILD_ID" value="${buildId}" />
         <filter token="BUILD_LABEL" value="${buildLabel}" />
         <filter token="BUILD_PATH" value="${publishRepoBasePath}/${buildLabel}" />
-        <filter token="SERVER_ARCHIVE_PREFIX" value="${archiveNamePrefix}" />
-        <filter token="REPO_ARCHIVE_PREFIX" value="${archiveNamePrefix}" />
+        <filter token="SERVER_ARCHIVE_WIN_64" value="${productArchiveNameWin64}" />
+        <filter token="SERVER_ARCHIVE_LINUX_64" value="${productArchiveNameLinux64}" />
+        <filter token="SERVER_ARCHIVE_MAC_64" value="${productArchiveNameMac64}" />
+        <filter token="REPO_ARCHIVE" value="${repositoryArchiveName}" />
       </filterset>
     </copy>
 
@@ -158,8 +179,8 @@
 
     <!-- mirror to target (but only the bits that really changed) -->
     <p2.mirror log="${buildDirectory}/${buildLabel}/publish-repo.log" ignoreErrors="true">
-      <source location="${resultRepoLocationUrl}" />
-      <destination compressed="true" name="Gyrex Repository (Build ${buildId})" location="${publishBuildRepoUrl}" append="true" format="${resultRepoLocationUrl}" kind="metadata" />
+      <source location="${buildResultRepoUrl}" />
+      <destination compressed="true" name="Gyrex Repository (Build ${buildId})" location="${publishBuildRepoUrl}" append="true" format="${buildResultRepoUrl}" kind="metadata" />
       <destination compressed="true" name="Gyrex Repository (Build ${buildId})" location="${publishBuildRepoUrl}" append="true" format="${templateRepoUrl}" kind="artifact" />
       <comparator comparator="org.eclipse.equinox.p2.repository.tools.jar.comparator" comparatorLog="${buildDirectory}/${buildLabel}/publish-repo-compare.log">
         <!-- compare against the existing composite to not mirror duplicate bits -->
@@ -203,13 +224,10 @@
     <!-- copy everything from build label directory -->
     <copy todir="${publishBaseDirectory}${publishRepoBasePath}/${buildLabel}" includeemptydirs="false">
       <fileset dir="${buildDirectory}/${buildLabel}" />
-      <fileset dir="buildResultsProducts">
-        <include name="*.gz" />
-        <include name="*.zip" />
-      </fileset>
-      <fileset dir="buildResultsRepo">
-        <include name="*.zip" />
-      </fileset>
+      <fileset file="${buildResultsProducts}/${productArchiveNameWin64}" />
+      <fileset file="${buildResultsProducts}/${productArchiveNameLinux64}" />
+      <fileset file="${buildResultsProducts}/${productArchiveNameMac64}" />
+      <fileset file="${buildResultsRepo}/${repositoryArchiveName}" />
     </copy>
   </target>
 

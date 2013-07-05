@@ -39,8 +39,7 @@
                 </repository>
               </repositories>
               <!-- call antrunner to call publish.xml Ant script -->
-              <appArgLine>-data target/publisher-workspace -application
-                org.eclipse.ant.core.antRunner -buildfile publish.xml</appArgLine>
+              <appArgLine><![CDATA[-data target/publisher-workspace -application org.eclipse.ant.core.antRunner -buildfile publish.xml]]></appArgLine>
               <dependencies>
                 <dependency>
                   <artifactId>org.eclipse.ant.core</artifactId>
@@ -51,12 +50,12 @@
                   <type>eclipse-plugin</type>
                 </dependency>
                 <dependency>
-                  <artifactId>org.eclipse.equinox.p2.repository.tools</artifactId>
-                  <type>eclipse-plugin</type>
+                  <artifactId>org.eclipse.equinox.p2.core.feature</artifactId>
+                  <type>eclipse-feature</type>
                 </dependency>
                 <dependency>
-                  <artifactId>org.eclipse.equinox.p2.metadata.repository</artifactId>
-                  <type>eclipse-plugin</type>
+                  <artifactId>org.eclipse.equinox.p2.extras.feature</artifactId>
+                  <type>eclipse-feature</type>
                 </dependency>
                 <dependency>
                   <artifactId>org.eclipse.pde.build</artifactId>
@@ -68,6 +67,10 @@
                 </dependency>
                 <dependency>
                   <artifactId>org.eclipse.equinox.launcher</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.equinox.ds</artifactId>
                   <type>eclipse-plugin</type>
                 </dependency>
               </dependencies>
