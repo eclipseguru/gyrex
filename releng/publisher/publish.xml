@@ -39,9 +39,6 @@
     <!-- ensure the working directory exists -->
     <mkdir dir="${buildDirectory}/${buildLabel}" />
 
-    <!-- by default, we publish into /shared -->
-    <property name="publishBaseDirectory" location="/shared/rt/gyrex/drops" />
-
     <!-- initialize publish target based on buildType -->
     <condition property="publishRepoBasePath" value="/gyrex/${publishRepoStream}">
       <equals arg1="${buildType}" arg2="R" />

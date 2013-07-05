@@ -17,6 +17,8 @@
   <properties>
     <!-- the repo stream (maps usually one on one to a branch identifier) -->
     <publishRepoStream>1.2</publishRepoStream>
+    <!-- by default, we publish into /shared -->
+    <publishBaseDirectory>/shared/rt/gyrex/drops</publishBaseDirectory>
   </properties>
 
   <profiles>
@@ -38,8 +40,7 @@
               </repositories>
               <!-- call antrunner to call publish.xml Ant script -->
               <appArgLine>-data target/publisher-workspace -application
-                org.eclipse.ant.core.antRunner -buildfile
-                publish.xml</appArgLine>
+                org.eclipse.ant.core.antRunner -buildfile publish.xml</appArgLine>
               <dependencies>
                 <dependency>
                   <artifactId>org.eclipse.ant.core</artifactId>
