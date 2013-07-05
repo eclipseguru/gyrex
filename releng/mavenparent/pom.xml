@@ -348,6 +348,7 @@
           <!-- disable processing of Maven default folders (eg., src/main/resources) -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
+          <version>2.6</version>
           <executions>
             <execution>
               <id>default-resources</id>
