@@ -15,6 +15,36 @@
     <relativePath>../mavenparent/</relativePath>
   </parent>
 
+  <profiles>
+    <profile>
+      <!-- participate in signing so that the executables are signed -->
+      <id>eclipse-sign</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.cbi.maven.plugins</groupId>
+            <artifactId>eclipse-winsigner-plugin</artifactId>
+            <version>${cbi-plugins.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <signFiles>
+                <signFile>${project.build.directory}/products/org.eclipse.gyrex.products.server/win32/win32/x86_64/gyrex/gyrex.exe</signFile>
+                <signFile>${project.build.directory}/products/org.eclipse.gyrex.products.server/win32/win32/x86_64/gyrex/eclipsec.exe</signFile>
+              </signFiles>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>
