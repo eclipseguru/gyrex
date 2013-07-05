@@ -23,7 +23,7 @@
     <cbi-plugins.version>1.0.3</cbi-plugins.version>
     <cbi-plugins-repo.url>https://repo.eclipse.org/content/repositories/releases/</cbi-plugins-repo.url>
 
-    <eclipserun-repo.url>http://download.eclipse.org/eclipse/updates/4.3/</eclipserun-repo.url>
+    <eclipserun-repo.url>http://download.eclipse.org/eclipse/updates/4.3/R-4.3-201306052000/</eclipserun-repo.url>
     <comparator-repo.url>http://download.eclipse.org/gyrex/1.2/</comparator-repo.url>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
