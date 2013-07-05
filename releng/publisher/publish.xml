@@ -27,16 +27,35 @@
   <property name="buildResultsRepo" location="${builder}/../repository/target" />
   <property name="buildResultsProducts" location="${builder}/products/target/products" />
 
-
   <!-- ==================================================================================
           target: main
          ================================================================================== -->
   <target name="main" description="Publishes the build results">
+    <fail unless="publishRepoStream" message="property publishRepoStream not set" />
+
     <!-- print build information -->
     <echo message="Publishing Gyrex build: ${buildLabel}" />
 
     <!-- ensure the working directory exists -->
     <mkdir dir="${buildDirectory}/${buildLabel}" />
+
+    <!-- by default, we publish into /shared -->
+    <property name="publishBaseDirectory" location="/shared/rt/gyrex/drops" />
+
+    <!-- initialize publish target based on buildType -->
+    <condition property="publishRepoBasePath" value="/gyrex/${publishRepoStream}">
+      <equals arg1="${buildType}" arg2="R" />
+    </condition>
+    <condition property="publishRepoBasePath" value="/gyrex/${publishRepoStream}/milestones">
+      <equals arg1="${buildType}" arg2="S" />
+    </condition>
+    <condition property="publishRepoBasePath" value="/gyrex/${publishRepoStream}/integration">
+      <equals arg1="${buildType}" arg2="I" />
+    </condition>
+    <condition property="publishRepoBasePath" value="/gyrex/${publishRepoStream}/maintenance">
+      <equals arg1="${buildType}" arg2="M" />
+    </condition>
+    <property name="publishRepoBasePath" value="/gyrex/${publishRepoStream}/builds" />
 
     <!-- generate additional publishing files (html pages & stuff) -->
     <antcall target="generateAddtionalFilesToPublish" />
@@ -121,7 +140,6 @@
     <fail unless="publishBaseDirectory" message="property publishBaseDirectory not set" />
     <fail unless="publishRepoStream" message="property publishRepoStream not set" />
     <fail unless="publishRepoBasePath" message="property publishRepoBasePath not set" />
-    <fail unless="publishRepoIndexGeneratorUrl" message="property publishRepoIndexGeneratorUrl not set" />
 
     <!-- generate all the relevant urls -->
     <mkdir dir="${buildDirectory}/publishRepoTemplate" />
@@ -168,6 +186,7 @@
     <available file="${buildDirectory}/publishRepoTemplate/compositeContent.xml" property="compositeContentXmlAvailable" />
     <fail unless="compositeContentXmlAvailable" message="compositeContent.xml not available" />
     <delete file="${publishBaseDirectory}${publishRepoBasePath}/index.html" failonerror="false" />
+    <property name="publishRepoIndexGeneratorUrl" value="http://www.eclipse.org/gyrex/download/helpers/repo-index.php" />
     <property name="generatePublishRepoIndexCommand" value="cat '${buildDirectory}/publishRepoTemplate/compositeContent.xml' | curl -X POST -H 'Content-type: text/xml' -o '${publishBaseDirectory}${publishRepoBasePath}/index.html' -d @- '${publishRepoIndexGeneratorUrl}?buildType=${buildType}&amp;repoPath=${publishRepoBasePath}'" />
     <echo message="Generating repository index.html using: ${generatePublishRepoIndexCommand}" />
     <exec executable="/bin/bash">

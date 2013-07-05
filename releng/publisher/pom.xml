@@ -15,15 +15,8 @@
   </parent>
 
   <properties>
-    <!-- publish target location on local file system of build machine -->
-    <!-- (i.e. http://download.eclipse.org/ on local file system) -->
-    <publishBaseDirectory>/shared/rt/gyrex/drops</publishBaseDirectory>
     <!-- the repo stream (maps usually one on one to a branch identifier) -->
     <publishRepoStream>1.2</publishRepoStream>
-    <!-- # the base url path to public repositories (within publishBaseDirectory) -->
-    <publishRepoBasePath>/gyrex/${publishRepoStream}</publishRepoBasePath>
-    <!-- # the index generator php script -->
-    <publishRepoIndexGeneratorUrl>http://www.eclipse.org/gyrex/download/helpers/repo-index.php</publishRepoIndexGeneratorUrl>
   </properties>
 
   <profiles>
