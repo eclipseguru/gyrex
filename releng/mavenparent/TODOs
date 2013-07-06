@@ -1,6 +1,8 @@
 
-- Sign & Pack (CBI)
-- Publish to download.eclipse.org
+- Sign & Pack (CBI) 
+  (DONE for jars, NOT DONE for executables; needs testing)
+- Publish products into repository
+
 
 
 Integrate Tests:
