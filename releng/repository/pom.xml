@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.eclipse.gyrex.releng</groupId>
@@ -23,6 +24,29 @@
           <repositoryName>Gyrex Repository (Build ${buildLabel})</repositoryName>
           <finalName>gyrex-${buildId}-repo</finalName>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-p2-extras-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>mirror-build</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>mirror</goal>
+            </goals>
+            <configuration>
+              <source>
+                <!-- mirror product data as well -->
+                <repository>
+                  <url>${project.baseUri}/../products/target/repository</url>
+                  <layout>p2-metadata</layout>
+                </repository>
+              </source>
+              <mirrorMetadataOnly>true</mirrorMetadataOnly>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
