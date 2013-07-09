@@ -37,13 +37,12 @@
             </goals>
             <configuration>
               <source>
-                <!-- mirror product data as well -->
+                <!-- mirror product data into the repo too -->
                 <repository>
-                  <url>${project.baseUri}/../products/target/repository</url>
-                  <layout>p2-metadata</layout>
+                  <url>${project.baseUri}../products/target/repository</url>
+                  <layout>p2</layout>
                 </repository>
               </source>
-              <mirrorMetadataOnly>true</mirrorMetadataOnly>
             </configuration>
           </execution>
         </executions>
