@@ -23,6 +23,9 @@
         <configuration>
           <repositoryName>Gyrex Repository (Build ${buildLabel})</repositoryName>
           <finalName>gyrex-${buildId}-repo</finalName>
+          <profileProperties>
+            <macosx-bundled>true</macosx-bundled>
+          </profileProperties>
         </configuration>
       </plugin>
       <plugin>
@@ -43,6 +46,9 @@
                   <layout>p2</layout>
                 </repository>
               </source>
+              <profileProperties>
+                <macosx-bundled>true</macosx-bundled>
+              </profileProperties>
             </configuration>
           </execution>
         </executions>
