@@ -164,14 +164,11 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 
 	@Override
 	protected Control createHeader(final Composite parent) {
-		if (Platform.inDevelopmentMode()) {
-			final Infobox infobox = new Infobox(parent);
-			infobox.setLayoutData(AdminUiUtil.createHorzFillData());
-			infobox.addHeading("Logging in Gyrex");
-			infobox.addParagraph("Gyrex makes use of <a href=\"http://logback.qos.ch/\">Logback</a> to capture logging events from the most popular logging APIs. Logback can be configured using a configuration file. This page provides an alternate way using Gyrex cloud preferences. The log configuration is stored in a central place.");
-			return infobox;
-		}
-		return null;
+		final Infobox infobox = new Infobox(parent);
+		infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+		infobox.addHeading("Logging in Gyrex");
+		infobox.addParagraph("Gyrex makes use of <a href=\"http://logback.qos.ch/\">Logback</a> to capture logging events from the most popular logging APIs. Logback can be configured using a configuration file. This page provides an alternate way using Gyrex cloud preferences. The log configuration is stored in a central place.");
+		return infobox;
 	}
 
 	void editDefaultLoggerButtonPressed() {

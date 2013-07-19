@@ -14,7 +14,9 @@ package org.eclipse.gyrex.admin.ui.cloud.internal;
 import java.util.Iterator;
 
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
+import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
@@ -143,13 +145,21 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 	}
 
 	private Control createConnectGroup(final Composite parent) {
-		final Composite connectGroup = new Composite(parent, SWT.NONE);
+
+		final Infobox infobox = new Infobox(parent);
+		infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+		infobox.addHeading("Clustering in Gyrex.");
+		infobox.addParagraph("A Gyrex cluster consists of Gyrex nodes, which are controlled via Apache Zookeeper. To add a node to a cluster, you need to connect it to the central Zookeeper first. After that the new node registers with the cluster but is still in pending mode and needs to be approved to go online.");
+		infobox.addParagraph("");
+
+		final Composite connectGroup = new Composite(infobox, SWT.NONE);
 //		connectGroup.setText("Connection");
 
 		final GridLayout innerLayout = new GridLayout();
 		innerLayout.numColumns = 2;
 		innerLayout.marginHeight = innerLayout.marginWidth = 0;
 		connectGroup.setLayout(innerLayout);
+		connectGroup.setLayoutData(AdminUiUtil.createHorzFillData());
 
 		nodeIdField = new StringDialogField() {
 			@Override
@@ -168,9 +178,9 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 
 		// fix off-by-one issue https://bugs.eclipse.org/bugs/show_bug.cgi?id=377605
 		// TODO: doesn't work for Text :(
+		final int heightHint = membershipStatusField.getLabelControl(null).computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 //		LayoutUtil.setHeightHint(nodeIdField.getLabelControl(null), heightHint);
 //		LayoutUtil.setHeightHint(nodeIdField.getTextControl(null), heightHint);
-		final int heightHint = membershipStatusField.getLabelControl(null).computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 		LayoutUtil.setHeightHint(membershipStatusField.getLabelControl(null), heightHint);
 		LayoutUtil.setHeightHint(membershipStatusField.getLinkControl(null), heightHint);
 
@@ -187,7 +197,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 				}
 			}
 		});
-		return connectGroup;
+		return infobox;
 	}
 
 	@Override

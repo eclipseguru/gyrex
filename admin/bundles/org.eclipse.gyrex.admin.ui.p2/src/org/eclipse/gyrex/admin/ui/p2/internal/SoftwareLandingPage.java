@@ -179,12 +179,10 @@ public class SoftwareLandingPage extends AdminPage {
 		pageComposite = new Composite(parent, SWT.NONE);
 		pageComposite.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(1, false));
 
-		if (Platform.inDevelopmentMode()) {
-			final Infobox infobox = new Infobox(pageComposite);
-			infobox.setLayoutData(AdminUiUtil.createHorzFillData());
-			infobox.addHeading("Manage software packages");
-			infobox.addParagraph("This page offers the possibillty to manage software packages. Create packages of features provided from p2 repositories.");
-		}
+		final Infobox infobox = new Infobox(pageComposite);
+		infobox.setLayoutData(AdminUiUtil.createHorzFillData());
+		infobox.addHeading("Manage software packages");
+		infobox.addParagraph("This page offers the possibillty to manage software packages. Create packages of features provided from p2 repositories.");
 
 		manageRepos = new Link(pageComposite, SWT.WRAP | SWT.READ_ONLY);
 		manageRepos.setText("Add more software by updating  <a>repository list</a>");

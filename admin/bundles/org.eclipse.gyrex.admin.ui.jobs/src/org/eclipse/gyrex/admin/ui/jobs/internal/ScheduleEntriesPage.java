@@ -11,7 +11,6 @@
  */
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
-import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
@@ -27,7 +26,6 @@ import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.internal.util.ContextHashUtil;
 import org.eclipse.gyrex.jobs.manager.IJobManager;
-import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -37,15 +35,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.widgets.DialogCallback;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Link;
 
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -141,30 +136,10 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 
 	@Override
 	protected Control createHeader(final Composite parent) {
-		if (Platform.inDevelopmentMode()) {
-			final Infobox infobox = new Infobox(parent);
-			infobox.addHeading("Schedule Entries");
-			infobox.addParagraph("A schedule is composed of schedule entries. They define, what and how a background task should run. They can have a cron expression and/or a dependency on other entries in the same schedule.");
-			infobox.addLink("Back to <a>schedules list</a>", new SelectionAdapter() {
-				/** serialVersionUID */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(final SelectionEvent e) {
-					openSchedulesPage();
-				}
-			});
-			return infobox;
-		}
-
-		final Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(AdminUiUtil.createGridLayout(1, false, true, false));
-		composite.setLayoutData(AdminUiUtil.createFillData());
-
-		final Link link = new Link(composite, SWT.WRAP);
-		link.setText("Back to <a>schedules list</a>");
-		link.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		link.addSelectionListener(new SelectionAdapter() {
+		final Infobox infobox = new Infobox(parent);
+		infobox.addHeading("Schedule Entries");
+		infobox.addParagraph("A schedule is composed of schedule entries. They define, what and how a background task should run. They can have a cron expression and/or a dependency on other entries in the same schedule.");
+		infobox.addLink("Back to <a>schedules list</a>", new SelectionAdapter() {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
 
@@ -173,8 +148,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				openSchedulesPage();
 			}
 		});
-
-		return composite;
+		return infobox;
 	}
 
 	void disableButtonPressed() {

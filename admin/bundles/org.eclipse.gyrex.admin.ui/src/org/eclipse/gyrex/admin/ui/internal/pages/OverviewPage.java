@@ -85,15 +85,13 @@ public class OverviewPage extends AdminPage {
 		overviewPageComposite = new Composite(parent, SWT.NONE);
 		overviewPageComposite.setLayout(AdminUiUtil.createMainLayout(3));
 
-		if (Platform.inDevelopmentMode()) {
-			final Infobox infobox = new Infobox(overviewPageComposite);
-			final GridData gd = AdminUiUtil.createHorzFillData();
-			gd.horizontalSpan = 3;
-			infobox.setLayoutData(gd);
-			infobox.addHeading("Welcome to Gyrex.");
-			infobox.addParagraph("Your system is running and ready for administration. If you like what you see here, please follow our <a href=\"http://www.eclipse.org/gyrex/\">blog</a>.");
-			infobox.addParagraph("This box only appears in development mode. A Gyrex node can opperate in different modes which influence the default configuration of the system. Development mode is the default mode and provides an environment that reduces the amount of setup work for developers. For example, a service such as Apache ZooKeeper which typically runs on different nodes in a production system, is started automatically within the Gyrex Java VM in development mode.");
-		}
+		final Infobox infobox = new Infobox(overviewPageComposite);
+		final GridData gd = AdminUiUtil.createHorzFillData();
+		gd.horizontalSpan = 3;
+		infobox.setLayoutData(gd);
+		infobox.addHeading("Welcome to Gyrex.");
+		infobox.addParagraph("Your system is running and ready for administration. If you like what you see here, please follow our <a href=\"http://www.eclipse.org/gyrex/\">blog</a>.");
+		infobox.addParagraph("This box only appears in development mode. A Gyrex node can opperate in different modes which influence the default configuration of the system. Development mode is the default mode and provides an environment that reduces the amount of setup work for developers. For example, a service such as Apache ZooKeeper which typically runs on different nodes in a production system, is started automatically within the Gyrex Java VM in development mode.");
 
 		return overviewPageComposite;
 	}

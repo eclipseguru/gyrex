@@ -18,7 +18,10 @@ import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.context.definitions.ContextDefinition;
 import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
 import org.eclipse.gyrex.context.internal.ContextActivator;
+import org.eclipse.gyrex.context.internal.configuration.ContextConfiguration;
+import org.eclipse.gyrex.context.internal.preferences.GyrexContextPreferencesImpl;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -36,6 +39,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
+
 /**
  * The Class ContextsSection.
  */
@@ -49,6 +55,9 @@ public class ContextsSection {
 
 	/** The remove button. */
 	private Button removeButton;
+
+	/** The editProperties button. */
+	private Button editPropertiesButton;
 
 	/** The contexts list. */
 	private ListViewer contextsList;
@@ -147,6 +156,46 @@ public class ContextsSection {
 				removeButtonPressed();
 			}
 		});
+
+//		editPropertiesButton = createButton(buttons, "Edit Properties");
+//		editPropertiesButton.setEnabled(true);
+//		editPropertiesButton.addSelectionListener(new SelectionAdapter() {
+//			/** serialVersionUID */
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void widgetSelected(final SelectionEvent event) {
+//				editPropertiesButtonPressed();
+//			}
+//		});
+
+	}
+
+	/**
+	 * Click Action for edit properties button
+	 */
+	void editPropertiesButtonPressed() {
+
+		final ContextDefinition contextDefinition = getSelectedContext();
+		if (contextDefinition == null)
+			return;
+
+		final String path = GyrexContextPreferencesImpl.getPreferencesPathToSettings(contextDefinition.getPath(), null);
+		final IEclipsePreferences prefRootNode = ContextConfiguration.getRootNodeForContextPreferences();
+		try {
+			if (!prefRootNode.nodeExists(path))
+				return;
+			final Preferences prefNode = prefRootNode.node(path);
+			final String[] names = prefNode.keys();
+			for (final String prefName : names) {
+				System.out.println(" ZK Pref " + prefName + ":" + prefNode.get(prefName, null));
+			}
+			prefNode.put("TestPref2", "1234");
+			prefNode.flush();
+		} catch (final BackingStoreException e) {
+
+		}
+
 	}
 
 	/**
