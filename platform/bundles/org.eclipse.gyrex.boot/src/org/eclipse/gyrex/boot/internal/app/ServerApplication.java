@@ -15,9 +15,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag;
+import javax.security.auth.login.Configuration;
 
 import org.eclipse.gyrex.boot.internal.BootActivator;
 import org.eclipse.gyrex.boot.internal.BootDebug;
@@ -446,6 +451,22 @@ public class ServerApplication extends BaseApplication {
 			} catch (final Exception e) {
 				// error (but do not fail)
 				LOG.warn("Unable to register authorized_keys file support for Equinox SSH Console. ", e);
+			}
+
+			// allow any combination of username/password in development mode
+			if (Platform.inDevelopmentMode()) {
+				final AppConfigurationEntry[] allowAny = new AppConfigurationEntry[] { new AppConfigurationEntry("org.eclipse.gyrex.boot.console.jaas.AllowAnyUserLoginModule", LoginModuleControlFlag.SUFFICIENT, new HashMap<String, Object>()) };
+				final Configuration configuration = Configuration.getConfiguration();
+				Configuration.setConfiguration(new Configuration() {
+
+					@Override
+					public AppConfigurationEntry[] getAppConfigurationEntry(final String name) {
+						final AppConfigurationEntry[] entry = configuration.getAppConfigurationEntry(name);
+						if (((entry == null) || (entry.length == 0)) && "equinox_console".equals(name))
+							return allowAny;
+						return entry;
+					}
+				});
 			}
 		}
 	}

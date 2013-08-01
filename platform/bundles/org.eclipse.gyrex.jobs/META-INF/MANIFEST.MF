@@ -26,6 +26,7 @@ Import-Package: javax.inject;version="[1.0.0,2.0.0)",
  org.quartz.impl;version="[1.8.3,2.0.0)",
  org.quartz.simpl;version="[1.8.3,2.0.0)",
  org.quartz.spi;version="[1.8.3,2.0.0)",
+ org.quartz.utils;version="[1.8.3,2.0.0)",
  org.slf4j;version="[1.6.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.gyrex.cloud;bundle-version="[1.0.0,2.0.0)",

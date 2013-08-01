@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>gyrex-platform-bundles</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>org.eclipse.gyrex.platform</groupId>
+    <artifactId>gyrex-platform</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <modules>
+    <module>org.eclipse.gyrex.boot</module>
+    <module>org.eclipse.gyrex.boot.jaas.fragment</module>
+    <module>org.eclipse.gyrex.boot.tests</module>
+    <module>org.eclipse.gyrex.cloud</module>
+    <module>org.eclipse.gyrex.cloud.tests</module>
+    <module>org.eclipse.gyrex.common</module>
+    <module>org.eclipse.gyrex.context</module>
+    <module>org.eclipse.gyrex.context.tests</module>
+    <module>org.eclipse.gyrex.frameworklogadapter</module>
+    <module>org.eclipse.gyrex.http</module>
+    <module>org.eclipse.gyrex.http.tests</module>
+    <module>org.eclipse.gyrex.http.equinoxhttpservice</module>
+    <module>org.eclipse.gyrex.http.jetty</module>
+    <module>org.eclipse.gyrex.http.log</module>
+    <module>org.eclipse.gyrex.http.registry</module>
+    <module>org.eclipse.gyrex.jobs</module>
+    <module>org.eclipse.gyrex.jobs.tests</module>
+    <module>org.eclipse.gyrex.junit</module>
+    <module>org.eclipse.gyrex.logback.config</module>
+    <module>org.eclipse.gyrex.model.common</module>
+    <module>org.eclipse.gyrex.monitoring</module>
+    <module>org.eclipse.gyrex.monitoring.tests</module>
+    <module>org.eclipse.gyrex.p2</module>
+    <module>org.eclipse.gyrex.persistence</module>
+    <module>org.eclipse.gyrex.persistence.tests</module>
+    <module>org.eclipse.gyrex.persistence.context.preferences</module>
+    <module>org.eclipse.gyrex.persistence.derby</module>
+    <module>org.eclipse.gyrex.persistence.derby.tests</module>
+    <module>org.eclipse.gyrex.persistence.eclipselink</module>
+    <module>org.eclipse.gyrex.persistence.jdbc</module>
+    <module>org.eclipse.gyrex.persistence.nondurable.map</module>
+    <module>org.eclipse.gyrex.preferences</module>
+    <module>org.eclipse.gyrex.preferences.tests</module>
+    <module>org.eclipse.gyrex.server.defaultroles</module>
+	<module>org.eclipse.gyrex.server.tests</module>
+    <module>org.eclipse.gyrex.services.common</module>
+  </modules>
+  
+</project>

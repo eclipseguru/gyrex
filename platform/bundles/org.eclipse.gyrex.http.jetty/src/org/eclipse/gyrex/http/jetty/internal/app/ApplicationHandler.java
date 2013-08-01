@@ -72,11 +72,7 @@ public class ApplicationHandler extends ServletContextHandler {
 		private <T> T createAndInject(final Class<T> c) throws ServletException {
 			try {
 				return getApplication().getContext().getInjector().make(c);
-			} catch (final AssertionError e) {
-				throw new ServletException(String.format("Error injecting class '%s'. %s", c.getName(), e.getMessage()), e);
-			} catch (final LinkageError e) {
-				throw new ServletException(String.format("Error injecting class '%s'. %s", c.getName(), e.getMessage()), e);
-			} catch (final Exception e) {
+			} catch (final Exception | AssertionError | LinkageError e) {
 				throw new ServletException(String.format("Error injecting class '%s'. %s", c.getName(), e.getMessage()), e);
 			}
 		}
