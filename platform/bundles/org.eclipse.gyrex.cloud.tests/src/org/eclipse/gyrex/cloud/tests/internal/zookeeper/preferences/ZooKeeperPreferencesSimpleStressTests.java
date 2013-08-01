@@ -11,9 +11,9 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.tests.internal.zookeeper.preferences;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.gyrex.cloud.internal.CloudDebug;
 import org.eclipse.gyrex.cloud.internal.preferences.ZooKeeperBasedPreferences;
@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
-import org.apache.zookeeper.ZKTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +35,7 @@ import org.junit.Test;
 /**
  * Simple stress tests for {@link ZooKeeperBasedPreferences}
  */
-public class ZooKeeperPreferencesSimpleStressTests extends ZKTestCase {
+public class ZooKeeperPreferencesSimpleStressTests extends ZooKeeperLoggingTestCase {
 
 	protected static final String KEY = "key";
 	protected static final String DEFAULT_VALUE = "default-value";

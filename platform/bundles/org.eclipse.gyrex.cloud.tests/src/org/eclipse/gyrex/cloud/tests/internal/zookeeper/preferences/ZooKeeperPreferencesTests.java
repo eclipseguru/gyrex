@@ -11,13 +11,13 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.tests.internal.zookeeper.preferences;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.gyrex.cloud.internal.CloudDebug;
 import org.eclipse.gyrex.cloud.internal.preferences.ZooKeeperBasedPreferences;
@@ -35,7 +35,7 @@ import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.osgi.service.prefs.BackingStoreException;
 
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZKTestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +43,7 @@ import org.junit.Test;
 /**
  * Bases tests for {@link ZooKeeperBasedPreferences}
  */
-public class ZooKeeperPreferencesTests extends ZKTestCase {
+public class ZooKeeperPreferencesTests extends ZooKeeperLoggingTestCase {
 
 	protected static final String KEY = "key";
 	protected static final String DEFAULT_VALUE = "default-value";

@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.tests.internal.zookeeper.preferences;
 
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;

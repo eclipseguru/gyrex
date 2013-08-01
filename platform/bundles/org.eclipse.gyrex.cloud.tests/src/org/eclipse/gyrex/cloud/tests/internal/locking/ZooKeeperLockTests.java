@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.tests.internal.locking;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.eclipse.gyrex.cloud.internal.locking.ZooKeeperLock;
 

@@ -11,18 +11,17 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.tests.internal.zookeeper;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-
-import junit.framework.AssertionFailedError;
 
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.test.QuorumUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,7 @@ public class EnsembleHelper {
 			}
 		}
 
-		throw new AssertionFailedError("not connected to any of the available peers");
+		throw new AssertionError("not connected to any of the available peers");
 	}
 
 	/**
@@ -99,9 +98,8 @@ public class EnsembleHelper {
 	}
 
 	public static synchronized void startQuorum() throws Exception {
-		if (null != qu) {
+		if (null != qu)
 			throw new IllegalStateException("Already started!");
-		}
 
 		qu = new QuorumUtil(2);
 		qu.startAll();

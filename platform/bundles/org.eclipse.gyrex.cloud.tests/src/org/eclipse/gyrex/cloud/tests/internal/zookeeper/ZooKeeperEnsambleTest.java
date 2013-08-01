@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.tests.internal.zookeeper;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.eclipse.gyrex.cloud.tests.internal.zookeeper.CountdownCloudStateHandler.CloudStateEvent;
 

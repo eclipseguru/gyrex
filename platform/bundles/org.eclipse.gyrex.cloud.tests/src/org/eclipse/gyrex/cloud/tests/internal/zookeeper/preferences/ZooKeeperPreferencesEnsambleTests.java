@@ -11,12 +11,12 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.tests.internal.zookeeper.preferences;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -42,6 +42,7 @@ import org.osgi.service.prefs.Preferences;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
