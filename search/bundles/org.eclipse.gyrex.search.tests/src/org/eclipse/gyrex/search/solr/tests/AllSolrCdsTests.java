@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.search.solr.tests;
 
+import org.eclipse.gyrex.junit.GyrexServerResource;
+import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -21,5 +23,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ SolrFacetTest.class, DocumentManagerTest.class, SolrCdsServiceTest.class })
 public class AllSolrCdsTests {
+	@ClassRule
+	public static final GyrexServerResource server = new GyrexServerResource();
 
 }

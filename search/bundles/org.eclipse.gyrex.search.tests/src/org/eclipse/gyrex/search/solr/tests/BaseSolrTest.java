@@ -99,7 +99,7 @@ public abstract class BaseSolrTest extends BaseContextTest {
 		try {
 			if (null == core) {
 				// there should be an "admin" core for such requests
-				final EmbeddedSolrServer adminServer = new EmbeddedSolrServer(coreContainer, null);
+				final EmbeddedSolrServer adminServer = new EmbeddedSolrServer(coreContainer, "admin");
 				CoreAdminRequest.createCore(coreName, coreName, adminServer);
 			} else {
 				coreContainer.reload(coreName);
