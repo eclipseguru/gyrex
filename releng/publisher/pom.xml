@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.eclipse.gyrex.releng</groupId>
+  <artifactId>gyrex-buildresults-publisher</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+
+  <parent>
+    <groupId>org.eclipse.gyrex.releng</groupId>
+    <artifactId>gyrex-maven-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../mavenparent/</relativePath>
+  </parent>
+
+  <properties>
+    <!-- the repo stream (maps usually one on one to a branch identifier) -->
+    <publishRepoStream>1.2</publishRepoStream>
+    <!-- by default, we publish into /shared -->
+    <publishBaseDirectory>/shared/rt/gyrex/drops</publishBaseDirectory>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>publish-results</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-eclipserun-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <repositories>
+                <repository>
+                  <id>eclipse</id>
+                  <layout>p2</layout>
+                  <url>${eclipserun-repo.url}</url>
+                </repository>
+              </repositories>
+              <!-- call antrunner to call publish.xml Ant script -->
+              <appArgLine><![CDATA[-data target/publisher-workspace -application org.eclipse.ant.core.antRunner -buildfile publish.xml]]></appArgLine>
+              <dependencies>
+                <dependency>
+                  <artifactId>org.eclipse.ant.core</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.apache.ant</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.equinox.p2.core.feature</artifactId>
+                  <type>eclipse-feature</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.equinox.p2.extras.feature</artifactId>
+                  <type>eclipse-feature</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.pde.build</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.pde.core</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.equinox.launcher</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.equinox.ds</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+              </dependencies>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>eclipse-run</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- process resource as part of compile -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-resources</id>
+            <phase>compile</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <resources>
+      <!-- allow to save interesting properties using resources for later 
+        use -->
+      <resource>
+        <directory>resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+
+</project>

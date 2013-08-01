@@ -1,0 +1,10 @@
+This folder contains the Target Definition files used within Eclipse
+for developing Gyrex.
+
+The same target definition is also used in the Maven build to compile
+Gyrex and build its artifacts.
+
+Hint: You should open the "gyrex-target-platform.target" file once and
+export it to a folder "gyrex-dev-exported" (within this folder). Then you
+can use the "gyrex-target-platform-local.target" file which uses the exported
+artifacts and doesn't require an Internet connection to load properly.
