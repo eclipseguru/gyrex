@@ -53,7 +53,7 @@
                 <phase>package</phase>
                 <configuration>
                   <signFiles>
-                    <signFile>${project.build.directory}/products/org.eclipse.gyrex.products.server/macosx/cocoa/x86_64/eclipse/gyrex.app</signFile>
+                    <signFile>${project.build.directory}/products/org.eclipse.gyrex.products.server/macosx/cocoa/x86_64/gyrex/gyrex.app</signFile>
                   </signFiles>
                 </configuration>
               </execution>
