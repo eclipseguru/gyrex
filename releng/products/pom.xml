@@ -41,12 +41,33 @@
             </configuration>
           </plugin>
           <plugin>
+            <!-- copy CodeResources for Mac signing -->
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+              <execution>
+                <id>copy-macos-app-resources</id>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/products/org.eclipse.gyrex.products.server/macosx/cocoa/x86_64/Gyrex.app/Contents</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>MacOS/Contents</directory>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
             <groupId>org.eclipse.cbi.maven.plugins</groupId>
             <artifactId>eclipse-macsigner-plugin</artifactId>
             <version>${cbi-plugins.version}</version>
             <executions>
               <execution>
-                <id>sign</id>
                 <goals>
                   <goal>sign</goal>
                 </goals>
@@ -102,6 +123,7 @@
               <id>org.eclipse.gyrex.products.server</id>
               <archiveFileName>gyrex-${buildId}</archiveFileName>
               <rootFolder>gyrex</rootFolder>
+              <!-- note: this doesn't work properly with Mac signing -->
               <rootFolders>
                 <macosx>Gyrex.app</macosx>
               </rootFolders>
