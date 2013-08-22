@@ -18,7 +18,7 @@
   <profiles>
     <profile>
       <!-- participate in signing so that the executables are signed -->
-      <id>eclipse-sign-executables</id>
+      <id>eclipse-sign-executables-windows</id>
       <build>
         <plugins>
           <plugin>
@@ -40,6 +40,14 @@
               </signFiles>
             </configuration>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- participate in signing so that the executables are signed -->
+      <id>eclipse-sign-executables-mac</id>
+      <build>
+        <plugins>
           <plugin>
             <!-- copy CodeResources for Mac signing -->
             <artifactId>maven-resources-plugin</artifactId>
