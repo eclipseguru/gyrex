@@ -21,8 +21,8 @@
     <tycho-extras.version>0.18.0</tycho-extras.version>
     <tycho-snapshots-repo.url>https://oss.sonatype.org/content/repositories/public/</tycho-snapshots-repo.url>
 
-    <cbi-plugins.version>1.0.4</cbi-plugins.version>
-    <cbi-plugins-repo.url>https://repo.eclipse.org/content/repositories/cbi/</cbi-plugins-repo.url>
+    <cbi-plugins.version>1.0.5-SNAPSHOT</cbi-plugins.version>
+    <cbi-plugins-repo.url>https://repo.eclipse.org/content/repositories/cbi-snapshots/</cbi-plugins-repo.url>
 
     <eclipserun-repo.url>http://download.eclipse.org/eclipse/updates/4.3/R-4.3-201306052000/</eclipserun-repo.url>
     <comparator-repo.url>http://download.eclipse.org/gyrex/1.2/</comparator-repo.url>
