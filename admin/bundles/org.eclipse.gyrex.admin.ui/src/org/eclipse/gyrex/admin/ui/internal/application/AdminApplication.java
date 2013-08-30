@@ -100,15 +100,27 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 
 	private static String getVersion() {
 		final Version version = AdminUiActivator.getInstance().getBundleVersion();
-		final StringBuilder resultBuffer = new StringBuilder(20);
-		resultBuffer.append(version.getMajor());
-		resultBuffer.append('.');
-		resultBuffer.append(version.getMinor());
-		resultBuffer.append('.');
-		resultBuffer.append(version.getMicro());
-		resultBuffer.append(" (Build ");
-		resultBuffer.append(version.getQualifier());
-		resultBuffer.append(')');
+		final StringBuilder resultBuffer = new StringBuilder(60);
+
+		final String buildId = AdminUiActivator.getInstance().getBundle().getBundleContext().getProperty("gyrex.buildId");
+		if (StringUtils.isNotBlank(buildId)) {
+			resultBuffer.append(" (Gyrex ").append(buildId);
+			final String buildTimestamp = AdminUiActivator.getInstance().getBundle().getBundleContext().getProperty("gyrex.buildTimestamp");
+			if (StringUtils.isNotBlank(buildTimestamp)) {
+				resultBuffer.append(" Build ").append(buildTimestamp);
+				resultBuffer.append(buildTimestamp);
+			}
+			resultBuffer.append(')');
+		} else {
+			resultBuffer.append(version.getMajor());
+			resultBuffer.append('.');
+			resultBuffer.append(version.getMinor());
+			resultBuffer.append('.');
+			resultBuffer.append(version.getMicro());
+			resultBuffer.append(" (Build ");
+			resultBuffer.append(version.getQualifier());
+			resultBuffer.append(')');
+		}
 		return resultBuffer.toString();
 	}
 
