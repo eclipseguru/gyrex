@@ -11,6 +11,10 @@
  */
 package org.eclipse.gyrex.admin.ui.context.internal;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
@@ -46,6 +50,21 @@ import org.osgi.service.prefs.Preferences;
  * The Class ContextsSection.
  */
 public class ContextsSection {
+
+	/**
+	 * 
+	 */
+	private class ContextDefinitionComparator implements Comparator<ContextDefinition> {
+
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		@Override
+		public int compare(final ContextDefinition arg0, final ContextDefinition arg1) {
+			return arg0.getPath().toString().compareTo(arg1.getPath().toString());
+		}
+
+	}
 
 	/** The page composite. */
 	private Composite pageComposite;
@@ -126,7 +145,15 @@ public class ContextsSection {
 		contextsList.setContentProvider(new ArrayContentProvider());
 		contextsList.setLabelProvider(new ContextUiLabelProvider());
 
-		contextsList.setInput(getContextRegistry().getDefinedContexts());
+		final java.util.List<ContextDefinition> definedContexts = new ArrayList<ContextDefinition>();
+
+		for (final ContextDefinition contextDefinition : getContextRegistry().getDefinedContexts()) {
+			definedContexts.add(contextDefinition);
+		}
+
+		Collections.sort(definedContexts, new ContextDefinitionComparator());
+
+		contextsList.setInput(definedContexts);
 
 		selectedValue = ViewersObservables.observeSingleSelection(contextsList);
 
@@ -157,17 +184,17 @@ public class ContextsSection {
 			}
 		});
 
-//		editPropertiesButton = createButton(buttons, "Edit Properties");
-//		editPropertiesButton.setEnabled(true);
-//		editPropertiesButton.addSelectionListener(new SelectionAdapter() {
-//			/** serialVersionUID */
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void widgetSelected(final SelectionEvent event) {
-//				editPropertiesButtonPressed();
-//			}
-//		});
+		editPropertiesButton = createButton(buttons, "Edit Preferences");
+		editPropertiesButton.setEnabled(true);
+		editPropertiesButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				editPropertiesButtonPressed();
+			}
+		});
 
 	}
 
@@ -183,19 +210,28 @@ public class ContextsSection {
 		final String path = GyrexContextPreferencesImpl.getPreferencesPathToSettings(contextDefinition.getPath(), null);
 		final IEclipsePreferences prefRootNode = ContextConfiguration.getRootNodeForContextPreferences();
 		try {
-			if (!prefRootNode.nodeExists(path))
-				return;
-			final Preferences prefNode = prefRootNode.node(path);
-			final String[] names = prefNode.keys();
-			for (final String prefName : names) {
-				System.out.println(" ZK Pref " + prefName + ":" + prefNode.get(prefName, null));
+			if (!prefRootNode.nodeExists(path)) {
+				//return;
 			}
-			prefNode.put("TestPref2", "1234");
-			prefNode.flush();
+			final Preferences prefNode = prefRootNode.node(path);
+
+			final EditContextPrefsDialog dialog = new EditContextPrefsDialog(SwtUtil.getShell(editPropertiesButton), prefNode);
+			dialog.openNonBlocking(new DialogCallback() {
+
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void dialogClosed(final int returnCode) {
+					if (returnCode == Window.OK) {
+						refresh();
+					}
+				}
+			});
+
 		} catch (final BackingStoreException e) {
-
+			e.printStackTrace();
 		}
-
 	}
 
 	/**
