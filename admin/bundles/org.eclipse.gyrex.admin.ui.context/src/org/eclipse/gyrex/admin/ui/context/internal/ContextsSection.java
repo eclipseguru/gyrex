@@ -157,17 +157,17 @@ public class ContextsSection {
 			}
 		});
 
-//		editPropertiesButton = createButton(buttons, "Edit Properties");
-//		editPropertiesButton.setEnabled(true);
-//		editPropertiesButton.addSelectionListener(new SelectionAdapter() {
-//			/** serialVersionUID */
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void widgetSelected(final SelectionEvent event) {
-//				editPropertiesButtonPressed();
-//			}
-//		});
+		editPropertiesButton = createButton(buttons, "Edit Preferences");
+		editPropertiesButton.setEnabled(true);
+		editPropertiesButton.addSelectionListener(new SelectionAdapter() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				editPropertiesButtonPressed();
+			}
+		});
 
 	}
 
@@ -183,19 +183,28 @@ public class ContextsSection {
 		final String path = GyrexContextPreferencesImpl.getPreferencesPathToSettings(contextDefinition.getPath(), null);
 		final IEclipsePreferences prefRootNode = ContextConfiguration.getRootNodeForContextPreferences();
 		try {
-			if (!prefRootNode.nodeExists(path))
-				return;
-			final Preferences prefNode = prefRootNode.node(path);
-			final String[] names = prefNode.keys();
-			for (final String prefName : names) {
-				System.out.println(" ZK Pref " + prefName + ":" + prefNode.get(prefName, null));
+			if (!prefRootNode.nodeExists(path)) {
+				//return;
 			}
-			prefNode.put("TestPref2", "1234");
-			prefNode.flush();
+			final Preferences prefNode = prefRootNode.node(path);
+
+			final EditContextPrefsDialog dialog = new EditContextPrefsDialog(SwtUtil.getShell(editPropertiesButton), prefNode);
+			dialog.openNonBlocking(new DialogCallback() {
+
+				/** serialVersionUID */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void dialogClosed(final int returnCode) {
+					if (returnCode == Window.OK) {
+						refresh();
+					}
+				}
+			});
+
 		} catch (final BackingStoreException e) {
-
+			e.printStackTrace();
 		}
-
 	}
 
 	/**
