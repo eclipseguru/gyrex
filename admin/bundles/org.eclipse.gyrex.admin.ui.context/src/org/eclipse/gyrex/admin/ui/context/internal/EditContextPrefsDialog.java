@@ -365,13 +365,15 @@ public class EditContextPrefsDialog extends NonBlockingStatusDialog {
 		final GridData gd = (GridData) composite.getLayoutData();
 		gd.minimumHeight = convertVerticalDLUsToPixels(200);
 		gd.minimumWidth = convertHorizontalDLUsToPixels(400);
+		gd.widthHint = convertHorizontalDLUsToPixels(400);
+		gd.heightHint = convertHorizontalDLUsToPixels(250);
 
 		qualifierField.setLabelText("Preference Qualifier/Group");
 		nameField.setLabelText("Preference Name");
 		valueField.setLabelText("Preference Value");
 
 		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY | SWT.WRAP);
-		warning.setText("All preference settings in the context " + prefRootNode.absolutePath() + " are listed below. \n" + "You can add new preferences or delete or edit existing ones. Please note, that Preferences in a Gyrex Context can be grouped by qualifiers.\n" + "You can select the qualifier/group in the drop down list. To create a new qualifier, just add a preference and enter a new qualifier.");
+		warning.setText("All preference settings in the context " + prefRootNode.absolutePath() + " are listed below. You can add new preferences or delete or edit existing ones. Please note, that Preferences in a Gyrex Context can be grouped by qualifiers. You can select the qualifier/group in the drop down list. To create a new qualifier, just add a preference and enter a new qualifier.");
 		warning.setLayoutData(new GridData(SWT.CENTER, SWT.LEFT, false, false));
 		warning.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
