@@ -104,22 +104,18 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 
 		final String buildId = AdminUiActivator.getInstance().getBundle().getBundleContext().getProperty("gyrex.buildId");
 		if (StringUtils.isNotBlank(buildId)) {
-			resultBuffer.append(" (Gyrex ").append(buildId);
+			resultBuffer.append("(Gyrex ").append(buildId);
 			final String buildTimestamp = AdminUiActivator.getInstance().getBundle().getBundleContext().getProperty("gyrex.buildTimestamp");
 			if (StringUtils.isNotBlank(buildTimestamp)) {
 				resultBuffer.append(" Build ").append(buildTimestamp);
 				resultBuffer.append(buildTimestamp);
 			}
 			resultBuffer.append(')');
+		} else if (StringUtils.equals(version.getQualifier(), "qualifier")) {
+			// running out of the IDE
+			resultBuffer.append("(Developer Build)");
 		} else {
-			resultBuffer.append(version.getMajor());
-			resultBuffer.append('.');
-			resultBuffer.append(version.getMinor());
-			resultBuffer.append('.');
-			resultBuffer.append(version.getMicro());
-			resultBuffer.append(" (Build ");
-			resultBuffer.append(version.getQualifier());
-			resultBuffer.append(')');
+			// don't append any version info at all
 		}
 		return resultBuffer.toString();
 	}
