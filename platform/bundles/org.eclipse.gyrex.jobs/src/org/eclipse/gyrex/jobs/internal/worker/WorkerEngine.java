@@ -33,6 +33,7 @@ import org.eclipse.gyrex.jobs.internal.scheduler.SchedulingJob;
 import org.eclipse.gyrex.jobs.manager.IJobManager;
 import org.eclipse.gyrex.jobs.provider.JobProvider;
 import org.eclipse.gyrex.preferences.CloudScope;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -59,7 +60,13 @@ public class WorkerEngine extends Job {
 
 	private static final int DEFAULT_IDLE_SLEEP_TIME = 20000;
 	private static final int DEFAULT_NON_IDLE_SLEEP_TIME = 3000;
-	private static final int DEFAULT_MAX_SLEEP_TIME = 30000;
+	private static final long MAX_ERROR_SLEEP_TIME = 30000L;
+
+	private static final SystemSetting<Integer> idleSleepTimeMsSetting = SystemSetting.newIntegerSetting("gyrex.jobs.workerEngine.idleSleepTimeMs", "Maximum sleep time in milli-seconds of the worker engine when there are no jobs waiting in the queue.").usingDefault(DEFAULT_IDLE_SLEEP_TIME).create();
+	private static final SystemSetting<Integer> nonIdleSleepTimeMsSetting = SystemSetting.newIntegerSetting("gyrex.jobs.workerEngine.nonIdleSleepTimeMs", "Maximum sleep time in milli-seconds of the worker engine when there are jobs waiting in the queue.").usingDefault(DEFAULT_NON_IDLE_SLEEP_TIME).create();
+	private static final SystemSetting<Integer> maxConcurrentScheduledJobsSetting = SystemSetting.newIntegerSetting("gyrex.jobs.workerEngine.maxConcurrentScheduledJobs", "The maximum number of jobs that will allowed to run in parallel on the local instance. Default is the number of available processors as detected by the Java VM.").usingDefault(Runtime.getRuntime().availableProcessors()).create();
+	private static final SystemSetting<Boolean> skipPriorityQueueSetting = SystemSetting.newBooleanSetting("gyrex.jobs.workerEngine.doNotCheckPriorityQueue", "If set to true, the priority queue will not be checked by this worker engine instance.").usingDefault(Boolean.FALSE).create();
+	private static final SystemSetting<String> queueIdSetting = SystemSetting.newStringSetting("gyrex.jobs.workerEngine.queueId", "The id of the queue to check for jobs. Default is the job system's default queue as spec'd by IJobManager.DEFAULT_QUEUE.").usingDefault(IJobManager.DEFAULT_QUEUE).create();
 
 	private static final String NODE_WORKER_ENGINE = "workerEngine";
 	private static final String PREF_KEY_SUSPENDED = "suspended";
@@ -123,11 +130,11 @@ public class WorkerEngine extends Job {
 		this.metrics = metrics;
 		setSystem(true);
 		setPriority(LONG);
-		idleSleepTime = Integer.getInteger("gyrex.jobs.workerEngine.idleSleepTimeMs", DEFAULT_IDLE_SLEEP_TIME);
-		nonIdleSleepTime = Integer.getInteger("gyrex.jobs.workerEngine.nonIdleSleepTimeMs", DEFAULT_NON_IDLE_SLEEP_TIME);
-		maxConcurrentJobs = Integer.getInteger("gyrex.jobs.workerEngine.maxConcurrentScheduledJobs", Runtime.getRuntime().availableProcessors());
-		queueId = System.getProperty("gyrex.jobs.workerEngine.queueId", IJobManager.DEFAULT_QUEUE);
-		skipPriorityQueue = Boolean.getBoolean("gyrex.jobs.workerEngine.doNotCheckPriorityQueue");
+		idleSleepTime = idleSleepTimeMsSetting.get();
+		nonIdleSleepTime = nonIdleSleepTimeMsSetting.get();
+		maxConcurrentJobs = maxConcurrentScheduledJobsSetting.get();
+		queueId = queueIdSetting.get();
+		skipPriorityQueue = skipPriorityQueueSetting.isTrue();
 	}
 
 	private void abortJob(final JobStateSynchronizer stateSynchronizer, final IQueue queue, final IMessage message) {
@@ -378,8 +385,8 @@ public class WorkerEngine extends Job {
 				return Status.CANCEL_STATUS;
 			}
 		} catch (final Exception e) {
-			// implement a back-off sleeping time (max 5 min)
-			engineSleepTime = Math.min(engineSleepTime * 2, DEFAULT_MAX_SLEEP_TIME);
+			// adjust sleep time in case of error
+			engineSleepTime = Math.min(engineSleepTime * 2, MAX_ERROR_SLEEP_TIME);
 
 			// log error
 			LOG.error("Unable to process queued jobs. Please verify the system is setup properly. {}", new Object[] { ExceptionUtils.getRootCauseMessage(e), e });

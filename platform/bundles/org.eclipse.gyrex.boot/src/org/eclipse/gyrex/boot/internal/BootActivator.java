@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.boot.internal;
 
+import static org.eclipse.gyrex.server.settings.SystemSetting.newIntegerSetting;
+
 import java.net.URL;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,6 +24,7 @@ import org.eclipse.gyrex.common.services.IServiceProxy;
 import org.eclipse.gyrex.server.Platform;
 import org.eclipse.gyrex.server.internal.opsmode.OperationMode;
 import org.eclipse.gyrex.server.internal.opsmode.OpsMode;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -41,7 +44,6 @@ import org.osgi.service.application.ApplicationDescriptor;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
-import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.slf4j.Logger;
@@ -64,6 +66,8 @@ public class BootActivator extends BaseBundleActivator {
 
 	private static final AtomicReference<OpsMode> opsModeRef = new AtomicReference<OpsMode>();
 	private static final AtomicBoolean debugModeRef = new AtomicBoolean();
+
+	private static final SystemSetting<Integer> portOffsetSetting = newIntegerSetting("gyrex.portOffset", "Offset for ports opened by Gyrex in case multiple instances should be running on a single OS.").create();
 	private static int portOffset;
 
 	public static EnvironmentInfo getEnvironmentInfo() {
@@ -108,7 +112,7 @@ public class BootActivator extends BaseBundleActivator {
 	private volatile IServiceProxy<Location> instanceLocationProxy;
 	private volatile IPath instanceLocationPath;
 
-	private ServiceRegistration frameworkLogServiceRegistration;
+	private ServiceRegistration<?> frameworkLogServiceRegistration;
 
 	/**
 	 * The constructor
@@ -152,17 +156,13 @@ public class BootActivator extends BaseBundleActivator {
 		loggingOn();
 
 		// get port offset
-		final String portOffset = context.getProperty("gyrex.portOffset");
+		final Integer portOffset = portOffsetSetting.get();
 		if (portOffset != null) {
-			int offset;
-			try {
-				offset = Integer.parseInt(portOffset);
-			} catch (final Exception e) {
-				throw new UnhandledException("Invalid port offset. ", e);
-			}
-			if (offset < 0)
+			if (portOffset.intValue() < 0)
 				throw new IllegalStateException("Negativ port offset not allowed!");
-			BootActivator.portOffset = offset;
+			else if (portOffset.intValue() > 60000)
+				throw new IllegalStateException("Setting a port offset greater than 60000 is not supported. There would be no room left to open new ports.");
+			BootActivator.portOffset = portOffset.intValue();
 		}
 	}
 
@@ -175,6 +175,7 @@ public class BootActivator extends BaseBundleActivator {
 	}
 
 	public Bundle getBundle(final String symbolicName) {
+		getBundle().getBundleContext().getBundles();
 		final PackageAdmin packageAdmin = getBundleAdmin();
 		if (packageAdmin == null)
 			return null;
@@ -210,7 +211,7 @@ public class BootActivator extends BaseBundleActivator {
 	}
 
 	@Override
-	protected Class getDebugOptions() {
+	protected Class<?> getDebugOptions() {
 		return BootDebug.class;
 	}
 

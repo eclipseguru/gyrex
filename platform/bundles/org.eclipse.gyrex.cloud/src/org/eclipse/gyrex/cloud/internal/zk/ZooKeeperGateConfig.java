@@ -11,11 +11,13 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.internal.zk;
 
+import static org.eclipse.gyrex.server.settings.SystemSetting.newIntegerSetting;
+import static org.eclipse.gyrex.server.settings.SystemSetting.newStringSetting;
+
 import org.eclipse.gyrex.cloud.internal.CloudActivator;
 import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.server.Platform;
-
-import org.apache.commons.lang.math.NumberUtils;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,19 +36,11 @@ public class ZooKeeperGateConfig {
 	public static final String PREF_KEY_CLIENT_CONNECT_STRING = "clientConnectString";
 	public static final String PREF_KEY_CLIENT_TIMEOUT = "clientTimeout";
 
-	private static String getDefaultConnectString() {
-		final String connectString = System.getProperty("gyrex.zookeeper.connectString");
-		if (null != connectString)
-			return connectString;
-		if (Platform.inDevelopmentMode())
-			return "localhost:2181";
-		return null;
-	}
+	private static final SystemSetting<Integer> defaultSessionTimeout = newIntegerSetting("gyrex.zookeeper.sessionTimeout", "Default session timeout for the ZooKeeper client.").usingDefault(DEFAULT_SESSION_TIMEOUT).create();;
+	private static final SystemSetting<String> defaultConnectString = newStringSetting("gyrex.zookeeper.connectString", "Default connect string for the ZooKeeper client.").usingDefault(Platform.inDevelopmentMode() ? "localhost:2181" : null).create();;
 
 	private final String nodeId;
-
 	private String connectString;
-
 	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
 
 	public ZooKeeperGateConfig(final NodeInfo info) {
@@ -69,12 +63,12 @@ public class ZooKeeperGateConfig {
 	 */
 	private String getConnectStringFromPreferences() {
 		// check for node specific string
-		return CloudActivator.getInstance().getPreferenceService().getString(CloudActivator.SYMBOLIC_NAME, PREF_NODE_ZOOKEEPER + "/" + PREF_KEY_CLIENT_CONNECT_STRING, getDefaultConnectString(), null);
+		return CloudActivator.getInstance().getPreferenceService().getString(CloudActivator.SYMBOLIC_NAME, PREF_NODE_ZOOKEEPER + "/" + PREF_KEY_CLIENT_CONNECT_STRING, defaultConnectString.get(), null);
 	}
 
 	private int getDefaultSessionTimeout() {
 		final String sessionTimeoutValue = System.getProperty("gyrex.zookeeper.sessionTimeout");
-		final int sessionTimeout = NumberUtils.toInt(sessionTimeoutValue, DEFAULT_SESSION_TIMEOUT);
+		final int sessionTimeout = defaultSessionTimeout.get();
 		if (sessionTimeout > 5000)
 			return sessionTimeout;
 		if (null != sessionTimeoutValue) {

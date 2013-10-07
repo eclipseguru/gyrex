@@ -20,6 +20,7 @@ import org.eclipse.gyrex.http.application.manager.ApplicationRegistrationExcepti
 import org.eclipse.gyrex.http.application.manager.IApplicationManager;
 import org.eclipse.gyrex.http.application.manager.MountConflictException;
 import org.eclipse.gyrex.server.Platform;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.core.runtime.Path;
 
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public class HttpServiceAppComponent {
 
 	private static final String DEFAULT_APP_ID = HttpServiceActivator.SYMBOLIC_NAME.concat(".application");
+	private static final SystemSetting<Boolean> registerHttpServiceApplication = SystemSetting.newBooleanSetting("gyrex.http.equinoxhttpservice.registerApplication", "Enables the registration of a default Equinox HTTP Service application. Default is true in development mode and false otherwise").usingDefault(Platform.inDevelopmentMode() ? Boolean.TRUE : Boolean.FALSE).create();
 
 	private static final Logger LOG = LoggerFactory.getLogger(HttpServiceAppComponent.class);
 
@@ -45,9 +47,8 @@ public class HttpServiceAppComponent {
 	public void activate() {
 		// only register in development mode
 		// otherwise it must be manually enabled
-		if (!Platform.inDevelopmentMode() || Boolean.TRUE.toString().equals(System.getProperty("gyrex.http.equinoxhttpservice.default.disabled"))) {
+		if (!registerHttpServiceApplication.isTrue())
 			return;
-		}
 
 		// get the root context
 		final IRuntimeContext context = getRuntimeContextRegistry().get(Path.ROOT);
@@ -97,9 +98,8 @@ public class HttpServiceAppComponent {
 	 */
 	public IApplicationManager getApplicationManager() {
 		final IApplicationManager manager = applicationManager;
-		if (manager == null) {
+		if (manager == null)
 			throw new IllegalStateException("application manager not available");
-		}
 		return manager;
 	}
 
@@ -110,9 +110,8 @@ public class HttpServiceAppComponent {
 	 */
 	public IRuntimeContextRegistry getRuntimeContextRegistry() {
 		final IRuntimeContextRegistry registry = runtimeContextRegistry;
-		if (registry == null) {
+		if (registry == null)
 			throw new IllegalStateException("context registry not available");
-		}
 		return registry;
 	}
 
