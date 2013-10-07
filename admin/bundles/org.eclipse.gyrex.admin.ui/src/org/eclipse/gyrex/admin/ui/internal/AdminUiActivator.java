@@ -30,6 +30,7 @@ import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.common.runtime.BaseBundleActivator;
 import org.eclipse.gyrex.monitoring.diagnostics.StatusTracker;
 import org.eclipse.gyrex.server.Platform;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -86,8 +87,8 @@ public class AdminUiActivator extends BaseBundleActivator {
 	private static volatile AdminUiActivator instance;
 	private static volatile Server server;
 
-	private static final String PROPERTY_ADMIN_SECURE = "gyrex.admin.secure";
-	private static final String PROPERTY_ADMIN_AUTH = "gyrex.admin.auth";
+	private static final SystemSetting<Boolean> useSslConnector = SystemSetting.newBooleanSetting("gyrex.admin.secure", "enables the Gyrex Admin UI to be deliviered via HTTPS instead of plain HTTP").usingDefault(Boolean.FALSE).create();
+	private static final SystemSetting<String> authenticationConfigString = SystemSetting.newStringSetting("gyrex.admin.auth", "authentication string containing username and password hash").create();
 
 	/**
 	 * Returns an image descriptor for the image file at the given plug-in
@@ -345,7 +346,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 		try {
 			server = new Server();
 
-			if (Boolean.getBoolean(PROPERTY_ADMIN_SECURE)) {
+			if (useSslConnector.isTrue()) {
 				addSslConnector(server);
 			} else {
 				addNonSslConnector(server);
@@ -366,8 +367,8 @@ public class AdminUiActivator extends BaseBundleActivator {
 			configureContextWithServletsAndResources(contextHandler);
 
 			// enable authentication if configured
-			final String authenticationPhrase = System.getProperty(PROPERTY_ADMIN_AUTH);
-			if (Boolean.getBoolean(PROPERTY_ADMIN_SECURE) && StringUtils.isNotBlank(authenticationPhrase)) {
+			final String authenticationPhrase = authenticationConfigString.get();
+			if (useSslConnector.isTrue() && StringUtils.isNotBlank(authenticationPhrase)) {
 				final String[] segments = authenticationPhrase.split("/");
 				if (segments.length != 3)
 					throw new IllegalArgumentException("Illegal authentication configuration. Must be three string separated by '/'");
