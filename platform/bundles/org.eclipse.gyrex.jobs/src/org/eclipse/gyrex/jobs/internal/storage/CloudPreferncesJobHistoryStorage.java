@@ -24,6 +24,7 @@ import org.eclipse.gyrex.jobs.internal.util.ContextHashUtil;
 import org.eclipse.gyrex.jobs.spi.storage.IJobHistoryStorage;
 import org.eclipse.gyrex.jobs.spi.storage.JobHistoryEntryStorable;
 import org.eclipse.gyrex.preferences.CloudScope;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -49,7 +50,7 @@ public class CloudPreferncesJobHistoryStorage implements IJobHistoryStorage {
 	private static final String KEY_QUEUED_TRIGGER = "queuedTrigger";
 	private static final String KEY_CANCELLED_TRIGGER = "canceledTrigger";
 	public static final int MAX_HISTORY_SIZE = 10;
-	public static final int MAX_RESULT_MESSAGE_SIZE = Integer.getInteger("gyrex.jobs.history.maxMessageLength", 4096); // ~4K
+	public static final int MAX_RESULT_MESSAGE_SIZE = SystemSetting.newIntegerSetting("gyrex.jobs.history.maxMessageLength", "Maximum length of job result messages to store inthe job history.").usingDefault(4096).create().get(); // ~4K
 
 	private static final Logger LOG = LoggerFactory.getLogger(CloudPreferncesJobHistoryStorage.class);
 

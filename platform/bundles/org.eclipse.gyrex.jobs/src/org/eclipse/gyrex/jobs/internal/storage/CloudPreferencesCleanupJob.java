@@ -21,6 +21,7 @@ import org.eclipse.gyrex.jobs.internal.manager.JobHungDetectionHelper;
 import org.eclipse.gyrex.jobs.internal.manager.JobImpl;
 import org.eclipse.gyrex.jobs.internal.manager.JobManagerImpl;
 import org.eclipse.gyrex.jobs.internal.util.ContextHashUtil;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -50,7 +51,7 @@ public final class CloudPreferencesCleanupJob extends Job {
 
 		// initialize max age
 		// (backwards compatibility; must be done in job)
-		setMaxDaysSinceLastRun(Integer.getInteger("gyrex.jobs.cleanup.maxDaysSinceLastRun", 14));
+		setMaxDaysSinceLastRun(SystemSetting.newIntegerSetting("gyrex.jobs.cleanup.maxDaysSinceLastRun", "Maximum number of days of job history that should be kept.").usingDefault(14).create().get());
 	}
 
 	@Override

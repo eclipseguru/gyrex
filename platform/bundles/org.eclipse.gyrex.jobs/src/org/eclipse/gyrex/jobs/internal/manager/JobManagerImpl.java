@@ -43,6 +43,7 @@ import org.eclipse.gyrex.jobs.manager.IJobManager;
 import org.eclipse.gyrex.jobs.spi.storage.IJobHistoryStorage;
 import org.eclipse.gyrex.jobs.spi.storage.JobHistoryEntryStorable;
 import org.eclipse.gyrex.preferences.ModificationConflictException;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -99,8 +100,8 @@ public class JobManagerImpl implements IJobManager {
 	private static final long DEFAULT_MODIFY_LOCK_TIMEOUT = 3000L;
 	private static final long modifyLockTimeout = Long.getLong("gyrex.jobs.modifyLock.timeout", DEFAULT_MODIFY_LOCK_TIMEOUT);
 
-	private static final int storageMaxNumberOfRetries = Integer.getInteger("gyrex.jobs.storage.retryAttempts", 3);
-	private static final long storageRetryDelay = Math.max(Long.getLong("gyrex.jobs.storage.retryDelay", 150L), 50L);
+	private static final int storageMaxNumberOfRetries = SystemSetting.newIntegerSetting("gyrex.jobs.storage.retryAttempts", "The number of retries that should be performed in case a storage operation fails.").usingDefault(3).create().get();
+	private static final long storageRetryDelayInMs = Math.max(SystemSetting.newLongSetting("gyrex.jobs.storage.retryDelayInMs", "The time to wait in milli-seconds between retry attempts.").usingDefault(150L).create().get(), 50L);
 
 	static final IJobHistory EMPTY_HISTORY = new IJobHistory() {
 		@Override
@@ -432,7 +433,7 @@ public class JobManagerImpl implements IJobManager {
 					throw e;
 
 				// wait a bit
-				Thread.sleep(storageRetryDelay);
+				Thread.sleep(storageRetryDelayInMs);
 			}
 		}
 	}
