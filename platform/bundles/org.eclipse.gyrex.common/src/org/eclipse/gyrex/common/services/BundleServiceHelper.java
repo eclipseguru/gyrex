@@ -143,9 +143,8 @@ public final class BundleServiceHelper {
 	 */
 	public <S> ServiceRegistration<S> registerService(final Class<S> clazz, final S service, final String vendor, final String description, final String pid, final Integer ranking) {
 		final BundleContext bundleContext = contextRef.get();
-		if (null == bundleContext) {
+		if (null == bundleContext)
 			throw newInactiveException();
-		}
 
 		final Dictionary<String, Object> properties = new Hashtable<String, Object>(4);
 		if (null != pid) {
@@ -193,11 +192,10 @@ public final class BundleServiceHelper {
 	 *         unregister the service
 	 * @see BundleContext#registerService(String, Object, Dictionary)
 	 */
-	public ServiceRegistration registerService(final String clazz, final Object service, final String vendor, final String description, final String pid, final Integer ranking) {
+	public ServiceRegistration<?> registerService(final String clazz, final Object service, final String vendor, final String description, final String pid, final Integer ranking) {
 		final BundleContext bundleContext = contextRef.get();
-		if (null == bundleContext) {
+		if (null == bundleContext)
 			throw newInactiveException();
-		}
 
 		final Dictionary<String, Object> properties = new Hashtable<String, Object>(4);
 		if (null != pid) {
@@ -245,11 +243,10 @@ public final class BundleServiceHelper {
 	 *         unregister the service
 	 * @see BundleContext#registerService(String, Object, Dictionary)
 	 */
-	public ServiceRegistration registerService(final String[] classes, final Object service, final String vendor, final String description, final String pid, final Integer ranking) {
+	public ServiceRegistration<?> registerService(final String[] classes, final Object service, final String vendor, final String description, final String pid, final Integer ranking) {
 		final BundleContext bundleContext = contextRef.get();
-		if (null == bundleContext) {
+		if (null == bundleContext)
 			throw newInactiveException();
-		}
 
 		final Dictionary<String, Object> properties = new Hashtable<String, Object>(4);
 		if (null != pid) {
@@ -329,14 +326,12 @@ public final class BundleServiceHelper {
 	 *             specified filter is invalid
 	 */
 	public <T> IServiceProxy<T> trackService(final Class<T> serviceInterface, final String filter) throws IllegalArgumentException {
-		if (null == serviceInterface) {
+		if (null == serviceInterface)
 			throw new IllegalArgumentException("serviceInterface must not be null");
-		}
 
 		final BundleContext bundleContext = contextRef.get();
-		if (null == bundleContext) {
+		if (null == bundleContext)
 			throw newInactiveException();
-		}
 
 		return serviceProxyPool.getOrCreate(serviceInterface, filter);
 	}

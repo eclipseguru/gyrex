@@ -225,7 +225,7 @@ public abstract class BaseBundleActivator implements BundleActivator {
 	 * 
 	 * @return the debug options
 	 */
-	protected Class getDebugOptions() {
+	protected Class<?> getDebugOptions() {
 		return null; // no debug options
 	}
 
@@ -319,7 +319,7 @@ public abstract class BaseBundleActivator implements BundleActivator {
 		bundle.set(context.getBundle());
 
 		// initialize debug options
-		final Class debugOptions = getDebugOptions();
+		final Class<?> debugOptions = getDebugOptions();
 		if (null != debugOptions) {
 			BundleDebugOptions.initializeDebugOptions(this, debugOptions);
 		}
