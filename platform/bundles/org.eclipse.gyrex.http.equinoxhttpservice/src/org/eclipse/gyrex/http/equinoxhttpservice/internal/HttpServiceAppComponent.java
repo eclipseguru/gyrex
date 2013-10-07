@@ -32,8 +32,10 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpServiceAppComponent {
 
+	private static final String ORG_OSGI_SERVICE_HTTP_PORT = "org.osgi.service.http.port"; //$NON-NLS-1$
+
 	private static final String DEFAULT_APP_ID = HttpServiceActivator.SYMBOLIC_NAME.concat(".application");
-	private static final SystemSetting<Boolean> registerHttpServiceApplication = SystemSetting.newBooleanSetting("gyrex.http.equinoxhttpservice.registerApplication", "Enables the registration of a default Equinox HTTP Service application. Default is true in development mode and false otherwise").usingDefault(Platform.inDevelopmentMode() ? Boolean.TRUE : Boolean.FALSE).create();
+	private static final SystemSetting<Boolean> registerHttpServiceApplication = SystemSetting.newBooleanSetting("gyrex.http.equinoxhttpservice.registerApplication", "Enables the registration of a default Equinox HTTP Service application. Default is true in development mode or in case system property 'org.osgi.service.http.port' is set and false otherwise").usingDefault(Platform.inDevelopmentMode() ? Boolean.TRUE : null != System.getProperty(ORG_OSGI_SERVICE_HTTP_PORT)).create();
 
 	private static final Logger LOG = LoggerFactory.getLogger(HttpServiceAppComponent.class);
 
