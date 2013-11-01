@@ -31,6 +31,7 @@ import org.eclipse.gyrex.http.jetty.internal.connectors.CertificateSslContextFac
 import org.eclipse.gyrex.monitoring.metrics.MetricSet;
 import org.eclipse.gyrex.preferences.CloudScope;
 import org.eclipse.gyrex.server.Platform;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -61,13 +62,16 @@ public class JettyEngineApplication implements IApplication {
 	private static final String ORG_OSGI_SERVICE_HTTP_PORT = "org.osgi.service.http.port"; //$NON-NLS-1$
 //	private static final String ORG_OSGI_SERVICE_HTTP_PORT_SECURE = "org.osgi.service.http.port.secure"; //$NON-NLS-1$
 
+	/** INTEGER */
+	private static final SystemSetting<Integer> httpServicePort = SystemSetting.newIntegerSetting(ORG_OSGI_SERVICE_HTTP_PORT, "Port for the OSGi HttpService to listen on (will only be used if no channels are configured).").usingDefault(8080).create();
+
 	/** Exit object indicating error termination */
 	private static final Integer EXIT_ERROR = Integer.valueOf(1);
 
 	private static final AtomicReference<CountDownLatch> stopSignalRef = new AtomicReference<CountDownLatch>(null);
 	private static final AtomicReference<Throwable> jettyErrorRef = new AtomicReference<Throwable>();
 
-	private static Map<MetricSet, ServiceRegistration> metricsRegistrations = new ConcurrentHashMap<MetricSet, ServiceRegistration>();
+	private static Map<MetricSet, ServiceRegistration<MetricSet>> metricsRegistrations = new ConcurrentHashMap<>();
 
 	/**
 	 * Force a shutdown of the ZooKeeper gate.
@@ -79,9 +83,9 @@ public class JettyEngineApplication implements IApplication {
 		}
 	}
 
-	public static ServiceRegistration registerMetrics(final MetricSet metricSet) {
-		final ServiceRegistration metricsRegistration = HttpJettyActivator.getInstance().getServiceHelper().registerService(MetricSet.SERVICE_NAME, metricSet, "Eclipse Gyrex", metricSet.getDescription(), null, null);
-		final ServiceRegistration oldRegistration = metricsRegistrations.put(metricSet, metricsRegistration);
+	public static ServiceRegistration<MetricSet> registerMetrics(final MetricSet metricSet) {
+		final ServiceRegistration<MetricSet> metricsRegistration = HttpJettyActivator.getInstance().getServiceHelper().registerService(MetricSet.class, metricSet, "Eclipse Gyrex", metricSet.getDescription(), null, null);
+		final ServiceRegistration<MetricSet> oldRegistration = metricsRegistrations.put(metricSet, metricsRegistration);
 		if ((null != oldRegistration) && (oldRegistration != metricsRegistration)) {
 			try {
 				oldRegistration.unregister();
@@ -93,7 +97,7 @@ public class JettyEngineApplication implements IApplication {
 	}
 
 	public static void unregisterMetrics(final MetricSet metrics) {
-		final ServiceRegistration registration = metricsRegistrations.remove(metrics);
+		final ServiceRegistration<MetricSet> registration = metricsRegistrations.remove(metrics);
 		if (null != registration) {
 			try {
 				registration.unregister();
@@ -122,14 +126,14 @@ public class JettyEngineApplication implements IApplication {
 			// start a default channel in development mode
 			// or if OSGi property is explicitly set (bug 358859)
 			if (Platform.inDevelopmentMode()) {
-				final int port = Integer.getInteger(ORG_OSGI_SERVICE_HTTP_PORT, 8080);
+				final int port = httpServicePort.get();
 				LOG.info("No channels configured. Enabling default channel on port {} in development mode.", port);
 				final ChannelDescriptor defaultChannel = new ChannelDescriptor();
 				defaultChannel.setId("default");
 				defaultChannel.setPort(port);
 				createConnector(server, defaultChannel, jettyManager, nodeProperties);
-			} else if (null != Integer.getInteger(ORG_OSGI_SERVICE_HTTP_PORT)) {
-				final int port = Integer.getInteger(ORG_OSGI_SERVICE_HTTP_PORT, 8080);
+			} else if (httpServicePort.isSet()) {
+				final int port = httpServicePort.get();
 				LOG.info("No channels configured. Enabling channel on port {} configured via system property '{}'.", port, ORG_OSGI_SERVICE_HTTP_PORT);
 				final ChannelDescriptor defaultChannel = new ChannelDescriptor();
 				defaultChannel.setId("default");
@@ -320,7 +324,7 @@ public class JettyEngineApplication implements IApplication {
 			}
 
 			// activate HTTP gateway
-			final ServiceRegistration gatewayServiceRegistration = HttpJettyActivator.getInstance().getServiceHelper().registerService(IHttpGateway.class.getName(), gateway, "Eclipse Gyrex", "Jetty based HTTP gateway.", null, null);
+			final ServiceRegistration<IHttpGateway> gatewayServiceRegistration = HttpJettyActivator.getInstance().getServiceHelper().registerService(IHttpGateway.class, gateway, "Eclipse Gyrex", "Jetty based HTTP gateway.", null, null);
 
 			if (JettyDebug.engine) {
 				LOG.debug("Jetty HTTP gateway registered!");
