@@ -198,7 +198,7 @@
         <configuration>
           <target>
             <!-- use target platform defined in releng/targetplatform -->
-            <!-- (note: name of targe file must match artifactId) -->
+            <!-- (note: name of target file must match artifactId) -->
             <artifact>
               <groupId>org.eclipse.gyrex.releng</groupId>
               <artifactId>gyrex-target-platform</artifactId>
