@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2013 Tasktop Technologies and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -179,7 +179,8 @@ public final class SystemSetting<T> {
 	 * <p>
 	 * Note, in case a value was found but cannot be parsed/converted into the
 	 * required value type, a warning message will be logged to a logger named
-	 * with the full name of this class.
+	 * with the full name of this class and the lookup will continue as
+	 * specified above.
 	 * </p>
 	 * 
 	 * @return the system setting value
@@ -258,7 +259,8 @@ public final class SystemSetting<T> {
 
 	/**
 	 * Convenient method that indicates if the system setting is set, i.e. the
-	 * value returned by {@link #get()} is different than its default value.
+	 * value returned by {@link #get()} is neither <code>null</code> nor the
+	 * default value.
 	 * <p>
 	 * In case no default value is set, this method will return true if
 	 * {@link #get()} returns a non <code>null</code> value.
@@ -269,10 +271,7 @@ public final class SystemSetting<T> {
 	 *         <code>false</code> otherwise
 	 */
 	public boolean isSet() {
-		if (defaultValue != null)
-			return !defaultValue.equals(get());
-		else
-			return get() != null;
+		return (System.getenv(environmentVariable) != null) || (System.getProperty(systemProperty) != null);
 	}
 
 	/**
