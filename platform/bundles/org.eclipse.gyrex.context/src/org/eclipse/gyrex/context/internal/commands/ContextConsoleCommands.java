@@ -30,6 +30,7 @@ public class ContextConsoleCommands extends BaseCommandProvider {
 		registerCommand("rm", RemoveContextCmd.class);
 		registerCommand("flush", FlushContextCmd.class);
 		registerCommand("dump", DumpContextCmd.class);
+		registerCommand(ContextFilterCommands.class);
 	}
 
 	public void _context(final CommandInterpreter ci) throws Exception {

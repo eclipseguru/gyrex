@@ -50,15 +50,20 @@ public class ServiceProxy<T> implements IServiceProxy<T>, InvocationHandler, Ser
 	private static final Logger LOG = LoggerFactory.getLogger(ServiceProxy.class);
 
 	public static <T> void verifyFilterContainsObjectClassConditionForServiceInterface(final Class<T> serviceInterface, final String filter) {
-		final String requiredObjectClassCondition = String.format("&(objectClass=%s)", serviceInterface.getName());
+		verifyFilterContainsObjectClassConditionForServiceInterface(serviceInterface.getName(), filter);
+	}
+
+	public static void verifyFilterContainsObjectClassConditionForServiceInterface(final String typeName, final String filter) {
+		final String requiredObjectClassCondition = String.format("&(objectClass=%s)", typeName);
 		if (!filter.contains(requiredObjectClassCondition))
-			throw new IllegalArgumentException(String.format("Filter '%s' does not match the service class condition '%s'!", filter, requiredObjectClassCondition));
+			throw new IllegalArgumentException(String.format("Filter '%s' does not contain a service class condition '%s'!", filter, requiredObjectClassCondition));
 	}
 
 	private final BundleContext bundleContext;
 	private final Class<T> serviceInterface;
 	private final String filter;
 	private final CopyOnWriteArraySet<IServiceProxyDisposalListener> disposalListeners = new CopyOnWriteArraySet<IServiceProxyDisposalListener>();
+
 	private final CopyOnWriteArraySet<IServiceProxyChangeListener> changeListeners = new CopyOnWriteArraySet<IServiceProxyChangeListener>();
 
 	/**
@@ -78,9 +83,9 @@ public class ServiceProxy<T> implements IServiceProxy<T>, InvocationHandler, Ser
 
 	/** indicated if disposed */
 	private volatile boolean disposed;
-
 	/** the generated dynamic proxy */
 	private volatile T dynamicProxy;
+
 	private final Object dynamicProxyCreationLock = new Object();
 
 	/** a background thread for notifying listeners */
