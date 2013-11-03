@@ -11,7 +11,10 @@
  */
 package org.eclipse.gyrex.context.internal.configuration;
 
-import org.eclipse.gyrex.context.IRuntimeContext;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.gyrex.context.internal.ContextActivator;
 import org.eclipse.gyrex.context.internal.ContextDebug;
 import org.eclipse.gyrex.preferences.CloudScope;
@@ -22,6 +25,8 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+
+import org.apache.commons.lang.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +60,8 @@ public final class ContextConfiguration {
 
 		// lookup filter in this context
 		String filter = readFilterFromPreferences(rootNode, contextPath, typeName);
-		if (null != filter) {
+		if (null != filter)
 			return filter;
-		}
 
 		// search parent contexts
 		while ((null == filter) && !contextPath.isRoot()) {
@@ -66,6 +70,48 @@ public final class ContextConfiguration {
 
 		// return what we have (may be nothing)
 		return filter;
+	}
+
+	/**
+	 * Returns a map all configured filter.
+	 * <p>
+	 * The map key is type name and the value is the configured filter. This
+	 * method only looks at the specified context and does not search the
+	 * hierarchy.
+	 * </p>
+	 * 
+	 * @param context
+	 *            the context
+	 * @param typeName
+	 *            the requested type name
+	 * @return the filter (maybe <code>null</code> if none is explicitly defined
+	 *         for the context)
+	 */
+	public static Map<String, String> getFilters(final IPath contextPath) {
+		final Map<String, String> result = new HashMap<String, String>();
+
+		// get preferences root node
+		final IEclipsePreferences rootNode = getRootNodeForContextPreferences();
+
+		// get the preferences
+		final String preferencesPath = getPreferencesPathForContextObjectFilterSetting(contextPath);
+		try {
+			if (!rootNode.nodeExists(preferencesPath))
+				return Collections.emptyMap();
+
+			// loop over keys and assume those are type names
+			for (final String typeName : rootNode.node(preferencesPath).keys()) {
+				// get the filter string
+				final String filterString = rootNode.node(preferencesPath).get(typeName, null);
+				if (StringUtils.isNotBlank(filterString)) {
+					result.put(typeName, filterString);
+				}
+			}
+			return result;
+		} catch (final BackingStoreException e) {
+			LOG.warn("Error while accessing the preferences backend for context path \"{}\": {}", contextPath, e.getMessage());
+			return Collections.emptyMap();
+		}
 	}
 
 	private static String getPreferencesPathForContextObjectFilterSetting(final IPath contextPath) {
@@ -93,9 +139,8 @@ public final class ContextConfiguration {
 		// get the preferences
 		final String preferencesPath = getPreferencesPathForContextObjectFilterSetting(contextPath);
 		try {
-			if (!root.nodeExists(preferencesPath)) {
+			if (!root.nodeExists(preferencesPath))
 				return null;
-			}
 		} catch (final BackingStoreException e) {
 			LOG.warn("Error while accessing the preferences backend for context path \"{}\": {}", contextPath, e.getMessage());
 			return null;
@@ -103,9 +148,8 @@ public final class ContextConfiguration {
 
 		// get the filter string
 		final String filterString = root.node(preferencesPath).get(typeName, null);
-		if (null == filterString) {
+		if (null == filterString)
 			return null;
-		}
 
 		// return the filter
 		return filterString;
@@ -121,16 +165,13 @@ public final class ContextConfiguration {
 	 * @return the filter (maybe <code>null</code> if none is explicitly defined
 	 *         for the context
 	 */
-	public static void setFilter(final IRuntimeContext context, final String typeName, final String filter) {
-		// the context path
-		final IPath contextPath = context.getContextPath();
-
+	public static void setFilter(final IPath contextPath, final String typeName, final String filter) {
 		// get preferences root node
 		final IEclipsePreferences rootNode = getRootNodeForContextPreferences();
 
 		// log a debug message
 		if (ContextDebug.objectLifecycle) {
-			LOG.debug("Setting filter in context {} for type {} to {}", new Object[] { context, typeName, filter });
+			LOG.debug("Setting filter in context {} for type {} to {}", new Object[] { contextPath, typeName, filter });
 		}
 
 		// set the preferences

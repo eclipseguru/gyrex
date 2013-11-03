@@ -18,6 +18,7 @@ import org.eclipse.gyrex.context.internal.registry.ContextRegistryImpl;
 import org.eclipse.gyrex.context.manager.IRuntimeContextManager;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ public class ContextManagerImpl implements IRuntimeContextManager, IShutdownPart
 
 	@Override
 	public void set(final IRuntimeContext context, final Class<?> type, final String filter) {
-		ContextConfiguration.setFilter(context, type.getName(), filter);
+		ContextConfiguration.setFilter(context.getContextPath(), type.getName(), filter);
 
 		// for now, we can only flush the contexts
 		// TODO investigate individual value flushing
