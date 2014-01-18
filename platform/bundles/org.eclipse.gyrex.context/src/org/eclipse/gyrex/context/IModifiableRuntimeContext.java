@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012, 2013 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -45,14 +45,16 @@ import org.osgi.framework.BundleContext;
  * </p>
  * <p>
  * Modifiable contexts <strong>must</strong> be {@link #dispose() disposed} when
- * no longer needed.
+ * no longer needed. Since version 1.3, for convenience this interface also
+ * implement the {@link AutoCloseable} interface so that they can be used with a
+ * try-with-resources code block.
  * </p>
  * 
  * @noimplement This interface is not intended to be implemented by clients.
  * @noextend This interface is not intended to be extended by clients.
  * @since 1.2
  */
-public interface IModifiableRuntimeContext extends IRuntimeContext {
+public interface IModifiableRuntimeContext extends IRuntimeContext, AutoCloseable {
 
 	/**
 	 * Fails with throwing an {@link IllegalStateException}.
@@ -204,5 +206,4 @@ public interface IModifiableRuntimeContext extends IRuntimeContext {
 	 *             if the specified type is <code>null</code>
 	 */
 	void unsetLocal(Class<?> type) throws IllegalArgumentException;
-
 }
