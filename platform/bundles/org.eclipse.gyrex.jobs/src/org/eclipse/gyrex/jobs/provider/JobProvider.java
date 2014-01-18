@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.gyrex.cloud.services.locking.ILockService;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
@@ -54,8 +56,24 @@ public abstract class JobProvider extends PlatformObject {
 	/** the OSGi service name */
 	public static final String SERVICE_NAME = JobProvider.class.getName();
 
+	/** placeholder for lazy initialization */
+	private static final List<String> LAZY_INITIALIZATION_PLACEHOLDER = Collections.emptyList();
+
+	/** lock which guards lazy initialization */
+	private final Lock lazyInitializationLock = new ReentrantLock();
+
 	/** provided job type ids */
-	private final List<String> providedTypeIds;
+	private volatile List<String> providedTypeIds;
+
+	/**
+	 * Creates a new, incomplete instance.
+	 * 
+	 * @noreference This constructor is not intended to be referenced by
+	 *              clients.
+	 */
+	JobProvider() {
+		providedTypeIds = LAZY_INITIALIZATION_PLACEHOLDER;
+	}
 
 	/**
 	 * Creates a new instance using the specified provider id.
@@ -105,6 +123,18 @@ public abstract class JobProvider extends PlatformObject {
 	public abstract Job createJob(String typeId, IJobContext context) throws Exception;
 
 	/**
+	 * Hook for internal sub-classes to discover provided job ids.
+	 * 
+	 * @return list of discovered provided job identifiers
+	 * @nooverride This method is not intended to be re-implemented or extended
+	 *             by clients.
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
+	List<String> discoverProvidedTypeIds() {
+		throw new IllegalStateException("Discovery not available.");
+	}
+
+	/**
 	 * Returns a human readable name of the specified job type.
 	 * <p>
 	 * The default implementation returns <code>null</code> for backwards
@@ -127,7 +157,18 @@ public abstract class JobProvider extends PlatformObject {
 	 * @return an unmodifiable collection of provided job type identifiers
 	 */
 	public final Collection<String> getProvidedTypeIds() {
-		return Collections.unmodifiableCollection(providedTypeIds);
+		List<String> ids = providedTypeIds;
+		if (ids == LAZY_INITIALIZATION_PLACEHOLDER) {
+			lazyInitializationLock.lock();
+			try {
+				if (providedTypeIds == LAZY_INITIALIZATION_PLACEHOLDER) {
+					ids = providedTypeIds = discoverProvidedTypeIds();
+				}
+			} finally {
+				lazyInitializationLock.unlock();
+			}
+		}
+		return Collections.unmodifiableCollection(ids);
 	}
 
 	/**

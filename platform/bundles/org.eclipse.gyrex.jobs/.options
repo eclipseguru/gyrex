@@ -15,3 +15,6 @@ org.eclipse.gyrex.jobs/jobLocks=true
 
 # debug cleanup
 org.eclipse.gyrex.jobs/cleanup=true
+
+# debug scanning provider
+org.eclipse.gyrex.jobs/scanningProvider=true

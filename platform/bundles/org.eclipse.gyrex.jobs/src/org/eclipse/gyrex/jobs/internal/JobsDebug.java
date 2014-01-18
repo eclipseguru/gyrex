@@ -26,4 +26,6 @@ public class JobsDebug extends BundleDebugOptions {
 	public static boolean jobLocks;
 	public static boolean cleanup;
 
+	public static boolean scanningProvider;
+
 }
