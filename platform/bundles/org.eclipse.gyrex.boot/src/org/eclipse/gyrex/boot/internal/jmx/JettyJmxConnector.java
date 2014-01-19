@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation in Jetty
  *******************************************************************************/
@@ -14,6 +14,7 @@ package org.eclipse.gyrex.boot.internal.jmx;
 import javax.management.remote.JMXServiceURL;
 
 import org.eclipse.gyrex.boot.internal.BootActivator;
+import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.jetty.jmx.ConnectorServer;
@@ -28,23 +29,26 @@ import org.slf4j.LoggerFactory;
  */
 public class JettyJmxConnector {
 
+	private static enum Status {
+		STARTING, STARTED
+	}
+
 	private static final String PROPERTY_HOST = "gyrex.jmxrmi.host";
 	private static final String PROPERTY_PORT = "gyrex.jmxrmi.port";
 
 	private static final Logger LOG = LoggerFactory.getLogger(JettyJmxConnector.class);
 
 	private static ConnectorServer connectorServer;
+	private static Status state;
 
-	public static synchronized void start() throws Exception {
-		if (connectorServer != null) {
-			throw new IllegalStateException("already started");
-		}
+	static synchronized void doStart() throws Exception {
+		if (state != Status.STARTING)
+			return;
 
 		// do not start if running in production mode and not explicitly set
 		final EnvironmentInfo info = BootActivator.getEnvironmentInfo();
-		if (info.getProperty("gyrex.jmxrmi.skip") != null) {
+		if (info.getProperty("gyrex.jmxrmi.skip") != null)
 			return;
-		}
 
 		// use defaults from http://wiki.eclipse.org/Jetty/Tutorial/JMX#Enabling_JMXConnectorServer_for_Remote_Access
 		String host = "localhost";
@@ -69,12 +73,33 @@ public class JettyJmxConnector {
 		final JMXServiceURL url = new JMXServiceURL("rmi", host, port, String.format("/jndi/rmi://%s:%d/jmxrmi", host, port));
 		connectorServer = new ConnectorServer(url, null, "org.eclipse.gyrex.jmx:name=rmiconnectorserver");
 		connectorServer.start();
+
+		state = Status.STARTED;
+	}
+
+	public static synchronized void start() throws Exception {
+		if ((state == Status.STARTING) || (state == Status.STARTED))
+			throw new IllegalStateException("already started");
+
+		state = Status.STARTING;
+		final Thread t = new Thread("JettyJMXConnectorStart") {
+			@Override
+			public void run() {
+				try {
+					doStart();
+				} catch (final Exception e) {
+					ServerApplication.shutdown(e);
+				}
+			};
+		};
+		t.setDaemon(true);
+		t.start();
 	}
 
 	public static synchronized void stop() throws Exception {
-		if (connectorServer == null) {
+		state = null;
+		if (connectorServer == null)
 			return;
-		}
 
 		connectorServer.stop();
 		connectorServer = null;
