@@ -5,7 +5,7 @@
 
   <groupId>org.eclipse.gyrex.releng</groupId>
   <artifactId>gyrex-maven-parent</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <!-- common settings for all modules -->
@@ -47,6 +47,15 @@
       <url>https://repo.eclipse.org/content/repositories/gyrex-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
+
+  <!-- common repos for all modules -->
+  <repositories>
+    <repository>
+      <id>repo.eclipse.org-gyrex</id>
+      <name>Gyrex Eclipse Maven Repositories</name>
+      <url>https://repo.eclipse.org/content/groups/gyrex/</url>
+    </repository>
+  </repositories>
 
   <!-- common plug-in repos for all modules -->
   <pluginRepositories>
