@@ -1,10 +1,3 @@
-
-- Sign & Pack (CBI) 
-  (DONE for jars, NOT DONE for executables; needs testing)
-
-
-
-
 Integrate Tests:
 http://assenkolov.blogspot.de/2011/02/staged-maven-build-in-hudson-with.html
 
