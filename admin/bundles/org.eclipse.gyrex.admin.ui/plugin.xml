@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="pages" name="Admin Console Pages Extension Point" schema="schema/pages.exsd"/>
+
+   <extension
+         point="org.eclipse.gyrex.server.roles">
+
+      <defaultStart
+            mode="any"
+            roleId="org.eclipse.gyrex.admin.ui.role"
+            trigger="onBoot">
+      </defaultStart>
+      <role
+            id="org.eclipse.gyrex.admin.ui.role"
+            name="RAP Based Admin UI">
+         <requireBundle
+               symbolicName="org.eclipse.core.runtime">
+         </requireBundle>
+         <requireBundle
+               symbolicName="org.eclipse.rap.rwt.osgi">
+         </requireBundle>
+         <requireBundle
+               symbolicName="org.eclipse.gyrex.admin.ui">
+         </requireBundle>
+         <requireBundle
+               symbolicName="org.eclipse.equinox.http.registry">
+         </requireBundle>
+      </role>
+   </extension>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.pages">
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
+            class="org.eclipse.gyrex.admin.ui.internal.pages.OverviewPage"
+            id="overview"
+            name="Overview"
+            sortKey="000">
+      </page>
+      <category
+            id="org.eclipse.gyrex.admin.ui.categories.system"
+            name="System"
+            sortKey="1000">
+      </category>
+      <category
+            id="org.eclipse.gyrex.admin.ui.categories.apps"
+            name="Applications"
+            sortKey="2000">
+      </category>
+      <page
+            class="org.eclipse.gyrex.admin.ui.internal.preferences.PreferencesExplorer"
+            id="preferences-explorer"
+            name="Preferences Explorer">
+      </page>
+   </extension>
+</plugin>

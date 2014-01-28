@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.gyrex.admin.ui" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.gyrex.admin.ui" id="pages" name="Admin Pages"/>
+      </appinfo>
+      <documentation>
+         This extension point allows the contribution of pages and categories to the Gyrex Admin Console. Pages are organized into categories. 
+&lt;p&gt;
+Note, as far as usability is concerned we recommend not creating a huge amount of additional categories. The Gyrex Admin Console is intended for administration of a Gyrex cluster. Thus, it should not be abused as a general administration UI for applications running in a cluster.
+&lt;/p&gt;
+&lt;p&gt;
+Although not marked as INTERNAL, contributions to the Admin Console are considered part of a provider API which may evolve faster than the usual Gyrex API.
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="category"/>
+            <element ref="page"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="page">
+      <annotation>
+         <documentation>
+            Adds a page to the Admin Console.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  page identifier
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="categoryId" type="string">
+            <annotation>
+               <documentation>
+                  reference to a category where the page should be visible (if not provided or empty/invalid, the page will not appear in the UI)
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="org.eclipse.gyrex.admin.ui.pages/category/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  page name
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="keywords" type="string">
+            <annotation>
+               <documentation>
+                  space separated list of keywords
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.gyrex.admin.ui.pages.AdminPage:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="sortKey" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="category">
+      <annotation>
+         <documentation>
+            Adds a category to the Admin Console.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  page name
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="keywords" type="string">
+            <annotation>
+               <documentation>
+                  space separated list of keywords
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="sortKey" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+
+
+
+
+
+</schema>

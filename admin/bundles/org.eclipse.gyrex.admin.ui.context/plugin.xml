@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.pages">
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
+            class="org.eclipse.gyrex.admin.ui.context.internal.ContextApplicationPage"
+            id="context"
+            keywords="context"
+            name="Context"
+            sortKey="400">
+      </page>
+   </extension>
+   
+</plugin>

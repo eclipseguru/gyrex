@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Logback Admin UI
+Bundle-SymbolicName: org.eclipse.gyrex.admin.ui.logback;singleton:=true
+Bundle-Version: 1.2.0.qualifier
+Bundle-Activator: org.eclipse.gyrex.admin.ui.logback.internal.LogbackUiActivator
+Bundle-Vendor: Eclipse Gyrex
+Require-Bundle: org.eclipse.gyrex.boot;bundle-version="1.2.0",
+ org.eclipse.gyrex.common;bundle-version="1.2.0",
+ org.eclipse.gyrex.logback.config;bundle-version="1.2.0",
+ org.eclipse.gyrex.preferences;bundle-version="1.2.0",
+ org.eclipse.gyrex.admin.ui;bundle-version="1.2.0",
+ org.eclipse.rap.jface;bundle-version="[2.0.0,3.0.0)",
+ org.eclipse.equinox.registry;bundle-version="[3.5.300,4.0.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Import-Package: ch.qos.logback.classic;version="1.0.7",
+ ch.qos.logback.core.joran.spi;version="1.0.7",
+ org.apache.commons.lang;version="2.4.0",
+ org.apache.commons.lang.text;version="2.4.0",
+ org.osgi.framework;version="1.7.0",
+ org.osgi.util.tracker;version="1.5.1",
+ org.slf4j;version="1.7.2"

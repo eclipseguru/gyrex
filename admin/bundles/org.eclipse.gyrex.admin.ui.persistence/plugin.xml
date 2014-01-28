@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.gyrex.persistence.storage.lookup.RepositoryContentTypeAssignments"
+            class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
+         <adapter
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.RepositoryContentTypeAssignmentsByContextPath"
+            class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
+         <adapter
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.RepositoryContentTypeAssignmentsByContextPathAndMediaType"
+            class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
+         <adapter
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.gyrex.persistence.storage.registry.IRepositoryDefinition"
+            class="org.eclipse.gyrex.admin.ui.persistence.internal.adapters.AdapterFactory">
+         <adapter
+               type="org.eclipse.gyrex.admin.ui.adapter.LabelAdapter">
+         </adapter>
+      </factory>
+   </extension>
+
+</plugin>

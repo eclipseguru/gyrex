@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.pages">
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.apps"
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.BackgroundTasksPage"
+            id="background-tasks"
+            name="Background Tasks"
+            sortKey="200">
+      </page>
+      <page
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.ScheduleEntriesPage"
+            id="schedule-entries"
+            name="Schedule Entries">
+      </page>
+      <page
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.ManageJobQueuePage"
+            id="job-queue"
+            name="Job Queue Contents">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.gyrex.jobs.internal.externalprocess.ExternalProcessJobProvider"
+            class="org.eclipse.gyrex.admin.ui.jobs.internal.externalprocess.AdapterFactory">
+         <adapter
+               type="org.eclipse.gyrex.admin.ui.jobs.configuration.wizard.JobConfigurationWizardAdapter">
+         </adapter>
+      </factory>
+   </extension>
+
+</plugin>

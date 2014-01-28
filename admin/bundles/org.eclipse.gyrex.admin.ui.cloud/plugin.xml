@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.gyrex.admin.ui.pages">
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
+            class="org.eclipse.gyrex.admin.ui.cloud.internal.ClusterAdminPage"
+            id="cluster"
+            keywords="cloud cluster"
+            name="Cluster"
+            sortKey="100">
+      </page>
+      <page
+            class="org.eclipse.gyrex.admin.ui.cloud.internal.NodeAdminPage"
+            id="node"
+            name="Node">
+      </page>
+      <page
+            categoryId="org.eclipse.gyrex.admin.ui.categories.system"
+            class="org.eclipse.gyrex.admin.ui.cloud.internal.zookeeper.ZooKeeperExplorer"
+            id="zookeeper-explorer"
+            name="ZooKeeper Explorer">
+      </page>
+   </extension>
+
+
+</plugin>
