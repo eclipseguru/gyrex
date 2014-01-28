@@ -11,13 +11,15 @@
  *******************************************************************************/
 package org.eclipse.gyrex.context.di;
 
-import org.eclipse.e4.core.di.IInjector;
-import org.eclipse.e4.core.di.InjectionException;
-
 /**
  * A injector is used to inject data and services from a context into a domain
- * object. It is entirely based on the {@link IInjector Eclipse dependency
- * injection system}.
+ * object.
+ * <p>
+ * It is currently based on the {@link org.eclipse.e4.core.di.IInjector Eclipse
+ * dependency injection system}. However, none of this is exposed as API.
+ * Therefore, clients may not rely on any behavior of the dependency injector
+ * other than what should be supported by JSR-330 standard.
+ * </p>
  * 
  * @noextend This interface is not intended to be extended by clients.
  * @noimplement This interface is not intended to be implemented by clients.
@@ -43,20 +45,20 @@ public interface IRuntimeContextInjector {
 	 * @param clazz
 	 *            The class to be instantiated
 	 * @return an instance of the specified class
-	 * @throws InjectionException
+	 * @throws org.eclipse.e4.core.di.InjectionException
 	 *             if an exception occurred while performing this operation
 	 * @see javax.inject.Scope
 	 * @see javax.inject.Singleton
 	 */
-	<T> T make(Class<T> clazz) throws InjectionException;
+	<T> T make(Class<T> clazz) throws RuntimeException;
 
 	/**
 	 * Un-injects the context from the object.
 	 * 
 	 * @param object
 	 *            The domain object previously injected with the context
-	 * @throws InjectionException
+	 * @throws org.eclipse.e4.core.di.InjectionException
 	 *             if an exception occurred while performing this operation
 	 */
-	void uninject(Object object) throws InjectionException;
+	void uninject(Object object) throws RuntimeException;
 }
