@@ -22,7 +22,7 @@
     <tycho.version>0.18.1</tycho.version>
     <tycho-extras.version>0.18.1</tycho-extras.version>
     <tycho-snapshots-repo.url>https://oss.sonatype.org/content/repositories/public/</tycho-snapshots-repo.url>
-
+    
     <cbi-plugins.version>1.0.5-SNAPSHOT</cbi-plugins.version>
     <cbi-plugins-repo.url>https://repo.eclipse.org/content/repositories/cbi-snapshots/</cbi-plugins-repo.url>
 
@@ -32,8 +32,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- property for generating Eclipse source reference bundle headers -->
-    <!-- (note, this needs to be overridden by module poms) -->
-    <tycho.scmUrl>scm:git:https://git.eclipse.org/r/p/gyrex/gyrex-releng.git</tycho.scmUrl>
+    <!-- (note, this needs to be overridden by module poms in other Git repos) -->
+    <tycho.scmUrl>scm:git:https://git.eclipse.org/r/p/gyrex/gyrex-server.git</tycho.scmUrl>
   </properties>
 
   <!-- the Gyrex Maven repos to publish to -->

@@ -6,13 +6,12 @@
 
   <groupId>org.eclipse.gyrex.releng</groupId>
   <artifactId>gyrex-build-aggregator</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>org.eclipse.gyrex.releng</groupId>
     <artifactId>gyrex-maven-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <relativePath>../mavenparent/</relativePath>
   </parent>
 
@@ -27,11 +26,11 @@
     <!-- build the modules -->
     <!-- (note: this assumes they have been cloned into the same directory 
       as the releng repo) -->
-    <module>../../gyrex-platform</module>
-    <module>../../gyrex-admin</module>
-    <module>../../gyrex-jersey-jaxrs</module>
-    <module>../../gyrex-mongodb-persistence</module>
-    <module>../../gyrex-search</module>
+    <module>../../platform</module>
+    <module>../../admin</module>
+    <module>../../jaxrs</module>
+    <module>../../mongodb</module>
+    <module>../../search</module>
 
     <!-- build the features -->
     <module>../features</module>

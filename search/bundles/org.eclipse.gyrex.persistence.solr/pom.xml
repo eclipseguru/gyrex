@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.eclipse.gyrex.addons.solr</groupId>
 		<artifactId>gyrex-solr-search-bundles</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 	</parent>
 
 </project>
