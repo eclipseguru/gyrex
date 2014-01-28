@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.eclipse.gyrex.admin</groupId>
     <artifactId>gyrex-admin-bundles</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
 
 </project>
