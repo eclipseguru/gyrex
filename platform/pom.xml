@@ -4,16 +4,21 @@
 
   <groupId>org.eclipse.gyrex.platform</groupId>
   <artifactId>gyrex-platform</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   <parent>
     <groupId>org.eclipse.gyrex.releng</groupId>
     <artifactId>gyrex-maven-parent</artifactId>
-  	<version>1.0.0-SNAPSHOT</version>
-	<!-- assume the releng repo has been cloned into the same top folder -->
-	<relativePath>../gyrex-releng/mavenparent/</relativePath>
+  	<version>1.3.0-SNAPSHOT</version>
   </parent>
+
+  <repositories>
+    <repository>
+      <id>repo.eclipse.org-gyrex</id>
+      <name>Gyrex Eclipse Maven Repositories</name>
+      <url>https://repo.eclipse.org/content/groups/gyrex/</url>
+    </repository>
+  </repositories>
 
   <properties>
     <tycho.scmUrl>scm:git:https://git.eclipse.org/r/p/gyrex/gyrex-platform.git</tycho.scmUrl>

@@ -7,3 +7,4 @@ target/
 .Trashes
 *.swp
 *.lock
+pom.xml.versionsBackup
