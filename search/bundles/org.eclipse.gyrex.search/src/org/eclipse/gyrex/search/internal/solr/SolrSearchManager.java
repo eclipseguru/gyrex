@@ -1,0 +1,36 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2011 Gunnar Wagenknecht and others.
+ * All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
+ *     Gunnar Wagenknecht - initial API and implementation
+ *     Mike Tschierschke - merged IDocumentManager, IFacetManager and ISearchService (https://bugs.eclipse.org/bugs/show_bug.cgi?id=339327)
+ *******************************************************************************/
+package org.eclipse.gyrex.search.internal.solr;
+
+import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.persistence.solr.SolrServerRepository;
+import org.eclipse.gyrex.search.internal.SearchActivator;
+import org.eclipse.gyrex.search.solr.BaseSolrSearchManager;
+
+/**
+ * A default {@link BaseSolrSearchManager} that can be used out of the box.
+ */
+public class SolrSearchManager extends BaseSolrSearchManager {
+
+	/**
+	 * Creates a new instance.
+	 * 
+	 * @param context
+	 *            the context
+	 * @param repository
+	 *            the repository
+	 */
+	SolrSearchManager(final IRuntimeContext context, final SolrServerRepository repository) {
+		super(context, repository, SearchActivator.SYMBOLIC_NAME + ".solr.model.documents.metrics");
+	}
+}
