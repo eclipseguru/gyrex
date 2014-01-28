@@ -1,0 +1,6 @@
+This folder contains the product definitions of the available products
+produced as downloadable artifacts on the Gyrex website.
+
+It also defines a Maven module for building those artifacts during a full
+build. After a build, the artifacts should be available under 
+"target/products/".

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.eclipse.gyrex.products</groupId>
+  <artifactId>gyrex-server</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>eclipse-repository</packaging>
+
+  <parent>
+    <groupId>org.eclipse.gyrex.releng</groupId>
+    <artifactId>gyrex-maven-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../mavenparent/</relativePath>
+  </parent>
+
+  <profiles>
+    <profile>
+      <!-- participate in signing so that the executables are signed -->
+      <id>eclipse-sign-executables-windows</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.cbi.maven.plugins</groupId>
+            <artifactId>eclipse-winsigner-plugin</artifactId>
+            <version>${cbi-plugins.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <signFiles>
+                <signFile>${project.build.directory}/products/org.eclipse.gyrex.products.server/win32/win32/x86_64/gyrex/gyrex.exe</signFile>
+                <signFile>${project.build.directory}/products/org.eclipse.gyrex.products.server/win32/win32/x86_64/gyrex/eclipsec.exe</signFile>
+              </signFiles>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- participate in signing so that the executables are signed -->
+      <id>eclipse-sign-executables-mac</id>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- copy CodeResources for Mac signing -->
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+              <execution>
+                <id>copy-macos-app-resources</id>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/products/org.eclipse.gyrex.products.server/macosx/cocoa/x86_64/Gyrex.app/Contents</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>MacOS/Contents</directory>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.eclipse.cbi.maven.plugins</groupId>
+            <artifactId>eclipse-macsigner-plugin</artifactId>
+            <version>${cbi-plugins.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <signFiles>
+                    <signFile>${project.build.directory}/products/org.eclipse.gyrex.products.server/macosx/cocoa/x86_64/Gyrex.app</signFile>
+                  </signFiles>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-repository-plugin</artifactId>
+        <configuration>
+          <!-- create the full repo (required for mirroring later) -->
+          <createArtifactRepository>true</createArtifactRepository>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-director-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- install products using p2 director -->
+            <id>materialize-products</id>
+            <goals>
+              <goal>materialize-products</goal>
+            </goals>
+          </execution>
+          <execution>
+            <!-- create product archives -->
+            <id>archive-products</id>
+            <!-- move this to the pre-integration-test for signing to work -->
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>archive-products</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <profile>GyrexServerProfile</profile>
+          <products>
+            <product>
+              <id>org.eclipse.gyrex.products.server</id>
+              <archiveFileName>gyrex-${buildId}</archiveFileName>
+              <rootFolder>gyrex</rootFolder>
+              <!-- note: this doesn't work properly with Mac signing -->
+              <rootFolders>
+                <macosx>Gyrex.app</macosx>
+              </rootFolders>
+            </product>
+          </products>
+          <formats>
+            <linux>tar.gz</linux>
+            <macosx>tar.gz</macosx>
+          </formats>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

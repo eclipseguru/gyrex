@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.eclipse.gyrex.releng</groupId>
+  <artifactId>gyrex-maven-parent</artifactId>
+  <version>1.3.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <!-- common settings for all modules -->
+  <properties>
+    <!-- FIXME: this is not UTC (https://jira.codehaus.org/browse/MNG-5452) -->
+    <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+    <buildType>I</buildType>
+    <buildId>${buildType}${buildTimestamp}</buildId>
+    <buildLabel>${buildType}-${buildId}-${buildTimestamp}</buildLabel>
+    
+    <gyrex-target-platform.version>1.3.0-SNAPSHOT</gyrex-target-platform.version>
+
+    <tycho.version>0.18.1</tycho.version>
+    <tycho-extras.version>0.18.1</tycho-extras.version>
+    <tycho-snapshots-repo.url>https://oss.sonatype.org/content/repositories/public/</tycho-snapshots-repo.url>
+
+    <cbi-plugins.version>1.0.5-SNAPSHOT</cbi-plugins.version>
+    <cbi-plugins-repo.url>https://repo.eclipse.org/content/repositories/cbi-snapshots/</cbi-plugins-repo.url>
+
+    <eclipserun-repo.url>http://download.eclipse.org/eclipse/updates/4.3/R-4.3-201306052000/</eclipserun-repo.url>
+    <comparator-repo.url>http://download.eclipse.org/gyrex/1.2/</comparator-repo.url>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- property for generating Eclipse source reference bundle headers -->
+    <!-- (note, this needs to be overridden by module poms) -->
+    <tycho.scmUrl>scm:git:https://git.eclipse.org/r/p/gyrex/gyrex-releng.git</tycho.scmUrl>
+  </properties>
+
+  <!-- the Gyrex Maven repos to publish to -->
+  <distributionManagement>
+    <repository>
+      <id>repo.eclipse.org</id>
+      <name>Gyrex Eclipse Maven Repository - Releases</name>
+      <url>https://repo.eclipse.org/content/repositories/gyrex-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>repo.eclipse.org</id>
+      <name>Gyrex Eclipse Maven Repository - Snapshots</name>
+      <url>https://repo.eclipse.org/content/repositories/gyrex-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <!-- common repos for all modules -->
+  <repositories>
+    <repository>
+      <id>repo.eclipse.org-gyrex</id>
+      <name>Gyrex Eclipse Maven Repositories</name>
+      <url>https://repo.eclipse.org/content/groups/gyrex/</url>
+    </repository>
+  </repositories>
+
+  <!-- common plug-in repos for all modules -->
+  <pluginRepositories>
+    <!-- Tycho SNAPSHOT repo -->
+    <pluginRepository>
+      <id>tycho</id>
+      <url>${tycho-snapshots-repo.url}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>cbi</id>
+      <url>${cbi-plugins-repo.url}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+
+  <profiles>
+    <profile>
+      <!-- default buildType when running in Hudson -->
+      <id>default-buildType</id>
+      <properties>
+        <buildType>${env.BUILD_TYPE}</buildType>
+      </properties>
+      <activation>
+        <property>
+          <name>env.BUILD_TYPE</name>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <!-- default buildId when running in Hudson -->
+      <id>default-buildId</id>
+      <properties>
+        <buildId>${env.BUILD_IDENTIFIER}</buildId>
+      </properties>
+      <activation>
+        <property>
+          <name>env.BUILD_IDENTIFIER</name>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <!-- profile used for signing the build on build.eclipse.org -->
+      <id>eclipse-sign</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <includePackedArtifacts>false</includePackedArtifacts>
+            </configuration>
+          </plugin>
+          <!-- note, there are issues with pack200, Tycho does not honor 
+            the eclipse.inf exclusions -->
+          <!-- therefore, the pack steps are disabled for now until Tycho 
+            supports it properly -->
+          <!-- <plugin> <groupId>org.eclipse.tycho.extras</groupId> <artifactId>tycho-pack200a-plugin</artifactId> 
+            <version>${tycho-extras.version}</version> <executions> <execution> <id>pack200-normalize</id> 
+            <goals> <goal>normalize</goal> </goals> <phase>verify</phase> </execution> 
+            </executions> </plugin> -->
+          <plugin>
+            <groupId>org.eclipse.cbi.maven.plugins</groupId>
+            <artifactId>eclipse-jarsigner-plugin</artifactId>
+            <version>${cbi-plugins.version}</version>
+            <executions>
+              <execution>
+                <id>sign</id>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <phase>verify</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- <plugin> <groupId>org.eclipse.tycho.extras</groupId> <artifactId>tycho-pack200b-plugin</artifactId> 
+            <version>${tycho-extras.version}</version> <executions> <execution> <id>pack200-pack</id> 
+            <goals> <goal>pack</goal> </goals> <phase>verify</phase> </execution> </executions> 
+            </plugin> -->
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-p2-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>p2-metadata</id>
+                <goals>
+                  <goal>p2-metadata</goal>
+                </goals>
+                <phase>verify</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <defaultP2Metadata>false</defaultP2Metadata>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- build using JRE for Bundle Runtime Execution Environment -->
+      <id>bree-libs</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.tycho</groupId>
+              <artifactId>tycho-compiler-plugin</artifactId>
+              <version>${tycho.version}</version>
+              <configuration>
+                <!-- Note, BREE libraries and toolchain.xml must be setup 
+                  for this to work (it's done on Eclipse Hudson) -->
+                <useJDK>BREE</useJDK>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+
+
+  <!-- defaults for all Gyrex artifacts -->
+  <build>
+    <plugins>
+      <plugin>
+        <!-- enable tycho build extension -->
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <!-- target platform configuration -->
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <configuration>
+          <target>
+            <!-- use target platform defined in releng/targetplatform -->
+            <!-- (note: name of target file must match artifactId) -->
+            <artifact>
+              <groupId>org.eclipse.gyrex.releng</groupId>
+              <artifactId>gyrex-target-platform</artifactId>
+              <version>${gyrex-target-platform.version}</version>
+            </artifact>
+          </target>
+          <environments>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>macosx</os>
+              <ws>cocoa</ws>
+              <arch>x86_64</arch>
+            </environment>
+          </environments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- enable generation of source bundles -->
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>plugin-source</id>
+            <goals>
+              <goal>plugin-source</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>target-platform-configuration</artifactId>
+          <version>${tycho.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-compiler-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+            <!-- disable some warnings for all projects (they are fine in 
+              the IDE) -->
+            <compilerArgument>-warn:-deprecation,raw,unchecked</compilerArgument>
+            <compilerArguments>
+              <!-- use compiler settings from project (if available) -->
+              <properties>${project.basedir}/.settings/org.eclipse.jdt.core.prefs</properties>
+              <verbose />
+              <inlineJSR />
+              <enableJavadoc />
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <log>${project.build.directory}/@dot.xml</log>
+              <!-- <proceedOnError/> -->
+            </compilerArguments>
+            <showWarnings>true</showWarnings>
+            <excludeResources>
+              <exclude>**/package.html</exclude>
+            </excludeResources>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-packaging-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.eclipse.tycho.extras</groupId>
+              <artifactId>tycho-buildtimestamp-jgit</artifactId>
+              <version>${tycho-extras.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.eclipse.tycho.extras</groupId>
+              <artifactId>tycho-sourceref-jgit</artifactId>
+              <version>${tycho-extras.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <!-- generate bundle .qualifier from Git tags/commits -->
+            <timestampProvider>jgit</timestampProvider>
+            <jgit.ignore>
+              pom.xml
+            </jgit.ignore>
+            <format>'v'yyyyMMdd-HHmm</format>
+            <additionalFileSets>
+              <fileSet>
+                <directory>${project.build.directory}</directory>
+                <includes>
+                  <include>.api_description</include>
+                </includes>
+              </fileSet>
+            </additionalFileSets>
+            <!-- generate bundle Eclipse-SourceReferences header -->
+            <sourceReferences>
+              <generate>true</generate>
+            </sourceReferences>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-source-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+            <strictSrcIncludes>false</strictSrcIncludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-p2-plugin</artifactId>
+          <version>${tycho.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-p2-director-plugin</artifactId>
+          <version>${tycho.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-p2-repository-plugin</artifactId>
+          <version>${tycho.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho.extras</groupId>
+          <artifactId>tycho-source-feature-plugin</artifactId>
+          <version>${tycho-extras.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho.extras</groupId>
+          <artifactId>tycho-custom-bundle-plugin</artifactId>
+          <version>${tycho-extras.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho.extras</groupId>
+          <artifactId>tycho-p2-extras-plugin</artifactId>
+          <version>${tycho-extras.version}</version>
+        </plugin>
+        <plugin>
+          <!-- disable processing of Maven default folders (eg., src/main/resources) -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.6</version>
+          <executions>
+            <execution>
+              <id>default-resources</id>
+              <phase>none</phase>
+            </execution>
+            <execution>
+              <id>default-testResources</id>
+              <phase>none</phase>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

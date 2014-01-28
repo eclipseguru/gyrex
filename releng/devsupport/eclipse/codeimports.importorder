@@ -1,0 +1,12 @@
+#Organize Import Order
+#Tue Sep 25 09:25:43 CEST 2012
+9=com
+8=net
+7=org
+6=org.codehaus
+5=org.apache
+4=org.osgi
+3=org.eclipse
+2=org.eclipse.gyrex
+1=javax
+0=java
