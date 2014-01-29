@@ -20,6 +20,8 @@ import org.eclipse.gyrex.server.Platform;
 import org.eclipse.jetty.jmx.ConnectorServer;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 
+import org.apache.commons.lang.UnhandledException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,8 +89,12 @@ public class JettyJmxConnector {
 			public void run() {
 				try {
 					doStart();
+				} catch (final ClassNotFoundException e) {
+					LOG.warn("Jetty JMX is not available. Please configure JMX support manually. ({})", e.getMessage());
+				} catch (final LinkageError e) {
+					LOG.warn("Jetty JMX is not available. Please configure JMX support manually. ({})", e.getMessage());
 				} catch (final Exception e) {
-					ServerApplication.shutdown(e);
+					ServerApplication.shutdown(new UnhandledException("An error occured while starting the embedded JMX server. Please verify the port/host configuration is correct and no other server is running. JMX can also be disabled by setting system property 'gyrex.jmxrmi.skip'.", e));
 				}
 			};
 		};
