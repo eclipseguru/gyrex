@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -64,7 +64,7 @@ public class GyrexStarter {
 	private void bootstrapBundles() throws BundleException {
 		// bundles that must be present and started
 		// in order to start Equinox apps and to have
-		// Gyrex start properly 
+		// Gyrex start properly
 		// (look at Gyrex product and bootstrap for details)
 		final Set<String> requiredBundles = new HashSet<>();
 		requiredBundles.add("org.eclipse.equinox.app");
@@ -98,7 +98,7 @@ public class GyrexStarter {
 			for (final String name : requiredBundles) {
 				String separator = "";
 				if (!started.contains(name)) {
-					errorMessage.appendln(separator).append(name);
+					errorMessage.append(separator).append(name);
 					separator = ", ";
 				}
 			}
