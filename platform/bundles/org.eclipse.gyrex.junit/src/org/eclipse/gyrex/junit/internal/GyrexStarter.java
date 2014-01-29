@@ -14,8 +14,10 @@ package org.eclipse.gyrex.junit.internal;
 import static junit.framework.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.equinox.app.IApplicationContext;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -150,13 +153,17 @@ public class GyrexStarter {
 		properties.put(EventConstants.EVENT_TOPIC, ICloudEventConstants.TOPIC_NODE_ONLINE);
 		context.registerService(EventHandler.class, cloudOnlineHandler, properties);
 
+		// prepare arguments for starting the required roles
+		final Map<String, Object> args = new HashMap<>();
+		args.put(IApplicationContext.APPLICATION_ARGS, new String[] { "-roles", "org.eclipse.gyrex.cloud.roles.coordinator,org.eclipse.gyrex.cloud.roles.leader" });
+
 		// get hold of application handle and start application
 		final Collection<ServiceReference<ApplicationDescriptor>> refs = context.getServiceReferences(ApplicationDescriptor.class, "(service.pid=org.eclipse.gyrex.boot.server)");
 		assertEquals("Unable to find proper Gyrex Server application to start!", 1, refs.size());
 		final ServiceReference<ApplicationDescriptor> sr = refs.iterator().next();
 		final ApplicationDescriptor service = context.getService(sr);
 		try {
-			applicationHandle = service.launch(null);
+			applicationHandle = service.launch(args);
 		} finally {
 			context.ungetService(sr);
 		}
