@@ -101,7 +101,12 @@ public class JettyJmxConnector {
 		if (connectorServer == null)
 			return;
 
-		connectorServer.stop();
-		connectorServer = null;
+		try {
+			connectorServer.stop();
+		} catch (final Exception e) {
+			// ignore
+		} finally {
+			connectorServer = null;
+		}
 	}
 }
