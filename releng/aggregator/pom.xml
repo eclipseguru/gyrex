@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.eclipse.gyrex.releng</groupId>
@@ -15,6 +14,29 @@
     <relativePath>../mavenparent/</relativePath>
   </parent>
 
+  <profiles>
+    <profile>
+      <!-- additional modules to build by default (but can be disabled for tests) -->
+      <id>full-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <!-- build the features -->
+        <module>../features</module>
+
+        <!-- build the products -->
+        <module>../products</module>
+
+        <!-- assemble the p2 repository -->
+        <module>../repository</module>
+
+        <!-- publish the build results -->
+        <module>../publisher</module>
+      </modules>
+    </profile>
+  </profiles>
+
   <modules>
 
     <!-- build the parent -->
@@ -24,26 +46,14 @@
     <module>../targetplatform</module>
 
     <!-- build the modules -->
-    <!-- (note: this assumes they have been cloned into the same directory 
-      as the releng repo) -->
+    <!-- (note: this assumes they have been cloned into the same directory as the releng repo) -->
     <module>../../platform</module>
     <module>../../admin</module>
     <module>../../jaxrs</module>
     <module>../../mongodb</module>
     <module>../../search</module>
-
-    <!-- build the features -->
-    <module>../features</module>
-
-    <!-- build the products -->
-    <module>../products</module>
-
-    <!-- assemble the p2 repository -->
-    <module>../repository</module>
     
-    <!-- publish the build results -->
-    <module>../publisher</module>
-
+    <!-- additional modules triggered via full-build profile defined above -->
   </modules>
 
 </project>
