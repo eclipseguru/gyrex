@@ -130,6 +130,7 @@ public class JettyGateway implements IHttpGateway {
 		requestLog.setAppend(true);
 		requestLog.setExtended(true);
 		requestLog.setLogCookies(false);
+		requestLog.setLogLatency(true);
 		requestLog.setLogTimeZone("GMT");
 		final RequestLogHandler logHandler = new RequestLogHandler();
 		logHandler.setRequestLog(requestLog);
@@ -148,12 +149,10 @@ public class JettyGateway implements IHttpGateway {
 	 * @return the {@link ApplicationHandler}
 	 */
 	public ApplicationHandler getApplicationHandler(final Handler customizedHandler) {
-		if (customizedHandler instanceof ApplicationHandler) {
+		if (customizedHandler instanceof ApplicationHandler)
 			return (ApplicationHandler) customizedHandler;
-		}
-		if (customizedHandler instanceof HandlerContainer) {
+		if (customizedHandler instanceof HandlerContainer)
 			return ((HandlerContainer) customizedHandler).getChildHandlerByClass(ApplicationHandler.class);
-		}
 		throw new IllegalArgumentException("unsupported handler: " + customizedHandler);
 	}
 
@@ -174,9 +173,8 @@ public class JettyGateway implements IHttpGateway {
 	@Override
 	public IUrlRegistry getUrlRegistry(final HttpGatewayBinding applicationManager) {
 		final UrlRegistry registry = urlRegistryByManager.get(applicationManager);
-		if (null != registry) {
+		if (null != registry)
 			return registry;
-		}
 		urlRegistryByManager.putIfAbsent(applicationManager, new UrlRegistry(this, applicationManager));
 		return urlRegistryByManager.get(applicationManager);
 	}
