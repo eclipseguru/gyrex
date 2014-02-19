@@ -49,14 +49,13 @@ public class LocalContextObjectSupplier extends BaseContextObjectSupplier {
 	}
 
 	@Override
-	protected Object getQualifiedObjected(final Class<?> key, final Annotation annotation) {
-		// not support for local contexts
-		return null;
+	protected Object getQualifiedObject(final Class<?> key, final Annotation annotation) {
+		return getQualifiedObjectFromExtendedObjectSupplier(key, annotation, context);
 	}
 
 	@Override
 	protected IServiceProxy<?> trackService(final BundleContext bundleContext, final Class<?> serviceInterface, final String filter) throws InvalidSyntaxException {
-		// not support for local contexts
+		// not supported for local contexts
 		return null;
 	}
 
