@@ -269,6 +269,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 		final TableLayout layout = new TableLayout();
 		treeViewer.getTree().setLayout(layout);
 		treeViewer.setUseHashlookup(true);
+		treeViewer.setAutoExpandLevel(2);
 		treeViewer.setContentProvider(createContentProvider());
 		final SortableColumnsComparator comparator = new SortableColumnsComparator();
 		treeViewer.setComparator(comparator);
@@ -389,6 +390,7 @@ public abstract class AdminPageWithTree extends AdminPage {
 	final void internalRefresh() {
 		refresh();
 		treeViewer.refresh();
+		treeViewer.expandToLevel(2);
 		updateButtons();
 	}
 
