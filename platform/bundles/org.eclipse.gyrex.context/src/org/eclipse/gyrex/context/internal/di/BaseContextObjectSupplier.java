@@ -24,8 +24,10 @@ import org.eclipse.gyrex.common.services.IServiceProxy;
 import org.eclipse.gyrex.common.services.ServiceNotAvailableException;
 import org.eclipse.gyrex.common.services.annotations.DynamicService;
 import org.eclipse.gyrex.context.IRuntimeContext;
+import org.eclipse.gyrex.context.internal.ContextActivator;
 import org.eclipse.gyrex.context.internal.ContextDebug;
 import org.eclipse.gyrex.context.internal.IContextDisposalListener;
+import org.eclipse.gyrex.context.provider.di.ExtendedObjectResolver;
 
 import org.eclipse.e4.core.di.IInjector;
 import org.eclipse.e4.core.di.InjectionException;
@@ -38,6 +40,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServicePermission;
+import org.osgi.framework.ServiceReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,7 +183,7 @@ public abstract class BaseContextObjectSupplier extends PrimaryObjectSupplier {
 			if ((null == value) && (null != descriptor.getQualifiers())) {
 				final Annotation[] qualifiers = descriptor.getQualifiers();
 				for (int j = 0; (null == value) && (j < qualifiers.length); j++) {
-					value = getQualifiedObjected(key, qualifiers[j]);
+					value = getQualifiedObject(key, qualifiers[j]);
 				}
 			}
 
@@ -270,7 +273,52 @@ public abstract class BaseContextObjectSupplier extends PrimaryObjectSupplier {
 	 * @return an object of the requested type (i.e. must be assignable to type,
 	 *         maybe <code>null</code>)
 	 */
-	protected abstract Object getQualifiedObjected(Class<?> type, Annotation annotation);
+	protected abstract Object getQualifiedObject(Class<?> type, Annotation annotation);
+
+	/**
+	 * Helper method to lookup a qualifier object using an available
+	 * {@link ExtendedObjectResolver}.
+	 * 
+	 * @param type
+	 *            the requested type
+	 * @param annotation
+	 *            the qualifying annotation
+	 * @param runtimeContext
+	 *            the runtime context to use for resolving object
+	 * @return an object of the requested type (i.e. must be assignable to type,
+	 *         maybe <code>null</code>)
+	 */
+	protected Object getQualifiedObjectFromExtendedObjectSupplier(final Class<?> type, final Annotation annotation, final IRuntimeContext runtimeContext) {
+		if (!(annotation.annotationType() instanceof Class<?>))
+			// ignore unknown annotation types
+			return null;
+
+		// extensibility: search for an ExtendedObjectResolver OSGi service that can handle the annotation
+		// note, we intentionally search for them using the bundle context of the context bundle (not the requestor)
+		final BundleContext bundleContext = ContextActivator.getInstance().getBundle().getBundleContext();
+		final String filter = '(' + ExtendedObjectResolver.ANNOTATION_PROPERTY + '=' + annotation.annotationType().getName() + ')';
+		try {
+			final Collection<ServiceReference<ExtendedObjectResolver>> refs = bundleContext.getServiceReferences(ExtendedObjectResolver.class, filter);
+			if (!refs.isEmpty()) {
+				for (final ServiceReference<ExtendedObjectResolver> ref : refs) {
+					final ExtendedObjectResolver resolver = bundleContext.getService(ref);
+					if (resolver != null) {
+						try {
+							// FIXME: we should look at supporting dynamic behavior
+							final Object result = resolver.get(type, runtimeContext, annotation);
+							if (result != null)
+								return result;
+						} finally {
+							bundleContext.ungetService(ref);
+						}
+					}
+				}
+			}
+		} catch (final InvalidSyntaxException e) {
+			throw new IllegalStateException(String.format("Error computing filter expression (%s) for annotation (%s). Please report Gyrex bug! (%s)", filter, annotation, e.getMessage()));
+		}
+		return null;
+	}
 
 	private Object getService(final Class<?> key, final IObjectDescriptor descriptor, final IRequestor requestor, final boolean initial, final boolean track, final boolean group) {
 		// look for @Service annotation
