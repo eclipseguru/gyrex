@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal.generic;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,6 +78,15 @@ public class GenericJobParameterPage extends WizardPage {
 			return element == null ? "" : element.toString();//$NON-NLS-1$
 		}
 
+		private boolean mayContainSensitiveData(final Parameter element) {
+			final String name = element.getName().toLowerCase();
+			for (final String token : Arrays.asList("password", "pwd", "secret")) {
+				if (name.indexOf(token) >= 0)
+					return true;
+			}
+			return false;
+		}
+
 		@Override
 		public void update(final ViewerCell cell) {
 			final Parameter element = (Parameter) cell.getElement();
@@ -86,7 +96,11 @@ public class GenericJobParameterPage extends WizardPage {
 					break;
 
 				case 1:
-					cell.setText(element.getValue());
+					if (mayContainSensitiveData(element)) {
+						cell.setText(StringUtils.leftPad("", element.getValue().length(), '*'));
+					} else {
+						cell.setText(element.getValue());
+					}
 					break;
 
 				default:
