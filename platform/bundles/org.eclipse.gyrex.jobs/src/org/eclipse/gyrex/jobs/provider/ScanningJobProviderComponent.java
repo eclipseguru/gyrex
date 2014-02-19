@@ -22,6 +22,7 @@ import org.eclipse.gyrex.context.IModifiableRuntimeContext;
 import org.eclipse.gyrex.jobs.IJobContext;
 import org.eclipse.gyrex.jobs.annotation.JobType;
 import org.eclipse.gyrex.jobs.internal.JobsDebug;
+import org.eclipse.gyrex.jobs.internal.util.BundleAnnotatedClassScanner;
 
 import org.eclipse.core.runtime.jobs.Job;
 
@@ -118,6 +119,7 @@ public class ScanningJobProviderComponent extends JobProvider {
 
 		try (final IModifiableRuntimeContext runtimeContext = context.getContext().createWorkingCopy()) {
 			runtimeContext.setLocal(IJobContext.class, context);
+			runtimeContext.setLocal(Logger.class, context.getLogger());
 			return runtimeContext.getInjector().make(clazz);
 		}
 	}
