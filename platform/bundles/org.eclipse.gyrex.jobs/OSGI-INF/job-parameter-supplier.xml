@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.eclipse.gyrex.jobs.component.jobparametersupplier">
+   <implementation class="org.eclipse.gyrex.jobs.internal.components.JobParameterSupplierComponent"/>
+   <property name="dependency.injection.annotation" type="String" value="org.eclipse.gyrex.jobs.annotation.JobParameter"/>
+   <property name="service.name" type="String" value="JobParameter Resolver"/>
+   <property name="service.vendor" type="String" value="Eclipse Gyrex"/>
+   <service>
+      <provide interface="org.eclipse.gyrex.context.provider.di.ExtendedObjectResolver"/>
+   </service>
+</scr:component>
