@@ -67,7 +67,7 @@ public class ExclusiveLockWizardPage extends WizardPage {
 		final IDialogFieldListener validateListener = new IDialogFieldListener() {
 			@Override
 			public void dialogFieldChanged(final DialogField field) {
-				validate();
+				validate(false);
 			}
 		};
 
@@ -86,6 +86,9 @@ public class ExclusiveLockWizardPage extends WizardPage {
 				lockNameField.setText(lockId);
 			}
 		}
+
+		// initial validation
+		validate(true);
 	}
 
 	public ScheduleEntryImpl getEntry() {
@@ -102,11 +105,16 @@ public class ExclusiveLockWizardPage extends WizardPage {
 		return schedule;
 	}
 
-	void validate() {
+	void validate(final boolean initial) {
 		final String id = getLockId();
 		if (StringUtils.isNotBlank(id)) {
 			if (!IdHelper.isValidId(id)) {
-				setMessage("The entered lock id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.", IMessageProvider.ERROR);
+				if (!initial) {
+					setMessage("The entered lock id is invalid. It may only contain ASCII chars a-z, 0-9, '.', '-' and/or '_'.", IMessageProvider.ERROR);
+				} else {
+					// don't come up with error message on initial validation
+					setMessage("Please enter an lock identifier.", INFORMATION);
+				}
 				setPageComplete(false);
 				return;
 			}
