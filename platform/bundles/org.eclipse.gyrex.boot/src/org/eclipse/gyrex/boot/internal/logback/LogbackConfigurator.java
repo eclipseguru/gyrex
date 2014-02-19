@@ -171,6 +171,7 @@ public class LogbackConfigurator {
 		lc.getLogger("org.eclipse.jetty").setLevel(Level.INFO);
 		lc.getLogger("org.quartz").setLevel(Level.INFO);
 		lc.getLogger("sun").setLevel(Level.INFO);
+		lc.getLogger("com.google.inject").setLevel(Level.INFO);
 
 		// apply overrides
 		if (!LOGBACK_DEBUG_OPTIONS_BRIDGE.overriddenLogLevels.isEmpty()) {
