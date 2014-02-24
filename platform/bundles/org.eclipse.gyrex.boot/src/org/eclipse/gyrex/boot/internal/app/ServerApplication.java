@@ -430,7 +430,6 @@ public class ServerApplication extends BaseApplication {
 
 	private void startConsole() throws BundleException {
 		// enable SSH console
-		// TODO: might want to use ConfigAdmin?
 		final EnvironmentInfo environmentInfo = BootActivator.getEnvironmentInfo();
 		if (null == environmentInfo.getProperty("osgi.console.ssh")) {
 			// set default ssh port
@@ -439,6 +438,10 @@ public class ServerApplication extends BaseApplication {
 		if (null == environmentInfo.getProperty("ssh.custom.publickeys.auth")) {
 			// enable custom ssh authentication
 			environmentInfo.setProperty("ssh.custom.publickeys.auth", "true");
+		}
+		if (null == environmentInfo.getProperty("ssh.server.keystore")) {
+			// set key location to key within workspace
+			environmentInfo.setProperty("ssh.server.keystore", Platform.getInstanceLocation().append("etc/.ssh/host_key").toFile().getAbsolutePath());
 		}
 		if (startBundle(BSN_EQUINOX_CONSOLE_SSH, false)) {
 			try {
