@@ -39,6 +39,7 @@ import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.WordUtils;
@@ -441,7 +442,13 @@ public class ServerApplication extends BaseApplication {
 		}
 		if (null == environmentInfo.getProperty("ssh.server.keystore")) {
 			// set key location to key within workspace
-			environmentInfo.setProperty("ssh.server.keystore", Platform.getInstanceLocation().append("etc/.ssh/host_key").toFile().getAbsolutePath());
+			final File hostkeyFile = Platform.getInstanceLocation().append("etc/.ssh/hostkey.ser").toFile();
+			try {
+				FileUtils.forceMkdir(hostkeyFile.getParentFile());
+			} catch (final IOException e) {
+				LOG.warn("Unable to create '{}'. {}", hostkeyFile.getParentFile(), e.getMessage());
+			}
+			environmentInfo.setProperty("ssh.server.keystore", hostkeyFile.getAbsolutePath());
 		}
 		if (startBundle(BSN_EQUINOX_CONSOLE_SSH, false)) {
 			try {
