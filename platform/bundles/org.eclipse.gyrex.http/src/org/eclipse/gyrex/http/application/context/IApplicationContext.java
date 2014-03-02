@@ -19,6 +19,8 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -289,6 +291,43 @@ public interface IApplicationContext {
 	void registerResources(final String alias, final String name, final IResourceProvider provider) throws NamespaceException;
 
 	/**
+	 * Registers a {@link WebServlet} annotated servlet.
+	 * <p>
+	 * This method expects a servlet annotated with the Servlet API
+	 * {@link WebServlet} annotation. The annotation will be read to obtain
+	 * registration information for the servlet. The servlet instance will be
+	 * created by the application from the specified class using dependency
+	 * injection based on the {@link Application#getContext() application's
+	 * context}.
+	 * </p>
+	 * <p>
+	 * The specified {@link Servlet} class must be loaded by an OSGi bundle. It
+	 * will be the bundle that is responsible for the registration. The
+	 * application will monitor the bundle so that the registrations will be
+	 * automatically (see {@link #unregister(String)}) unregistered when the
+	 * bundle is stopped.
+	 * </p>
+	 * <p>
+	 * As required by the Servlet API, the specified servlet must extend
+	 * {@link HttpServlet}.
+	 * </p>
+	 * 
+	 * @param annotatedServletClass
+	 *            the servlet class to register
+	 * @throws NamespaceException
+	 *             if the registration fails because an alias specified by
+	 *             {@link WebServlet#urlPatterns()} is already in use
+	 * @throws javax.servlet.ServletException
+	 *             if the servlet's <code>init</code> method throws an
+	 *             exception, or the given servlet class has already been
+	 *             registered
+	 * @throws java.lang.IllegalArgumentException
+	 *             if any of the arguments are invalid
+	 * @see #unregister(Class)
+	 */
+	void registerServlet(final Class<? extends HttpServlet> annotatedServletClass) throws ServletException, NamespaceException;
+
+	/**
 	 * Registers a servlet into the URI namespace.
 	 * <p>
 	 * This method behaves exactly the same as
@@ -302,8 +341,12 @@ public interface IApplicationContext {
 	 * The specified {@link Servlet} class must be loaded by an OSGi bundle. It
 	 * will be the bundle that is responsible for the registration. The
 	 * application will monitor the bundle so that the registrations will be
-	 * automatically (see {@link #unregister(String)} unregistered) when the
+	 * automatically (see {@link #unregister(String)}) unregistered when the
 	 * bundle is stopped.
+	 * </p>
+	 * <p>
+	 * Note, this method will ignore the {@link WebServlet} annotation if
+	 * present on the servlet class.
 	 * </p>
 	 * 
 	 * @param alias
@@ -381,6 +424,34 @@ public interface IApplicationContext {
 	 *             if any of the arguments are invalid
 	 */
 	void registerServlet(final String alias, final Servlet servlet, final Map<String, String> initparams) throws ServletException, NamespaceException;
+
+	/**
+	 * Unregisters a previous registration done by
+	 * {@link #registerServlet(Class)} method.
+	 * <p>
+	 * After this call, the registered servlet will no longer be available. The
+	 * application must call the <code>destroy</code> method of the servlet
+	 * before returning in case a servlet instance was created.
+	 * </p>
+	 * <p>
+	 * If a bundle which was specified during the registration is stopped
+	 * without calling {@link #unregister(Class)} then the application
+	 * automatically unregisters the registration of that bundle. However, if
+	 * the registration was for a servlet, the <code>destroy</code> method of
+	 * the servlet will not be called in this case since the bundle may be
+	 * stopped. {@link #unregister(Class)} must be explicitly called to cause
+	 * the <code>destroy</code> method of the servlet to be called. This can be
+	 * done in the <code>BundleActivator.stop</code> method of the bundle
+	 * registering the servlet.
+	 * </p>
+	 * 
+	 * @param annotatedServletClass
+	 *            the servlet class to unregister
+	 * @throws java.lang.IllegalArgumentException
+	 *             if there is no registration for the servlet or the calling
+	 *             bundle was not the bundle which registered the servlet class.
+	 */
+	void unregister(final Class<? extends HttpServlet> annotatedServletClass);
 
 	/**
 	 * Unregisters a previous registration done by
