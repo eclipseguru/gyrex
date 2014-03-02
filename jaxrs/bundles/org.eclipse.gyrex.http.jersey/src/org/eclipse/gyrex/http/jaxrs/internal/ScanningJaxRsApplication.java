@@ -11,6 +11,8 @@
  */
 package org.eclipse.gyrex.http.jaxrs.internal;
 
+import javax.servlet.http.HttpServlet;
+
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.http.jaxrs.JaxRsApplication;
 import org.eclipse.gyrex.http.jaxrs.JaxRsApplicationProviderComponent;
@@ -103,6 +105,13 @@ public final class ScanningJaxRsApplication extends JaxRsApplication {
 		// create service injector
 		contextServiceInjector = new ContextServiceInjectableProvider(bundle.getBundleContext());
 		injectServiceInjector = new InjectServiceInjectableProvider(bundle.getBundleContext());
+
+		// scan for @WebServlet servlets
+		final WebServletScanner servletScanner = new WebServletScanner(bundle);
+		for (final Class<? extends HttpServlet> servletClass : servletScanner.getClasses()) {
+			getApplicationContext().registerServlet(servletClass);
+		}
+
 		// call super
 		super.doInit();
 	}

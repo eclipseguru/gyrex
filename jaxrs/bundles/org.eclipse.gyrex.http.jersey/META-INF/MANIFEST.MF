@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jersey Integration for Gyrex HTTP Applications
 Bundle-SymbolicName: org.eclipse.gyrex.http.jersey
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: Eclipse Gyrex
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.sun.jersey.api.container.filter;version="[1.17.0,2.0.0)",
@@ -23,7 +23,9 @@ Import-Package: com.sun.jersey.api.container.filter;version="[1.17.0,2.0.0)",
  com.sun.jersey.spi.scanning;version="[1.17.0,2.0.0)",
  com.sun.research.ws.wadl;version="[1.17.0,2.0.0)",
  javax.inject;version="[1.0.0,2.0.0)",
- javax.servlet;version="[2.6.0,3.1.0)",
+ javax.servlet;version="2.6.0",
+ javax.servlet.annotation;version="2.6.0",
+ javax.servlet.http;version="2.6.0",
  javax.ws.rs;version="[1.1.0,2.0.0)",
  javax.ws.rs.core;version="[1.1.0,2.0.0)",
  javax.ws.rs.ext;version="[1.1.0,2.0.0)",
