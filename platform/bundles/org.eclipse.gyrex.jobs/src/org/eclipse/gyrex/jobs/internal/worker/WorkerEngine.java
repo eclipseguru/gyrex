@@ -228,7 +228,7 @@ public class WorkerEngine extends Job {
 
 	private void handleCreateJobError(final IQueue queue, final IMessage message, final JobInfo info, final JobContext jobContext, final Throwable e) {
 		// log error
-		LOG.error("Error creating job {}: {}. Job won't be executed.", new Object[] { message, ExceptionUtils.getRootCauseMessage(e), e });
+		LOG.error("Error creating job ({}): {}", new Object[] { message, ExceptionUtils.getRootCauseMessage(e), e });
 
 		// discard message
 		discardJobMessage(queue, message);
@@ -239,7 +239,7 @@ public class WorkerEngine extends Job {
 			final JobManagerImpl jobManager = (JobManagerImpl) jobContext.getContext().get(IJobManager.class);
 			jobManager.setResult(info.getJobId(), jobContext.getParameter(), new Status(IStatus.ERROR, JobsActivator.SYMBOLIC_NAME, String.format("Error creating job: %s", e.getMessage()), e), timestamp, timestamp, info.getQueueTrigger(), info.getQueueTimestamp());
 		} catch (final Exception jobManagerException) {
-			LOG.error("Error updating job result for job {}: {}", new Object[] { info.getJobId(), ExceptionUtils.getRootCauseMessage(jobManagerException) });
+			LOG.error("Error updating job result for job ({}): {}", new Object[] { info.getJobId(), ExceptionUtils.getRootCauseMessage(jobManagerException) });
 		}
 	}
 
