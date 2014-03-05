@@ -26,6 +26,7 @@ import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleManagerImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
+import org.eclipse.gyrex.jobs.internal.schedules.SchedulingUtil;
 import org.eclipse.gyrex.jobs.internal.util.ContextHashUtil;
 import org.eclipse.gyrex.jobs.manager.IJobManager;
 
@@ -69,6 +70,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	private Button removeButton;
 	private Button enableButton;
 	private Button disableButton;
+	private Button runNowButton;
 
 	private ScheduleImpl schedule;
 
@@ -134,6 +136,17 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 			}
 		});
 
+		createButtonSeparator(parent);
+
+		runNowButton = createButton(parent, "Run Now");
+		runNowButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				runNowButtonPressed();
+			}
+		});
 	}
 
 	@Override
@@ -355,7 +368,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 			}
 		}
 		return "n/a";
-	};
+	}
 
 	String getLastResult(final ScheduleEntryImpl entry) {
 		final IRuntimeContext ctx = JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(schedule.getContextPath());
@@ -407,7 +420,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 			}
 		}
 		return null;
-	}
+	};
 
 	private String getName(final ScheduleEntryImpl entry) {
 		final String name = JobsActivator.getInstance().getJobProviderRegistry().getName(entry.getJobTypeId());
@@ -486,6 +499,32 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 		});
 	}
 
+	void runNowButtonPressed() {
+		final ScheduleEntryImpl scheduleEntry = getSelectedScheduleEntry();
+		if (scheduleEntry == null)
+			return;
+
+		NonBlockingMessageDialogs.openQuestion(SwtUtil.getShell(getTreeViewer().getTree()), "Run Now", String.format("Do you want to queue entry '%s' for execution now?", scheduleEntry.getId()), new DialogCallback() {
+			/** serialVersionUID */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void dialogClosed(final int returnCode) {
+				if (returnCode != Window.OK)
+					return;
+
+				try {
+					SchedulingUtil.queueJob(scheduleEntry);
+				} catch (final Exception ex) {
+					Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to queue schedule entry.", ex), "Error");
+				}
+
+				getTreeViewer().refresh(scheduleEntry);
+				updateButtons();
+			}
+		});
+	}
+
 	@Override
 	public void setArguments(final String[] args) {
 		super.setArguments(args);
@@ -514,39 +553,41 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 
 	@Override
 	protected void updateButtons() {
+		final ScheduleEntryImpl selectedScheduleEntry = getSelectedScheduleEntry();
+
 		if (getSchedule().isEnabled()) {
-			// disable all buttons when schedule is enabled
+			// disable most buttons when schedule is enabled
 			addButton.setEnabled(false);
 			editButton.setEnabled(false);
 			removeButton.setEnabled(false);
 			enableButton.setEnabled(false);
 			disableButton.setEnabled(false);
+			runNowButton.setEnabled((selectedScheduleEntry != null) && selectedScheduleEntry.isEnabled());
 			return;
 		}
 
-		final int selectedElementsCount = ((IStructuredSelection) getTreeViewer().getSelection()).size();
-		if (selectedElementsCount == 0) {
+		if (selectedScheduleEntry == null) {
 			addButton.setEnabled(true);
 			editButton.setEnabled(false);
 			removeButton.setEnabled(false);
 			enableButton.setEnabled(false);
 			disableButton.setEnabled(false);
+			runNowButton.setEnabled(false);
 			return;
 		}
 
 		addButton.setEnabled(true);
-		editButton.setEnabled(selectedElementsCount == 1);
-		removeButton.setEnabled(selectedElementsCount == 1);
+		editButton.setEnabled(true);
+		removeButton.setEnabled(true);
 
-		final ScheduleEntryImpl selectedScheduleEntry = getSelectedScheduleEntry();
-		if (selectedScheduleEntry != null) {
-			if (selectedScheduleEntry.isEnabled()) {
-				enableButton.setEnabled(false);
-				disableButton.setEnabled(true);
-			} else {
-				enableButton.setEnabled(true);
-				disableButton.setEnabled(false);
-			}
+		if (selectedScheduleEntry.isEnabled()) {
+			enableButton.setEnabled(false);
+			disableButton.setEnabled(true);
+			runNowButton.setEnabled(true);
+		} else {
+			enableButton.setEnabled(true);
+			disableButton.setEnabled(false);
+			runNowButton.setEnabled(false);
 		}
 	}
 
