@@ -472,6 +472,15 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 		}
 	}
 
+	/**
+	 * Opens the specified page using the given arguments.
+	 * <p>
+	 * If the page is already opened, it will be re-loaded.
+	 * </p>
+	 * 
+	 * @param contribution
+	 * @param args
+	 */
 	private void openPage(final PageContribution contribution, final String[] args) {
 		try {
 			final AdminPage page = getPage(contribution);
@@ -480,10 +489,7 @@ public class AdminApplication implements EntryPoint, IAdminUi {
 				return;
 			}
 
-			if (page == currentPage)
-				// don't do anything if it's the same page
-				return;
-			else if (null != currentPage) {
+			if (null != currentPage) {
 				// deactivate old page first
 				deactivate(currentPage);
 			}
