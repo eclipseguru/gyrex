@@ -238,19 +238,32 @@ Tree.filter-tree  {
   background-color: transparent;
 }*/
 
+
 Composite.infobox {
   background-color: #e5e5e5;
   border: 1px solid #bdbdbd;
   border-radius: 0 30px 0 30px;
 }
-
 Label.infobox {
   /*color: #bdbdbd;*/
 }
-
 Label.infobox-heading {
   font: 16px Helvetica, Verdana, sans-serif;
   color: #31619C; /*#357cd4;*/
+}
+
+Composite.statusbox-warning {
+  background-color: #FFDA73;
+  border: 1px solid #A67A00;
+  border-radius: 1px;
+  opacity: 0.96;
+}
+Label.statusbox-warning {
+  color: #2F2917;
+}
+Label.statusbox-warning-heading {
+  font: 16px Helvetica, Verdana, sans-serif;
+  color: #A67A00;
 }
 
 Label.markup {

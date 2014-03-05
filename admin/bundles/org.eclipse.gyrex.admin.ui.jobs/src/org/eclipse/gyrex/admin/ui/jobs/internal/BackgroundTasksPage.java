@@ -15,6 +15,7 @@ import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
+import org.eclipse.gyrex.admin.ui.pages.IAdminUi;
 import org.eclipse.gyrex.context.definitions.ContextDefinition;
 import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
 import org.eclipse.gyrex.jobs.JobState;
@@ -25,7 +26,6 @@ import org.eclipse.gyrex.jobs.internal.storage.CloudPreferncesJobStorage;
 import org.eclipse.gyrex.jobs.internal.worker.WorkerEngine;
 import org.eclipse.gyrex.jobs.manager.IJobManager;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
-import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -60,15 +60,20 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	private static final int COLUMN_TIMEZONE = 1;
 	private static final int COLUMN_QUEUE = 2;
 
+	static void openSchedule(final ScheduleImpl schedule, final IAdminUi adminUi) {
+		adminUi.openPage(ScheduleEntriesPage.ID, schedule.getContextPath().toString(), schedule.getId());
+	}
+
 	private Button addButton;
 	private Button removeButton;
 	private Button enableButton;
 	private Button disableButton;
-	private Button showEntriesButton;
 
+	private Button showEntriesButton;
 	private Label schedulesMetricLabel;
 	private Label jobsRunningLabel;
 	private Label jobsWaitingMetricLabel;
+
 	private Label processingStateMetricLabel;
 
 	public BackgroundTasksPage() {
@@ -217,7 +222,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 			ScheduleStore.flush(schedule.getStorageKey(), schedule);
 			schedule.load();
 		} catch (final BackingStoreException e) {
-			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to activate schedule.", e), "Error");
+			Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to deactivate schedule.", e), "Error");
 		}
 
 		getTreeViewer().refresh(schedule, true);
@@ -265,7 +270,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 				return JobsUiImages.getImage(JobsUiImages.IMG_OBJ_SCHEDULE_DISABLED);
 		}
 		return null;
-	}
+	};
 
 	@Override
 	protected String getElementLabel(final Object element, final int column) {
@@ -287,7 +292,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 			}
 		}
 		return StringUtils.EMPTY;
-	};
+	}
 
 	ScheduleImpl getFirstSelectedSchedule(final ISelection selection) {
 		if (selection instanceof IStructuredSelection) {
@@ -328,7 +333,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	}
 
 	void openScheduleEntriesPage(final ScheduleImpl schedule) {
-		getAdminUi().openPage(ScheduleEntriesPage.ID, schedule.getContextPath().toString(), schedule.getId());
+		openSchedule(schedule, getAdminUi());
 	}
 
 	@Override
