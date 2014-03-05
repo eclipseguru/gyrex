@@ -20,6 +20,7 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.NonBlockingWizardDialog;
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.registry.IRuntimeContextRegistry;
 import org.eclipse.gyrex.jobs.IJob;
+import org.eclipse.gyrex.jobs.JobState;
 import org.eclipse.gyrex.jobs.internal.JobsActivator;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleEntryImpl;
 import org.eclipse.gyrex.jobs.internal.schedules.ScheduleImpl;
@@ -33,6 +34,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.util.Policy;
+import org.eclipse.jface.viewers.ColumnLayoutData;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.window.Window;
@@ -59,6 +62,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	private static final int COLUMN_CRON = 2;
 	private static final int COLUMN_PRECEDINGS = 3;
 	private static final int COLUMN_LAST_RESULT = 4;
+	private static final int COLUMN_STATUS = 5;
 
 	private Button addButton;
 	private Button editButton;
@@ -69,7 +73,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	private ScheduleImpl schedule;
 
 	public ScheduleEntriesPage() {
-		super(5);
+		super(6);
 		setTitle("Schedule Entries");
 		setTitleToolTip("Edit a schedule and its entries for executing background tasks.");
 	}
@@ -259,9 +263,27 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 				return "Precedings";
 			case COLUMN_LAST_RESULT:
 				return "Last Run";
+			case COLUMN_STATUS:
+				return "Status";
 
 			default:
 				return StringUtils.EMPTY;
+		}
+	}
+
+	@Override
+	protected ColumnLayoutData getColumnLayoutData(final int column) {
+		switch (column) {
+			case COLUMN_ID:
+				return new ColumnWeightData(25, 50);
+			case COLUMN_TYPE:
+			case COLUMN_CRON:
+				return new ColumnWeightData(12, 50);
+			case COLUMN_LAST_RESULT:
+			case COLUMN_STATUS:
+				return new ColumnWeightData(6, 30);
+			default:
+				return new ColumnWeightData(10, 50);
 		}
 	}
 
@@ -297,6 +319,8 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 						return getLastResult(entry);
 					else
 						return null;
+				case COLUMN_STATUS:
+					return getJobStatus(entry);
 
 				default:
 					return null;
@@ -305,6 +329,33 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 
 		return null;
 	}
+
+	String getJobStatus(final ScheduleEntryImpl entry) {
+		final IRuntimeContext ctx = JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(schedule.getContextPath());
+		if (ctx != null) {
+			final IJobManager jobManager = ctx.get(IJobManager.class);
+			if (jobManager != null) {
+				final IJob job = jobManager.getJob(entry.getJobId());
+				if (job != null) {
+					final JobState state = job.getState();
+					switch (state) {
+						case ABORTING:
+							return "aborting";
+						case RUNNING:
+							return "running";
+						case WAITING:
+							return "waiting";
+						case NONE:
+							if (entry.isEnabled() && entry.getSchedule().isEnabled())
+								return "sleeping";
+						default:
+							return "";
+					}
+				}
+			}
+		}
+		return "n/a";
+	};
 
 	String getLastResult(final ScheduleEntryImpl entry) {
 		final IRuntimeContext ctx = JobsUiActivator.getInstance().getService(IRuntimeContextRegistry.class).get(schedule.getContextPath());
