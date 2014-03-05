@@ -211,7 +211,7 @@ public class ScheduleEntryWizardPage extends WizardPage {
 		scheduleCheckBox.setLabelText("Run at specific times (cron expression):");
 		cronExpressionField.setLabelText("");
 		cronMakerLinkField.setLabelText("");
-		cronMakerLinkField.setText("<small>Tip: Use <a href=\"http://cronmaker.com/\" target=\"_blank\">CronMaker</a> to generate cron expressions (but drop the seconds).</small>");
+		cronMakerLinkField.setText("<small>Tip: Use <a href=\"http://www.cronmaker.com/\" target=\"_blank\">CronMaker</a> to generate cron expressions (but drop the seconds).</small>");
 
 		dependsCheckBox.setLabelText("Run whenever one of the folloing entries run successfully:");
 		preceedingEntriesTree.setLabelText("");
