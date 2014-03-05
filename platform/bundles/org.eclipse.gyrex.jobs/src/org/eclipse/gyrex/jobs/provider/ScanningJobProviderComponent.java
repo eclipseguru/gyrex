@@ -29,6 +29,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.service.component.ComponentConstants;
 import org.osgi.service.component.ComponentContext;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +123,12 @@ public class ScanningJobProviderComponent extends JobProvider {
 			runtimeContext.setLocal(IJobContext.class, context);
 			runtimeContext.setLocal(Logger.class, context.getLogger());
 			return runtimeContext.getInjector().make(clazz);
+		} catch (final Exception e) {
+			// report injection issues with hints
+			if (StringUtils.contains(e.getMessage(), "no actual value was found for the argument"))
+				throw new IllegalArgumentException("Please verify the job configuration. Not all required parameter seems to be available.", e);
+			// re-throw
+			throw e;
 		}
 	}
 
