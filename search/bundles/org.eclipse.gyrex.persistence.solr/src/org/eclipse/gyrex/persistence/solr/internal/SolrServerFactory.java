@@ -57,6 +57,7 @@ public class SolrServerFactory {
 
 		try {
 			cloudSolrServerConstructor = bundle.loadClass("org.apache.solr.client.solrj.impl.CloudSolrServer").getConstructor(String.class);
+			LOG.info("SolrJ 4 Cloud client successfully loaded.");
 		} catch (Exception | AssertionError | LinkageError e) {
 			LOG.debug("Error loading SolrJ 4 CloudSolrServer!", e);
 		}
