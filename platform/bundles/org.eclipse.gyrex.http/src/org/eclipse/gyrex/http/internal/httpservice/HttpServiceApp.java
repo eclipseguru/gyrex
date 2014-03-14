@@ -14,8 +14,6 @@ package org.eclipse.gyrex.http.internal.httpservice;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.eclipse.equinox.http.servlet.ExtendedHttpService;
-
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.http.application.Application;
 import org.eclipse.gyrex.http.internal.HttpActivator;
@@ -29,13 +27,18 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.http.HttpService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The HttpService application.
  */
 public class HttpServiceApp extends Application implements ServiceFactory<HttpService> {
 
-	private ServiceRegistration serviceRegistration;
+	private ServiceRegistration<?> serviceRegistration;
 	private Filter filter;
+
+	private static final Logger LOG = LoggerFactory.getLogger(HttpServiceApp.class);
 
 	/**
 	 * Creates a new instance.
@@ -45,6 +48,10 @@ public class HttpServiceApp extends Application implements ServiceFactory<HttpSe
 	 */
 	public HttpServiceApp(final String id, final IRuntimeContext context) {
 		super(id, context);
+	}
+
+	private HttpService createExtendedHttpServiceIfPossible(final Bundle bundle) {
+		return new ExtendedHttpServiceImpl(getApplicationContext(), bundle, filter);
 	}
 
 	@Override
@@ -77,12 +84,17 @@ public class HttpServiceApp extends Application implements ServiceFactory<HttpSe
 			props.put(Constants.SERVICE_PID, HttpActivator.SYMBOLIC_NAME.concat(".service-").concat(getId()));
 		}
 
-		serviceRegistration = HttpActivator.getInstance().getBundle().getBundleContext().registerService(new String[] { HttpService.class.getName(), ExtendedHttpService.class.getName() }, this, props);
+		serviceRegistration = HttpActivator.getInstance().getBundle().getBundleContext().registerService(new String[] { HttpService.class.getName(), "org.eclipse.equinox.http.servlet.ExtendedHttpService" }, this, props);
 	}
 
 	@Override
 	public HttpService getService(final Bundle bundle, final ServiceRegistration<HttpService> registration) {
-		return new HttpServiceImpl(getApplicationContext(), bundle, filter);
+		try {
+			return createExtendedHttpServiceIfPossible(bundle);
+		} catch (LinkageError | Exception e) {
+			LOG.warn("Equinox OSGi HttpService extension not available (potential request from bundle {}).", bundle, e);
+			return new HttpServiceImpl(getApplicationContext(), bundle, filter);
+		}
 	}
 
 	@Override

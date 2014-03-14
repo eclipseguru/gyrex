@@ -21,8 +21,6 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
-import org.eclipse.equinox.http.servlet.ExtendedHttpService;
-
 import org.eclipse.gyrex.http.application.context.IApplicationContext;
 import org.eclipse.gyrex.http.internal.HttpDebug;
 
@@ -38,7 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link HttpService} implementation backed by {@link IApplicationContext}.
  */
-public class HttpServiceImpl implements HttpService, ExtendedHttpService {
+public class HttpServiceImpl implements HttpService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HttpServiceImpl.class);
 
@@ -78,9 +76,8 @@ public class HttpServiceImpl implements HttpService, ExtendedHttpService {
 	}
 
 	private boolean isFiltered(final String alias, final Filter filter) {
-		if (null == registrationFilter) {
+		if (null == registrationFilter)
 			return false;
-		}
 
 		final Map<String, Object> m = new HashMap<String, Object>(6);
 		putBundleProperties(m);
@@ -91,9 +88,8 @@ public class HttpServiceImpl implements HttpService, ExtendedHttpService {
 	}
 
 	private boolean isFiltered(final String alias, final Servlet servlet) {
-		if (null == registrationFilter) {
+		if (null == registrationFilter)
 			return false;
-		}
 
 		final Map<String, Object> m = new HashMap<String, Object>(6);
 		putBundleProperties(m);
@@ -104,9 +100,8 @@ public class HttpServiceImpl implements HttpService, ExtendedHttpService {
 	}
 
 	private boolean isFiltered(final String alias, final String name) {
-		if (null == registrationFilter) {
+		if (null == registrationFilter)
 			return false;
-		}
 
 		final Map<String, Object> m = new HashMap<String, Object>(6);
 		putBundleProperties(m);
@@ -125,8 +120,11 @@ public class HttpServiceImpl implements HttpService, ExtendedHttpService {
 		}
 	}
 
-	@Override
-	public void registerFilter(final String alias, final Filter filter, final Dictionary initparams, final HttpContext context) throws ServletException, NamespaceException {
+	/**
+	 * Implementation for
+	 * org.eclipse.equinox.http.servlet.ExtendedHttpService#registerFilter
+	 */
+	public void registerFilter(final String alias, final Filter filter, @SuppressWarnings("rawtypes") final Dictionary initparams, final HttpContext context) throws ServletException, NamespaceException {
 		if (isFiltered(alias, filter)) {
 			if (HttpDebug.httpService) {
 				LOG.debug("Ignoring filtered filter with alias {} (bundle {} ({}), filter {})", new Object[] { alias, bundle.getSymbolicName(), bundle.getBundleId(), filter });
@@ -162,7 +160,7 @@ public class HttpServiceImpl implements HttpService, ExtendedHttpService {
 	}
 
 	@Override
-	public void registerServlet(final String alias, final Servlet servlet, final Dictionary initparams, final HttpContext context) throws ServletException, NamespaceException {
+	public void registerServlet(final String alias, final Servlet servlet, @SuppressWarnings("rawtypes") final Dictionary initparams, final HttpContext context) throws ServletException, NamespaceException {
 		if (isFiltered(alias, servlet)) {
 			if (HttpDebug.httpService) {
 				LOG.debug("Ignoring filtered servlet with alias {} (bundle {} ({}), servlet {})", new Object[] { alias, bundle.getSymbolicName(), bundle.getBundleId(), servlet });
@@ -181,13 +179,12 @@ public class HttpServiceImpl implements HttpService, ExtendedHttpService {
 		}
 	}
 
-	private Map<String, String> toMap(final Dictionary initparams) {
-		if (initparams == null) {
+	private Map<String, String> toMap(final Dictionary<?, ?> initparams) {
+		if (initparams == null)
 			return null;
-		}
 
 		final HashMap<String, String> initparamsMap = new HashMap<String, String>(initparams.size());
-		final Enumeration keys = initparams.keys();
+		final Enumeration<?> keys = initparams.keys();
 		while (keys.hasMoreElements()) {
 			final Object key = keys.nextElement();
 			try {
@@ -231,7 +228,10 @@ public class HttpServiceImpl implements HttpService, ExtendedHttpService {
 		}
 	}
 
-	@Override
+	/**
+	 * Implementation for
+	 * org.eclipse.equinox.http.servlet.ExtendedHttpService#unregisterFilter
+	 */
 	public void unregisterFilter(final Filter filter) {
 		if (HttpDebug.httpService) {
 			LOG.debug("Unregistering filter (bundle {} ({}), filter {})", new Object[] { bundle.getSymbolicName(), bundle.getBundleId(), filter });
