@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2013 AGETO Service GmbH and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -15,7 +15,7 @@ package org.eclipse.gyrex.monitoring.profiling;
  * A manager for accessing {@link Transaction transactions}.
  * <p>
  * Warning: This is part of a new API that has not been finalized yet. Please
- * get in touch with the Gyrex developments if you intend to use it and this
+ * get in touch with the Gyrex developers if you intend to use it and this
  * warning is still present.
  * </p>
  */
