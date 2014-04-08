@@ -220,17 +220,18 @@ public class JettyEngineApplication implements IApplication {
 				final Constructor<?> constructor = spdyConnectorClass.getConstructor(Server.class, HttpConfiguration.class, SslContextFactory.class, Map.class);
 				return (ServerConnector) constructor.newInstance(server, httpConfig, sslFactory, null);
 			} else {
-				// log error and fall through; will force standard connector belog
-				LOG.error("Jetty NPN not loaded via boot class loader. Falling back to non-SPDY setup. Please check your server setup (see http://wiki.eclipse.org/Jetty/Feature/NPN for details)! ({})", npnClass.getClassLoader());
+				// log error and fall through; will force standard connector below
+				LOG.error("Jetty NPN not loaded via boot class loader. Falling back to non-SPDY setup. Please check your server setup (see http://www.eclipse.org/jetty/documentation/current/npn-chapter.html for details)! ({})", npnClass.getClassLoader());
 			}
 		} catch (AssertionError | LinkageError | ClassNotFoundException e) {
 			if (JettyDebug.engine) {
 				LOG.debug("Jetty SPDY environment not available: {}", ExceptionUtils.getRootCauseMessage(e), e);
 			}
+			LOG.warn("Jetty SPDY compatible environment not available. To use SPDY in Jetty you need to add the NPN boot Jar in the boot classpath (see http://www.eclipse.org/jetty/documentation/current/npn-chapter.html#npn-starting).");
 		} catch (final Exception e) {
 			LOG.error("Error loading the Jetty SPDY implementation. {}", ExceptionUtils.getRootCauseMessage(e), e);
 		}
-		LOG.info("Jetty SPDY environment not available. Using non SPDY implementation.");
+		LOG.info("Using non SPDY implementation.");
 		return new ServerConnector(server, sslFactory, new HttpConnectionFactory(httpConfig));
 	}
 
@@ -316,7 +317,7 @@ public class JettyEngineApplication implements IApplication {
 
 			// don't expose too detailed version info
 			// (must be set after server started)
-			HttpGenerator.setServerVersion("7");
+			HttpGenerator.setJettyVersion("Jetty");
 
 			if (JettyDebug.engine) {
 				LOG.debug("Jetty server started!");
