@@ -93,13 +93,13 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.persistence.sdk.feature.group" version="2.6.0.v20140228-cbe64ea"/>
+<unit id="org.eclipse.persistence.sdk.feature.group" version="0.0.0"/>
 <unit id="javax.persistence" version="2.1.0.v201304241213"/>
 <unit id="javax.persistence.source" version="2.1.0.v201304241213"/>
-<unit id="org.eclipse.persistence.nosql" version="2.6.0.v20140228-cbe64ea"/>
-<unit id="org.eclipse.persistence.nosql.source" version="2.6.0.v20140228-cbe64ea"/>
+<unit id="org.eclipse.persistence.nosql" version="0.0.0"/>
+<unit id="org.eclipse.persistence.nosql.source" version="0.0.0"/>
 <unit id="commonj.sdo.source" version="2.1.1.v201112051852"/>
-<repository location="http://download.eclipse.org/rt/eclipselink/nightly-updates/2.6.0.v20140228-cbe64ea/"/>
+<repository location="http://download.eclipse.org/rt/eclipselink/nightly-updates/2.6.0.v20140407-11a548f/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.hadoop.zookeeper" version="3.4.5.v20121214-1350"/>
