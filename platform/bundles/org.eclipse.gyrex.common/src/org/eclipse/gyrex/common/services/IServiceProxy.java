@@ -136,4 +136,19 @@ public interface IServiceProxy<T> {
 	 * @return an unmodifiable collection of service object
 	 */
 	List<T> getServices() throws IllegalStateException;
+
+	/**
+	 * Indicates if a service might be available.
+	 * <p>
+	 * This method is a convenience method for simplifying checks when a service
+	 * is not mandatory for regular operation. Its result represents the
+	 * situation of the time of invoking this method. It may change after this
+	 * method returns at any point in time. Therefore, clients calling this
+	 * method and receiving a positive result, must not expect that a subsequent
+	 * call to {@link #getService()} will not fail.
+	 * </p>
+	 * * @return <code>true</code> if at least one service is currently
+	 * available
+	 */
+	boolean isAvailable();
 }

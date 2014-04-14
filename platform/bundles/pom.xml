@@ -20,6 +20,8 @@
     <module>org.eclipse.gyrex.common</module>
     <module>org.eclipse.gyrex.context</module>
     <module>org.eclipse.gyrex.context.tests</module>
+    <module>org.eclipse.gyrex.eventbus</module>
+    <module>org.eclipse.gyrex.eventbus.tests</module>
     <module>org.eclipse.gyrex.frameworklogadapter</module>
     <module>org.eclipse.gyrex.http</module>
     <module>org.eclipse.gyrex.http.tests</module>

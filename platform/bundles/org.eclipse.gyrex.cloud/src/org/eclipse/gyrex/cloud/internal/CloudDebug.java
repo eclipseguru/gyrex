@@ -28,4 +28,6 @@ public class CloudDebug extends BundleDebugOptions {
 	public static boolean zooKeeperLockService;
 	public static boolean zooKeeperPreferences;
 	public static boolean zooKeeperPreferencesSync;
+
+	public static boolean eventService;
 }

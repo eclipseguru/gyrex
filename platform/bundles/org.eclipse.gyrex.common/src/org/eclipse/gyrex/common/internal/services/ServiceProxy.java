@@ -308,6 +308,11 @@ public class ServiceProxy<T> implements IServiceProxy<T>, InvocationHandler, Ser
 		}
 	}
 
+	@Override
+	public boolean isAvailable() {
+		return services.size() > 0;
+	}
+
 	/**
 	 * Called during construction to hook the service listener with the bundle
 	 * context

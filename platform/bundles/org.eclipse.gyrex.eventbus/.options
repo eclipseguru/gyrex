@@ -1,0 +1,2 @@
+# global debug option
+org.eclipse.gyrex.eventbus/debug=true
