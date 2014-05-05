@@ -13,6 +13,7 @@
 package org.eclipse.gyrex.jobs.internal.scheduler;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.gyrex.jobs.internal.JobsActivator;
@@ -123,7 +124,7 @@ public class Schedule implements IPreferenceChangeListener {
 			// make sure that Quartz does not check for updates
 			System.setProperty("org.terracotta.quartz.skipUpdateCheck", "true");
 
-			// prepare scheduler 
+			// prepare scheduler
 			final DirectSchedulerFactory factory = DirectSchedulerFactory.getInstance();
 			final SimpleThreadPool threadPool = new SimpleThreadPool(1, Thread.NORM_PRIORITY);
 			threadPool.setInstanceId(scheduleStoreStorageKey);
@@ -310,9 +311,6 @@ public class Schedule implements IPreferenceChangeListener {
 				continue;
 			}
 
-			final JobDetail detail = new JobDetail(entry.getId(), SchedulingJob.class);
-			SchedulingJob.populateJobDataMap(detail.getJobDataMap(), entry, schedule);
-
 			final CronTrigger trigger = new CronTrigger(entry.getId());
 			trigger.setTimeZone(schedule.getTimeZone());
 			try {
@@ -321,6 +319,21 @@ public class Schedule implements IPreferenceChangeListener {
 				LOG.error("Unable to schedule entry {}. Invalid cron expression. {}", entry, ExceptionUtils.getRootCauseMessage(e));
 				continue;
 			}
+
+			/*
+			 * Check, whether the job will be triggered at all.
+			 * It won't be scheduled if it lacks any further executions.
+			 */
+			final Date firstFireTime = trigger.computeFirstFireTime(null);
+			if ((firstFireTime == null)) {
+				if (JobsDebug.schedulerEngine) {
+					LOG.debug("Ignoring job {} since it won't be triggered anymore.", entry);
+				}
+				continue;
+			}
+
+			final JobDetail detail = new JobDetail(entry.getId(), SchedulingJob.class);
+			SchedulingJob.populateJobDataMap(detail.getJobDataMap(), entry, schedule);
 
 			if (JobsDebug.schedulerEngine) {
 				LOG.debug("Adding job {} to Quartz engine {}...", entry, getScheduleStoreStorageKey());
