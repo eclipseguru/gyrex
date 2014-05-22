@@ -306,6 +306,11 @@ public class Schedule implements IPreferenceChangeListener {
 
 		// schedule entries with cron expression if available
 		for (final IScheduleEntry entry : entries) {
+			// ignore invalid entries (bug 413417)
+			if ("invalid".equals(entry.getJobTypeId())) {
+				continue;
+			}
+
 			final String cronExpression = entry.getCronExpression();
 			if (StringUtils.isBlank(cronExpression)) {
 				continue;

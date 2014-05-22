@@ -150,7 +150,7 @@ public class ScheduleEntryImpl implements IScheduleEntry, IScheduleEntryWorkingC
 
 	void load(final Preferences node) throws BackingStoreException {
 		try {
-			setJobTypeId(node.get(JOB_TYPE_ID, null));
+			setJobTypeId(node.get(JOB_TYPE_ID, "invalid")); // bug 413417: use "invalid" instead of null
 			setEnabled(node.getBoolean(ENABLED, true /* default true (backwards compatibility) */));
 			if (node.nodeExists(PARAMETER)) {
 				final Preferences paramNode = node.node(PARAMETER);
