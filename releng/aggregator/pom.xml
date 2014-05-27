@@ -50,6 +50,7 @@
     <module>../../platform</module>
     <module>../../admin</module>
     <module>../../jaxrs</module>
+    <module>../../eventbus</module>
     <module>../../mongodb</module>
     <module>../../search</module>
     

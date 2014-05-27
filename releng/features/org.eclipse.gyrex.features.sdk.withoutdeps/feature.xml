@@ -95,4 +95,13 @@
          id="org.eclipse.gyrex.features.addons.jersey.jaxrs.source"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.gyrex.features.addons.eventbus"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.gyrex.features.addons.eventbus.source"
+         version="0.0.0"/>
+
+
 </feature>

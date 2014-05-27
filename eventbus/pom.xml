@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.eclipse.gyrex.addons.eventbus</groupId>
-  <artifactId>gyrex-websocket-eventbus</artifactId>
+  <artifactId>gyrex-eventbus</artifactId>
   <packaging>pom</packaging>
   
   <parent>
@@ -15,6 +15,7 @@
 
   <modules>
     <module>bundles</module>
+    <module>features</module>
   </modules>
   
 </project>

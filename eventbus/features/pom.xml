@@ -2,7 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>gyrex-eventbus-bundles</artifactId>
+  <artifactId>gyrex-eventbus-features</artifactId>
   <packaging>pom</packaging>
 
   <parent>
@@ -12,9 +12,7 @@
   </parent>
 
   <modules>
-    <module>org.eclipse.gyrex.eventbus.websocket</module>
-    <module>org.eclipse.gyrex.eventbus</module>
-    <module>org.eclipse.gyrex.eventbus.tests</module>
+    <module>org.eclipse.gyrex.features.addons.eventbus</module>
   </modules>
   
 </project>

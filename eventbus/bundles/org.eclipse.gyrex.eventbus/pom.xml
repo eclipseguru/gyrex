@@ -6,8 +6,8 @@
   <packaging>eclipse-plugin</packaging>
 
   <parent>
-    <groupId>org.eclipse.gyrex.platform</groupId>
-    <artifactId>gyrex-platform-bundles</artifactId>
+    <groupId>org.eclipse.gyrex.addons.eventbus</groupId>
+    <artifactId>gyrex-eventbus-bundles</artifactId>
     <version>1.3.0-SNAPSHOT</version>
   </parent>
 
