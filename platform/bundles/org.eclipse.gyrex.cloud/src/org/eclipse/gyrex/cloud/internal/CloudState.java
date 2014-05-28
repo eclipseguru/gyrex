@@ -428,8 +428,8 @@ public class CloudState implements ZooKeeperGateListener {
 
 		// filter based on node filter
 		final INodeEnvironment nodeEnvironment = getNodeEnvironment();
-		for (final Iterator stream = startOptions.iterator(); stream.hasNext();) {
-			final ServerRoleDefaultStartOption startOption = (ServerRoleDefaultStartOption) stream.next();
+		for (final Iterator<ServerRoleDefaultStartOption> stream = startOptions.iterator(); stream.hasNext();) {
+			final ServerRoleDefaultStartOption startOption = stream.next();
 			final String nodeFilter = startOption.getNodeFilter();
 			if (null != nodeFilter) {
 				try {
