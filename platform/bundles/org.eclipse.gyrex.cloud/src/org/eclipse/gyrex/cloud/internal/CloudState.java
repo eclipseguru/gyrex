@@ -136,9 +136,8 @@ public class CloudState implements ZooKeeperGateListener {
 
 		@Override
 		protected IStatus run(final IProgressMonitor monitor) {
-			if (monitor.isCanceled() || (getConnectState() != State.CONNECTING)) {
+			if (monitor.isCanceled() || (getConnectState() != State.CONNECTING))
 				return Status.CANCEL_STATUS;
-			}
 
 			if (CloudDebug.cloudState) {
 				LOG.debug("Attempting node registration in cloud.");
@@ -177,9 +176,8 @@ public class CloudState implements ZooKeeperGateListener {
 	 */
 	public static NodeInfo getNodeInfo() {
 		final CloudState cloudState = instanceRef.get();
-		if (cloudState == null) {
+		if (cloudState == null)
 			return null;
-		}
 
 		return cloudState.myInfo.get();
 	}
@@ -189,9 +187,8 @@ public class CloudState implements ZooKeeperGateListener {
 	 */
 	public static void registerNode() throws Exception {
 		final CloudState cloudState = new CloudState();
-		if (!instanceRef.compareAndSet(null, cloudState)) {
+		if (!instanceRef.compareAndSet(null, cloudState))
 			throw new IllegalStateException("Already registered!");
-		}
 
 		// hook with ZooKeeperGate
 		ZooKeeperGate.addConnectionMonitor(cloudState);
@@ -214,9 +211,8 @@ public class CloudState implements ZooKeeperGateListener {
 	 */
 	public static void unregisterNode() {
 		final CloudState cloudState = instanceRef.getAndSet(null);
-		if (cloudState == null) {
+		if (cloudState == null)
 			throw new IllegalStateException("Not registered!");
-		}
 
 		// remove from gate
 		ZooKeeperGate.removeConnectionMonitor(cloudState);
@@ -247,9 +243,8 @@ public class CloudState implements ZooKeeperGateListener {
 		protected void pathCreated(final String path) {
 			// check if active
 			final NodeInfo nodeInfo = myInfo.get();
-			if (nodeInfo == null) {
+			if (nodeInfo == null)
 				return;
-			}
 
 			// process node activated events
 			if (path.equals(IZooKeeperLayout.PATH_NODES_APPROVED.append(nodeInfo.getNodeId()).toString())) {
@@ -276,9 +271,8 @@ public class CloudState implements ZooKeeperGateListener {
 		protected void pathDeleted(final String path) {
 			// check if active
 			final NodeInfo nodeInfo = myInfo.get();
-			if (nodeInfo == null) {
+			if (nodeInfo == null)
 				return;
-			}
 
 			// process node de-activation events
 			if (path.equals(IZooKeeperLayout.PATH_NODES_APPROVED.append(nodeInfo.getNodeId()).toString())) {
@@ -314,9 +308,8 @@ public class CloudState implements ZooKeeperGateListener {
 		protected void recordChanged(final String path) {
 			// check if active
 			final NodeInfo nodeInfo = myInfo.get();
-			if (nodeInfo == null) {
+			if (nodeInfo == null)
 				return;
-			}
 
 			// process node updates
 			if (path.equals(IZooKeeperLayout.PATH_NODES_APPROVED.append(nodeInfo.getNodeId()).toString())) {
@@ -360,27 +353,28 @@ public class CloudState implements ZooKeeperGateListener {
 		final Stat existingStat = new Stat();
 		final IPath nodePath = parentPath.append(info.getNodeId());
 		final String existingSignature = ZooKeeperGate.get().readRecord(nodePath, (String) null, existingStat);
-		if (StringUtils.equalsIgnoreCase(existingSignature, signature)) {
-			// if existing signature maps it was created by us
-			// check if the session is still the same
-			if (existingStat.getEphemeralOwner() == ZooKeeperGate.get().getSessionId()) {
-				// recover previous session
-				if (CloudDebug.cloudState) {
-					LOG.debug("Recovering previous session for node {} (path {}).", info.getNodeId(), parentPath.lastSegment());
-				}
-				return;
-			}
 
-			// created by a different session, so let's recover by removing what is there
-			// and create a new node (see below)
-			if (CloudDebug.cloudState) {
-				LOG.debug("Cleaning up previous session for node {} (path {}).", info.getNodeId(), parentPath.lastSegment());
-			}
-			ZooKeeperGate.get().deletePath(nodePath);
-		} else if (null != existingSignature) {
+		// check that signature matches if one is present
+		if ((null != existingSignature) && !existingSignature.equals(signature))
 			// different non-null signature really means different node
 			throw new IllegalStateException(String.format("Node id %s (path %s) already in use (reference %s)! Please investigate.", info.getNodeId(), parentPath.lastSegment(), existingSignature));
+
+		// if existing signature maps it was created by us
+		// check if the session is still the same
+		if (existingStat.getEphemeralOwner() == ZooKeeperGate.get().getSessionId()) {
+			// recover previous session
+			if (CloudDebug.cloudState) {
+				LOG.debug("Recovering previous session for node {} (path {}).", info.getNodeId(), parentPath.lastSegment());
+			}
+			return;
 		}
+
+		// created by a different session, so let's recover by removing what is there
+		// and create a new node (see below)
+		if (CloudDebug.cloudState) {
+			LOG.debug("Cleaning up previous session for node {} (path {}).", info.getNodeId(), parentPath.lastSegment());
+		}
+		ZooKeeperGate.get().deletePath(nodePath);
 
 		// create new record
 		try {
@@ -497,9 +491,8 @@ public class CloudState implements ZooKeeperGateListener {
 
 		// check if there is a recored in the "approved" list
 		final NodeInfo approvedNodeInfo = readApprovedNodeInfo(info.getNodeId());
-		if (approvedNodeInfo != null) {
+		if (approvedNodeInfo != null)
 			return approvedNodeInfo;
-		}
 
 		// create an ephemeral pending record
 		createOrRestoreEphemeralNodeRecord(IZooKeeperLayout.PATH_NODES_PENDING, info, signature);
@@ -529,15 +522,13 @@ public class CloudState implements ZooKeeperGateListener {
 				final byte[] record = ZooKeeperGate.get().readRecord(approvedNodeIdPath, stat);
 
 				// return node info if available
-				if (record != null) {
+				if (record != null)
 					return new NodeInfo(new ZooKeeperNodeInfo(nodeId, true, record, stat.getVersion()));
-				}
 			} catch (final NoNodeException e) {
 				// someone deleted the path in between
 				attempts++;
-				if (attempts > 5) {
+				if (attempts > 5)
 					throw new IllegalStateException("Failed read approved node info. The exists call succeeds but the read call says it doesn't exist. Please verify the ZooKeeper state.");
-				}
 			}
 		}
 
@@ -558,18 +549,15 @@ public class CloudState implements ZooKeeperGateListener {
 		registrationLock.lock();
 		try {
 			final NodeInfo oldInfo = myInfo.get();
-			if (oldInfo == null) {
+			if (oldInfo == null)
 				throw new IllegalStateException("cloud is inactive");
-			}
 
 			// read info
 			final NodeInfo newInfo = readApprovedNodeInfo(oldInfo.getNodeId());
-			if (newInfo == null) {
+			if (newInfo == null)
 				throw new IllegalStateException("no approved node info found");
-			}
-			if (!StringUtils.equals(oldInfo.getNodeId(), newInfo.getNodeId())) {
+			if (!StringUtils.equals(oldInfo.getNodeId(), newInfo.getNodeId()))
 				throw new IllegalStateException("node id mismatch");
-			}
 
 			// check version
 			if (oldInfo.getVersion() >= newInfo.getVersion()) {
@@ -767,9 +755,8 @@ public class CloudState implements ZooKeeperGateListener {
 	}
 
 	private void setNodeOnline(final NodeInfo node) throws Exception {
-		if (!node.isApproved()) {
+		if (!node.isApproved())
 			throw new IllegalArgumentException(NLS.bind("Node {0} must be approved first before it is allowed to join the cloud.", node.getNodeId()));
-		}
 
 		// create an ephemeral record for this node in the "online" tree
 		createOrRestoreEphemeralNodeRecord(IZooKeeperLayout.PATH_NODES_ONLINE, node, getNodeSignature(node));
@@ -826,10 +813,9 @@ public class CloudState implements ZooKeeperGateListener {
 		try {
 			// get current node info
 			final NodeInfo nodeInfo = myInfo.getAndSet(null);
-			if (nodeInfo == null) {
+			if (nodeInfo == null)
 				// already unregistered
 				return;
-			}
 
 			// set node completely offline
 			try {
