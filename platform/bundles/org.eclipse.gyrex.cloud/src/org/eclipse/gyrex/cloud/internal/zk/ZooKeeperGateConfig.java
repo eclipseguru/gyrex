@@ -15,7 +15,6 @@ import static org.eclipse.gyrex.server.settings.SystemSetting.newIntegerSetting;
 import static org.eclipse.gyrex.server.settings.SystemSetting.newStringSetting;
 
 import org.eclipse.gyrex.cloud.internal.CloudActivator;
-import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.server.Platform;
 import org.eclipse.gyrex.server.settings.SystemSetting;
 
@@ -43,8 +42,8 @@ public class ZooKeeperGateConfig {
 	private String connectString;
 	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
 
-	public ZooKeeperGateConfig(final NodeInfo info) {
-		nodeId = info.getNodeId();
+	public ZooKeeperGateConfig(final String nodeId) {
+		this.nodeId = nodeId;
 	}
 
 	/**

@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.internal.locking;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -23,7 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.gyrex.cloud.internal.CloudActivator;
 import org.eclipse.gyrex.cloud.internal.CloudDebug;
-import org.eclipse.gyrex.cloud.internal.CloudState;
 import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateCallable;
@@ -586,6 +587,9 @@ public abstract class ZooKeeperLock<T extends IDistributedLock> extends ZooKeepe
 	/**
 	 * Creates a new lock instance.
 	 * 
+	 * @param nodeInfo
+	 *            the node information of the lock owning node (typically this
+	 *            node)
 	 * @param lockId
 	 *            the lock id
 	 * @param lockMonitor
@@ -599,10 +603,11 @@ public abstract class ZooKeeperLock<T extends IDistributedLock> extends ZooKeepe
 	 *            <code>true</code> if the lock is recoverable,
 	 *            <code>false</code> otherwise
 	 */
-	public ZooKeeperLock(final String lockId, final ILockMonitor<T> lockMonitor, final IPath lockNodeParentPath, final boolean ephemeral, final boolean recovarable) {
+	public ZooKeeperLock(final NodeInfo nodeInfo, final String lockId, final ILockMonitor<T> lockMonitor, final IPath lockNodeParentPath, final boolean ephemeral, final boolean recovarable) {
 		super(200l, 5);
 		if (!IdHelper.isValidId(lockId))
 			throw new IllegalArgumentException("invalid lock id; please see IdHelper#isValidId");
+		checkArgument(nodeInfo != null, "node info must be provided");
 		this.lockId = lockId;
 		lockNodePath = lockNodeParentPath.append(lockId);
 		this.lockMonitor = lockMonitor;
@@ -610,10 +615,6 @@ public abstract class ZooKeeperLock<T extends IDistributedLock> extends ZooKeepe
 		this.recoverable = recovarable;
 
 		// pre-generate lock node content info
-		NodeInfo nodeInfo = CloudState.getNodeInfo();
-		if (null == nodeInfo) {
-			nodeInfo = new NodeInfo();
-		}
 		try {
 			lockNodeContent = nodeInfo.getNodeId() + SEPARATOR + nodeInfo.getLocation() + SEPARATOR + DigestUtils.shaHex(UUID.randomUUID().toString().getBytes(CharEncoding.US_ASCII));
 		} catch (final UnsupportedEncodingException e1) {

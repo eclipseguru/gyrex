@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.admin;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,6 +21,13 @@ import java.util.Set;
  * @noimplement This interface is not intended to be implemented by clients.o
  */
 public interface INodeDescriptor {
+
+	/**
+	 * Returns the public node addresses.
+	 * 
+	 * @return the unmodifiable collection of node addresses
+	 */
+	List<String> getAddresses();
 
 	/**
 	 * Returns the node identifier.

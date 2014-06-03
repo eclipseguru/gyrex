@@ -18,9 +18,6 @@ import org.eclipse.gyrex.cloud.internal.locking.ZooKeeperLock;
 
 import org.junit.Test;
 
-/**
- *
- */
 public class ZooKeeperLockTests {
 
 	private void testRecoverKey(final String lockName, final String nodeContent) {

@@ -11,11 +11,18 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.internal;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,6 +37,8 @@ import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.CharSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
+
+import com.google.common.net.InetAddresses;
 
 /**
  * Information about this node.
@@ -65,6 +74,26 @@ public class NodeInfo {
 		}
 	}
 
+	private static List<String> getAllPublicInetAddresses() {
+		try {
+			final List<String> addresses = new ArrayList<String>();
+			final Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+				final NetworkInterface networkInterface = interfaces.nextElement();
+				if (!networkInterface.isLoopback() && networkInterface.isUp()) {
+					final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+					while (inetAddresses.hasMoreElements()) {
+						final InetAddress inetAddress = inetAddresses.nextElement();
+						addresses.add(InetAddresses.toUriString(inetAddress));
+					}
+				}
+			}
+			return addresses;
+		} catch (final SocketException e) {
+			throw new IllegalStateException(format("Unable to detect all public internet addresses of this node. %s", e.getMessage()), e);
+		}
+	}
+
 	private static String getDefaultLocationInfo(final String nodeId) {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
@@ -90,9 +119,8 @@ public class NodeInfo {
 		try {
 			// re-use verified id
 			final String nodeId = verifiedNodeId.get();
-			if (nodeId != null) {
+			if (nodeId != null)
 				return nodeId;
-			}
 
 			// get file
 			final File nodeIdFile = getNodeIdFile();
@@ -129,15 +157,13 @@ public class NodeInfo {
 	 */
 	private static boolean isValidNodeId(final String rawNodeId) {
 		// not null or blank
-		if (StringUtils.isBlank(rawNodeId)) {
+		if (StringUtils.isBlank(rawNodeId))
 			return false;
-		}
 
 		// scan for invalid chars
 		for (final char c : rawNodeId.toCharArray()) {
-			if (!ALLOWED_NODE_ID_CHARS.contains(c)) {
+			if (!ALLOWED_NODE_ID_CHARS.contains(c))
 				return false;
-			}
 		}
 
 		// ok
@@ -149,15 +175,16 @@ public class NodeInfo {
 	private final String location;
 	private final String name;
 	private final Set<String> tags;
-
+	private final List<String> addresses;
 	private final int version;
 
 	/**
 	 * Creates a new instance.
 	 */
-	public NodeInfo() {
+	NodeInfo() {
 		nodeId = initializeNodeId();
 		location = getDefaultLocationInfo(nodeId);
+		addresses = getAllPublicInetAddresses();
 		name = null;
 		tags = Collections.emptySet();
 		approved = false;
@@ -176,12 +203,10 @@ public class NodeInfo {
 	 */
 	NodeInfo(final ZooKeeperNodeInfo info) throws Exception {
 		nodeId = initializeNodeId();
-		if (!nodeId.equals(info.getId())) {
+		if (!nodeId.equals(info.getId()))
 			throw new IllegalArgumentException("node id mismatch");
-		}
-		if (!info.isApproved()) {
+		if (!info.isApproved())
 			throw new IllegalArgumentException("node must be approved first");
-		}
 		approved = info.isApproved();
 		version = info.getVersion();
 
@@ -198,55 +223,64 @@ public class NodeInfo {
 		} else {
 			this.tags = Collections.emptySet();
 		}
+
+		// addresses
+		final List<String> addresses = info.getAddresses();
+		if (addresses != null) {
+			this.addresses = Collections.unmodifiableList(addresses);
+		} else {
+			this.addresses = Collections.emptyList();
+		}
 	};
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		final NodeInfo other = (NodeInfo) obj;
-		if (approved != other.approved) {
+		if (approved != other.approved)
 			return false;
-		}
 		if (location == null) {
-			if (other.location != null) {
+			if (other.location != null)
 				return false;
-			}
-		} else if (!location.equals(other.location)) {
+		} else if (!location.equals(other.location))
 			return false;
-		}
 		if (name == null) {
-			if (other.name != null) {
+			if (other.name != null)
 				return false;
-			}
-		} else if (!name.equals(other.name)) {
+		} else if (!name.equals(other.name))
 			return false;
-		}
 		if (nodeId == null) {
-			if (other.nodeId != null) {
+			if (other.nodeId != null)
 				return false;
-			}
-		} else if (!nodeId.equals(other.nodeId)) {
+		} else if (!nodeId.equals(other.nodeId))
 			return false;
-		}
 		if (tags == null) {
-			if (other.tags != null) {
+			if (other.tags != null)
 				return false;
-			}
-		} else if (!tags.equals(other.tags)) {
+		} else if (!tags.equals(other.tags))
 			return false;
-		}
-		if (version != other.version) {
+		if (addresses == null) {
+			if (other.addresses != null)
+				return false;
+		} else if (!addresses.equals(other.addresses))
 			return false;
-		}
+		if (version != other.version)
+			return false;
 		return true;
+	}
+
+	/**
+	 * Returns the node addresses.
+	 * 
+	 * @return the unmodifiable collection of node addresses
+	 */
+	public List<String> getAddresses() {
+		return addresses;
 	}
 
 	/**
@@ -304,6 +338,7 @@ public class NodeInfo {
 		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
 		result = (prime * result) + ((nodeId == null) ? 0 : nodeId.hashCode());
 		result = (prime * result) + ((tags == null) ? 0 : tags.hashCode());
+		result = (prime * result) + ((addresses == null) ? 0 : addresses.hashCode());
 		result = (prime * result) + version;
 		return result;
 	}

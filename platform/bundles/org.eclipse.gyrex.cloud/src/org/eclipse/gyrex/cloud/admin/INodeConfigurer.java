@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.admin;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
@@ -36,6 +37,15 @@ public interface INodeConfigurer {
 	IStatus configureConnection(String connectString);
 
 	String getConnectionString();
+
+	/**
+	 * Assigns the specified addresses to the node.
+	 * 
+	 * @param addresses
+	 *            the addresses to assign (maybe <code>null</code> to reset)
+	 * @return a status indicating the result
+	 */
+	IStatus setAddesses(List<String> addresses);
 
 	/**
 	 * @param text

@@ -65,12 +65,13 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 	public static final int LOCATION = 1;
 	public static final int TAGS = 2;
 	public static final int STATUS = 3;
+	public static final int ADDRESSES = 4;
 
 	/**
 	 * Creates a new instance.
 	 */
 	public ClusterAdminPage() {
-		super(4);
+		super(5);
 		setTitle("Cluster Configuration");
 		setTitleToolTip("Configure the cluster of nodes in the system.");
 	}
@@ -262,6 +263,8 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 				return "Tags";
 			case STATUS:
 				return "Status";
+			case ADDRESSES:
+				return "Addresses";
 			default:
 				return String.valueOf(column);
 		}
@@ -289,6 +292,8 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 					return status.toString();
 				case TAGS:
 					return StringUtils.join(((NodeItem) element).getDescriptor().getTags(), ", ");
+				case ADDRESSES:
+					return StringUtils.join(((NodeItem) element).getDescriptor().getAddresses(), ", ");
 				default:
 					break;
 			}
@@ -324,6 +329,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 			case STATUS:
 				return true;
 			case TAGS:
+			case ADDRESSES:
 			default:
 				return false;
 		}

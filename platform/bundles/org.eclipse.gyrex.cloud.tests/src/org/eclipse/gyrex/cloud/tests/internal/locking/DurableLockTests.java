@@ -29,12 +29,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.gyrex.cloud.internal.CloudDebug;
+import org.eclipse.gyrex.cloud.internal.CloudState;
+import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.cloud.internal.locking.DurableLockImpl;
 import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 import org.eclipse.gyrex.cloud.services.locking.IDurableLock;
 import org.eclipse.gyrex.cloud.services.locking.ILockMonitor;
+import org.eclipse.gyrex.junit.GyrexServerResource;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -42,13 +45,11 @@ import org.apache.commons.lang.StringUtils;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class DurableLockTests {
 
 	final class LockMonitorTestHelper implements ILockMonitor<IDurableLock> {
@@ -79,12 +80,17 @@ public class DurableLockTests {
 		}
 	}
 
+	@ClassRule
+	public static final GyrexServerResource server = new GyrexServerResource();
+
 	private static final Logger LOG = LoggerFactory.getLogger(DurableLockTests.class);
 
 	private ScheduledExecutorService executorService;
 
+	private NodeInfo nodeInfo;
+
 	private void debugLockStatus(final String lockId) {
-		final DurableLockImpl lock = new DurableLockImpl(lockId, null);
+		final DurableLockImpl lock = new DurableLockImpl(nodeInfo, lockId, null);
 		assertFalse(lock.isValid());
 		final IStatus status = lock.getStatus();
 		assertNotNull(status);
@@ -108,6 +114,7 @@ public class DurableLockTests {
 	@Before
 	public void setUp() throws Exception {
 		executorService = Executors.newScheduledThreadPool(4);
+		nodeInfo = CloudState.getNodeInfo();
 
 		// configure debug output
 		CloudDebug.debug = true;
@@ -129,7 +136,7 @@ public class DurableLockTests {
 	@Test
 	public void testAcquire001() throws Exception {
 		final String lockId = "test." + ZooKeeperGate.get().getSessionId() + "." + System.currentTimeMillis();
-		final Future<DurableLockImpl> lock1 = executorService.submit(newAcquireLockCall(new DurableLockImpl(lockId, null), 0));
+		final Future<DurableLockImpl> lock1 = executorService.submit(newAcquireLockCall(new DurableLockImpl(nodeInfo, lockId, null), 0));
 
 		final DurableLockImpl lock = lock1.get(15, TimeUnit.SECONDS);
 		assertNotNull(lock);
@@ -149,7 +156,7 @@ public class DurableLockTests {
 	public void testAcquire002() throws Exception {
 		final String lockId = "test." + ZooKeeperGate.get().getSessionId() + "." + System.currentTimeMillis();
 
-		final DurableLockImpl lock1 = new DurableLockImpl(lockId, null);
+		final DurableLockImpl lock1 = new DurableLockImpl(nodeInfo, lockId, null);
 		final Future<DurableLockImpl> lock1f = executorService.submit(newAcquireLockCall(lock1, 1000));
 
 		final DurableLockImpl lock1lock = lock1f.get(15, TimeUnit.SECONDS);
@@ -158,7 +165,7 @@ public class DurableLockTests {
 		assertTrue(lock1lock.isValid());
 
 		// check that's impossible to acquire a second log
-		final DurableLockImpl lock2 = new DurableLockImpl(lockId, null);
+		final DurableLockImpl lock2 = new DurableLockImpl(nodeInfo, lockId, null);
 		final Future<DurableLockImpl> lock2f = executorService.submit(newAcquireLockCall(lock2, 0));
 		try {
 			lock2f.get(10, TimeUnit.SECONDS);
@@ -169,7 +176,7 @@ public class DurableLockTests {
 		assertNotNull("lock2 is still waiting so it must have a name", lock2.getMyLockName());
 
 		// check that acquire timeouts work
-		final DurableLockImpl lock3 = new DurableLockImpl(lockId, null);
+		final DurableLockImpl lock3 = new DurableLockImpl(nodeInfo, lockId, null);
 		final Future<DurableLockImpl> lock3f = executorService.submit(newAcquireLockCall(lock3, 2000));
 		try {
 			lock3f.get(10, TimeUnit.SECONDS);
@@ -204,7 +211,7 @@ public class DurableLockTests {
 		final String lockId = "test." + ZooKeeperGate.get().getSessionId() + "." + System.currentTimeMillis();
 		LOG.info("Durable lock recovery test. Lock: {}", lockId);
 
-		final Future<DurableLockImpl> lock1 = executorService.submit(newAcquireLockCall(new DurableLockImpl(lockId, null), 0));
+		final Future<DurableLockImpl> lock1 = executorService.submit(newAcquireLockCall(new DurableLockImpl(nodeInfo, lockId, null), 0));
 		final DurableLockImpl lock = lock1.get(15, TimeUnit.SECONDS);
 		assertNotNull(lock);
 		assertTrue(lock.isValid());
@@ -261,7 +268,7 @@ public class DurableLockTests {
 
 		// attempt recovery
 		LOG.info("Recovering lock: {}", lockId);
-		final DurableLockImpl recoveredLock = new DurableLockImpl(lockId, null);
+		final DurableLockImpl recoveredLock = new DurableLockImpl(nodeInfo, lockId, null);
 		recoveredLock.recover(recoveryKey);
 		LOG.info("Durable lock recoverd: {}", recoveredLock);
 
@@ -280,7 +287,7 @@ public class DurableLockTests {
 		LOG.info("Durable lock recovery test. Lock: {}", lockId);
 
 		final LockMonitorTestHelper lockMonitor = new LockMonitorTestHelper();
-		final Future<DurableLockImpl> lock1 = executorService.submit(newAcquireLockCall(new DurableLockImpl(lockId, lockMonitor), 0));
+		final Future<DurableLockImpl> lock1 = executorService.submit(newAcquireLockCall(new DurableLockImpl(nodeInfo, lockId, lockMonitor), 0));
 		final DurableLockImpl lock = lock1.get(15, TimeUnit.SECONDS);
 		assertNotNull(lock);
 		assertTrue(lock.isValid());
@@ -311,7 +318,7 @@ public class DurableLockTests {
 
 		// attempt recovery
 		LOG.info("Testing tecovering lock: {}", lockId);
-		final IDurableLock recoveredLock = new DurableLockImpl(lockId, null).recover(recoveryKey);
+		final IDurableLock recoveredLock = new DurableLockImpl(nodeInfo, lockId, null).recover(recoveryKey);
 		assertNull("Should not be possible to recover a killed lock", recoveredLock);
 	}
 

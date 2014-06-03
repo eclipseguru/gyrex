@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.gyrex.cloud.admin.ICloudManager;
@@ -88,7 +89,7 @@ public class ZooKeeperEnsambleTestSuite {
 
 		// now approve node
 		cloudState.reset();
-		ZooKeeperNodeInfo.approve(myNodeId, "test-client", "localhost");
+		ZooKeeperNodeInfo.approve(myNodeId, "test-client", "localhost", Arrays.asList("localhost"));
 
 		// wait for cloud to become online
 		cloudState.waitForOnline(CONNECT_TIMEOUT);

@@ -12,6 +12,7 @@
 package org.eclipse.gyrex.cloud.internal.admin;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.gyrex.cloud.admin.INodeDescriptor;
@@ -40,16 +41,22 @@ public class NodeDescriptor implements INodeDescriptor {
 	}
 
 	private ZooKeeperNodeInfo ensureInfo() {
-		if (info != null) {
+		if (info != null)
 			return info;
-		}
 
 		info = ZooKeeperNodeInfo.load(nodeId, approved);
-		if (info == null) {
+		if (info == null)
 			throw new IllegalStateException("node info not available!");
-		}
 
 		return info;
+	}
+
+	@Override
+	public List<String> getAddresses() {
+		final List<String> addresses = ensureInfo().getAddresses();
+		if (addresses == null)
+			return Collections.emptyList();
+		return Collections.unmodifiableList(addresses);
 	}
 
 	@Override
@@ -60,27 +67,24 @@ public class NodeDescriptor implements INodeDescriptor {
 	@Override
 	public String getLocation() {
 		final String location = ensureInfo().getLocation();
-		if (location == null) {
+		if (location == null)
 			return "unknown";
-		}
 		return location;
 	}
 
 	@Override
 	public String getName() {
 		final String name = ensureInfo().getName();
-		if (name == null) {
+		if (name == null)
 			return "";
-		}
 		return name;
 	}
 
 	@Override
 	public Set<String> getTags() {
 		final Set<String> roles = ensureInfo().getTags();
-		if (roles == null) {
+		if (roles == null)
 			return Collections.emptySet();
-		}
 		return Collections.unmodifiableSet(roles);
 	}
 

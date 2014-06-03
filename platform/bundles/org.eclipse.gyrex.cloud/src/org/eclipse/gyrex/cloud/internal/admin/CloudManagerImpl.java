@@ -87,7 +87,7 @@ public class CloudManagerImpl implements ICloudManager {
 	@Override
 	public IStatus approveNode(final String nodeId) {
 		try {
-			ZooKeeperNodeInfo.approve(nodeId, null, null);
+			ZooKeeperNodeInfo.approve(nodeId, null, null, null);
 			return Status.OK_STATUS;
 		} catch (final Exception e) {
 			return new Status(IStatus.ERROR, CloudActivator.SYMBOLIC_NAME, String.format("Error approving node %s. %s", nodeId, ExceptionUtils.getRootCauseMessage(e)), e);
@@ -116,7 +116,7 @@ public class CloudManagerImpl implements ICloudManager {
 
 	@Override
 	public INodeConfigurer getNodeConfigurer(final String nodeId) {
-		return new NodeConfigurer(nodeId);
+		return new NodeConfigurer(nodeId, getLocalInfo().getNodeId());
 	}
 
 	@Override
@@ -130,9 +130,8 @@ public class CloudManagerImpl implements ICloudManager {
 		try {
 			final ZooKeeperGate zk = ZooKeeperGate.get();
 			final List<String> names = zk.readChildrenNames(IZooKeeperLayout.PATH_NODES_ONLINE, null);
-			if (names == null) {
+			if (names == null)
 				return Collections.emptySet();
-			}
 			return new HashSet<String>(names);
 		} catch (final NoNodeException e) {
 			return Collections.emptySet();
@@ -162,9 +161,8 @@ public class CloudManagerImpl implements ICloudManager {
 			final IPath path = approved ? IZooKeeperLayout.PATH_NODES_APPROVED : IZooKeeperLayout.PATH_NODES_PENDING;
 			final ZooKeeperGate zk = ZooKeeperGate.get();
 			final Collection<String> names = zk.readChildrenNames(path, null);
-			if (names == null) {
+			if (names == null)
 				return Collections.emptyList();
-			}
 			final List<INodeDescriptor> nodes = new ArrayList<INodeDescriptor>(names.size());
 			for (final String nodeId : names) {
 				nodes.add(new NodeDescriptor(nodeId, approved));

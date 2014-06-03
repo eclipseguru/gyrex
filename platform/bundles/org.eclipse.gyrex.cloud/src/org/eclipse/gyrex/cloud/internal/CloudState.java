@@ -12,6 +12,7 @@
 package org.eclipse.gyrex.cloud.internal;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,7 +94,7 @@ public class CloudState implements ZooKeeperGateListener {
 		protected IStatus run(final IProgressMonitor monitor) {
 			try {
 				if (getNodeEnvironment().inStandaloneMode()) {
-					ZooKeeperNodeInfo.approve(nodeInfo.getNodeId(), null, nodeInfo.getLocation());
+					ZooKeeperNodeInfo.approve(nodeInfo.getNodeId(), null, nodeInfo.getLocation(), nodeInfo.getAddresses());
 					LOG.info("Node {} approved automatically. Welcome to your local cloud!", nodeInfo.getNodeId());
 				}
 				return Status.OK_STATUS;
@@ -161,6 +162,8 @@ public class CloudState implements ZooKeeperGateListener {
 	public static enum State {
 		DISCONNECTED, CONNECTING, CONNECTED, CLOSED
 	}
+
+	private static final String SIGNATURE_SEPARATOR = "::";
 
 	private static final Logger LOG = LoggerFactory.getLogger(CloudState.class);
 	private static final AtomicReference<CloudState> instanceRef = new AtomicReference<CloudState>();
@@ -465,12 +468,12 @@ public class CloudState implements ZooKeeperGateListener {
 	 * Reads (or generates) a persistent node signature which does not change
 	 * between sessions.
 	 */
-	private String getNodeSignature(final NodeInfo info) throws Exception {
+	private String getNodeSignature(final NodeInfo info) throws IOException {
 		final File signatureFile = Platform.getStateLocation(CloudActivator.getInstance().getBundle()).append(".nodeCloudSignature").toFile();
 		if (!signatureFile.exists()) {
 			synchronized (CloudState.class) {
 				if (!signatureFile.exists()) {
-					FileUtils.write(signatureFile, info.getNodeId() + "::" + info.getLocation() + "::" + DigestUtils.shaHex(UUID.randomUUID().toString().getBytes(CharEncoding.US_ASCII)), CharEncoding.US_ASCII);
+					FileUtils.write(signatureFile, info.getNodeId() + SIGNATURE_SEPARATOR + info.getLocation() + SIGNATURE_SEPARATOR + DigestUtils.shaHex(UUID.randomUUID().toString().getBytes(CharEncoding.US_ASCII)), CharEncoding.US_ASCII);
 				}
 			}
 		}
@@ -495,7 +498,8 @@ public class CloudState implements ZooKeeperGateListener {
 			return approvedNodeInfo;
 
 		// create an ephemeral pending record
-		createOrRestoreEphemeralNodeRecord(IZooKeeperLayout.PATH_NODES_PENDING, info, signature);
+		// (and store the full node info in it)
+		writePendingNodeRecord(info);
 
 		return info;
 	}
@@ -766,7 +770,7 @@ public class CloudState implements ZooKeeperGateListener {
 		//NodeMetricsReporter.start();
 
 		// start cloud services
-		CloudActivator.getInstance().startCloudServices();
+		CloudActivator.getInstance().startCloudServices(node);
 
 		// refresh cloud roles
 		refreshServerRoles();
@@ -832,5 +836,40 @@ public class CloudState implements ZooKeeperGateListener {
 		} finally {
 			registrationLock.unlock();
 		}
+	}
+
+	/**
+	 * Writes the node info to the pending node record as ephemeral node.
+	 */
+	private void writePendingNodeRecord(final NodeInfo info) throws Exception {
+		final IPath pendingNodeIdPath = IZooKeeperLayout.PATH_NODES_PENDING.append(info.getNodeId());
+
+		// check existence in a loop which ensures that we catch deletions in progress
+		int attempts = 0;
+		while (ZooKeeperGate.get().exists(pendingNodeIdPath)) {
+			try {
+				// delete record
+				ZooKeeperGate.get().deletePath(pendingNodeIdPath);
+			} catch (final NoNodeException e) {
+				// someone deleted the path in between
+				attempts++;
+				if (attempts > 5)
+					throw new IllegalStateException("Failed read approved node info. The exists call succeeds but the read call says it doesn't exist. Please verify the ZooKeeper state.");
+			}
+		}
+
+		// create new info
+		final ZooKeeperNodeInfo nodeInfo = new ZooKeeperNodeInfo(info.getNodeId(), true, null, 0);
+		nodeInfo.setName(info.getName());
+		nodeInfo.setLocation(info.getLocation());
+		if (!info.getAddresses().isEmpty()) {
+			nodeInfo.setAddresses(info.getAddresses());
+		}
+		if (!info.getTags().isEmpty()) {
+			nodeInfo.setTags(info.getTags());
+		}
+
+		// create new record
+		ZooKeeperNodeInfo.save(nodeInfo, false);
 	}
 }

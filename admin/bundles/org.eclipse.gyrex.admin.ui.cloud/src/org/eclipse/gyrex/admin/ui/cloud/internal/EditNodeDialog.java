@@ -11,7 +11,9 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
@@ -43,6 +45,7 @@ public class EditNodeDialog extends NonBlockingStatusDialog {
 	private final StringDialogField nameField = new StringDialogField();
 	private final StringDialogField locationField = new StringDialogField();
 	private final StringDialogField tagsField = new StringDialogField();
+	private final StringDialogField addressesField = new StringDialogField();
 
 	private final ICloudManager cloudManager;
 	private final INodeDescriptor nodeDescriptor;
@@ -63,6 +66,7 @@ public class EditNodeDialog extends NonBlockingStatusDialog {
 		nameField.setText(nodeDescriptor.getName());
 		locationField.setText(nodeDescriptor.getLocation());
 		tagsField.setText(StringUtils.join(nodeDescriptor.getTags(), ", "));
+		addressesField.setText(StringUtils.join(nodeDescriptor.getAddresses(), ", "));
 	}
 
 	@Override
@@ -76,6 +80,7 @@ public class EditNodeDialog extends NonBlockingStatusDialog {
 		nameField.setLabelText("Name");
 		locationField.setLabelText("Location");
 		tagsField.setLabelText("Tags");
+		addressesField.setLabelText("Addresses");
 
 		idField.setEnabled(false);
 
@@ -90,12 +95,13 @@ public class EditNodeDialog extends NonBlockingStatusDialog {
 		nameField.setDialogFieldListener(validateListener);
 		locationField.setDialogFieldListener(validateListener);
 		tagsField.setDialogFieldListener(validateListener);
+		addressesField.setDialogFieldListener(validateListener);
 
 		final Text warning = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
 		warning.setText("Warning: this dialog is ugly. Please help us improve the UI. Any mockups and/or patches are very much appreciated!");
 		warning.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, nameField, locationField, tagsField }, false);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { new Separator(), idField, nameField, locationField, addressesField, tagsField }, false);
 		LayoutUtil.setHorizontalGrabbing(idField.getTextControl(null));
 
 		final GridLayout masterLayout = (GridLayout) composite.getLayout();
@@ -110,9 +116,8 @@ public class EditNodeDialog extends NonBlockingStatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 			final INodeConfigurer nodeConfigurer = cloudManager.getNodeConfigurer(nodeDescriptor.getId());
@@ -127,6 +132,15 @@ public class EditNodeDialog extends NonBlockingStatusDialog {
 				}
 			}
 			nodeConfigurer.setTags(cleanedTags);
+			final String[] addresses = StringUtils.split(addressesField.getText(), ',');
+			final List<String> cleanedAddresses = new ArrayList<String>();
+			for (String address : addresses) {
+				address = StringUtils.trimToNull(address);
+				if ((address != null) && !cleanedAddresses.contains(address)) {
+					cleanedAddresses.add(address);
+				}
+			}
+			nodeConfigurer.setAddesses(cleanedAddresses);
 		} catch (final Exception e) {
 			setError(e.getMessage());
 			return;

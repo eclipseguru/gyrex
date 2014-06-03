@@ -28,21 +28,27 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.gyrex.cloud.internal.CloudState;
+import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.cloud.internal.locking.ExclusiveLockImpl;
 import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
+import org.eclipse.gyrex.junit.GyrexServerResource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
-/**
- *
- */
 public class ExclusiveLockTests {
 
+	@ClassRule
+	public static final GyrexServerResource server = new GyrexServerResource();
+
 	private ScheduledExecutorService executorService;
+
+	private NodeInfo nodeInfo;
 
 	private Callable<ExclusiveLockImpl> newAcquireLockCall(final ExclusiveLockImpl lock, final long timeout) {
 		return new Callable<ExclusiveLockImpl>() {
@@ -60,6 +66,7 @@ public class ExclusiveLockTests {
 	@Before
 	public void setUp() throws Exception {
 		executorService = Executors.newScheduledThreadPool(4);
+		nodeInfo = CloudState.getNodeInfo();
 	}
 
 	/**
@@ -73,7 +80,7 @@ public class ExclusiveLockTests {
 	@Test
 	public void testAcquire001() throws Exception {
 		final String lockId = "test." + ZooKeeperGate.get().getSessionId() + "." + System.currentTimeMillis();
-		final Future<ExclusiveLockImpl> lock1 = executorService.submit(newAcquireLockCall(new ExclusiveLockImpl(lockId, null), 0));
+		final Future<ExclusiveLockImpl> lock1 = executorService.submit(newAcquireLockCall(new ExclusiveLockImpl(nodeInfo, lockId, null), 0));
 
 		final ExclusiveLockImpl lock = lock1.get(15, TimeUnit.SECONDS);
 		assertNotNull(lock);
@@ -87,7 +94,7 @@ public class ExclusiveLockTests {
 	public void testAcquire002() throws Exception {
 		final String lockId = "test." + ZooKeeperGate.get().getSessionId() + "." + System.currentTimeMillis();
 
-		final ExclusiveLockImpl lock1 = new ExclusiveLockImpl(lockId, null);
+		final ExclusiveLockImpl lock1 = new ExclusiveLockImpl(nodeInfo, lockId, null);
 		final Future<ExclusiveLockImpl> lock1f = executorService.submit(newAcquireLockCall(lock1, 1000));
 
 		final ExclusiveLockImpl lock1lock = lock1f.get(15, TimeUnit.SECONDS);
@@ -96,7 +103,7 @@ public class ExclusiveLockTests {
 		assertTrue(lock1lock.isValid());
 
 		// check that's impossible to acquire a second log
-		final ExclusiveLockImpl lock2 = new ExclusiveLockImpl(lockId, null);
+		final ExclusiveLockImpl lock2 = new ExclusiveLockImpl(nodeInfo, lockId, null);
 		final Future<ExclusiveLockImpl> lock2f = executorService.submit(newAcquireLockCall(lock2, 0));
 		try {
 			lock2f.get(10, TimeUnit.SECONDS);
@@ -107,7 +114,7 @@ public class ExclusiveLockTests {
 		assertNotNull("lock2 is still waiting so it must have a name", lock2.getMyLockName());
 
 		// check that acquire timeouts work
-		final ExclusiveLockImpl lock3 = new ExclusiveLockImpl(lockId, null);
+		final ExclusiveLockImpl lock3 = new ExclusiveLockImpl(nodeInfo, lockId, null);
 		final Future<ExclusiveLockImpl> lock3f = executorService.submit(newAcquireLockCall(lock3, 2000));
 		try {
 			lock3f.get(10, TimeUnit.SECONDS);
@@ -143,7 +150,7 @@ public class ExclusiveLockTests {
 
 		// test acquiring the same lock multiple times in a row
 		for (int i = 0; i < 5; i++) {
-			final Future<ExclusiveLockImpl> lock1 = executorService.submit(newAcquireLockCall(new ExclusiveLockImpl(lockId, null), 0));
+			final Future<ExclusiveLockImpl> lock1 = executorService.submit(newAcquireLockCall(new ExclusiveLockImpl(nodeInfo, lockId, null), 0));
 
 			final ExclusiveLockImpl lock = lock1.get(15, TimeUnit.SECONDS);
 			assertNotNull(lock);
@@ -157,7 +164,7 @@ public class ExclusiveLockTests {
 	@Test
 	public void testDisconnect001() throws Exception {
 		final String lockId = "test." + ZooKeeperGate.get().getSessionId() + "." + System.currentTimeMillis();
-		final Future<ExclusiveLockImpl> lock1 = executorService.submit(newAcquireLockCall(new ExclusiveLockImpl(lockId, null), 0));
+		final Future<ExclusiveLockImpl> lock1 = executorService.submit(newAcquireLockCall(new ExclusiveLockImpl(nodeInfo, lockId, null), 0));
 
 		final ExclusiveLockImpl lock = lock1.get(15, TimeUnit.SECONDS);
 		assertNotNull(lock);

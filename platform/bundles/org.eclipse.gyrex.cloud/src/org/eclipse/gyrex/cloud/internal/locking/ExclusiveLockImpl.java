@@ -13,6 +13,7 @@ package org.eclipse.gyrex.cloud.internal.locking;
 
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.services.locking.IExclusiveLock;
 import org.eclipse.gyrex.cloud.services.locking.ILockMonitor;
@@ -23,15 +24,11 @@ import org.eclipse.gyrex.cloud.services.locking.ILockMonitor;
 public class ExclusiveLockImpl extends ZooKeeperLock<IExclusiveLock> implements IExclusiveLock {
 
 	/**
-	 * Creates a new instance.
-	 * 
-	 * @param lockId
-	 * @param lockMonitor
 	 * @noreference This constructor is not intended to be referenced by
 	 *              clients.
 	 */
-	public ExclusiveLockImpl(final String lockId, final ILockMonitor<IExclusiveLock> lockMonitor) {
-		super(lockId, lockMonitor, IZooKeeperLayout.PATH_LOCKS_EXCLUSIVE, true, false);
+	public ExclusiveLockImpl(final NodeInfo nodeInfo, final String lockId, final ILockMonitor<IExclusiveLock> lockMonitor) {
+		super(nodeInfo, lockId, lockMonitor, IZooKeeperLayout.PATH_LOCKS_EXCLUSIVE, true, false);
 	}
 
 	/**

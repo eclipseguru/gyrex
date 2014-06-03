@@ -18,9 +18,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.gyrex.cloud.environment.INodeEnvironment;
 import org.eclipse.gyrex.cloud.internal.CloudActivator;
 import org.eclipse.gyrex.cloud.internal.CloudDebug;
-import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.common.internal.applications.BaseApplication;
 
 import org.slf4j.Logger;
@@ -196,7 +196,7 @@ public class ZooKeeperGateApplication extends BaseApplication {
 		scheduleConnect(executor, ConnectRunnable.INITIAL_CONNECT_DELAY);
 
 		// register with embedded server if running
-		if (CloudActivator.getInstance().getNodeEnvironment().inStandaloneMode()) {
+		if (getNodeEnvironment().inStandaloneMode()) {
 			ZooKeeperServerApplication.connectedGateApplication = this;
 		}
 
@@ -235,8 +235,12 @@ public class ZooKeeperGateApplication extends BaseApplication {
 		return LOG;
 	}
 
+	private INodeEnvironment getNodeEnvironment() {
+		return CloudActivator.getInstance().getNodeEnvironment();
+	}
+
 	private void refreshConfig() {
-		final ZooKeeperGateConfig config = new ZooKeeperGateConfig(new NodeInfo());
+		final ZooKeeperGateConfig config = new ZooKeeperGateConfig(getNodeEnvironment().getNodeId());
 		config.readFromPreferences();
 		this.config = config;
 	}

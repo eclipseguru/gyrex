@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.cloud.internal.admin;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.gyrex.cloud.admin.INodeConfigurer;
 import org.eclipse.gyrex.cloud.internal.CloudActivator;
 import org.eclipse.gyrex.cloud.internal.CloudState;
-import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateApplication;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateConfig;
@@ -52,22 +52,28 @@ public class NodeConfigurer implements INodeConfigurer {
 
 	private final String nodeId;
 
+	private final String localNodeId;
+
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param nodeId
+	 * @param localNodeId
 	 */
-	public NodeConfigurer(final String nodeId) {
+	public NodeConfigurer(final String nodeId, final String localNodeId) {
 		this.nodeId = nodeId;
+		this.localNodeId = localNodeId;
 	}
 
 	@Override
 	public IStatus configureConnection(final String connectString) {
+		if (!localNodeId.equals(nodeId))
+			return new Status(IStatus.ERROR, CloudActivator.SYMBOLIC_NAME, "Cannot change ZooKeeper connection on remote machine! Please log into remote machine and change from there.");
+
 		ZooKeeper zk = null;
 		try {
 			if (connectString != null) {
 				// try connect
-				// TODO: not sure if this makes sense when configuring a remote system
 				final CountDownLatch connected = new CountDownLatch(1);
 				zk = new ZooKeeper(connectString, 5000, new Watcher() {
 
@@ -82,43 +88,38 @@ public class NodeConfigurer implements INodeConfigurer {
 				// wait at most 5 seconds for a connection
 				connected.await(5000, TimeUnit.MILLISECONDS);
 
-				if (zk.getState() != States.CONNECTED) {
+				if (zk.getState() != States.CONNECTED)
 					throw new IllegalStateException(String.format("Timeout waiting for a connection to '%s'. Please verify the connect string.", connectString));
-				}
 
 				// try reading some information from the cloud
 				if (null == zk.exists(IZooKeeperLayout.PATH_GYREX_ROOT.toString(), false)) {
 					// maybe a new cloud, try initialization
 					final String path = IZooKeeperLayout.PATH_GYREX_ROOT.toString();
 					final String createdPath = zk.create(path, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-					if (!path.equals(createdPath)) {
+					if (!path.equals(createdPath))
 						throw new IllegalStateException(String.format("created path does not match expected path (%s != %s)", path, createdPath));
-					}
 				}
 
 				// at this point the connect string seems to be ok
-				// TODO: store it in ZooKeeper and implement ZK to local sync
 			}
 
 			// store in instance preferences if local
-			if (new NodeInfo().getNodeId().equals(nodeId)) {
-				final Preferences preferences = InstanceScope.INSTANCE.getNode(CloudActivator.SYMBOLIC_NAME).node(ZooKeeperGateConfig.PREF_NODE_ZOOKEEPER);
-				if (connectString != null) {
-					preferences.put(ZooKeeperGateConfig.PREF_KEY_CLIENT_CONNECT_STRING, connectString);
-				} else {
-					preferences.remove(ZooKeeperGateConfig.PREF_KEY_CLIENT_CONNECT_STRING);
-				}
-				preferences.flush();
-
-				// remove connection to cloud
-				CloudState.unregisterNode();
-
-				// bring down ZooKeeper Gate
-				ZooKeeperGateApplication.reconnect();
-
-				// register with new cloud
-				CloudState.registerNode();
+			final Preferences preferences = InstanceScope.INSTANCE.getNode(CloudActivator.SYMBOLIC_NAME).node(ZooKeeperGateConfig.PREF_NODE_ZOOKEEPER);
+			if (connectString != null) {
+				preferences.put(ZooKeeperGateConfig.PREF_KEY_CLIENT_CONNECT_STRING, connectString);
+			} else {
+				preferences.remove(ZooKeeperGateConfig.PREF_KEY_CLIENT_CONNECT_STRING);
 			}
+			preferences.flush();
+
+			// remove connection to cloud
+			CloudState.unregisterNode();
+
+			// bring down ZooKeeper Gate
+			ZooKeeperGateApplication.reconnect();
+
+			// register with new cloud
+			CloudState.registerNode();
 		} catch (final Exception e) {
 			LOG.debug("Exception connecting to cloud using connect string {}.", connectString, e);
 			return new Status(IStatus.ERROR, CloudActivator.SYMBOLIC_NAME, "Unable to connect to ZooKeeper. " + ExceptionUtils.getRootCauseMessage(e), e);
@@ -139,6 +140,21 @@ public class NodeConfigurer implements INodeConfigurer {
 	public String getConnectionString() {
 		final Preferences preferences = InstanceScope.INSTANCE.getNode(CloudActivator.SYMBOLIC_NAME).node(ZooKeeperGateConfig.PREF_NODE_ZOOKEEPER);
 		return preferences.get(ZooKeeperGateConfig.PREF_KEY_CLIENT_CONNECT_STRING, null);
+	}
+
+	@Override
+	public IStatus setAddesses(final List<String> addresses) {
+		try {
+			// load info
+			final ZooKeeperNodeInfo info = ZooKeeperNodeInfo.load(nodeId, true);
+			// update roles
+			info.setAddresses(addresses);
+			// write info
+			ZooKeeperNodeInfo.save(info, true);
+		} catch (final Exception e) {
+			return new Status(IStatus.ERROR, CloudActivator.SYMBOLIC_NAME, "Unable to update node info in ZooKeeper. " + ExceptionUtils.getRootCauseMessage(e), e);
+		}
+		return Status.OK_STATUS;
 	}
 
 	@Override

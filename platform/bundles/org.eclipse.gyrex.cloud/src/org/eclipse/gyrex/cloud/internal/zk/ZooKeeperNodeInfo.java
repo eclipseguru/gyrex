@@ -14,7 +14,9 @@ package org.eclipse.gyrex.cloud.internal.zk;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -36,8 +38,9 @@ public class ZooKeeperNodeInfo {
 	private static final String PROP_TAGS = "tags";
 	private static final String PROP_LOCATION = "location";
 	private static final String PROP_NAME = "name";
+	private static final String PROP_ADDRESSES = "addresses";
 
-	public static void approve(final String nodeId, String name, String location) throws Exception {
+	public static void approve(final String nodeId, String name, String location, List<String> addresses) throws Exception {
 		final ZooKeeperGate zk = ZooKeeperGate.get();
 
 		// read missing info from current pending record
@@ -49,6 +52,9 @@ public class ZooKeeperNodeInfo {
 			if (location == null) {
 				location = info.getLocation();
 			}
+			if (addresses == null) {
+				addresses = info.getAddresses();
+			}
 		} catch (final Exception e) {
 			// ignore
 		}
@@ -57,6 +63,7 @@ public class ZooKeeperNodeInfo {
 		final ZooKeeperNodeInfo nodeInfo = new ZooKeeperNodeInfo(nodeId, true, null, 0);
 		nodeInfo.setName(name);
 		nodeInfo.setLocation(location);
+		nodeInfo.setAddresses(addresses);
 
 		// create approved record
 		zk.createPath(IZooKeeperLayout.PATH_NODES_APPROVED.append(nodeId), CreateMode.PERSISTENT, nodeInfo.toByteArray());
@@ -79,11 +86,22 @@ public class ZooKeeperNodeInfo {
 		return new ZooKeeperNodeInfo(nodeId, approved, record, stat.getVersion());
 	}
 
+	/**
+	 * Saves the node info as either persistent approved record (if approved is
+	 * <code>true</code>) or as ephemeral pending record (if approved is
+	 * <code>false</code>).
+	 * 
+	 * @param info
+	 *            the node info
+	 * @param approved
+	 *            if approved or pending (<code>false</code>)
+	 * @throws IllegalStateException
+	 */
 	public static void save(final ZooKeeperNodeInfo info, final boolean approved) throws IllegalStateException {
 		final IPath path = approved ? IZooKeeperLayout.PATH_NODES_APPROVED : IZooKeeperLayout.PATH_NODES_PENDING;
+		final CreateMode createMode = approved ? CreateMode.PERSISTENT : CreateMode.EPHEMERAL;
 		try {
-			// create approved record
-			ZooKeeperGate.get().writeRecord(path.append(info.getId()), CreateMode.PERSISTENT, info.toByteArray());
+			ZooKeeperGate.get().writeRecord(path.append(info.getId()), createMode, info.toByteArray());
 		} catch (final Exception e) {
 			throw new IllegalStateException(String.format("Failed to save record for node %s! %s", info.getId(), ExceptionUtils.getRootCauseMessage(e)), e);
 		}
@@ -95,14 +113,14 @@ public class ZooKeeperNodeInfo {
 	private String name;
 	private String location;
 	private Set<String> tags;
+	private List<String> addresses;
 
 	/**
 	 * Creates a new instance.
 	 */
 	public ZooKeeperNodeInfo(final String nodeId, final boolean approved, final byte[] data, final int version) {
-		if (nodeId == null) {
+		if (nodeId == null)
 			throw new IllegalArgumentException("node id must not be null");
-		}
 		this.nodeId = nodeId;
 		this.approved = approved;
 		this.version = version;
@@ -135,6 +153,28 @@ public class ZooKeeperNodeInfo {
 			}
 			this.tags = cloudTags;
 		}
+
+		// addresses
+		final String[] addresses = StringUtils.split(properties.getProperty(PROP_ADDRESSES), ',');
+		if ((addresses != null) && (addresses.length > 0)) {
+			final List<String> addressList = new ArrayList<String>(addresses.length);
+			for (final String address : addresses) {
+				if (!addressList.contains(address)) {
+					addressList.add(address);
+				}
+			}
+			this.addresses = addressList;
+		}
+
+	}
+
+	/**
+	 * Returns the addresses.
+	 * 
+	 * @return the addresses
+	 */
+	public List<String> getAddresses() {
+		return addresses;
 	}
 
 	/**
@@ -192,6 +232,16 @@ public class ZooKeeperNodeInfo {
 	}
 
 	/**
+	 * Sets the addresses.
+	 * 
+	 * @param addresses
+	 *            the addresses to set
+	 */
+	public void setAddresses(final List<String> addresses) {
+		this.addresses = addresses;
+	}
+
+	/**
 	 * Sets the location.
 	 * 
 	 * @param location
@@ -232,6 +282,9 @@ public class ZooKeeperNodeInfo {
 		if ((null != tags) && !tags.isEmpty()) {
 			nodeData.setProperty(PROP_TAGS, StringUtils.join(tags, ','));
 		}
+		if ((null != addresses) && !addresses.isEmpty()) {
+			nodeData.setProperty(PROP_ADDRESSES, StringUtils.join(addresses, ','));
+		}
 
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		nodeData.store(out, null);
@@ -240,6 +293,6 @@ public class ZooKeeperNodeInfo {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.NO_FIELD_NAMES_STYLE).append("id", nodeId).append("name", name).append("location", location).append("tags", tags).toString();
+		return new ToStringBuilder(this, ToStringStyle.NO_FIELD_NAMES_STYLE).append("id", nodeId).append("name", name).append("location", location).append("tags", tags).append("addresses", addresses).toString();
 	}
 }

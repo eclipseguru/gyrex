@@ -13,6 +13,7 @@ package org.eclipse.gyrex.cloud.internal.locking;
 
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.gyrex.cloud.internal.NodeInfo;
 import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.services.locking.IDurableLock;
 import org.eclipse.gyrex.cloud.services.locking.ILockMonitor;
@@ -23,15 +24,11 @@ import org.eclipse.gyrex.cloud.services.locking.ILockMonitor;
 public class DurableLockImpl extends ZooKeeperLock<IDurableLock> implements IDurableLock {
 
 	/**
-	 * Creates a new instance.
-	 * 
-	 * @param lockId
-	 * @param lockMonitor
 	 * @noreference This constructor is not intended to be referenced by
 	 *              clients.
 	 */
-	public DurableLockImpl(final String lockId, final ILockMonitor<IDurableLock> lockMonitor) {
-		super(lockId, lockMonitor, IZooKeeperLayout.PATH_LOCKS_DURABLE, false, true);
+	public DurableLockImpl(final NodeInfo nodeInfo, final String lockId, final ILockMonitor<IDurableLock> lockMonitor) {
+		super(nodeInfo, lockId, lockMonitor, IZooKeeperLayout.PATH_LOCKS_DURABLE, false, true);
 	}
 
 	/**
@@ -54,9 +51,8 @@ public class DurableLockImpl extends ZooKeeperLock<IDurableLock> implements IDur
 	@Override
 	public String getRecoveryKey() {
 		final String recoveryKey = myRecoveryKey;
-		if (null == recoveryKey) {
+		if (null == recoveryKey)
 			throw new IllegalStateException("recovery key not available; lock must be acquired");
-		}
 		return recoveryKey;
 	}
 

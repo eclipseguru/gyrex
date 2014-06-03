@@ -53,9 +53,8 @@ public class CloudActivator extends BaseBundleActivator {
 	 */
 	public static CloudActivator getInstance() {
 		final CloudActivator instance = instanceRef.get();
-		if (instance == null) {
+		if (instance == null)
 			throw new IllegalArgumentException(NLS.bind("Bundle {0} is not active.", SYMBOLIC_NAME));
-		}
 		return instance;
 	}
 
@@ -122,9 +121,8 @@ public class CloudActivator extends BaseBundleActivator {
 
 	public EventAdmin getEventAdmin() {
 		final IServiceProxy<EventAdmin> serviceProxy = eventAdminRef.get();
-		if (null == serviceProxy) {
+		if (null == serviceProxy)
 			throw createBundleInactiveException();
-		}
 		return serviceProxy.getService();
 	}
 
@@ -139,17 +137,16 @@ public class CloudActivator extends BaseBundleActivator {
 
 	public IPreferencesService getPreferenceService() {
 		final IServiceProxy<IPreferencesService> serviceProxy = preferenceServiceRef.get();
-		if (null == serviceProxy) {
+		if (null == serviceProxy)
 			throw createBundleInactiveException();
-		}
 		return serviceProxy.getService();
 	}
 
-	void startCloudServices() {
+	void startCloudServices(final NodeInfo nodeInfo) {
 		if (CloudDebug.debug) {
 			LOG.debug("Starting cloud services");
 		}
-		lockServiceRegistration = getServiceHelper().registerService(ILockService.class, new ZooKeeperLockService(), "Eclipse Gyrex", "ZooKeeper base lock service.", null, null);
+		lockServiceRegistration = getServiceHelper().registerService(ILockService.class, new ZooKeeperLockService(nodeInfo), "Eclipse Gyrex", "ZooKeeper base lock service.", null, null);
 		queueServiceRegistration = getServiceHelper().registerService(IQueueService.class, new ZooKeeperQueueService(), "Eclipse Gyrex", "ZooKeeper base queue service.", null, null);
 
 		nodeStateService = new ZooKeeperNodeStateService(getBundle().getBundleContext(), nodeEnvironment.getNodeId());
