@@ -35,6 +35,7 @@
 <booleanAttribute key="restart" value="true"/>
 <stringAttribute key="selectedPlugin" value="org.eclipse.gyrex.preferences"/>
 <setAttribute key="selected_features">
+<setEntry value="org.eclipse.gyrex.features.addons.eventbus:default"/>
 <setEntry value="org.eclipse.gyrex.features.addons.jersey.jaxrs:default"/>
 <setEntry value="org.eclipse.gyrex.features.addons.mongodb:default"/>
 <setEntry value="org.eclipse.gyrex.features.admin:default"/>
