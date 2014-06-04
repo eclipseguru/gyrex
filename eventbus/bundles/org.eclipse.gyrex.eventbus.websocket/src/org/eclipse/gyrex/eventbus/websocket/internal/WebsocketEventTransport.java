@@ -63,6 +63,18 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
+/**
+ * An {@link IEventTransport} that works based on web sockets.
+ * <p>
+ * Receiving - When the transport is activated, a Jetty server will be started
+ * to offer a web socket connection. It will be used for receiving events.
+ * </p>
+ * <p>
+ * Sending - When the transport is activated, connections will be established to
+ * the Jetty server running on all online nodes. It will be used for sending
+ * events.
+ * </p>
+ */
 @SuppressWarnings("restriction")
 public class WebsocketEventTransport implements IEventTransport {
 
@@ -78,6 +90,13 @@ public class WebsocketEventTransport implements IEventTransport {
 
 	private volatile Map<String, EventMessageSender> connectedNodesByNodeId = Collections.emptyMap();
 
+	private final INodeListener reconnectListener = new INodeListener() {
+		@Override
+		public void nodesChanged() {
+			connectAllOnlineNodes();
+		}
+	};
+
 	public WebsocketEventTransport() {
 		eventReceiverListsByTopicId = new ConcurrentHashMap<>();
 	}
@@ -87,14 +106,11 @@ public class WebsocketEventTransport implements IEventTransport {
 		startWebSocketServer();
 		startWebSocketClient();
 
-		getCloudManager().addNodeListener(new INodeListener() {
+		// hook change listener to watch for online node changes
+		getCloudManager().addNodeListener(reconnectListener);
 
-			@Override
-			public void nodesChanged() {
-				// re-connect
-				connectAllOnlineNodes();
-			}
-		});
+		// establish initial connections
+		connectAllOnlineNodes();
 	}
 
 	private void connectAllOnlineNodes() {
@@ -184,7 +200,20 @@ public class WebsocketEventTransport implements IEventTransport {
 
 	public void deactivate(final ComponentContext context) {
 		LOG.info("Deactivating WebsocketEventTransport.");
+
+		// hook change listener to watch for online node changes
+		getCloudManager().removeNodeListener(reconnectListener);
+
+		// disconnect from all nodes;
+		final Map<String, EventMessageSender> nodesByNodeId = connectedNodesByNodeId;
+		connectedNodesByNodeId = Collections.emptyMap();
+		for (final EventMessageSender sender : nodesByNodeId.values()) {
+			sender.getSession().close();
+		}
+
+		// stop server and client
 		stopWebSocketServer();
+		stopWebSocketClient();
 	}
 
 	@VisibleForTesting
@@ -288,6 +317,17 @@ public class WebsocketEventTransport implements IEventTransport {
 			server.start();
 		} catch (final Exception e) {
 			throw new IllegalStateException("Error starting jetty for cluster event websocket", e);
+		}
+	}
+
+	private void stopWebSocketClient() {
+		try {
+			final WebSocketClient client = clientRef.getAndSet(null);
+			if (client != null) {
+				client.stop();
+			}
+		} catch (final Exception e) {
+			LOG.error("Error stopping websocket client.", e);
 		}
 	}
 
