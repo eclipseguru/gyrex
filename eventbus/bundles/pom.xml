@@ -13,8 +13,9 @@
 
   <modules>
     <module>org.eclipse.gyrex.eventbus.websocket</module>
+    <module>org.eclipse.gyrex.eventbus.websocket.tests</module>
     <module>org.eclipse.gyrex.eventbus</module>
     <module>org.eclipse.gyrex.eventbus.tests</module>
   </modules>
-  
+
 </project>

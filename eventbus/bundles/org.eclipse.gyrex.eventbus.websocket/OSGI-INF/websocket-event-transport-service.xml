@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="gyrex.cloud.services.event.websocketeventtransport">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.eclipse.gyrex.eventbus.websocket.eventtransport.component">
    <implementation class="org.eclipse.gyrex.eventbus.websocket.internal.WebsocketEventTransport"/>
    <property name="service.vendor" type="String" value="Eclipse Gyrex"/>
    <property name="service.description" type="String" value="Websocket based Event Transport"/>
    <service>
       <provide interface="org.eclipse.gyrex.cloud.services.events.IEventTransport"/>
    </service>
+   <reference bind="setCloudManager" cardinality="1..1" interface="org.eclipse.gyrex.cloud.admin.ICloudManager" name="ICloudManager" policy="static"/>
 </scr:component>
