@@ -39,6 +39,10 @@ import org.eclipse.gyrex.eventbus.websocket.internal.EventMessageReceiver.IEvent
 import org.eclipse.gyrex.server.Platform;
 import org.eclipse.gyrex.server.settings.SystemSetting;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -93,9 +97,14 @@ public class WebsocketEventTransport implements IEventTransport {
 	private final INodeListener reconnectListener = new INodeListener() {
 		@Override
 		public void nodesChanged() {
-			connectAllOnlineNodes();
+			final Job connectionMonitor = WebsocketEventTransport.this.connectionMonitor;
+			if (connectionMonitor != null) {
+				connectionMonitor.schedule();
+			}
 		}
 	};
+
+	volatile Job connectionMonitor;
 
 	public WebsocketEventTransport() {
 		eventReceiverListsByTopicId = new ConcurrentHashMap<>();
@@ -109,8 +118,25 @@ public class WebsocketEventTransport implements IEventTransport {
 		// hook change listener to watch for online node changes
 		getCloudManager().addNodeListener(reconnectListener);
 
-		// establish initial connections
-		connectAllOnlineNodes();
+		// that connection monitor
+		connectionMonitor = new Job("Event Bus Connection Monitor") {
+
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				try {
+					LOG.debug("Connecting online nodes for the event transport.");
+					connectAllOnlineNodes();
+				} catch (final Exception e) {
+					LOG.warn("An error occured while connecting online nodes for the event transport. Operation will be retried.");
+				}
+				if (!monitor.isCanceled()) {
+					schedule(120000L); // run again in two minutes
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		connectionMonitor.setSystem(true);
+		connectionMonitor.schedule();
 	}
 
 	private void connectAllOnlineNodes() {
@@ -171,7 +197,7 @@ public class WebsocketEventTransport implements IEventTransport {
 
 	private boolean connectToNextAvailableAddress(final Iterator<String> addresses, final EventMessageSender sender, final WebSocketClient client, final String nodeId) {
 		if (!addresses.hasNext()) {
-			LOG.error("No routes available to node ({}). Unable to connect event transport.", nodeId);
+			LOG.error("No routes available to node ({}). Unable to connect event transport. Please check node addresses configuration.", nodeId);
 			return false;
 		}
 
@@ -203,6 +229,12 @@ public class WebsocketEventTransport implements IEventTransport {
 
 		// hook change listener to watch for online node changes
 		getCloudManager().removeNodeListener(reconnectListener);
+
+		Job connectionMonitor = this.connectionMonitor;
+		if (connectionMonitor != null) {
+			connectionMonitor.cancel();
+			connectionMonitor = null;
+		}
 
 		// disconnect from all nodes;
 		final Map<String, EventMessageSender> nodesByNodeId = connectedNodesByNodeId;
@@ -287,7 +319,7 @@ public class WebsocketEventTransport implements IEventTransport {
 
 			final HandlerCollection handlers = new HandlerCollection();
 
-			// create context for event bus, which is used between the nodes
+			// create context for event transport, which is used between the nodes
 			final EventMessageReceiver singletonReceiver = new EventMessageReceiver(getCloudManager().getLocalInfo().getNodeId(), new IEventMessageCallback() {
 
 				@Override
