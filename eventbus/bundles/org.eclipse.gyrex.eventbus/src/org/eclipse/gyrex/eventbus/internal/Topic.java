@@ -15,6 +15,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ public class Topic implements ITopic {
 	/**
 	 * Dispatches the specified event message to all compatible, interested
 	 * event handlers.
-	 * 
+	 *
 	 * @param eventMessage
 	 */
 	public void dispatchEvent(final EventMessage eventMessage) {
@@ -124,11 +125,11 @@ public class Topic implements ITopic {
 			LOG.debug("No deserializers found in topic ({}) for event type ({}).", this, eventMessage.getType());
 			return;
 		}
-		checkState(eventMessage.getPayload().hasArray());
+		final byte[] payload = toArray(eventMessage.getPayload());
 		for (final IEventDeserializer<Object> deserializer : deserializers) {
 			Object event;
 			try {
-				event = deserializer.deserializeEvent(eventMessage.getPayload().array());
+				event = deserializer.deserializeEvent(payload);
 				LOG.trace("Deserialized event message ({}) using ({}) to ({}).", eventMessage, deserializer, event);
 			} catch (Exception | LinkageError e) {
 				LOG.error("Unable to deserialized event message ({}, topic {}) using ({}). {}", eventMessage, getId(), deserializer, ExceptionUtils.getRootCause(e), e);
@@ -145,7 +146,7 @@ public class Topic implements ITopic {
 	 * <p>
 	 * Any error is logged but not propagated.
 	 * </p>
-	 * 
+	 *
 	 * @param event
 	 * @param handler
 	 */
@@ -175,7 +176,7 @@ public class Topic implements ITopic {
 	 * concurrent modifications via {@link #registerHandler(EventHandler)} and
 	 * {@link #unregisterHandler(EventHandler)}.
 	 * </p>
-	 * 
+	 *
 	 * @param eventType
 	 *            the event type
 	 * @return a snapshot copy of all registered handlers
@@ -246,6 +247,18 @@ public class Topic implements ITopic {
 		checkClosed();
 		final byte[] serializedEvent = getSerializer(event.getClass()).serializeEvent(event);
 		getEventService().queueEvent(getId(), createEventMessage(event.getClass(), serializedEvent));
+	}
+
+	private byte[] toArray(final ByteBuffer buffer) {
+		if (buffer.hasArray()) {
+			final byte[] array = buffer.array();
+			final int from = buffer.arrayOffset() + buffer.position();
+			return Arrays.copyOfRange(array, from, from + buffer.remaining());
+		} else {
+			final byte[] to = new byte[buffer.remaining()];
+			buffer.slice().get(to);
+			return to;
+		}
 	}
 
 	@Override
