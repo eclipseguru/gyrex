@@ -112,31 +112,46 @@ public class WebsocketEventTransport implements IEventTransport {
 
 	public void activate(final ComponentContext context) {
 		LOG.info("Activating WebsocketEventTransport.");
+
+		// start server
 		startWebSocketServer();
-		startWebSocketClient();
+		try {
 
-		// hook change listener to watch for online node changes
-		getCloudManager().addNodeListener(reconnectListener);
+			// start client
+			startWebSocketClient();
+			try {
+				// hook change listener to watch for online node changes
+				getCloudManager().addNodeListener(reconnectListener);
 
-		// that connection monitor
-		connectionMonitor = new Job("Event Bus Connection Monitor") {
+				// that connection monitor
+				connectionMonitor = new Job("Event Bus Connection Monitor") {
 
-			@Override
-			protected IStatus run(final IProgressMonitor monitor) {
-				try {
-					LOG.debug("Connecting online nodes for the event transport.");
-					connectAllOnlineNodes();
-				} catch (final Exception e) {
-					LOG.warn("An error occured while connecting online nodes for the event transport. Operation will be retried.");
-				}
-				if (!monitor.isCanceled()) {
-					schedule(120000L); // run again in two minutes
-				}
-				return Status.OK_STATUS;
+					@Override
+					protected IStatus run(final IProgressMonitor monitor) {
+						try {
+							LOG.debug("Connecting online nodes for the event transport.");
+							connectAllOnlineNodes();
+						} catch (final Exception e) {
+							LOG.warn("An error occured while connecting online nodes for the event transport. Operation will be retried.");
+						}
+						if (!monitor.isCanceled()) {
+							schedule(120000L); // run again in two minutes
+						}
+						return Status.OK_STATUS;
+					}
+				};
+				connectionMonitor.setSystem(true);
+				connectionMonitor.schedule();
+			} catch (RuntimeException | LinkageError e) {
+				// clean-up client on failure
+				stopWebSocketClient();
+				throw e;
 			}
-		};
-		connectionMonitor.setSystem(true);
-		connectionMonitor.schedule();
+		} catch (RuntimeException | LinkageError e) {
+			// clean-up server on failure
+			stopWebSocketServer();
+			throw e;
+		}
 	}
 
 	private void connectAllOnlineNodes() {
