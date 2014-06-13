@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.eventbus.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 
@@ -129,7 +130,7 @@ public class Topic implements ITopic {
 		for (final IEventDeserializer<Object> deserializer : deserializers) {
 			Object event;
 			try {
-				event = deserializer.deserializeEvent(payload);
+				event = checkNotNull(deserializer.deserializeEvent(payload), "Deserialiser (%s) returned null for event (%s)", deserializer, payload);
 				LOG.trace("Deserialized event message ({}) using ({}) to ({}).", eventMessage, deserializer, event);
 			} catch (Exception | LinkageError e) {
 				LOG.error("Unable to deserialized event message ({}, topic {}) using ({}). {}", eventMessage, getId(), deserializer, ExceptionUtils.getRootCause(e), e);
