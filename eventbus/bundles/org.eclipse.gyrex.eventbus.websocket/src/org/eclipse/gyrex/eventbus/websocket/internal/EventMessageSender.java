@@ -59,8 +59,8 @@ final class EventMessageSender extends WebSocketAdapter {
 		writeUtf8String(buffer, message.getType());
 		writeUtf8String(buffer, localINodeId);
 
-		// payload
-		buffer.put(message.getPayload());
+		// payload (use slice in order to not consume the whole buffer)
+		buffer.put(message.getPayload().slice());
 
 		// send asynchronously
 		buffer.flip();
