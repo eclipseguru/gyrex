@@ -5,7 +5,7 @@
 
   <groupId>org.eclipse.gyrex.releng</groupId>
   <artifactId>gyrex-maven-parent</artifactId>
-  <version>1.3.0-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <!-- common settings for all modules -->
@@ -17,7 +17,7 @@
     <buildId>${buildType}${buildTimestamp}</buildId>
     <buildLabel>${buildType}-${buildId}-${buildTimestamp}</buildLabel>
 
-    <gyrex-target-platform.version>1.3.0-SNAPSHOT</gyrex-target-platform.version>
+    <gyrex-target-platform.version>1.4.0-SNAPSHOT</gyrex-target-platform.version>
 
     <tycho.version>0.18.1</tycho.version>
     <tycho-extras.version>0.18.1</tycho-extras.version>

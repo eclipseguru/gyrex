@@ -10,13 +10,13 @@
   <parent>
     <groupId>org.eclipse.gyrex.releng</groupId>
     <artifactId>gyrex-maven-parent</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     <relativePath>../mavenparent/</relativePath>
   </parent>
 
   <properties>
     <!-- the repo stream (maps usually one on one to a branch identifier) -->
-    <publishRepoStream>1.2</publishRepoStream>
+    <publishRepoStream>1.4</publishRepoStream>
     <!-- by default, we publish into /shared -->
     <publishBaseDirectory>/shared/rt/gyrex/drops</publishBaseDirectory>
   </properties>

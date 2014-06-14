@@ -4,17 +4,18 @@
 
   <groupId>org.eclipse.gyrex.admin</groupId>
   <artifactId>gyrex-admin</artifactId>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <parent>
     <groupId>org.eclipse.gyrex.releng</groupId>
     <artifactId>gyrex-maven-parent</artifactId>
-  	<version>1.3.0-SNAPSHOT</version>
+  	<version>1.4.0-SNAPSHOT</version>
     <relativePath>../releng/mavenparent</relativePath>
   </parent>
 
   <modules>
     <module>bundles</module>
   </modules>
-  
+
 </project>
