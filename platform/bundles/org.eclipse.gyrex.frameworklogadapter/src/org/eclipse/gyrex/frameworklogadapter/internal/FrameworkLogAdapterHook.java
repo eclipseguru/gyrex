@@ -11,24 +11,20 @@
  */
 package org.eclipse.gyrex.frameworklogadapter.internal;
 
-import java.io.IOException;
-import java.net.URLConnection;
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.equinox.log.ExtendedLogReaderService;
-
 import org.eclipse.core.runtime.adaptor.EclipseStarter;
-import org.eclipse.osgi.baseadaptor.BaseAdaptor;
-import org.eclipse.osgi.baseadaptor.hooks.AdaptorHook;
+import org.eclipse.equinox.log.ExtendedLogReaderService;
 import org.eclipse.osgi.framework.log.FrameworkLog;
+import org.eclipse.osgi.internal.hookregistry.ActivatorHookFactory;
 
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -39,17 +35,11 @@ import org.osgi.framework.ServiceReference;
 /**
  * The adapter hook for the Gyrex extended {@link FrameworkLog}.
  */
-public class FrameworkLogAdapterHook implements AdaptorHook {
-
-	public static final String PROP_LOG_ENABLED = "gyrex.log.forwarder.enabled";
-	public static final String PROP_BUFFER_SIZE = "gyrex.log.forwarder.buffer.size";
-	public static final String PROP_FALLBACK_TO_SYSOUT = "gyrex.log.forwarder.fallback.sysout";
-
-	private static final AtomicReference<FrameworkLogAdapterHook> instanceRef = new AtomicReference<FrameworkLogAdapterHook>();
+public class FrameworkLogAdapterHook implements ActivatorHookFactory {
 
 	/**
 	 * Returns the shared instance.
-	 * 
+	 *
 	 * @return the shared instance
 	 */
 	public static FrameworkLogAdapterHook getInstance() {
@@ -60,6 +50,13 @@ public class FrameworkLogAdapterHook implements AdaptorHook {
 		}
 		return frameworkLogAdapterHook;
 	}
+
+	public static final String PROP_LOG_ENABLED = "gyrex.log.forwarder.enabled";
+	public static final String PROP_BUFFER_SIZE = "gyrex.log.forwarder.buffer.size";
+
+	public static final String PROP_FALLBACK_TO_SYSOUT = "gyrex.log.forwarder.fallback.sysout";
+
+	private static final AtomicReference<FrameworkLogAdapterHook> instanceRef = new AtomicReference<FrameworkLogAdapterHook>();
 
 	private GyrexSlf4jForwarder logForwarder;
 	private BundleContext context;
@@ -104,23 +101,27 @@ public class FrameworkLogAdapterHook implements AdaptorHook {
 	}
 
 	@Override
-	public void addProperties(final Properties properties) {
-		// empty
+	public BundleActivator createActivator() {
+		// TODO Auto-generated method stub
+		return new BundleActivator() {
+
+			@Override
+			public void start(final BundleContext context) throws Exception {
+				frameworkStop(context);
+			}
+
+			@Override
+			public void stop(final BundleContext context) throws Exception {
+				frameworkStart(context);
+			}
+		};
 	}
 
-	@Override
-	public FrameworkLog createFrameworkLog() {
-		// we rely on 'eclipse.log.enabled=false' to disable the default Eclipse log
-		return null;
-	}
-
-	@Override
 	public void frameworkStart(final BundleContext context) throws BundleException {
 		// allow to disable via system property
 		final String enabled = System.getProperty(PROP_LOG_ENABLED, "true");
-		if (!"true".equals(enabled)) {
+		if (!"true".equals(enabled))
 			return;
-		}
 
 		this.context = context;
 
@@ -154,11 +155,9 @@ public class FrameworkLogAdapterHook implements AdaptorHook {
 		}
 	}
 
-	@Override
 	public void frameworkStop(final BundleContext context) throws BundleException {
-		if (logForwarder == null) {
+		if (logForwarder == null)
 			return;
-		}
 
 		context.removeServiceListener(slf4jLoggerListener);
 		context.removeServiceListener(logReaderServiceListener);
@@ -181,36 +180,14 @@ public class FrameworkLogAdapterHook implements AdaptorHook {
 		this.context = null;
 	}
 
-	@Override
-	public void frameworkStopping(final BundleContext context) {
-		// empty
-	}
-
-	@Override
-	public void handleRuntimeError(final Throwable error) {
-		// empty
-	}
-
-	@Override
-	public void initialize(final BaseAdaptor adaptor) {
-		// empty
-	}
-
-	@Override
-	public URLConnection mapLocationToURLConnection(final String location) throws IOException {
-		// empty
-		return null;
-	}
-
-	void registerLogger(final ServiceReference serviceReference) {
+	void registerLogger(final ServiceReference<?> serviceReference) {
 		loggers.add(serviceReference);
 		updateLogger();
 	}
 
 	void registerWithLogReaderService(final ServiceReference<?> serviceReference) {
-		if (null == logForwarder) {
+		if (null == logForwarder)
 			return;
-		}
 
 		// get service
 		final ExtendedLogReaderService service = (ExtendedLogReaderService) context.getService(serviceReference);
@@ -232,7 +209,7 @@ public class FrameworkLogAdapterHook implements AdaptorHook {
 		context.ungetService(serviceReference);
 	}
 
-	void unregisterLogger(final ServiceReference serviceReference) {
+	void unregisterLogger(final ServiceReference<?> serviceReference) {
 		loggers.remove(serviceReference);
 		updateLogger();
 	}
