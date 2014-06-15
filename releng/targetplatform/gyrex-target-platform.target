@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Gyrex Development" sequenceNumber="96">
+<?pde version="3.8"?><target name="Gyrex Development" sequenceNumber="97">
 <locations>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.core.di" version="1.4.0.v20140414-1837"/>
@@ -344,6 +344,15 @@
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.9.0.v20140309-0741"/>
 <unit id="org.eclipse.ecf.filetransfer.source.feature.feature.group" version="3.9.0.v20140309-0741"/>
 <repository location="http://download.eclipse.org/rt/ecf/latest/site.p2"/>
+</location>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="3.9.0.v20140523-0116"/>
+<unit id="org.eclipse.equinox.compendium.sdk.feature.group" version="3.10.0.v20140416-2102"/>
+<unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.10.0.v20140606-1602"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
+<unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.10.0.v20140606-1445"/>
+<unit id="org.eclipse.equinox.weaving.sdk.feature.group" version="1.1.0.v20140529-1734"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
