@@ -102,22 +102,21 @@ public class FrameworkLogAdapterHook implements ActivatorHookFactory {
 
 	@Override
 	public BundleActivator createActivator() {
-		// TODO Auto-generated method stub
 		return new BundleActivator() {
 
 			@Override
 			public void start(final BundleContext context) throws Exception {
-				frameworkStop(context);
+				frameworkStart(context);
 			}
 
 			@Override
 			public void stop(final BundleContext context) throws Exception {
-				frameworkStart(context);
+				frameworkStop(context);
 			}
 		};
 	}
 
-	public void frameworkStart(final BundleContext context) throws BundleException {
+	void frameworkStart(final BundleContext context) throws BundleException {
 		// allow to disable via system property
 		final String enabled = System.getProperty(PROP_LOG_ENABLED, "true");
 		if (!"true".equals(enabled))
@@ -155,7 +154,7 @@ public class FrameworkLogAdapterHook implements ActivatorHookFactory {
 		}
 	}
 
-	public void frameworkStop(final BundleContext context) throws BundleException {
+	void frameworkStop(final BundleContext context) throws BundleException {
 		if (logForwarder == null)
 			return;
 
