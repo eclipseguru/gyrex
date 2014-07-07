@@ -4,7 +4,7 @@
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.core.di" version="1.4.0.v20140414-1837"/>
 <unit id="org.eclipse.e4.core.di.source" version="1.4.0.v20140414-1837"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.orbit.mongodb" version="2.10.1.v20130422-1135"/>
@@ -80,7 +80,7 @@
 <unit id="org.eclipse.core.jobs.source" version="3.6.0.v20140424-0053"/>
 <unit id="org.eclipse.equinox.p2.transport.ecf.source" version="1.1.0.v20140408-1354"/>
 <unit id="org.eclipse.equinox.p2.operations" version="2.4.0.v20131119-0908"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.core.net.win32.x86" version="1.0.100.v20140124-2013"/>
@@ -89,7 +89,7 @@
 <unit id="org.eclipse.core.net" version="1.2.200.v20140124-2013"/>
 <unit id="org.eclipse.core.net.win32.x86_64" version="1.0.100.v20140124-2013"/>
 <unit id="org.eclipse.core.net.linux.x86_64" version="1.1.100.v20140124-2013"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.ibm.icu" version="50.1.1.v201304230130"/>
@@ -167,7 +167,7 @@
 <unit id="org.eclipse.test.feature.group" version="3.6.100.v20140528-1640"/>
 <unit id="org.eclipse.jdt.junit.runtime" version="3.4.500.v20140527-1138"/>
 <unit id="org.eclipse.pde.junit.runtime" version="3.4.400.v20140204-1740"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.M1"/>
@@ -209,7 +209,7 @@
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.100.v20140603-1326"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="javax.ws.rs" version="1.1.1.v20130318-1750"/>
@@ -286,7 +286,7 @@
 <unit id="org.eclipse.core.databinding.observable.source" version="1.4.1.v20140210-1835"/>
 <unit id="org.eclipse.core.databinding.property" version="1.4.200.v20140214-0004"/>
 <unit id="org.eclipse.core.databinding.property.source" version="1.4.200.v20140214-0004"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
@@ -301,7 +301,7 @@
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.http.servlet" version="1.1.500.v20140318-1755"/>
 <unit id="org.eclipse.equinox.http.servlet.source" version="1.1.500.v20140318-1755"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
@@ -330,20 +330,23 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group" version="1.0.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.0.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.core.source.feature.feature.group" version="1.1.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.core.ssl.source.feature.feature.group" version="1.0.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature.feature.group" version="1.0.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.0.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.filetransfer.httpclient4.feature.feature.group" version="3.8.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.filetransfer.httpclient4.source.feature.feature.group" version="3.8.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.1.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.8.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.filetransfer.ssl.source.feature.feature.group" version="1.0.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.9.0.v20140309-0741"/>
-<unit id="org.eclipse.ecf.filetransfer.source.feature.feature.group" version="3.9.0.v20140309-0741"/>
-<repository location="http://download.eclipse.org/rt/ecf/latest/site.p2"/>
+<unit id="org.eclipse.ecf" version="3.4.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.source" version="3.4.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.filetransfer" version="5.0.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.filetransfer.source" version="5.0.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.identity" version="3.4.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.identity.source" version="3.4.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer" version="3.2.200.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer.source" version="3.2.200.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer.httpclient4" version="1.0.500.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer.httpclient4.source" version="1.0.500.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer.httpclient4.ssl" version="1.0.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer.httpclient4.ssl.source" version="1.0.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer.ssl" version="1.0.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.provider.filetransfer.ssl.source" version="1.0.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.ssl" version="1.1.0.v20140528-1625"/>
+<unit id="org.eclipse.ecf.ssl.source" version="1.1.0.v20140528-1625"/>
+<repository location="http://download.eclipse.org/rt/ecf/3.8.1/site.p2"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="3.9.0.v20140523-0116"/>
@@ -352,7 +355,7 @@
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
 <unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.10.0.v20140606-1445"/>
 <unit id="org.eclipse.equinox.weaving.sdk.feature.group" version="1.1.0.v20140529-1734"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones/S-4.4RC4-201406061215/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
