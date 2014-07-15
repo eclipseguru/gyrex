@@ -151,7 +151,7 @@ public class GyrexContextImpl extends PlatformObject implements BundleListener {
 	 */
 	public void dispose() {
 		// don't do anything if already disposed; if not begin disposing
-		if (disposed.compareAndSet(null, DisposeState.DISPOSING))
+		if (!disposed.compareAndSet(null, DisposeState.DISPOSING))
 			return;
 
 		// notify disposables
