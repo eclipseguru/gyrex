@@ -22,7 +22,7 @@ import org.junit.runners.Suite;
  * Context Test Suite.
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ ContextRegistryTests.class, ContextualRuntimeBlackBoxTests.class, PreferencesBlackBoxTests.class, ContextInjectionTests.class })
+@Suite.SuiteClasses({ ContextRegistryTests.class, ContextualRuntimeBlackBoxTests.class, PreferencesBlackBoxTests.class, ContextInjectionTests.class, GyrexContextImplTest.class })
 public class AllContextTests {
 
 	@ClassRule
