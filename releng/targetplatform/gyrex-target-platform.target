@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Gyrex Development" sequenceNumber="97">
+<?pde version="3.8"?><target name="Gyrex Development" sequenceNumber="102">
 <locations>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.core.di" version="1.4.0.v20140414-1837"/>
@@ -57,8 +57,8 @@
 <unit id="org.apache.commons.collections" version="3.2.0.v2013030210310"/>
 <unit id="org.apache.commons.fileupload" version="1.2.2.v20111214-1400"/>
 <unit id="org.apache.commons.fileupload.source" version="1.2.2.v20111214-1400"/>
-<unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
-<unit id="org.apache.commons.io.source" version="2.0.1.v201105210651"/>
+<unit id="org.apache.commons.io" version="2.2.0.v201405211200"/>
+<unit id="org.apache.commons.io.source" version="2.2.0.v201405211200"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -92,8 +92,8 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.4/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="com.ibm.icu" version="50.1.1.v201304230130"/>
-<unit id="com.ibm.icu.source" version="50.1.1.v201304230130"/>
+<unit id="com.ibm.icu" version="52.1.0.v201404241930"/>
+<unit id="com.ibm.icu.source" version="52.1.0.v201404241930"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -195,6 +195,8 @@
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
 <unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -203,8 +205,8 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="com.ibm.icu.base" version="50.1.1.v201304230130"/>
-<unit id="com.ibm.icu.base.source" version="50.1.1.v201304230130"/>
+<unit id="com.ibm.icu.base" version="52.1.0.v201404171520"/>
+<unit id="com.ibm.icu.base.source" version="52.1.0.v201404171520"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
