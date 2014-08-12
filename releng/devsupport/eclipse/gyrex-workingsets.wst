@@ -1,36 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workingSets>
-<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1241420305573_4" label="Gyrex 3rdParty" name="Gyrex 3rdParty">
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.orbit.mongodb" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.apache.commons.daemon" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.apache.solr+lucene4" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.quartz_v1.8.3" type="4"/>
-</workingSet>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1241420305573_4" label="Gyrex 3rdParty" name="Gyrex 3rdParty"/>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1241420305573_5" label="Gyrex Admin" name="Gyrex Admin">
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.admin.ui.jobs" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.admin.ui.context" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.admin.ui.http" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.admin.ui.http.jetty" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.admin.ui.p2" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.admin.ui.cloud" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.admin.ui" type="4"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.logback" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.jobs" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.context" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.http" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.http.jetty" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.persistence" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.p2" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui.cloud" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.admin.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1241420305573_7" label="Gyrex Core" name="Gyrex Core">
-<item elementID="=org.eclipse.gyrex.frameworklogadapter" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.logback.config" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.boot.jaas.fragment" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.monitoring" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.junit" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.context" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.gyrex.boot" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.gyrex.boot.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.cloud" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.gyrex.p2" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.gyrex.context.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.monitoring.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.context.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.common" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.cloud.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.frameworklogadapter" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.boot" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.boot.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.p2" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.preferences" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.preferences.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1401213253031_36" label="Gyrex Event Bus AddOn" name="Gyrex Event Bus AddOn">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.addons.eventbus" type="4"/>
+<item elementID="=org.eclipse.gyrex.eventbus.websocket.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.eventbus.websocket" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.eventbus.tests" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.eventbus" type="4"/>
 </workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1302849025805_21" label="Gyrex Features" name="Gyrex Features">
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.web" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.admin" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.web" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.provisioning" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.eclipselink" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.commons" type="4"/>
@@ -43,8 +52,8 @@
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.processing" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.http" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.sdk.withoutdeps" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.solr" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.processing" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.solr" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.admin" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.modelandservices" type="4"/>
 </workingSet>
@@ -56,18 +65,29 @@
 <item elementID="=org.eclipse.gyrex.http.log" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.http.jetty" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSet>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1368731440375_16" label="Gyrex HTTP JAX-RS AddOn" name="Gyrex HTTP JAX-RS AddOn">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.addons.jersey.jaxrs" type="4"/>
+<item elementID="=org.eclipse.gyrex.http.jersey" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.jersey" type="4"/>
+</workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1241420305573_12" label="Gyrex Model+Services API" name="Gyrex Model+Services API">
 <item elementID="=org.eclipse.gyrex.model.common" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.services.common" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1241420305573_13" label="Gyrex Persistence" name="Gyrex Persistence">
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence.context.preferences" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence.derby" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence.derby.tests" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence.eclipselink" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence.jdbc" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence.tests" type="4"/>
+<item elementID="=org.eclipse.gyrex.persistence.context.preferences" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.persistence.derby" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.persistence.derby.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.persistence.nondurable.map" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.persistence.jdbc" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.persistence" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.persistence.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.gyrex.persistence.eclipselink" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1368731536649_17" label="Gyrex Persistence MongoDB AddOn" name="Gyrex Persistence MongoDB AddOn">
+<item elementID="=org.eclipse.gyrex.persistence.mongodb" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.dependencies.mongodb" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.features.addons.mongodb" type="4"/>
 </workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1301382838815_20" label="Gyrex Processing" name="Gyrex Processing">
 <item elementID="=org.eclipse.gyrex.jobs.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -78,17 +98,15 @@
 </workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1241420305573_6" label="Gyrex Search" name="Gyrex Search">
 <item elementID="=org.eclipse.gyrex.search" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.search" type="4"/>
 <item elementID="=org.eclipse.gyrex.search.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.search.tests" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.gyrex.persistence.solr" type="4"/>
+<item elementID="=org.eclipse.gyrex.persistence.solr" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1301382893102_21" label="Gyrex Server" name="Gyrex Server">
 <item elementID="=org.eclipse.gyrex.server.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.gyrex.server.defaultroles" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSet>
 <workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" id="1300740033686_19" label="Hello Cloud Example" name="Hello Cloud Example">
-<item elementID="=hello.cloud" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/hello.cloud-feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/jaxrs.test" type="4"/>
+<item elementID="=jaxrs-demo" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSet>
 </workingSets>
