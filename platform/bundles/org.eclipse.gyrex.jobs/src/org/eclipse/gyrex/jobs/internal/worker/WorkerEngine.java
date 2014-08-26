@@ -13,6 +13,7 @@
 package org.eclipse.gyrex.jobs.internal.worker;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class WorkerEngine extends Job {
 	private static final SystemSetting<Integer> maxConcurrentScheduledJobsSetting = SystemSetting.newIntegerSetting("gyrex.jobs.workerEngine.maxConcurrentScheduledJobs", "The maximum number of jobs that will allowed to run in parallel on the local instance. Default is the number of available processors as detected by the Java VM.").usingDefault(Runtime.getRuntime().availableProcessors()).create();
 	private static final SystemSetting<Boolean> skipPriorityQueueSetting = SystemSetting.newBooleanSetting("gyrex.jobs.workerEngine.doNotCheckPriorityQueue", "If set to true, the priority queue will not be checked by this worker engine instance.").usingDefault(Boolean.FALSE).create();
 	private static final SystemSetting<String> queueIdSetting = SystemSetting.newStringSetting("gyrex.jobs.workerEngine.queueId", "The id of the queue to check for jobs. Default is the job system's default queue as spec'd by IJobManager.DEFAULT_QUEUE.").usingDefault(IJobManager.DEFAULT_QUEUE).create();
+	private static final SystemSetting<List<String>> queueIdsSetting = SystemSetting.newMultiValueStringSetting("gyrex.jobs.workerEngine.queueIds", "The ids of the queues to check for jobs. By default, the single values for default and high priority will be used.").create();
 
 	private static final String NODE_WORKER_ENGINE = "workerEngine";
 	private static final String PREF_KEY_SUSPENDED = "suspended";
@@ -97,9 +99,12 @@ public class WorkerEngine extends Job {
 	private final int maxConcurrentJobs;
 	private final int idleSleepTime;
 	private final int nonIdleSleepTime;
-	private final String queueId;
-
-	private final boolean skipPriorityQueue;
+	/**
+	 * Holds the queueIds to check for jobs. They are ordered by priority, thus
+	 * as soon as the worker engine is free to execute a new job it will check
+	 * the queues starting by the first one given in this list.
+	 */
+	private final List<String> queueIds;
 
 	private long engineSleepTime = DEFAULT_IDLE_SLEEP_TIME;
 
@@ -133,8 +138,16 @@ public class WorkerEngine extends Job {
 		idleSleepTime = idleSleepTimeMsSetting.get();
 		nonIdleSleepTime = nonIdleSleepTimeMsSetting.get();
 		maxConcurrentJobs = maxConcurrentScheduledJobsSetting.get();
-		queueId = queueIdSetting.get();
-		skipPriorityQueue = skipPriorityQueueSetting.isTrue();
+
+		if (queueIdsSetting.isSet()) {
+			queueIds = queueIdsSetting.get();
+		} else {
+			queueIds = new ArrayList<>();
+			if (!skipPriorityQueueSetting.isTrue()) {
+				queueIds.add(IJobManager.PRIORITY_QUEUE);
+			}
+			queueIds.add(queueIdSetting.get());
+		}
 	}
 
 	private void abortJob(final JobStateSynchronizer stateSynchronizer, final IQueue queue, final IMessage message) {
@@ -274,28 +287,22 @@ public class WorkerEngine extends Job {
 			return false;
 		}
 
-		// check priority queue first
-		IQueue queue = getQueue(IJobManager.PRIORITY_QUEUE);
-		if ((queue != null) && !skipPriorityQueue) {
-			if (JobsDebug.workerEngine) {
-				LOG.debug("Checking priority queue.");
+		for (final String queueId : queueIds) {
+			final IQueue queue = getQueue(queueId);
+			if (queue == null) {
+				if (JobsDebug.workerEngine) {
+					LOG.debug("Queue {} does not exists. The worker will skip it.", queueId);
+				}
+				continue;
 			}
-			if (processNextJobFromQueue(queue))
+			final boolean queueContainsEntries = processNextJobFromQueue(queue);
+			if (queueContainsEntries)
 				return true;
-			// else: no job in queue ... continue processing from default queue
 		}
-
-		// no job processed from priority queue
-		// check default queue
-		queue = getQueue(queueId);
-		if (queue == null) {
-			if (JobsDebug.workerEngine) {
-				LOG.debug("Queue {} does not exists. Nothing to work one.", queueId);
-			}
-			return false;
+		if (JobsDebug.workerEngine) {
+			LOG.debug("None of the configured Queues is existing. Nothing to work on.");
 		}
-
-		return processNextJobFromQueue(queue);
+		return false;
 	}
 
 	/**

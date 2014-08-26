@@ -13,8 +13,8 @@ public class SystemSettingBuilderTest {
 
 	@Test
 	public void SystemSettingBuilder() throws Exception {
-		final SystemSettingBuilder<String> settingBuilder = new SystemSettingBuilder<>(String.class);
-		assertEquals(String.class, settingBuilder.type);
+		final SystemSettingBuilder<String> settingBuilder = new SystemSettingBuilder<>(new SingleValueConverter<>(String.class), String.class);
+		assertEquals(String.class, settingBuilder.valueType);
 	}
 
 }

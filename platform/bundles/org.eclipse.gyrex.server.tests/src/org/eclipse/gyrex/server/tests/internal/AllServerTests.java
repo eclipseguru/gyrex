@@ -11,6 +11,7 @@
  */
 package org.eclipse.gyrex.server.tests.internal;
 
+import org.eclipse.gyrex.boot.tests.AllBootTests;
 import org.eclipse.gyrex.context.tests.internal.AllContextTests;
 import org.eclipse.gyrex.jobs.tests.internal.AllJobTests;
 import org.eclipse.gyrex.junit.GyrexServerResource;
@@ -23,7 +24,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ AllPreferencesTests.class, AllPersistenceTests.class, AllContextTests.class, AllJobTests.class })
+@SuiteClasses({ AllPreferencesTests.class, AllPersistenceTests.class, AllContextTests.class, AllJobTests.class, AllBootTests.class })
 public class AllServerTests {
 	@ClassRule
 	public static final GyrexServerResource server = new GyrexServerResource();

@@ -8,9 +8,11 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Konrad Schergaut - support for multi value settings
  *******************************************************************************/
 package org.eclipse.gyrex.server.settings;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -23,7 +25,27 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public final class SystemSettingBuilder<T> {
 
-	static String toEnvironmentVariableName(final CharSequence systemProperty) {
+	/**
+	 * Provides a builder for list-value settings of the given type.
+	 *
+	 * @param <T>
+	 *            The element type of the list.
+	 */
+	static <T> SystemSettingBuilder<List<T>> multiValued(final Class<T> valueType) {
+		return new SystemSettingBuilder<>(new ListValueConverter<>(valueType), valueType);
+	}
+
+	/**
+	 * Provides a builder for single value settings of the given type.
+	 *
+	 * @param <T>
+	 *            The element type of the list.
+	 */
+	static <T> SystemSettingBuilder<T> singleValued(final Class<T> valueType) {
+		return new SystemSettingBuilder<>(new SingleValueConverter<>(valueType), valueType);
+	}
+
+	private static String toEnvironmentVariableName(final CharSequence systemProperty) {
 		final StringBuilder result = new StringBuilder(systemProperty.length());
 		for (int i = 0; i < systemProperty.length(); i++) {
 			final char c = systemProperty.charAt(i);
@@ -37,16 +59,25 @@ public final class SystemSettingBuilder<T> {
 	}
 
 	@VisibleForTesting
-	final Class<T> type;
-
-	@VisibleForTesting
 	String environmentVariable, systemProperty, description;
+
+	/**
+	 * The type for single values. The type is not always identical to the type
+	 * T. If T is a List then this holds the type-argument for that list.<br/>
+	 * We might handle this by adding an additional type parameter, but that
+	 * would reduce the readability of this class, so it is kept internal.
+	 */
+	@VisibleForTesting
+	final Class<?> valueType;
 
 	private T defaultValue;
 
+	private final ValueConverter<T> valueConverter;
+
 	@VisibleForTesting
-	SystemSettingBuilder(final Class<T> valueType) {
-		type = valueType;
+	SystemSettingBuilder(final ValueConverter<T> valueConverter, final Class<?> valueType) {
+		this.valueConverter = valueConverter;
+		this.valueType = valueType;
 	}
 
 	/**
@@ -62,10 +93,13 @@ public final class SystemSettingBuilder<T> {
 	 * @return a new {@link SystemSetting} instance
 	 */
 	public SystemSetting<T> create() {
-		if (environmentVariable == null)
-			return new SystemSetting<>(toEnvironmentVariableName(Objects.requireNonNull(systemProperty, "Please specify at least a system property!")), systemProperty, description, type, defaultValue);
-
-		return new SystemSetting<>(environmentVariable, systemProperty, description, type, defaultValue);
+		final String environmentVariable;
+		if (this.environmentVariable == null) {
+			environmentVariable = toEnvironmentVariableName(Objects.requireNonNull(systemProperty, "Please specify at least a system property!"));
+		} else {
+			environmentVariable = this.environmentVariable;
+		}
+		return new SystemSetting<>(environmentVariable, systemProperty, description, valueConverter, defaultValue);
 	}
 
 	/**
@@ -115,4 +149,5 @@ public final class SystemSettingBuilder<T> {
 		this.defaultValue = defaultValue;
 		return this;
 	}
+
 }

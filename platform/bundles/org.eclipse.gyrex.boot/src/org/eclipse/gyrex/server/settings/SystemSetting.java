@@ -8,9 +8,11 @@
  *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
+ *     Konrad Schergaut - support for multi value settings
  *******************************************************************************/
 package org.eclipse.gyrex.server.settings;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,8 +32,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @param <T>
  *            the value type (currently only {@link String}, {@link Integer},
- *            {@link Long}, {@link Double}, {@link Float} and {@link Boolean}
- *            are supported)
+ *            {@link Long}, {@link Double}, {@link Float}, {@link Boolean} and
+ *            {@link List lists of Strings} are supported)
  */
 public final class SystemSetting<T> {
 
@@ -41,67 +43,105 @@ public final class SystemSetting<T> {
 	 * Returns a new builder for a system setting with a {@link Boolean} value
 	 * type.
 	 * 
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
 	 * @return a new {@link SystemSettingBuilder}
 	 */
 	public static SystemSettingBuilder<Boolean> newBooleanSetting(final String systemProperty, final String description) {
-		return new SystemSettingBuilder<>(Boolean.class).systemProperty(systemProperty).description(description);
+		return SystemSettingBuilder.singleValued(Boolean.class).systemProperty(systemProperty).description(description);
 	}
 
 	/**
 	 * Returns a new builder for a system setting with a {@link Double} value
 	 * type.
 	 * 
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
 	 * @return a new {@link SystemSettingBuilder}
 	 */
 	public static SystemSettingBuilder<Double> newDoubleSetting(final String systemProperty, final String description) {
-		return new SystemSettingBuilder<>(Double.class).systemProperty(systemProperty).description(description);
+		return SystemSettingBuilder.singleValued(Double.class).systemProperty(systemProperty).description(description);
 	}
 
 	/**
 	 * Returns a new builder for a system setting with a {@link Float} value
 	 * type.
 	 * 
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
 	 * @return a new {@link SystemSettingBuilder}
 	 */
 	public static SystemSettingBuilder<Float> newFloatSetting(final String systemProperty, final String description) {
-		return new SystemSettingBuilder<>(Float.class).systemProperty(systemProperty).description(description);
+		return SystemSettingBuilder.singleValued(Float.class).systemProperty(systemProperty).description(description);
 	}
 
 	/**
 	 * Returns a new builder for a system setting with a {@link Integer} value
 	 * type.
 	 * 
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
 	 * @return a new {@link SystemSettingBuilder}
 	 */
 	public static SystemSettingBuilder<Integer> newIntegerSetting(final String systemProperty, final String description) {
-		return new SystemSettingBuilder<>(Integer.class).systemProperty(systemProperty).description(description);
+		return SystemSettingBuilder.singleValued(Integer.class).systemProperty(systemProperty).description(description);
 	}
 
 	/**
 	 * Returns a new builder for a system setting with a {@link Long} value
 	 * type.
 	 * 
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
 	 * @return a new {@link SystemSettingBuilder}
 	 */
 	public static SystemSettingBuilder<Long> newLongSetting(final String systemProperty, final String description) {
-		return new SystemSettingBuilder<>(Long.class).systemProperty(systemProperty).description(description);
+		return SystemSettingBuilder.singleValued(Long.class).systemProperty(systemProperty).description(description);
 	}
 
 	/**
 	 * Returns a new builder for a system setting with a {@link String} value
 	 * type.
 	 * 
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
 	 * @return a new {@link SystemSettingBuilder}
 	 */
 	public static SystemSettingBuilder<String> newStringSetting(final String systemProperty, final String description) {
-		return new SystemSettingBuilder<>(String.class).systemProperty(systemProperty).description(description);
+		return SystemSettingBuilder.singleValued(String.class).systemProperty(systemProperty).description(description);
+	}
+
+	/**
+	 * Returns a new builder for a system setting with multiple {@link String}
+	 * values. The values are expected to be separated by a comma.
+	 * 
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
+	 * @return a new {@link SystemSettingBuilder}
+	 */
+	public static SystemSettingBuilder<List<String>> newMultiValueStringSetting(final String systemProperty, final String description) {
+		return SystemSettingBuilder.multiValued(String.class).systemProperty(systemProperty).description(description);
 	}
 
 	final String environmentVariable;
 	final String systemProperty;
 	final String description;
 	final T defaultValue;
-	final Class<T> valueType;
+	final ValueConverter<T> converter;
 
 	/**
 	 * Creates a new system setting.
@@ -119,7 +159,7 @@ public final class SystemSetting<T> {
 	 * @param defaultValue
 	 *            a default value
 	 */
-	SystemSetting(final String environmentVariable, final String systemProperty, final String description, final Class<T> valueType, final T defaultValue) {
+	SystemSetting(final String environmentVariable, final String systemProperty, final String description, final ValueConverter<T> converter, final T defaultValue) {
 		if (StringUtils.isBlank(environmentVariable))
 			throw new IllegalArgumentException("Please specify a non blank environment variable!");
 		if (StringUtils.isBlank(systemProperty))
@@ -129,25 +169,8 @@ public final class SystemSetting<T> {
 		this.environmentVariable = environmentVariable;
 		this.systemProperty = systemProperty;
 		this.description = description;
-		this.valueType = Objects.requireNonNull(valueType, "Please specify a value type!");
+		this.converter = Objects.requireNonNull(converter, "Please specify a value converter!");
 		this.defaultValue = defaultValue;
-	}
-
-	@SuppressWarnings("unchecked")
-	private T convertToValueType(final String value) {
-		if (valueType.isInstance(value))
-			return (T) value;
-		if (valueType.equals(Boolean.class))
-			return (T) new Boolean(Boolean.parseBoolean(value));
-		if (valueType.equals(Integer.class))
-			return (T) new Integer(Integer.parseInt(value));
-		if (valueType.equals(Long.class))
-			return (T) new Long(Long.parseLong(value));
-		if (valueType.equals(Double.class))
-			return (T) new Double(Double.parseDouble(value));
-		if (valueType.equals(Float.class))
-			return (T) new Float(Float.parseFloat(value));
-		throw new IllegalArgumentException("Unsupported value type: " + valueType);
 	}
 
 	@Override
@@ -159,7 +182,7 @@ public final class SystemSetting<T> {
 		if (!(obj instanceof SystemSetting))
 			return false;
 		final SystemSetting<?> other = (SystemSetting<?>) obj;
-		return Objects.equals(environmentVariable, other.environmentVariable) && Objects.equals(systemProperty, other.systemProperty) && Objects.equals(description, other.description) && Objects.equals(valueType, other.valueType) && Objects.equals(defaultValue, other.defaultValue);
+		return Objects.equals(environmentVariable, other.environmentVariable) && Objects.equals(systemProperty, other.systemProperty) && Objects.equals(description, other.description) && Objects.equals(converter, other.converter) && Objects.equals(defaultValue, other.defaultValue);
 	}
 
 	/**
@@ -190,7 +213,7 @@ public final class SystemSetting<T> {
 		if (null != value) {
 			try {
 				LOG.debug("Using value {} from environment variable {}", value, environmentVariable);
-				return convertToValueType(value);
+				return converter.convertValue(value);
 			} catch (final IllegalArgumentException e) {
 				LOG.warn("Unable to parse environment variable '{}': {}", environmentVariable, e);
 			}
@@ -199,7 +222,7 @@ public final class SystemSetting<T> {
 		if (null != value) {
 			try {
 				LOG.debug("Using value {} from system property {}", value, systemProperty);
-				return convertToValueType(value);
+				return converter.convertValue(value);
 			} catch (final IllegalArgumentException e) {
 				LOG.warn("Unable to parse syste property '{}': {}", systemProperty, e);
 			}
@@ -241,12 +264,12 @@ public final class SystemSetting<T> {
 		String value = System.getenv(environmentVariable);
 		if (null != value) {
 			LOG.debug("Using value {} from environment variable {}", value, environmentVariable);
-			return convertToValueType(value);
+			return converter.convertValue(value);
 		}
 		value = System.getProperty(systemProperty);
 		if (null != value) {
 			LOG.debug("Using value {} from system property {}", value, systemProperty);
-			return convertToValueType(value);
+			return converter.convertValue(value);
 		}
 		LOG.debug("No value set for {}/{}, using default value {}", environmentVariable, systemProperty, defaultValue);
 		return defaultValue;
@@ -254,7 +277,7 @@ public final class SystemSetting<T> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(environmentVariable, systemProperty, description, defaultValue, valueType);
+		return Objects.hash(environmentVariable, systemProperty, description, defaultValue, converter);
 	}
 
 	/**
