@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2013 Tasktop Technologies and others.
  * All rights reserved.
- *  
- * This program and the accompanying materials are made available under the 
+ *
+ * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html.
- * 
+ *
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
@@ -13,9 +13,11 @@ package org.eclipse.gyrex.server.settings;
 
 import java.util.Objects;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * A builder to create {@link SystemSetting} instances in a fluent way.
- * 
+ *
  * @param <T>
  *            the value type (see {@link SystemSetting} for supported types)
  */
@@ -34,11 +36,15 @@ public final class SystemSettingBuilder<T> {
 		return result.toString();
 	}
 
-	private final Class<T> type;
-	private String environmentVariable, systemProperty, description;
+	@VisibleForTesting
+	final Class<T> type;
+
+	@VisibleForTesting
+	String environmentVariable, systemProperty, description;
 
 	private T defaultValue;
 
+	@VisibleForTesting
 	SystemSettingBuilder(final Class<T> valueType) {
 		type = valueType;
 	}
@@ -52,7 +58,7 @@ public final class SystemSettingBuilder<T> {
 	 * All chars other than US-ASCII 0-9, a-z and A-Z will be replaced by an
 	 * underscore ('_').
 	 * </p>
-	 * 
+	 *
 	 * @return a new {@link SystemSetting} instance
 	 */
 	public SystemSetting<T> create() {
@@ -64,7 +70,7 @@ public final class SystemSettingBuilder<T> {
 
 	/**
 	 * Sets the description.
-	 * 
+	 *
 	 * @param description
 	 *            the description to set
 	 * @return this {@link SystemSettingBuilder}
@@ -76,7 +82,7 @@ public final class SystemSettingBuilder<T> {
 
 	/**
 	 * Sets the environment variable.
-	 * 
+	 *
 	 * @param environmentVariable
 	 *            the environment variable to set
 	 * @return this {@link SystemSettingBuilder}
@@ -88,7 +94,7 @@ public final class SystemSettingBuilder<T> {
 
 	/**
 	 * Sets the system property.
-	 * 
+	 *
 	 * @param systemProperty
 	 *            the system property to set
 	 * @return this {@link SystemSettingBuilder}
@@ -100,7 +106,7 @@ public final class SystemSettingBuilder<T> {
 
 	/**
 	 * Sets the default value.
-	 * 
+	 *
 	 * @param defaultValue
 	 *            the default value to set
 	 * @return this {@link SystemSettingBuilder}
