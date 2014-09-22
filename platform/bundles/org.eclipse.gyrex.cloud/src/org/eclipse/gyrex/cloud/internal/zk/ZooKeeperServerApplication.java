@@ -39,7 +39,6 @@ public class ZooKeeperServerApplication extends BaseApplication {
 	private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperServerApplication.class);
 
 	static volatile ZooKeeperGateApplication connectedGateApplication;
-
 	private ZooKeeperServer zkServer;
 	private Object factory;
 
@@ -68,7 +67,7 @@ public class ZooKeeperServerApplication extends BaseApplication {
 	}
 
 	@Override
-	protected void doStart(final Map arguments) throws Exception {
+	protected void doStart(final Map<?, ?> arguments) throws Exception {
 		try {
 			runStandaloneEmbedded();
 		} catch (final Exception e) {
@@ -145,7 +144,7 @@ public class ZooKeeperServerApplication extends BaseApplication {
 		// clean old logs
 		PurgeTxnLog.purge(dataDir, snapDir, 3);
 
-		// create standalone server
+		// create stand-alone server
 		zkServer = new ZooKeeperServer();
 		zkServer.setTxnLogFactory(new FileTxnSnapLog(dataDir, snapDir));
 
@@ -154,8 +153,11 @@ public class ZooKeeperServerApplication extends BaseApplication {
 		zkServer.setMinSessionTimeout(2 * ZooKeeperServer.DEFAULT_TICK_TIME);
 		zkServer.setMaxSessionTimeout(10 * ZooKeeperServer.DEFAULT_TICK_TIME);
 
+		// use the default client port for the embedded server
+		final int port = ZooKeeperGateConfig.getDefaultPort();
+
 		// start factory on default port
-		factory = createFactory(new InetSocketAddress(2181), 10);
+		factory = createFactory(new InetSocketAddress(port), 10);
 
 		// start server
 		LOG.info("Starting ZooKeeper standalone server.");

@@ -40,7 +40,7 @@ public class ZooKeeperGateApplication extends BaseApplication {
 
 		/**
 		 * Creates a new instance.
-		 * 
+		 *
 		 * @param executor
 		 * @param config
 		 * @param delay
@@ -119,8 +119,6 @@ public class ZooKeeperGateApplication extends BaseApplication {
 		}
 	}
 
-	private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperGateApplication.class);
-
 	/**
 	 * Initiates a reconnect with ZooKeeper.
 	 * <p>
@@ -132,7 +130,7 @@ public class ZooKeeperGateApplication extends BaseApplication {
 	 * Although this method is public, client must not call it directly. It is
 	 * dangerous.
 	 * </p>
-	 * 
+	 *
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public static void reconnect() {
@@ -150,6 +148,8 @@ public class ZooKeeperGateApplication extends BaseApplication {
 			gate.shutdown(true);
 		}
 	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperGateApplication.class);
 
 	private ScheduledExecutorService executor;
 	private volatile ZooKeeperGateConfig config;
@@ -178,7 +178,7 @@ public class ZooKeeperGateApplication extends BaseApplication {
 	}
 
 	@Override
-	protected void doStart(final Map arguments) throws Exception {
+	protected void doStart(final Map<?, ?> arguments) throws Exception {
 		// create initial config
 		refreshConfig();
 
@@ -210,7 +210,7 @@ public class ZooKeeperGateApplication extends BaseApplication {
 		executor.shutdownNow();
 		executor = null;
 
-		// unset gate application
+		// un-set gate application
 		ZooKeeperServerApplication.connectedGateApplication = null;
 
 		// shutdown ZooKeeper if still running

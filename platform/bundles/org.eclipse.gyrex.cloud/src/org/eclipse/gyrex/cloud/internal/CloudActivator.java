@@ -38,17 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 public class CloudActivator extends BaseBundleActivator {
 
-	static final Logger LOG = LoggerFactory.getLogger(CloudActivator.class);
-
-	/** SYMBOLIC_NAME */
-	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cloud";
-
-	/** shared instance (only set when active) */
-	private static final AtomicReference<CloudActivator> instanceRef = new AtomicReference<CloudActivator>();
-
 	/**
 	 * Returns the shared instance
-	 * 
+	 *
 	 * @return the shared instance
 	 */
 	public static CloudActivator getInstance() {
@@ -57,6 +49,14 @@ public class CloudActivator extends BaseBundleActivator {
 			throw new IllegalArgumentException(NLS.bind("Bundle {0} is not active.", SYMBOLIC_NAME));
 		return instance;
 	}
+
+	static final Logger LOG = LoggerFactory.getLogger(CloudActivator.class);
+
+	/** SYMBOLIC_NAME */
+	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.cloud";
+
+	/** shared instance (only set when active) */
+	private static final AtomicReference<CloudActivator> instanceRef = new AtomicReference<CloudActivator>();
 
 	private final AtomicReference<IServiceProxy<IPreferencesService>> preferenceServiceRef = new AtomicReference<IServiceProxy<IPreferencesService>>();
 	private final AtomicReference<IServiceProxy<EventAdmin>> eventAdminRef = new AtomicReference<IServiceProxy<EventAdmin>>();
@@ -128,7 +128,7 @@ public class CloudActivator extends BaseBundleActivator {
 
 	/**
 	 * Returns the nodeEnvironment.
-	 * 
+	 *
 	 * @return the nodeEnvironment
 	 */
 	public INodeEnvironment getNodeEnvironment() {

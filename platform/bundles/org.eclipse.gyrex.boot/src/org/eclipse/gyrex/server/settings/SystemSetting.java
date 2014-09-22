@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * applications are typically configured via system properties. This class
  * allows clients to support both worlds including typed access to values.
  * </p>
- * 
+ *
  * @param <T>
  *            the value type (currently only {@link String}, {@link Integer},
  *            {@link Long}, {@link Double}, {@link Float}, {@link Boolean} and
@@ -37,12 +37,10 @@ import org.slf4j.LoggerFactory;
  */
 public final class SystemSetting<T> {
 
-	final static Logger LOG = LoggerFactory.getLogger(SystemSetting.class);
-
 	/**
 	 * Returns a new builder for a system setting with a {@link Boolean} value
 	 * type.
-	 * 
+	 *
 	 * @param systemProperty
 	 *            The property name to read
 	 * @param description
@@ -56,7 +54,7 @@ public final class SystemSetting<T> {
 	/**
 	 * Returns a new builder for a system setting with a {@link Double} value
 	 * type.
-	 * 
+	 *
 	 * @param systemProperty
 	 *            The property name to read
 	 * @param description
@@ -70,7 +68,7 @@ public final class SystemSetting<T> {
 	/**
 	 * Returns a new builder for a system setting with a {@link Float} value
 	 * type.
-	 * 
+	 *
 	 * @param systemProperty
 	 *            The property name to read
 	 * @param description
@@ -84,7 +82,7 @@ public final class SystemSetting<T> {
 	/**
 	 * Returns a new builder for a system setting with a {@link Integer} value
 	 * type.
-	 * 
+	 *
 	 * @param systemProperty
 	 *            The property name to read
 	 * @param description
@@ -98,7 +96,7 @@ public final class SystemSetting<T> {
 	/**
 	 * Returns a new builder for a system setting with a {@link Long} value
 	 * type.
-	 * 
+	 *
 	 * @param systemProperty
 	 *            The property name to read
 	 * @param description
@@ -110,23 +108,9 @@ public final class SystemSetting<T> {
 	}
 
 	/**
-	 * Returns a new builder for a system setting with a {@link String} value
-	 * type.
-	 * 
-	 * @param systemProperty
-	 *            The property name to read
-	 * @param description
-	 *            A description of this property
-	 * @return a new {@link SystemSettingBuilder}
-	 */
-	public static SystemSettingBuilder<String> newStringSetting(final String systemProperty, final String description) {
-		return SystemSettingBuilder.singleValued(String.class).systemProperty(systemProperty).description(description);
-	}
-
-	/**
 	 * Returns a new builder for a system setting with multiple {@link String}
 	 * values. The values are expected to be separated by a comma.
-	 * 
+	 *
 	 * @param systemProperty
 	 *            The property name to read
 	 * @param description
@@ -137,6 +121,22 @@ public final class SystemSetting<T> {
 		return SystemSettingBuilder.multiValued(String.class).systemProperty(systemProperty).description(description);
 	}
 
+	/**
+	 * Returns a new builder for a system setting with a {@link String} value
+	 * type.
+	 *
+	 * @param systemProperty
+	 *            The property name to read
+	 * @param description
+	 *            A description of this property
+	 * @return a new {@link SystemSettingBuilder}
+	 */
+	public static SystemSettingBuilder<String> newStringSetting(final String systemProperty, final String description) {
+		return SystemSettingBuilder.singleValued(String.class).systemProperty(systemProperty).description(description);
+	}
+
+	final static Logger LOG = LoggerFactory.getLogger(SystemSetting.class);
+
 	final String environmentVariable;
 	final String systemProperty;
 	final String description;
@@ -145,7 +145,7 @@ public final class SystemSetting<T> {
 
 	/**
 	 * Creates a new system setting.
-	 * 
+	 *
 	 * @param environmentVariable
 	 *            name of the environment variable (must not be
 	 *            <code>null</code>)
@@ -205,7 +205,7 @@ public final class SystemSetting<T> {
 	 * with the full name of this class and the lookup will continue as
 	 * specified above.
 	 * </p>
-	 * 
+	 *
 	 * @return the system setting value
 	 */
 	public T get() {
@@ -224,7 +224,7 @@ public final class SystemSetting<T> {
 				LOG.debug("Using value {} from system property {}", value, systemProperty);
 				return converter.convertValue(value);
 			} catch (final IllegalArgumentException e) {
-				LOG.warn("Unable to parse syste property '{}': {}", systemProperty, e);
+				LOG.warn("Unable to parse system property '{}': {}", systemProperty, e);
 			}
 		}
 		LOG.debug("No value set for {}/{}, using default value {}", environmentVariable, systemProperty, defaultValue);
@@ -233,7 +233,7 @@ public final class SystemSetting<T> {
 
 	/**
 	 * Returns the default value.
-	 * 
+	 *
 	 * @return the default value
 	 */
 	public T getDefaultValue() {
@@ -254,7 +254,7 @@ public final class SystemSetting<T> {
 	 * <li>Return a given default value.</li>
 	 * <ol>
 	 * </p>
-	 * 
+	 *
 	 * @return the system setting value
 	 * @throws IllegalArgumentException
 	 *             in case a value cannot be converted to the required value
@@ -288,7 +288,7 @@ public final class SystemSetting<T> {
 	 * In case no default value is set, this method will return true if
 	 * {@link #get()} returns a non <code>null</code> value.
 	 * </p>
-	 * 
+	 *
 	 * @return <code>true</code> if the value returned by {@link #get()} is
 	 *         different than the {@link #getDefaultValue() default value},
 	 *         <code>false</code> otherwise
@@ -300,7 +300,7 @@ public final class SystemSetting<T> {
 	/**
 	 * Convenient method that indicates if the value returned by {@link #get()}
 	 * is a {@link Boolean} and equal to <code>true</code>
-	 * 
+	 *
 	 * @return <code>true</code> if the value returned by {@link #get()} is
 	 *         {@link Boolean} and equal to {@link Boolean#TRUE},
 	 *         <code>false</code> otherwise

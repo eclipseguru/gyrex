@@ -31,7 +31,7 @@ import org.slf4j.Logger;
  * This class should be subclassed by clients providing an application to Gyrex.
  * However, its usage is not mandatory.
  * </p>
- * 
+ *
  * @see IApplication
  */
 public abstract class BaseApplication implements IApplication {
@@ -47,19 +47,10 @@ public abstract class BaseApplication implements IApplication {
 
 	}
 
-	/** shutdown timeout */
-	private static final long SHUTDOWN_TIMEOUT = 60000L;
-
-	/** Exit object indicating error termination */
-	public static final Integer EXIT_ERROR = new Integer(1);
-
-	/** the singleton stop signals */
-	private static final WeakHashMap<Class<? extends BaseApplication>, CountDownLatch> singletonStopSignals = new WeakHashMap<Class<? extends BaseApplication>, CountDownLatch>();
-
 	/**
 	 * Convenience method to return {@link IApplicationContext#APPLICATION_ARGS}
 	 * from the specified map.
-	 * 
+	 *
 	 * @param arguments
 	 *            the map with application arguments retrieved from
 	 *            {@link IApplicationContext#getArguments()}
@@ -69,16 +60,23 @@ public abstract class BaseApplication implements IApplication {
 	 *             if the {@link IApplicationContext#APPLICATION_ARGS} are
 	 *             missing or of wrong type
 	 */
-	protected static final String[] getApplicationArguments(final Map arguments) throws IllegalStateException {
+	protected static final String[] getApplicationArguments(final Map<?, ?> arguments) throws IllegalStateException {
 		final Object args = arguments.get(IApplicationContext.APPLICATION_ARGS);
-		if (null == args) {
+		if (null == args)
 			throw new IllegalStateException("application arguments missing");
-		}
-		if (!(args instanceof String[])) {
+		if (!(args instanceof String[]))
 			throw new IllegalStateException("application arguments of wrong type");
-		}
 		return (String[]) args;
 	}
+
+	/** shutdown timeout */
+	private static final long SHUTDOWN_TIMEOUT = 60000L;
+
+	/** Exit object indicating error termination */
+	public static final Integer EXIT_ERROR = new Integer(1);
+
+	/** the singleton stop signals */
+	private static final WeakHashMap<Class<? extends BaseApplication>, CountDownLatch> singletonStopSignals = new WeakHashMap<Class<? extends BaseApplication>, CountDownLatch>();
 
 	/** enabled or disables debug logging */
 	protected boolean debug = false;
@@ -101,12 +99,12 @@ public abstract class BaseApplication implements IApplication {
 	 * Implementors should do whatever is necessary to start the application.
 	 * However, they must not block when the application is running but return.
 	 * </p>
-	 * 
+	 *
 	 * @param arguments
 	 *            the map with application arguments retrieved from
 	 *            {@link IApplicationContext#getArguments()}
 	 */
-	protected abstract void doStart(Map arguments) throws Exception;
+	protected abstract void doStart(Map<?, ?> arguments) throws Exception;
 
 	/**
 	 * Stops the application.
@@ -119,21 +117,21 @@ public abstract class BaseApplication implements IApplication {
 	 * Applications can return any object they like. If an Integer is returned
 	 * it is treated as the program exit code if Eclipse is exiting.
 	 * </p>
-	 * 
+	 *
 	 * @return the return value of the application
 	 */
 	protected abstract Object doStop();
 
 	/**
 	 * Returns the logger that may be used for logging purposes.
-	 * 
+	 *
 	 * @return the application logger
 	 */
 	protected abstract Logger getLogger();
 
 	/**
 	 * Returns a human readable application name.
-	 * 
+	 *
 	 * @return the name (may not be null)
 	 */
 	public String getName() {
@@ -148,16 +146,15 @@ public abstract class BaseApplication implements IApplication {
 
 	private boolean initialzeStopSignal(final CountDownLatch stopSignal) {
 		synchronized (singletonStopSignals) {
-			if (singletonStopSignals.containsKey(getClass())) {
+			if (singletonStopSignals.containsKey(getClass()))
 				return false;
-			}
 			return null == singletonStopSignals.put(getClass(), stopSignal);
 		}
 	}
 
 	/**
 	 * Convenience method to indicate if the application is active.
-	 * 
+	 *
 	 * @return <code>true</code> if active, <code>false</code> otherwise
 	 */
 	protected boolean isActive() {
@@ -176,12 +173,12 @@ public abstract class BaseApplication implements IApplication {
 	 * application will not react to any stop requests. Typically, work is
 	 * performed asynchronously (for example, using Eclipse Jobs).
 	 * </p>
-	 * 
+	 *
 	 * @param arguments
 	 *            the map with application arguments retrieved from
 	 *            {@link IApplicationContext#getArguments()}
 	 */
-	protected void onApplicationStarted(final Map arguments) {
+	protected void onApplicationStarted(final Map<?, ?> arguments) {
 		// empty
 	}
 
@@ -198,14 +195,14 @@ public abstract class BaseApplication implements IApplication {
 	 * to starting the application. However, be aware that the application has
 	 * not been started so essential application services won't be available.
 	 * </p>
-	 * 
+	 *
 	 * @param arguments
 	 *            the map with application arguments retrieved from
 	 *            {@link IApplicationContext#getArguments()}
 	 * @throws Exception
 	 *             in case of errors
 	 */
-	protected void onBeforeStart(final Map arguments) throws Exception {
+	protected void onBeforeStart(final Map<?, ?> arguments) throws Exception {
 		// empty
 	}
 
@@ -217,9 +214,8 @@ public abstract class BaseApplication implements IApplication {
 
 		// set stop signal to enforce singleton style
 		final CountDownLatch stopSignal = new CountDownLatch(1);
-		if (!initialzeStopSignal(stopSignal)) {
+		if (!initialzeStopSignal(stopSignal))
 			throw new IllegalStateException(String.format("%s already started!", getName()));
-		}
 
 		try {
 			if (debug) {

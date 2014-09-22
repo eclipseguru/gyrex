@@ -26,46 +26,30 @@ import org.slf4j.LoggerFactory;
  */
 public class ZooKeeperGateConfig {
 
-	/** default session timeout (in ms) */
-	private static final int DEFAULT_SESSION_TIMEOUT = 30000;
+	static String getDefaultConnectString() {
+		if (defaultConnectString.isSet())
+			return defaultConnectString.get();
 
-	private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperGateConfig.class);
+		if (Platform.inDevelopmentMode())
+			return "localhost:" + getDefaultPort();
 
-	public static final String PREF_NODE_ZOOKEEPER = "zookeeper";
-	public static final String PREF_KEY_CLIENT_CONNECT_STRING = "clientConnectString";
-	public static final String PREF_KEY_CLIENT_TIMEOUT = "clientTimeout";
-
-	private static final SystemSetting<Integer> defaultSessionTimeout = newIntegerSetting("gyrex.zookeeper.sessionTimeout", "Default session timeout for the ZooKeeper client.").usingDefault(DEFAULT_SESSION_TIMEOUT).create();;
-	private static final SystemSetting<String> defaultConnectString = newStringSetting("gyrex.zookeeper.connectString", "Default connect string for the ZooKeeper client.").usingDefault(Platform.inDevelopmentMode() ? "localhost:2181" : null).create();;
-
-	private final String nodeId;
-	private String connectString;
-	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
-
-	public ZooKeeperGateConfig(final String nodeId) {
-		this.nodeId = nodeId;
+		return null; // no default otherwise
 	}
 
-	/**
-	 * Returns the connectString.
-	 * 
-	 * @return the connectString
-	 */
-	public String getConnectString() {
-		return connectString;
+	static int getDefaultPort() {
+		if (defaultPort.isSet()) {
+			final int port = defaultPort.get();
+			if ((port >= 1) && (port <= 65535))
+				return port;
+			else {
+				LOG.warn("ZooKeeper port {} is invalid. Using default.", port);
+			}
+		}
+
+		return Platform.getInstancePort(defaultPort.getDefaultValue());
 	}
 
-	/**
-	 * Reads the connect string from the preferences.
-	 * 
-	 * @return the connect string
-	 */
-	private String getConnectStringFromPreferences() {
-		// check for node specific string
-		return CloudActivator.getInstance().getPreferenceService().getString(CloudActivator.SYMBOLIC_NAME, PREF_NODE_ZOOKEEPER + "/" + PREF_KEY_CLIENT_CONNECT_STRING, defaultConnectString.get(), null);
-	}
-
-	private int getDefaultSessionTimeout() {
+	static int getDefaultSessionTimeout() {
 		final String sessionTimeoutValue = System.getProperty("gyrex.zookeeper.sessionTimeout");
 		final int sessionTimeout = defaultSessionTimeout.get();
 		if (sessionTimeout > 5000)
@@ -78,9 +62,52 @@ public class ZooKeeperGateConfig {
 		return DEFAULT_SESSION_TIMEOUT;
 	}
 
+	/** default session timeout (in ms) */
+	private static final int DEFAULT_SESSION_TIMEOUT = 30000;
+
+	private static final int DEFAULT_ZOOKEEPER_PORT = 2181;
+
+	private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperGateConfig.class);
+	public static final String PREF_NODE_ZOOKEEPER = "zookeeper";
+	public static final String PREF_KEY_CLIENT_CONNECT_STRING = "clientConnectString";;
+
+	public static final String PREF_KEY_CLIENT_TIMEOUT = "clientTimeout";
+	private static final SystemSetting<Integer> defaultSessionTimeout = newIntegerSetting("gyrex.zookeeper.sessionTimeout", "Default session timeout for the ZooKeeper client.").usingDefault(DEFAULT_SESSION_TIMEOUT).create();
+	private static final SystemSetting<String> defaultConnectString = newStringSetting("gyrex.zookeeper.connectString", "Default connect string for the ZooKeeper client.").create();
+	private static final SystemSetting<Integer> defaultPort = newIntegerSetting("gyrex.zookeeper.port", "Default port for connecting to Zookeeper.").usingDefault(DEFAULT_ZOOKEEPER_PORT).create();
+
+	private final String nodeId;
+
+	private String connectString;
+
+	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
+
+	public ZooKeeperGateConfig(final String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	/**
+	 * Returns the connectString.
+	 *
+	 * @return the connectString
+	 */
+	public String getConnectString() {
+		return connectString;
+	}
+
+	/**
+	 * Reads the connect string from the preferences.
+	 *
+	 * @return the connect string
+	 */
+	private String getConnectStringFromPreferences() {
+		// check for node specific string, otherwise use a default
+		return CloudActivator.getInstance().getPreferenceService().getString(CloudActivator.SYMBOLIC_NAME, PREF_NODE_ZOOKEEPER + "/" + PREF_KEY_CLIENT_CONNECT_STRING, getDefaultConnectString(), null);
+	}
+
 	/**
 	 * Returns the sessionTimeout.
-	 * 
+	 *
 	 * @return the sessionTimeout
 	 */
 	public int getSessionTimeout() {
@@ -89,7 +116,7 @@ public class ZooKeeperGateConfig {
 
 	/**
 	 * Reads the connect string from the preferences.
-	 * 
+	 *
 	 * @return the connect string
 	 */
 	private int getSessionTimeoutFromPreferences() {
@@ -111,7 +138,7 @@ public class ZooKeeperGateConfig {
 
 	/**
 	 * Sets the connectString.
-	 * 
+	 *
 	 * @param connectString
 	 *            the connectString to set
 	 */
@@ -121,7 +148,7 @@ public class ZooKeeperGateConfig {
 
 	/**
 	 * Sets the sessionTimeout.
-	 * 
+	 *
 	 * @param sessionTimeout
 	 *            the sessionTimeout to set
 	 */
