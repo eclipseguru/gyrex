@@ -56,23 +56,6 @@ import org.slf4j.LoggerFactory;
 
 public class JettyEngineApplication implements IApplication {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JettyEngineApplication.class);
-
-	// OSGi Http Service suggest these properties for setting the default ports
-	private static final String ORG_OSGI_SERVICE_HTTP_PORT = "org.osgi.service.http.port"; //$NON-NLS-1$
-//	private static final String ORG_OSGI_SERVICE_HTTP_PORT_SECURE = "org.osgi.service.http.port.secure"; //$NON-NLS-1$
-
-	/** INTEGER */
-	private static final SystemSetting<Integer> httpServicePort = SystemSetting.newIntegerSetting(ORG_OSGI_SERVICE_HTTP_PORT, "Port for the OSGi HttpService to listen on (will only be used if no channels are configured).").usingDefault(8080).create();
-
-	/** Exit object indicating error termination */
-	private static final Integer EXIT_ERROR = Integer.valueOf(1);
-
-	private static final AtomicReference<CountDownLatch> stopSignalRef = new AtomicReference<CountDownLatch>(null);
-	private static final AtomicReference<Throwable> jettyErrorRef = new AtomicReference<Throwable>();
-
-	private static Map<MetricSet, ServiceRegistration<MetricSet>> metricsRegistrations = new ConcurrentHashMap<>();
-
 	/**
 	 * Force a shutdown of the ZooKeeper gate.
 	 */
@@ -106,6 +89,22 @@ public class JettyEngineApplication implements IApplication {
 			}
 		}
 	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(JettyEngineApplication.class);
+
+	// OSGi Http Service suggest these properties for setting the default ports
+	private static final String ORG_OSGI_SERVICE_HTTP_PORT = "org.osgi.service.http.port"; //$NON-NLS-1$
+//	private static final String ORG_OSGI_SERVICE_HTTP_PORT_SECURE = "org.osgi.service.http.port.secure"; //$NON-NLS-1$
+	private static final SystemSetting<Integer> httpServicePort = SystemSetting.newIntegerSetting(ORG_OSGI_SERVICE_HTTP_PORT, "Port for the OSGi HttpService to listen on (will only be used if no channels are configured).").usingDefault(Platform.getInstancePort(8080)).create();
+
+	/** Exit object indicating error termination */
+	private static final Integer EXIT_ERROR = Integer.valueOf(1);
+
+	private static final AtomicReference<CountDownLatch> stopSignalRef = new AtomicReference<CountDownLatch>(null);
+
+	private static final AtomicReference<Throwable> jettyErrorRef = new AtomicReference<Throwable>();
+
+	private static Map<MetricSet, ServiceRegistration<MetricSet>> metricsRegistrations = new ConcurrentHashMap<>();
 
 	private void configureServer(final Server server) {
 		if (JettyDebug.engine) {
