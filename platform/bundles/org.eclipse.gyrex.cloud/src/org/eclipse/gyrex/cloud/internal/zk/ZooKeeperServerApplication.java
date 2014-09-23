@@ -16,7 +16,6 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
-import org.eclipse.gyrex.cloud.internal.CloudActivator;
 import org.eclipse.gyrex.cloud.internal.CloudDebug;
 import org.eclipse.gyrex.common.internal.applications.BaseApplication;
 import org.eclipse.gyrex.server.Platform;
@@ -25,6 +24,7 @@ import org.eclipse.core.runtime.IPath;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.zookeeper.server.PurgeTxnLog;
+import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 
@@ -47,23 +47,6 @@ public class ZooKeeperServerApplication extends BaseApplication {
 	 */
 	public ZooKeeperServerApplication() {
 		debug = CloudDebug.zooKeeperServer;
-	}
-
-	private Object createFactory(final InetSocketAddress socketAddress, final int maxClientConnextions) throws Exception {
-		// try ZooKeeper 3.4 way
-		try {
-			return CloudActivator.getInstance().getBundle().loadClass("org.apache.zookeeper.server.ServerCnxnFactory").getMethod("createFactory", InetSocketAddress.class, Integer.TYPE).invoke(null, socketAddress, maxClientConnextions);
-		} catch (final Exception e) {
-			LOG.debug("ZooKeeper 3.4 API not available. Falling back to ZooKeeper 3.3 API.");
-		}
-
-		// fallback to ZooKeeper 3.3 way
-		// FIXME: remove this once we upgraded (bug 361524)
-		try {
-			return CloudActivator.getInstance().getBundle().loadClass("org.apache.zookeeper.server.NIOServerCnxn$Factory").getConstructor(InetSocketAddress.class, Integer.TYPE).newInstance(socketAddress, maxClientConnextions);
-		} catch (final Exception e) {
-			throw new IllegalStateException("Unable to create ZooKeeper NIO Factory using 3.3 API.", e);
-		}
 	}
 
 	@Override
@@ -157,7 +140,7 @@ public class ZooKeeperServerApplication extends BaseApplication {
 		final int port = ZooKeeperGateConfig.getDefaultPort();
 
 		// start factory on default port
-		factory = createFactory(new InetSocketAddress(port), 10);
+		factory = ServerCnxnFactory.createFactory(new InetSocketAddress(port), 10);
 
 		// start server
 		LOG.info("Starting ZooKeeper standalone server.");
