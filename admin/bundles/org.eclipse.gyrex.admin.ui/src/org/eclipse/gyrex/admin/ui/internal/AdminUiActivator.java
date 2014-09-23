@@ -78,22 +78,10 @@ import org.slf4j.LoggerFactory;
  */
 public class AdminUiActivator extends BaseBundleActivator {
 
-	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui"; //$NON-NLS-1$
-
-	private static final String IMAGE_REGISTRY = SYMBOLIC_NAME + "#imageRegistry";
-	private static final int DEFAULT_ADMIN_PORT = 3110;
-	private static final Logger LOG = LoggerFactory.getLogger(AdminUiActivator.class);
-
-	private static volatile AdminUiActivator instance;
-	private static volatile Server server;
-
-	private static final SystemSetting<Boolean> useSslConnector = SystemSetting.newBooleanSetting("gyrex.admin.secure", "enables the Gyrex Admin UI to be deliviered via HTTPS instead of plain HTTP").usingDefault(Boolean.FALSE).create();
-	private static final SystemSetting<String> authenticationConfigString = SystemSetting.newStringSetting("gyrex.admin.auth", "authentication string containing username and password hash").create();
-
 	/**
 	 * Returns an image descriptor for the image file at the given plug-in
 	 * relative path
-	 * 
+	 *
 	 * @param path
 	 *            the path
 	 * @return the image descriptor
@@ -104,7 +92,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 	/**
 	 * Returns the instance.
-	 * 
+	 *
 	 * @return the instance
 	 */
 	public static AdminUiActivator getInstance() {
@@ -114,10 +102,22 @@ public class AdminUiActivator extends BaseBundleActivator {
 		return activator;
 	}
 
+	public static final String SYMBOLIC_NAME = "org.eclipse.gyrex.admin.ui"; //$NON-NLS-1$
+	private static final String IMAGE_REGISTRY = SYMBOLIC_NAME + "#imageRegistry";
+
+	private static final int DEFAULT_ADMIN_PORT = 3110;
+	private static final Logger LOG = LoggerFactory.getLogger(AdminUiActivator.class);
+
+	private static volatile AdminUiActivator instance;
+	private static volatile Server server;
+
+	private static final SystemSetting<Boolean> useSslConnector = SystemSetting.newBooleanSetting("gyrex.admin.secure", "enables the Gyrex Admin UI to be deliviered via HTTPS instead of plain HTTP").usingDefault(Boolean.FALSE).create();
+	private static final SystemSetting<String> authenticationConfigString = SystemSetting.newStringSetting("gyrex.admin.auth", "authentication string containing username and password hash").create();
+	private static final SystemSetting<Integer> adminHttpPort = SystemSetting.newIntegerSetting("gyrex.admin.http.port", "port of the Gyrex Admin UI").usingDefault(Platform.getInstancePort(DEFAULT_ADMIN_PORT)).create();
+	private static final SystemSetting<String> adminHttpHost = SystemSetting.newStringSetting("gyrex.admin.http.host", "host address the Gyrex Admin UI should accept requests on").create();
+
 	private ApplicationRunner adminApplicationRunner;
 	private StatusTracker statusTracker;
-	private int adminPort;
-	private String adminHost;
 
 	/**
 	 * The constructor
@@ -133,14 +133,11 @@ public class AdminUiActivator extends BaseBundleActivator {
 
 		final ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpConfiguration));
 
-		connector.setPort(adminPort);
-		if (null != adminHost) {
-			connector.setHost(adminHost);
+		connector.setPort(adminHttpPort.get());
+		if (adminHttpHost.isSet()) {
+			connector.setHost(adminHttpHost.get());
 		}
 		connector.setIdleTimeout(60000);
-		// TODO: (Jetty9?) connector.setLowResourcesConnections(20000);
-		// TODO: (Jetty9?) connector.setLowResourcesMaxIdleTime(5000);
-		// TODO: (Jetty9?) connector.setForwarded(true);
 
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=356988 for an issue
 		// with configuring the connector
@@ -169,18 +166,15 @@ public class AdminUiActivator extends BaseBundleActivator {
 			final HttpConfiguration httpConfiguration = new HttpConfiguration();
 			httpConfiguration.setSendServerVersion(false);
 			httpConfiguration.setSendDateHeader(false);
-			httpConfiguration.setSecurePort(adminPort);
+			httpConfiguration.setSecurePort(adminHttpPort.get());
 
 			final ServerConnector connector = new ServerConnector(server, sslContextFactory, new HttpConnectionFactory(httpConfiguration));
 
-			connector.setPort(adminPort);
-			if (null != adminHost) {
-				connector.setHost(adminHost);
+			connector.setPort(adminHttpPort.get());
+			if (adminHttpHost.isSet()) {
+				connector.setHost(adminHttpHost.get());
 			}
 			connector.setIdleTimeout(60000);
-			// TODO: (Jetty9?) connector.setLowResourcesConnections(20000);
-			// TODO: (Jetty9?) connector.setLowResourcesMaxIdleTime(5000);
-			// TODO: (Jetty9?) connector.setForwarded(true);
 
 			server.addConnector(connector);
 		} catch (final Exception e) {
@@ -282,14 +276,6 @@ public class AdminUiActivator extends BaseBundleActivator {
 	@Override
 	protected void doStart(final BundleContext context) throws Exception {
 		instance = this;
-
-		try {
-			// set to default admin port if null or not a number
-			adminPort = Integer.valueOf(context.getProperty("gyrex.admin.http.port"));
-		} catch (final NumberFormatException nfe) {
-			adminPort = DEFAULT_ADMIN_PORT;
-		}
-		adminHost = context.getProperty("gyrex.admin.http.host");
 
 		statusTracker = new StatusTracker(context);
 		statusTracker.open();
