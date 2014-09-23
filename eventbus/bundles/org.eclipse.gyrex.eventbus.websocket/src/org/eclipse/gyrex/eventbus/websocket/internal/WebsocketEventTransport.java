@@ -84,7 +84,7 @@ public class WebsocketEventTransport implements IEventTransport {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebsocketEventTransport.class);
 
-	private static final SystemSetting<Integer> eventsPort = SystemSetting.newIntegerSetting("gyrex.event.websocket.port", "Default port for web socket based event transport.").usingDefault(3111).create();
+	private static final SystemSetting<Integer> eventsPort = SystemSetting.newIntegerSetting("gyrex.event.websocket.port", "Default port for web socket based event transport.").usingDefault(Platform.getInstancePort(3111)).create();
 	private static final AtomicReference<Server> serverRef = new AtomicReference<Server>();
 	private static final AtomicReference<WebSocketClient> clientRef = new AtomicReference<WebSocketClient>();
 
@@ -222,7 +222,7 @@ public class WebsocketEventTransport implements IEventTransport {
 
 		try {
 			// try connection
-			final URI echoUri = new URI("ws://" + address + ":" + Platform.getInstancePort(eventsPort.get()) + "/eventbus/");
+			final URI echoUri = new URI("ws://" + address + ":" + eventsPort.get() + "/eventbus/");
 			client.connect(sender, echoUri).get();
 			return true;
 		} catch (final CancellationException e) {
@@ -324,7 +324,7 @@ public class WebsocketEventTransport implements IEventTransport {
 			httpConfiguration.setSendDateHeader(false);
 
 			final ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpConfiguration));
-			connector.setPort(Platform.getInstancePort(eventsPort.get()));
+			connector.setPort(eventsPort.get());
 			connector.setIdleTimeout(60000);
 			server.addConnector(connector);
 
