@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.gyrex.junit.internal.JUnitActivator
 Bundle-Vendor: Eclipse Gyrex
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: junit.framework;version="4.10.0",
+Import-Package: com.google.common.base;version="15.0.0",
+ junit.framework;version="4.10.0",
  org.apache.commons.lang.exception;version="2.6.0",
  org.apache.commons.lang.text;version="2.6.0",
  org.eclipse.core.runtime.jobs,
