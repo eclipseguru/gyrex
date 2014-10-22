@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.eclipse.gyrex.http.application.provider.automount.component">
+   <implementation class="org.eclipse.gyrex.http.internal.application.manager.AutomountComponent"/>
+   <property name="service.description" type="String" value="An automatic mounter for Gyrex HTTP applications."/>
+   <property name="service.vendor" type="String" value="Eclipse Gyrex"/>
+   <reference bind="setApplicationManager" cardinality="1..1" interface="org.eclipse.gyrex.http.application.manager.IApplicationManager" name="IApplicationManager" policy="static"/>
+   <reference bind="setRuntimeContextRegistry" cardinality="1..1" interface="org.eclipse.gyrex.context.registry.IRuntimeContextRegistry" name="IRuntimeContextRegistry" policy="static"/>
+   <reference bind="mountProvider" cardinality="0..n" interface="org.eclipse.gyrex.http.application.provider.ApplicationProvider" name="ApplicationProvider" policy="dynamic"/>
+   <service>
+      <provide interface="org.eclipse.gyrex.http.internal.application.manager.IAutomountService"/>
+   </service>
+</scr:component>

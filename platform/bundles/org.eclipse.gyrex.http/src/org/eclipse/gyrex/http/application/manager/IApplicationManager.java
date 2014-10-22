@@ -13,6 +13,7 @@ package org.eclipse.gyrex.http.application.manager;
 
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.SortedSet;
 
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.http.application.Application;
@@ -31,7 +32,7 @@ import org.eclipse.gyrex.http.application.provider.ApplicationProvider;
  * The manager is provided as an OSGi service. A Gyrex based platform may use
  * OSGi security restrictions to limit the registration of applications.
  * </p>
- * 
+ *
  * @see Application
  * @see ApplicationProvider
  * @noimplement This interface is not intended to be implemented by clients.
@@ -47,7 +48,7 @@ public interface IApplicationManager {
 	 * <p>
 	 * This method has no effect if the application is already active.
 	 * </p>
-	 * 
+	 *
 	 * @param applicationId
 	 *            the id of the application which should be activated
 	 * @throws IllegalArgumentException
@@ -70,7 +71,7 @@ public interface IApplicationManager {
 	 * <p>
 	 * This method has no effect if the application is not active.
 	 * </p>
-	 * 
+	 *
 	 * @param applicationId
 	 *            the id of the application which should be activated
 	 * @throws IllegalArgumentException
@@ -81,6 +82,28 @@ public interface IApplicationManager {
 	void deactivate(String applicationId) throws IllegalArgumentException, IllegalArgumentException;
 
 	/**
+	 * Returns a collection of urls an application is mounted too.
+	 * <p>
+	 * If the specified application is unknown, <code>null</code> will be
+	 * returned. The returned list can be freely modified. No changes will be
+	 * reflected to the persisted mounts. In order to update any mounts,
+	 * {@link #mount(String, String)} and {@link #unmount(String)} need to be
+	 * used.
+	 * </p>
+	 * <p>
+	 * The collection is sorted in the natural order.
+	 * </p>
+	 *
+	 * @param applicationId
+	 *            the application id
+	 * @return a list of urls an application is mount to (maybe
+	 *         <code>null</code>)
+	 * @throws IllegalArgumentException
+	 *             if the application id is invalid
+	 */
+	SortedSet<String> getMounts(final String applicationId) throws IllegalArgumentException;
+
+	/**
 	 * Returns the properties currently set for application.
 	 * <p>
 	 * If the specified application is unknown, <code>null</code> will be
@@ -89,7 +112,7 @@ public interface IApplicationManager {
 	 * the updated map needs to be passed to {@link #setProperties(String, Map)}
 	 * .
 	 * </p>
-	 * 
+	 *
 	 * @param applicationId
 	 *            the application id
 	 * @return a map of application properties which may the application further
@@ -100,6 +123,18 @@ public interface IApplicationManager {
 	 *             if the application id is invalid
 	 */
 	Map<String, String> getProperties(String applicationId) throws IllegalArgumentException;
+
+	/**
+	 * Indicates if the specified application id is registered.
+	 *
+	 * @param applicationId
+	 *            the application id
+	 * @return <code>true</code> if an application with the specified id is
+	 *         registered, <code>false</code> otherwise
+	 * @throws IllegalArgumentException
+	 *             if the application id is invalid
+	 */
+	boolean isRegistered(String applicationId) throws IllegalArgumentException;
 
 	/**
 	 * Mounts an application at the specified URL.
@@ -141,7 +176,7 @@ public interface IApplicationManager {
 	 * If a URL is already in use a {@link MountConflictException} will be
 	 * thrown.
 	 * </p>
-	 * 
+	 *
 	 * @param url
 	 *            the url the application should be mounted on (must use
 	 *            <code>http://</code> or <code>https://</code> protocol)
@@ -179,7 +214,7 @@ public interface IApplicationManager {
 	 * If an application id is already in use a
 	 * {@link ApplicationRegistrationException} will be thrown.
 	 * </p>
-	 * 
+	 *
 	 * @param applicationId
 	 *            the application id
 	 * @param providerId
@@ -206,7 +241,7 @@ public interface IApplicationManager {
 	 * {@link #deactivate(String) deactivate}, update the properties, and
 	 * {@link #activate(String) activate it again thereafter}.
 	 * </p>
-	 * 
+	 *
 	 * @param applicationId
 	 *            the application id
 	 * @param properties
@@ -224,7 +259,7 @@ public interface IApplicationManager {
 
 	/**
 	 * Unmounts an application mounted at the specified URL.
-	 * 
+	 *
 	 * @param url
 	 *            the mount point
 	 * @throws IllegalArgumentException
@@ -239,7 +274,7 @@ public interface IApplicationManager {
 
 	/**
 	 * Unregisters an application and removes any mounts associated with it.
-	 * 
+	 *
 	 * @param applicationId
 	 *            the id of the application which should be unregistered
 	 * @throws IllegalArgumentException

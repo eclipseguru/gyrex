@@ -41,18 +41,10 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
  * The application manager.
- * 
+ *
  * @TODO we need to support providers in multiple versions
  */
 public class ApplicationManager implements IApplicationManager {
-
-	public static final String NODE_URLS = "urls";
-	public static final String NODE_APPLICATIONS = "applications";
-	public static final String NODE_PROPERTIES = "properties";
-	public static final String KEY_CONTEXT_PATH = "contextPath";
-	public static final String KEY_PROVIDER_ID = "providerId";
-	public static final String KEY_ACTIVE = "active";
-	public static final boolean DEFAULT_ACTIVE = true; // *true* for backwards compatibility
 
 	public static IEclipsePreferences getAppsNode() {
 		return (IEclipsePreferences) CloudScope.INSTANCE.getNode(HttpActivator.SYMBOLIC_NAME).node(NODE_APPLICATIONS);
@@ -62,10 +54,19 @@ public class ApplicationManager implements IApplicationManager {
 		return (IEclipsePreferences) CloudScope.INSTANCE.getNode(HttpActivator.SYMBOLIC_NAME).node(NODE_URLS);
 	}
 
+	public static final String NODE_URLS = "urls";
+	public static final String NODE_APPLICATIONS = "applications";
+	public static final String NODE_PROPERTIES = "properties";
+	public static final String KEY_CONTEXT_PATH = "contextPath";
+	public static final String KEY_PROVIDER_ID = "providerId";
+
+	public static final String KEY_ACTIVE = "active";
+
+	public static final boolean DEFAULT_ACTIVE = true; // *true* for backwards compatibility
+
 	@Override
 	public void activate(final String applicationId) {
-		if (!IdHelper.isValidId(applicationId))
-			throw new IllegalArgumentException("invalid application id; please use only ascii chars a-z, 0-9, ., _ and/or -");
+		checkApplicationId(applicationId);
 
 		try {
 			// check if there is a registration
@@ -81,10 +82,14 @@ public class ApplicationManager implements IApplicationManager {
 		}
 	}
 
-	@Override
-	public void deactivate(final String applicationId) {
+	private void checkApplicationId(final String applicationId) throws IllegalArgumentException {
 		if (!IdHelper.isValidId(applicationId))
 			throw new IllegalArgumentException("invalid application id; please use only ascii chars a-z, 0-9, ., _ and/or -");
+	}
+
+	@Override
+	public void deactivate(final String applicationId) {
+		checkApplicationId(applicationId);
 
 		try {
 			// check if there is a registration
@@ -103,7 +108,7 @@ public class ApplicationManager implements IApplicationManager {
 	/**
 	 * Gets an {@link ApplicationRegistration} object for a registered
 	 * applications
-	 * 
+	 *
 	 * @param applicationId
 	 * @return
 	 */
@@ -130,9 +135,16 @@ public class ApplicationManager implements IApplicationManager {
 		}
 	}
 
-	public Collection<String> getMounts(final String applicationId) throws IllegalStateException {
-		final IEclipsePreferences urlsNode = ApplicationManager.getUrlsNode();
+	@Override
+	public SortedSet<String> getMounts(final String applicationId) throws IllegalArgumentException, IllegalStateException {
+		// verify application id
+		checkApplicationId(applicationId);
+
 		try {
+			if (!getAppsNode().nodeExists(applicationId))
+				return null;
+
+			final IEclipsePreferences urlsNode = ApplicationManager.getUrlsNode();
 			final SortedSet<String> mounts = new TreeSet<String>();
 			final String[] urls = urlsNode.keys();
 			for (final String url : urls) {
@@ -152,13 +164,13 @@ public class ApplicationManager implements IApplicationManager {
 	@Override
 	public Map<String, String> getProperties(final String applicationId) throws IllegalArgumentException {
 		// verify application id
-		if (!IdHelper.isValidId(applicationId))
-			throw new IllegalArgumentException("invalid application id; please use only ascii chars a-z, 0-9, ., _ and/or -");
+		checkApplicationId(applicationId);
 
 		try {
-			final Preferences appNode = getAppsNode().node(applicationId);
-			if (!appNode.nodeExists(""))
+			if (!getAppsNode().nodeExists(applicationId))
 				return null;
+
+			final Preferences appNode = getAppsNode().node(applicationId);
 
 			final Map<String, String> properties = new HashMap<String, String>();
 			if (appNode.nodeExists(NODE_PROPERTIES)) {
@@ -180,8 +192,7 @@ public class ApplicationManager implements IApplicationManager {
 	}
 
 	public boolean isActive(final String applicationId) {
-		if (!IdHelper.isValidId(applicationId))
-			throw new IllegalArgumentException("invalid application id; please use only ascii chars a-z, 0-9, ., _ and/or -");
+		checkApplicationId(applicationId);
 
 		try {
 			// check if there is a registration
@@ -197,13 +208,21 @@ public class ApplicationManager implements IApplicationManager {
 	}
 
 	@Override
+	public boolean isRegistered(final String applicationId) throws IllegalArgumentException {
+		checkApplicationId(applicationId);
+		try {
+			return getAppsNode().nodeExists(applicationId);
+		} catch (final BackingStoreException e) {
+			throw new IllegalStateException("Error checking application registration. " + ExceptionUtils.getRootCauseMessage(e), e);
+		}
+	}
+
+	@Override
 	public void mount(final String url, final String applicationId) throws MountConflictException, MalformedURLException {
 		// parse the url
 		final URL parsedUrl = parseAndVerifyUrl(url);
 
-		// verify application id
-		if (!IdHelper.isValidId(applicationId))
-			throw new IllegalArgumentException("invalid application id; please use only ascii chars a-z, 0-9, ., _ and/or -");
+		checkApplicationId(applicationId);
 
 		try {
 			// verify the application exists
@@ -241,8 +260,7 @@ public class ApplicationManager implements IApplicationManager {
 
 	@Override
 	public void register(final String applicationId, final String providerId, final IRuntimeContext context, final Map<String, String> properties) throws ApplicationRegistrationException {
-		if (!IdHelper.isValidId(applicationId))
-			throw new IllegalArgumentException("invalid application id; please use only ascii chars a-z, 0-9, ., _ and/or -");
+		checkApplicationId(applicationId);
 		if (!IdHelper.isValidId(providerId))
 			throw new IllegalArgumentException("invalid provider id; please use only ascii chars a-z, 0-9, ., _ and/or -");
 		if (null == context)
@@ -250,12 +268,11 @@ public class ApplicationManager implements IApplicationManager {
 
 		try {
 			// check if there is already a registration
-			final Preferences node = getAppsNode();
-			if (node.nodeExists(applicationId))
+			if (getAppsNode().nodeExists(applicationId))
 				throw new ApplicationRegistrationException(applicationId);
 
 			// persist registration
-			final Preferences appNode = node.node(applicationId);
+			final Preferences appNode = getAppsNode().node(applicationId);
 			appNode.put(KEY_PROVIDER_ID, providerId);
 			appNode.put(KEY_CONTEXT_PATH, context.getContextPath().toString());
 
@@ -266,7 +283,7 @@ public class ApplicationManager implements IApplicationManager {
 				}
 			}
 
-			node.flush();
+			getAppsNode().flush();
 		} catch (final BackingStoreException e) {
 			throw new IllegalStateException("Error persisting application registration info to the backend data store. " + ExceptionUtils.getRootCauseMessage(e), e);
 		}
@@ -274,15 +291,15 @@ public class ApplicationManager implements IApplicationManager {
 
 	@Override
 	public void setProperties(final String applicationId, final Map<String, String> properties) throws IllegalArgumentException, IllegalStateException {
-		// verify application id
-		if (!IdHelper.isValidId(applicationId))
-			throw new IllegalArgumentException("invalid application id; please use only ascii chars a-z, 0-9, ., _ and/or -");
+		checkApplicationId(applicationId);
 
 		try {
-			final Preferences appNode = getAppsNode().node(applicationId);
-			if (!appNode.nodeExists(""))
+			// check if there is already a registration
+			if (getAppsNode().nodeExists(applicationId))
 				throw new IllegalStateException(String.format("application %s does not exists", applicationId));
+			final Preferences appNode = getAppsNode().node(applicationId);
 
+			// update properties
 			if ((null == properties) || properties.isEmpty()) {
 				if (appNode.nodeExists(NODE_PROPERTIES)) {
 					appNode.node(NODE_PROPERTIES).removeNode();

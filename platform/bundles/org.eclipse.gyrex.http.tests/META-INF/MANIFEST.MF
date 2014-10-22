@@ -15,5 +15,6 @@ Import-Package: junit.framework;version="4.5.0",
 Require-Bundle: org.eclipse.gyrex.http;bundle-version="1.0.0",
  org.eclipse.gyrex.context;bundle-version="1.0.0",
  org.eclipse.gyrex.monitoring;bundle-version="1.0.0",
- org.eclipse.gyrex.common;bundle-version="1.0.0"
+ org.eclipse.gyrex.common;bundle-version="1.0.0",
+ org.eclipse.gyrex.junit;bundle-version="1.0.0"
 Export-Package: org.eclipse.gyrex.http.tests.internal;x-friends:="org.eclipse.gyrex.server.tests"
