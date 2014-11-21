@@ -39,7 +39,7 @@ public class ZooKeeperNodeStateService extends ServiceTracker<INodeState, INodeS
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param context
 	 */
 	public ZooKeeperNodeStateService(final BundleContext context, final String myNodeId) {
@@ -50,10 +50,9 @@ public class ZooKeeperNodeStateService extends ServiceTracker<INodeState, INodeS
 	@Override
 	public INodeState addingService(final ServiceReference<INodeState> reference) {
 		// get service
-		final INodeState service = super.getService();
-		if (null == service) {
+		final INodeState service = super.addingService(reference);
+		if (null == service)
 			return service;
-		}
 
 		// publish if pid is available
 		final String pid = (String) reference.getProperty(Constants.SERVICE_PID);
@@ -64,9 +63,6 @@ public class ZooKeeperNodeStateService extends ServiceTracker<INodeState, INodeS
 		return service;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.util.tracker.ServiceTracker#close()
-	 */
 	@Override
 	public void close() {
 		try {
