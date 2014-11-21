@@ -46,7 +46,7 @@ import org.osgi.framework.Constants;
 public interface INodeState {
 
 	/** the service name */
-	String SERVICE_NAME = "org.eclipse.gyrex.cloud.environment.NodeState";
+	String SERVICE_NAME = INodeState.class.getName();
 
 	/** INSTANCE */
 	INodeState INSTANCE = new INodeState() {
