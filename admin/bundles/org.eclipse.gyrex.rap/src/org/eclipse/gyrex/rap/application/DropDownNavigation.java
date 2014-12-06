@@ -9,16 +9,12 @@
  *    EclipseSource - initial API and implementation
  *    Gunnar Wagenknecht - adapted to Gyrex Console
  ******************************************************************************/
-package org.eclipse.gyrex.admin.ui.internal.application;
+package org.eclipse.gyrex.rap.application;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
-import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
-import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
-import org.eclipse.gyrex.admin.ui.internal.widgets.DropDownItem;
+import org.eclipse.gyrex.rap.widgets.DropDownItem;
 
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -36,24 +32,16 @@ abstract class DropDownNavigation extends DropDownItem {
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 
-	private static List<String> getItemLabels(final List<PageContribution> pages) {
-		final ArrayList<String> list = new ArrayList<String>();
-		for (final PageContribution pageContribution : pages) {
-			list.add(pageContribution.getName());
-		}
-		return list;
-	}
-
-	private final CategoryContribution category;
-	private final List<PageContribution> pages;
+	private final Category category;
+	private final List<PageHandle> pages;
 	private final Menu pullDownMenu;
 
-	public DropDownNavigation(final Composite parent, final CategoryContribution category) {
+	public DropDownNavigation(final Composite parent, final Category category, final PageProvider pageProvider) {
 		super(parent, category.getName(), "navigation");
 		this.category = category;
 
 		// get pages for category and sort
-		pages = AdminPageRegistry.getInstance().getPages(category);
+		pages = pageProvider.getPages(category);
 		Collections.sort(pages);
 
 		// menu
@@ -61,12 +49,14 @@ abstract class DropDownNavigation extends DropDownItem {
 		pullDownMenu.setData(RWT.CUSTOM_VARIANT, getCustomVariant());
 
 		// build menu
-		createMenuItems(getItemLabels(pages));
+		for (final PageHandle page : pages) {
+			createMenuItem(page);
+		}
 	}
 
-	private void createMenuItem(final String item) {
+	private void createMenuItem(final PageHandle page) {
 		final MenuItem menuItem = new MenuItem(pullDownMenu, SWT.PUSH | SWT.LEFT);
-		menuItem.setText(item.replace("&", "&&"));
+		menuItem.setText(page.getName().replace("&", "&&"));
 		menuItem.setData(RWT.CUSTOM_VARIANT, getCustomVariant());
 		menuItem.addSelectionListener(new SelectionAdapter() {
 			/** serialVersionUID */
@@ -74,39 +64,25 @@ abstract class DropDownNavigation extends DropDownItem {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				openItem(item);
+				openPage(page);
 			}
 		});
 	}
 
-	public void createMenuItems(final List<String> items) {
-		// dispose existing
-		for (final MenuItem menuItem : pullDownMenu.getItems()) {
-			menuItem.dispose();
-		}
-
-		// create new
-		for (final String item : items) {
-			createMenuItem(item);
-		}
-	}
-
-	public PageContribution findFirstPage() {
-		for (final PageContribution page : pages) {
+	PageHandle findFirstPage() {
+		for (final PageHandle page : pages)
 			return page;
-		}
 		return null;
 	}
 
-	public CategoryContribution getCategory() {
+	Category getCategory() {
 		return category;
 	}
 
 	@Override
 	protected void openDropDown(final Point location) {
-		if (pullDownMenu.getItemCount() == 0) {
+		if (pullDownMenu.getItemCount() == 0)
 			return;
-		}
 		// set open
 		setOpen(true);
 
@@ -127,14 +103,5 @@ abstract class DropDownNavigation extends DropDownItem {
 		pullDownMenu.setVisible(true);
 	}
 
-	protected void openItem(final String item) {
-		for (final PageContribution page : pages) {
-			if (item.equals(page.getName())) {
-				openPage(page);
-				return;
-			}
-		}
-	}
-
-	protected abstract void openPage(final PageContribution page);
+	protected abstract void openPage(final PageHandle page);
 }

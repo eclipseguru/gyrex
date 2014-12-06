@@ -17,10 +17,10 @@ import java.util.List;
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.common.internal.services.IServiceProxyChangeListener;
 import org.eclipse.gyrex.common.internal.services.ServiceProxy;
 import org.eclipse.gyrex.common.services.IServiceProxy;
+import org.eclipse.gyrex.rap.application.Page;
 import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.swt.SWT;
@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Display;
  * System overview.
  */
 @SuppressWarnings("restriction")
-public class OverviewPage extends AdminPage {
+public class OverviewPage extends Page {
 
 	private Composite overviewPageComposite;
 	private IServiceProxy<OverviewPageItem> itemServiceProxy;

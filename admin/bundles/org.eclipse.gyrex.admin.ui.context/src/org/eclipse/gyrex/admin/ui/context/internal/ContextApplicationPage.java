@@ -13,7 +13,7 @@
 package org.eclipse.gyrex.admin.ui.context.internal;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.rap.application.Page;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * The Class represents RAP UI page to manage ZooKeeper Context values.
  */
-public class ContextApplicationPage extends AdminPage {
+public class ContextApplicationPage extends Page {
 
 	/** The context section represent UI part for context listing. */
 	private ContextsSection contextSection;

@@ -13,14 +13,14 @@
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.p2.internal.P2Activator;
 import org.eclipse.gyrex.p2.internal.packages.IPackageManager;
 import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
 import org.eclipse.gyrex.p2.internal.repositories.IRepositoryDefinitionManager;
+import org.eclipse.gyrex.rap.application.Page;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.List;
 /**
  * Configuration page for Jobs.
  */
-public class SoftwareLandingPage extends AdminPage {
+public class SoftwareLandingPage extends Page {
 
 	private Composite pageComposite;
 

@@ -12,13 +12,13 @@
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
-import org.eclipse.gyrex.admin.ui.pages.FilteredAdminPage;
 import org.eclipse.gyrex.p2.internal.repositories.IRepositoryDefinitionManager;
 import org.eclipse.gyrex.p2.internal.repositories.RepositoryDefinition;
+import org.eclipse.gyrex.rap.application.Page;
+import org.eclipse.gyrex.rap.application.FilteredPage;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IOpenListener;
@@ -71,8 +71,8 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 	}
 
 	/**
-	 * Used the same way as {@link AdminPage#activate()} from {@link AdminPage}
-	 * or {@link FilteredAdminPage} but called during
+	 * Used the same way as {@link Page#activate()} from {@link Page}
+	 * or {@link FilteredPage} but called during
 	 * {@link RepositoriesListDialog#createDialogArea(Composite)}
 	 */
 	private void activate() {
@@ -181,8 +181,8 @@ public class RepositoriesListDialog extends NonBlockingStatusDialog {
 	}
 
 	/**
-	 * Used the same way as {@link AdminPage#deactivate()} from
-	 * {@link AdminPage} or {@link FilteredAdminPage} but called in
+	 * Used the same way as {@link Page#deactivate()} from
+	 * {@link Page} or {@link FilteredPage} but called in
 	 * {@link SoftwareLandingPage#editRepositoriesList()}
 	 */
 	public void deactivate() {

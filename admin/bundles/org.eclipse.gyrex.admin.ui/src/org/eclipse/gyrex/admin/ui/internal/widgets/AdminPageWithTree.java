@@ -12,7 +12,7 @@
 package org.eclipse.gyrex.admin.ui.internal.widgets;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.rap.application.Page;
 
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Label;
 
 import org.apache.commons.lang.StringUtils;
 
-public abstract class AdminPageWithTree extends AdminPage {
+public abstract class AdminPageWithTree extends Page {
 
 	private final class ChangeSortColumnListener extends SelectionAdapter {
 		/** serialVersionUID */

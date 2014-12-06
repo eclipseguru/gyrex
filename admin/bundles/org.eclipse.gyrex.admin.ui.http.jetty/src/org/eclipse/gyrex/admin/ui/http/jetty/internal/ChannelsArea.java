@@ -12,11 +12,11 @@
 package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.http.jetty.admin.ChannelDescriptor;
 import org.eclipse.gyrex.http.jetty.admin.IJettyManager;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;

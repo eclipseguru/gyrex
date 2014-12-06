@@ -11,7 +11,7 @@
  */
 package org.eclipse.gyrex.admin.ui.cloud.internal;
 
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.rap.application.Page;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Label;
 
 import org.apache.commons.lang.StringUtils;
 
-public class NodeAdminPage extends AdminPage {
+public class NodeAdminPage extends Page {
 
 	public static final String ID = "node";
 

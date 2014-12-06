@@ -8,7 +8,9 @@
  * Contributors:
  *    Gunnar Wagenknecht - extracted from RAP Examples and refactored
  ******************************************************************************/
-package org.eclipse.gyrex.admin.ui.internal.widgets;
+package org.eclipse.gyrex.rap.widgets;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -22,6 +24,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+/**
+ * A widget providing drop-down like behavior.
+ * <p>
+ * The widget appearance depends on styling.
+ * </p>
+ */
 public abstract class DropDownItem extends Composite {
 
 	private static final long serialVersionUID = 1L;
@@ -32,15 +40,29 @@ public abstract class DropDownItem extends Composite {
 	private boolean selected;
 	private boolean open;
 
+	/**
+	 * Creates a new instance hosted in the specified parent.
+	 *
+	 * @param parent
+	 *            a widget which will be the parent of the new instance (cannot
+	 *            be null)
+	 * @param text
+	 *            the drop down item text (must not be <code>null</code>)
+	 * @param customVariant
+	 *            base name for {@link RWT#CUSTOM_VARIANT} (must not be
+	 *            <code>null</code>)
+	 */
 	public DropDownItem(final Composite parent, final String text, final String customVariant) {
 		super(parent, SWT.NONE);
+		checkArgument(text != null, "text must no be null");
+		checkArgument(customVariant != null, "customVariant must no be null");
 		this.text = text;
 		this.customVariant = customVariant;
 
 		setLayout(new FillLayout());
 		setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
-		// toolbar
+		// tool bar
 		toolBar = new ToolBar(this, SWT.HORIZONTAL);
 		toolBar.setData(RWT.CUSTOM_VARIANT, customVariant);
 
@@ -66,7 +88,7 @@ public abstract class DropDownItem extends Composite {
 
 	/**
 	 * Returns the text.
-	 * 
+	 *
 	 * @return the text
 	 */
 	public String getText() {
@@ -75,20 +97,41 @@ public abstract class DropDownItem extends Composite {
 
 	/**
 	 * Returns the ToolItem which represents the drop-down element.
-	 * 
+	 *
 	 * @return the toolItem
 	 */
 	public ToolItem getToolItem() {
 		return toolItem;
 	}
 
+	/**
+	 * Called when the drop-down shall be opened.
+	 * <p>
+	 * Subclasses must override and open the content. Implementors must call
+	 * {@link #setOpen(boolean)} with an appropriate state if the drop down was
+	 * opened and closed later on (most likely due to user interaction).
+	 *
+	 * @param location
+	 */
 	protected abstract void openDropDown(final Point location);
 
+	/**
+	 * Sets the widget's open state.
+	 *
+	 * @param open
+	 *            <code>true</code> if open, <code>false</code> otherwise
+	 */
 	public void setOpen(final boolean open) {
 		this.open = open;
 		updateCustomVariant();
 	}
 
+	/**
+	 * Sets the widget's selection state.
+	 *
+	 * @param open
+	 *            <code>true</code> if selected, <code>false</code> otherwise
+	 */
 	public void setSelected(final boolean selected) {
 		this.selected = selected;
 		updateCustomVariant();

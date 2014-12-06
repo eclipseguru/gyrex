@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Gunnar Wagenknecht - copied from JDT and adapted to Gyrex
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.internal.helper;
+package org.eclipse.gyrex.rap.helper;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.IDialogConstants;

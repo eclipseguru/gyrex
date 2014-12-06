@@ -19,7 +19,6 @@ import java.util.List;
 import org.eclipse.gyrex.admin.ui.adapter.AdapterUtil;
 import org.eclipse.gyrex.admin.ui.adapter.LabelAdapter;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
@@ -27,6 +26,7 @@ import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.context.definitions.ContextDefinition;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationManager;
 import org.eclipse.gyrex.http.internal.application.manager.ApplicationRegistration;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.jface.viewers.IStructuredSelection;

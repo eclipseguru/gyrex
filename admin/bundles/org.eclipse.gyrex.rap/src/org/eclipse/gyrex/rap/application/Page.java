@@ -9,7 +9,7 @@
  * Contributors:
  *      Mike Tschierschke - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.pages;
+package org.eclipse.gyrex.rap.application;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -18,28 +18,23 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 /**
- * Base class for pages in the Gyrex Admin Console.
+ * Base class for pages in Gyrex RAP web applications.
  * <p>
- * The Gyrex Admin Console provides a pluggable way for configuring systems.
- * Clients need to provide an implementation of this class in order to
- * participate in the Admin Console.
- * </p>
- * <p>
- * This class must be subclassed by clients that contribute a page to the Gyrex
- * Admin Console. It is considered part of a service provider API. As such it
- * may evolve faster than other APIs.
+ * This class must be subclassed by clients that contribute a page to a Gyrex
+ * RAP based web application. It is considered part of a service provider API.
+ * As such it may evolve faster than other APIs.
  * </p>
  */
-public abstract class AdminPage {
+public abstract class Page {
 
 	private String title;
 	private String titleToolTip;
 	private Image titleImage;
 	private String[] arguments;
-	private IAdminUi adminUi;
+	private IApplicationService applicationService;
 
 	/**
-	 * Called by the Admin UI whenever a page becomes active.
+	 * Called by the application whenever a page becomes active.
 	 * <p>
 	 * Subclass may override and trigger logic that is necessary in order to
 	 * activate a page (eg. register listeners with underlying model, etc.).
@@ -48,9 +43,9 @@ public abstract class AdminPage {
 	 * Note, when a page becomes active, its control has been created.
 	 * </p>
 	 * <p>
-	 * Clients should not call this method (the Admin UI calls this method at
-	 * appropriate times). However, implementors must call super at appropriate
-	 * times.
+	 * Clients should not call this method (the application calls this method at
+	 * appropriate times). However, implementors must call super as part of
+	 * their implementation.
 	 * </p>
 	 */
 	public void activate() {
@@ -65,10 +60,10 @@ public abstract class AdminPage {
 	 * parent control and/or the control created by the default implementation.
 	 * </p>
 	 * <p>
-	 * Clients should not call this method (the Admin UI calls this method at
+	 * Clients should not call this method (the application calls this method at
 	 * appropriate times).
 	 * </p>
-	 * 
+	 *
 	 * @param parent
 	 *            the parent composite
 	 * @return the created control
@@ -81,14 +76,14 @@ public abstract class AdminPage {
 	}
 
 	/**
-	 * Called by the Admin UI whenever a page becomes inactive.
+	 * Called by the application whenever a page becomes inactive.
 	 * <p>
 	 * The default implementation does nothing. Subclass may override and
 	 * trigger logic that is necessary in order to inactivate a page (eg.
 	 * unregister listeners with underlying model, etc.).
 	 * </p>
 	 * <p>
-	 * Clients should not call this method (the Admin UI calls this method at
+	 * Clients should not call this method (the application calls this method at
 	 * appropriate times). However, implementors must call super at appropriate
 	 * times.
 	 * </p>
@@ -98,20 +93,19 @@ public abstract class AdminPage {
 	}
 
 	/**
-	 * Returns the adminUi.
-	 * 
-	 * @return the adminUi
+	 * Returns the {@link IApplicationService application service}.
+	 *
+	 * @return the {@link IApplicationService application service}
 	 */
-	public final IAdminUi getAdminUi() {
-		if (adminUi == null) {
+	public final IApplicationService getApplicationService() {
+		if (applicationService == null)
 			throw new IllegalStateException("not initialized");
-		}
-		return adminUi;
+		return applicationService;
 	}
 
 	/**
 	 * Returns the page arguments.
-	 * 
+	 *
 	 * @return the arguments
 	 */
 	public String[] getArguments() {
@@ -125,7 +119,7 @@ public abstract class AdminPage {
 	 * The title is used to populate the title bar of this page's visual
 	 * container.
 	 * </p>
-	 * 
+	 *
 	 * @return the configuration page title (not <code>null</code>)
 	 */
 	public String getTitle() {
@@ -139,7 +133,7 @@ public abstract class AdminPage {
 	 * The title image is usually used to populate the title bar of this page's
 	 * visual container.
 	 * </p>
-	 * 
+	 *
 	 * @return the title image
 	 */
 	public Image getTitleImage() {
@@ -154,7 +148,7 @@ public abstract class AdminPage {
 	 * The tool tip text is used to populate the title bar of this page's visual
 	 * container.
 	 * </p>
-	 * 
+	 *
 	 * @return the configuration page title tool tip (not <code>null</code>)
 	 */
 	public String getTitleToolTip() {
@@ -162,14 +156,14 @@ public abstract class AdminPage {
 	}
 
 	/**
-	 * Sets the Admin UI.
-	 * 
+	 * Sets the application service.
+	 *
 	 * @param ui
-	 *            the admin ui to set
+	 *            the application service to set
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
-	public final void setAdminUi(final IAdminUi ui) {
-		adminUi = ui;
+	public final void setApplicationService(final IApplicationService ui) {
+		applicationService = ui;
 	}
 
 	/**
@@ -184,7 +178,7 @@ public abstract class AdminPage {
 	 * Note, when this method is invoked by the framework, no control might have
 	 * been created yet.
 	 * </p>
-	 * 
+	 *
 	 * @param args
 	 *            the arguments (never <code>null</code>)
 	 */
@@ -194,7 +188,7 @@ public abstract class AdminPage {
 
 	/**
 	 * Sets the title of this page.
-	 * 
+	 *
 	 * @param title
 	 *            the title to set (maybe <code>null</code>)
 	 */
@@ -204,22 +198,21 @@ public abstract class AdminPage {
 
 	/**
 	 * Sets the title image of this page.
-	 * 
+	 *
 	 * @param titleImage
 	 *            the title image of this configuration page to set (maybe
 	 *            <code>null</code>)
 	 */
 	protected void setTitleImage(final Image titleImage) {
 		final Image oldImage = this.titleImage;
-		if (oldImage != null && oldImage.equals(titleImage)) {
+		if ((oldImage != null) && oldImage.equals(titleImage))
 			return;
-		}
 		this.titleImage = titleImage;
 	}
 
 	/**
 	 * Sets the tool tip text of this page.
-	 * 
+	 *
 	 * @param titleToolTip
 	 *            the tool tip text of this configuration page to set (maybe
 	 *            <code>null</code>)

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 AGETO Service GmbH and others.
+ * Copyright (c) 2014 Tasktop Technologies and others.
  * All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,23 +9,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.pages;
-
 /**
- * A little helper that provides hooks into the Admin UI.
+ * Useful widgets for RAP applications.
  */
-public interface IAdminUi {
-
-	/**
-	 * Opens the specified page with the optional arguments in the Admin UI.
-	 * <p>
-	 * Note, if a page with the specified id is already opened it will be
-	 * reloaded.
-	 * </p>
-	 * 
-	 * @param pageId
-	 * @param args
-	 */
-	void openPage(String pageId, String... args);
-
-}
+package org.eclipse.gyrex.rap.widgets;

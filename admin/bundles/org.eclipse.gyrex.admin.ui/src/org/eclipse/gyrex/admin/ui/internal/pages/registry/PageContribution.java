@@ -11,7 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.pages.registry;
 
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.rap.application.Page;
+import org.eclipse.gyrex.rap.application.PageHandle;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -21,67 +22,20 @@ import org.apache.commons.lang.StringUtils;
 /**
  * A page contributed by an extension for the admin ui.
  */
-public class PageContribution implements Comparable<PageContribution> {
+public class PageContribution extends PageHandle {
 
-	private final IConfigurationElement element;
-	private final String id;
-	private String[] keywords;
+	final IConfigurationElement element;
 
 	public PageContribution(final IConfigurationElement element) {
+		super(element.getAttribute("id"));
 		this.element = element;
-		id = element.getAttribute("id");
-		if (StringUtils.isBlank(id)) {
-			throw new IllegalArgumentException("id is required");
-		}
+		setKeywords(StringUtils.split(element.getAttribute("keywords")));
+		setName(element.getAttribute("name"));
+		setSortKey(element.getAttribute("sortKey"));
+		setCategoryId(element.getAttribute("categoryId"));
 	}
 
-	@Override
-	public int compareTo(final PageContribution o) {
-		return getSortKey().compareTo(o.getSortKey());
-	}
-
-	public AdminPage createPage() throws CoreException {
-		return (AdminPage) element.createExecutableExtension("class");
-	}
-
-	@Override
-	public boolean equals(final Object provider) {
-		return provider instanceof PageContribution ? getId().equals(((PageContribution) provider).getId()) : Boolean.FALSE;
-	}
-
-	public String getCategoryId() {
-		return element.getAttribute("categoryId");
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String[] getKeywords() {
-		if (keywords == null) {
-			keywords = StringUtils.split(element.getAttribute("keywords"));
-			if (keywords == null) {
-				keywords = new String[0];
-			}
-		}
-
-		return keywords;
-	}
-
-	public String getName() {
-		final String name = element.getAttribute("name");
-		return name != null ? name : getId();
-	}
-
-	public String getSortKey() {
-		String value = element.getAttribute("sortKey");
-		if (StringUtils.isNotBlank(value)) {
-			return value;
-		}
-		value = getName();
-		if (StringUtils.isNotBlank(value)) {
-			return value;
-		}
-		return getId();
+	Page createPage() throws CoreException {
+		return (Page) element.createExecutableExtension("class");
 	}
 }

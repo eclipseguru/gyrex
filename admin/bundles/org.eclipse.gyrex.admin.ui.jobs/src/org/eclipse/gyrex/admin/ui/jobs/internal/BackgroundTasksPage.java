@@ -11,11 +11,9 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
-import org.eclipse.gyrex.admin.ui.pages.IAdminUi;
 import org.eclipse.gyrex.context.definitions.ContextDefinition;
 import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
 import org.eclipse.gyrex.jobs.JobState;
@@ -26,6 +24,8 @@ import org.eclipse.gyrex.jobs.internal.storage.CloudPreferncesJobStorage;
 import org.eclipse.gyrex.jobs.internal.worker.WorkerEngine;
 import org.eclipse.gyrex.jobs.manager.IJobManager;
 import org.eclipse.gyrex.jobs.schedules.ISchedule;
+import org.eclipse.gyrex.rap.application.IApplicationService;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -54,15 +54,15 @@ import org.apache.commons.lang.StringUtils;
 
 public class BackgroundTasksPage extends AdminPageWithTree {
 
-	public static final String ID = "background-tasks";
+	static void openSchedule(final ScheduleImpl schedule, final IApplicationService appService) {
+		appService.openPage(ScheduleEntriesPage.ID, schedule.getContextPath().toString(), schedule.getId());
+	}
 
+	public static final String ID = "background-tasks";
 	private static final int COLUMN_ID = 0;
 	private static final int COLUMN_TIMEZONE = 1;
-	private static final int COLUMN_QUEUE = 2;
 
-	static void openSchedule(final ScheduleImpl schedule, final IAdminUi adminUi) {
-		adminUi.openPage(ScheduleEntriesPage.ID, schedule.getContextPath().toString(), schedule.getId());
-	}
+	private static final int COLUMN_QUEUE = 2;
 
 	private Button addButton;
 	private Button removeButton;
@@ -333,7 +333,7 @@ public class BackgroundTasksPage extends AdminPageWithTree {
 	}
 
 	void openScheduleEntriesPage(final ScheduleImpl schedule) {
-		openSchedule(schedule, getAdminUi());
+		openSchedule(schedule, getApplicationService());
 	}
 
 	@Override

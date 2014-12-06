@@ -9,16 +9,16 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *******************************************************************************/
-package org.eclipse.gyrex.admin.ui.pages;
+package org.eclipse.gyrex.rap.application;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
-import org.eclipse.gyrex.admin.ui.internal.widgets.DropDownItem;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
+import org.eclipse.gyrex.rap.widgets.DropDownItem;
 
 import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
  * Specialized AdminPage which allows to filter the content within the page
  * based on some criteria.
  */
-public abstract class FilteredAdminPage extends AdminPage {
+public abstract class FilteredPage extends Page {
 
 	private Composite filterPanel;
 	private List<String> filters;
@@ -47,7 +47,7 @@ public abstract class FilteredAdminPage extends AdminPage {
 	 * Subclasses must override and create an appropriate control for
 	 * manipulating a filter.
 	 * </p>
-	 * 
+	 *
 	 * @param filter
 	 *            the filter
 	 * @param parent
@@ -70,7 +70,7 @@ public abstract class FilteredAdminPage extends AdminPage {
 	 * Clients should not call this method (the Admin UI calls this method at
 	 * appropriate times).
 	 * </p>
-	 * 
+	 *
 	 * @param parent
 	 *            the parent composite
 	 * @return the created filter control
@@ -78,7 +78,7 @@ public abstract class FilteredAdminPage extends AdminPage {
 	 */
 	public final void createFilterControls(final Composite parent) {
 		filterPanel = new Composite(parent, SWT.NONE);
-		filterPanel.setLayout(AdminUiUtil.createGridLayoutWithoutMargin(5, false));
+		filterPanel.setLayout(GridLayoutFactory.fillDefaults().numColumns(5).create());
 
 		final String customVariant = "filter";
 
@@ -106,9 +106,8 @@ public abstract class FilteredAdminPage extends AdminPage {
 	}
 
 	protected List<String> getFilters() {
-		if (null == filters) {
+		if (null == filters)
 			return Collections.emptyList();
-		}
 
 		return filters;
 	}
@@ -116,7 +115,7 @@ public abstract class FilteredAdminPage extends AdminPage {
 	/**
 	 * Called dynamically to obtain the text to be displayed as title for a
 	 * filter in the filter bar.
-	 * 
+	 *
 	 * @param filter
 	 *            the filter
 	 * @return the text
@@ -140,9 +139,8 @@ public abstract class FilteredAdminPage extends AdminPage {
 			@Override
 			public boolean close() {
 				final boolean closed = super.close();
-				if (!closed) {
+				if (!closed)
 					return closed;
-				}
 
 				if (null != closeCallback) {
 					closeCallback.run();
@@ -163,9 +161,8 @@ public abstract class FilteredAdminPage extends AdminPage {
 				if (parent.getLayout() instanceof FillLayout) {
 					final Control[] children = parent.getChildren();
 					for (final Control child : children) {
-						if (null != child.getLayoutData()) {
-							throw new IllegalStateException(String.format("%s#createFilterControl not allowed to set layout data on children!", FilteredAdminPage.this.getClass()));
-						}
+						if (null != child.getLayoutData())
+							throw new IllegalStateException(String.format("%s#createFilterControl not allowed to set layout data on children!", FilteredPage.this.getClass()));
 					}
 				}
 				return control;

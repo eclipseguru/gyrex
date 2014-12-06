@@ -9,75 +9,96 @@
  *    EclipseSource - initial API and implementation
  *    Gunnar Wagenknecht - adapted to Gyrex Console
  ******************************************************************************/
-package org.eclipse.gyrex.admin.ui.internal.application;
+package org.eclipse.gyrex.rap.application;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.gyrex.admin.ui.internal.pages.registry.AdminPageRegistry;
-import org.eclipse.gyrex.admin.ui.internal.pages.registry.CategoryContribution;
-import org.eclipse.gyrex.admin.ui.internal.pages.registry.PageContribution;
-
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public abstract class NavigationBar extends Composite {
+abstract class NavigationBar extends Composite {
 
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
-	private final List<CategoryContribution> categories;
+	private final List<Category> categories;
+	private final PageProvider pageProvider;
 
-	public NavigationBar(final Composite parent) {
+	public NavigationBar(final Composite parent, final PageProvider pageProvider) {
 		super(parent, SWT.NONE);
-		setLayout(AdminUiUtil.createGridLayoutWithoutMargin(5, false));
+		setLayout(GridLayoutFactory.fillDefaults().numColumns(5).create());
 		setData(RWT.CUSTOM_VARIANT, "navigation");
 
+		checkArgument(pageProvider != null, "PageProvider must not be null!");
+		this.pageProvider = pageProvider;
+
 		// get and sort categories
-		categories = AdminPageRegistry.getInstance().getCategories();
+		categories = getPageProvider().getCategories();
 		Collections.sort(categories);
 
 		// create UI
-		for (final CategoryContribution category : categories) {
+		for (final Category category : categories) {
 			createNavigationDropDown(category);
 		}
 	}
 
-	private void changeSelectedDropDownEntry(final PageContribution page, final DropDownNavigation navEntry) {
+	private void changeSelectedDropDownEntry(final PageHandle page, final DropDownNavigation navEntry) {
 		navEntry.setSelected(pageBelongsToDropDownNav(page, navEntry));
 	}
 
-	private void createNavigationDropDown(final CategoryContribution category) {
-		new DropDownNavigation(this, category) {
+	private void createNavigationDropDown(final Category category) {
+		new DropDownNavigation(this, category, getPageProvider()) {
 			/** serialVersionUID */
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void openPage(final PageContribution page) {
+			protected void openPage(final PageHandle page) {
 				NavigationBar.this.openPage(page);
 			}
 		};
 	}
 
-	public PageContribution findInitialPage() {
+	PageHandle findInitialPage() {
 		final Control[] children = getChildren();
 		for (final Control control : children) {
-			if (control instanceof DropDownNavigation) {
+			if (control instanceof DropDownNavigation)
 				return ((DropDownNavigation) control).findFirstPage();
-			}
 		}
 		return null;
 	}
 
-	protected abstract void openPage(PageContribution page);
+	/**
+	 * Returns the pageProvider.
+	 *
+	 * @return the pageProvider
+	 */
+	PageProvider getPageProvider() {
+		return pageProvider;
+	}
 
-	private boolean pageBelongsToDropDownNav(final PageContribution page, final DropDownNavigation navEntry) {
-		final CategoryContribution category = navEntry.getCategory();
+	/**
+	 * Opens the selected page.
+	 * <p>
+	 * Subclasses must implement and react on the request to open the specified
+	 * page.
+	 * </p>
+	 *
+	 * @param page
+	 *            the page to open
+	 */
+	protected abstract void openPage(PageHandle page);
+
+	private boolean pageBelongsToDropDownNav(final PageHandle page, final DropDownNavigation navEntry) {
+		final Category category = navEntry.getCategory();
 		return category.getId().equals(page.getCategoryId());
 	}
 
-	public void selectNavigationEntry(final PageContribution page) {
+	void selectNavigationEntry(final PageHandle page) {
 		final Control[] children = getChildren();
 		for (final Control control : children) {
 			if (control instanceof DropDownNavigation) {

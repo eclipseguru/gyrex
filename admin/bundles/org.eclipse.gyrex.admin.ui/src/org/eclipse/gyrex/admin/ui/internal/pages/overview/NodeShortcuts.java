@@ -16,10 +16,10 @@ import java.net.InetAddress;
 
 import org.eclipse.gyrex.admin.ui.internal.AdminUiActivator;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.pages.OverviewPageItem;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.widgets.DialogCallback;

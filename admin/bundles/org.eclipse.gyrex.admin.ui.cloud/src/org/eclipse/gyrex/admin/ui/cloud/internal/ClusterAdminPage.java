@@ -15,7 +15,6 @@ import java.util.Iterator;
 
 import org.eclipse.gyrex.admin.ui.cloud.internal.NodeBrowserContentProvider.NodeItem;
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingStatusDialog;
 import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
@@ -27,6 +26,7 @@ import org.eclipse.gyrex.cloud.admin.ICloudManager;
 import org.eclipse.gyrex.cloud.admin.INodeConfigurer;
 import org.eclipse.gyrex.cloud.environment.INodeEnvironment;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -341,7 +341,7 @@ public class ClusterAdminPage extends ZooKeeperBasedAdminPage {
 		if (!(firstElement instanceof NodeItem))
 			return;
 
-		getAdminUi().openPage(NodeAdminPage.ID, new String[] { ((NodeItem) firstElement).getDescriptor().getId() });
+		getApplicationService().openPage(NodeAdminPage.ID, new String[] { ((NodeItem) firstElement).getDescriptor().getId() });
 	}
 
 	@Override

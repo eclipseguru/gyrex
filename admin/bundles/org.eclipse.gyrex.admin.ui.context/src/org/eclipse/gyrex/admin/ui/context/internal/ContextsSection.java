@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
 import org.eclipse.gyrex.context.definitions.ContextDefinition;
@@ -24,6 +23,7 @@ import org.eclipse.gyrex.context.definitions.IRuntimeContextDefinitionManager;
 import org.eclipse.gyrex.context.internal.ContextActivator;
 import org.eclipse.gyrex.context.internal.configuration.ContextConfiguration;
 import org.eclipse.gyrex.context.internal.preferences.GyrexContextPreferencesImpl;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.databinding.viewers.IViewerObservableValue;

@@ -1,0 +1,298 @@
+/* Theme contribution to RAP default theme for Admin UI */
+
+.mainshell {
+  background-color: #fff;
+}
+
+.header {
+  background-color: #234558; 
+}
+
+.footer {
+  background-color: #e5e5e5;
+  border: 1px solid #bdbdbd;
+}
+
+Composite.mainContentAreaHeaderSeparator {
+  background-color: #34332F;
+}
+
+Composite.mainContentArea {
+  background-color: #fff;
+}
+
+Composite.centerArea {
+  background-color: #fff;
+}
+
+Composite.nav-bar {
+  background-color: transparent;
+}
+
+.navigation {
+  background-color: transparent;
+}
+
+ToolBar.navigation {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #34332F;
+}
+
+ToolItem.navigation {
+  color: #d5d5d5;
+  background-color: transparent;
+  background-image: none;
+  border: none;
+  padding: 8px;
+  text-shadow: none;
+}
+
+ToolItem.navigation:hover,
+ToolItem.navigationOpen:hover,
+ToolItem.navigationSelected:hover  {
+  cursor: pointer;
+  color: white;
+  background-color: #34332F;
+  background-image: none;
+  border-radius: 4px 4px 0 0;
+}
+
+ToolItem.navigation:pressed {
+  padding: 8px 8px 8px 8px;
+}
+
+ToolItem.navigationOpen {
+  color: #d5d5d5;
+  border: none;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolItem.navigationSelected {
+  color: white;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+}
+
+ToolItem.navigationSelectedOpen {
+  color: white;
+  border: none;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolItem.navigationSelected:pressed {
+  padding: 8px 8px 8px 8px;
+}
+
+
+ToolItem-DropDownIcon.navigation,
+ToolItem-DropDownIcon.navigationOpen {
+  border:none;
+  background-image: url( images/down-nav.png );
+}
+
+ToolItem-DropDownIcon.navigation:hover,
+ToolItem-DropDownIcon.navigationOpen:hover,
+ToolItem-DropDownIcon.navigationSelected,
+ToolItem-DropDownIcon.navigationSelectedOpen {
+  border:none;
+  background-image: url( images/down-nav-hover.png );
+}
+
+Menu.navigation {
+  background-color: #34332F;
+  color: white;
+  font: 14px Helvetica, Verdana, sans-serif;
+  background-image: none;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+}
+
+MenuItem.navigation {
+  color: #e5e5e5;
+  padding: 10px 0 10px 0px;
+  background-color: #34332F;
+}
+
+MenuItem.navigation:hover {
+  color: #e5e5e5;
+  background-image: none;
+  background-color: #31619C;
+}
+
+Label.heading {
+  font: 16px Helvetica, Verdana, sans-serif;
+  color: #31619C;
+}
+
+Label.pageHeadline {
+  font: 20px Helvetica, Verdana, sans-serif;
+  color: #31619C;
+}
+
+Label.title {
+  font: 24px Helvetica, Verdana, sans-serif;
+  color: #999;
+}
+
+Label.footerLabel {
+  font: 14px Helvetica, Verdana, sans-serif;
+}
+
+Composite.filter-container {
+  background-color: transparent;
+}
+
+Composite.filter {
+  color: white;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolBar.filter {
+  font: 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #34332F;
+}
+
+ToolItem.filter {
+  color: #d5d5d5;
+  background-color: transparent;
+  background-image: none;
+  border: none;
+  padding: 8px;
+  text-shadow: none;
+}
+
+ToolItem.filter:hover,
+ToolItem.filterOpen:hover,
+ToolItem.filterSelected:hover  {
+  cursor: pointer;
+  color: white;
+  background-color: #34332F;
+  background-image: none;
+  border-radius: 4px 4px 0 0;
+}
+
+ToolItem.filter:pressed {
+  padding: 8px 8px 8px 8px;
+}
+
+ToolItem.filterOpen {
+  color: #d5d5d5;
+  border: none;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolItem.filterSelected {
+  color: white;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+}
+
+ToolItem.filterSelectedOpen {
+  color: white;
+  border: none;
+  background-color: #34332F;
+  background-image: none;
+}
+
+ToolItem.filterSelected:pressed {
+  padding: 8px 8px 8px 8px;
+}
+
+ToolItem-DropDownIcon.filter,
+ToolItem-DropDownIcon.filterOpen {
+  border:none;
+  background-image: url( images/down-nav.png );
+}
+
+ToolItem-DropDownIcon.filter:hover,
+ToolItem-DropDownIcon.filterOpen:hover,
+ToolItem-DropDownIcon.filterSelected,
+ToolItem-DropDownIcon.filterSelectedOpen {
+  border:none;
+  background-image: url( images/down-nav-hover.png );
+}
+
+Shell.filter-popup {
+  background-color: white;
+  color: #d5d5d5;
+  font: 10px Helvetica, Verdana, sans-serif;
+  background-image: none;
+  box-shadow: none;
+  border: 2px solid #34332F;
+  padding: 6px;
+  opacity: 0.96;
+}
+
+/*Text.filter-tree,
+Tree.filter-tree  {
+  font: 10px Helvetica, Verdana, sans-serif;
+  background-color: transparent;
+}*/
+
+
+Composite.infobox {
+  background-color: #e5e5e5;
+  border: 1px solid #bdbdbd;
+  border-radius: 0 30px 0 30px;
+}
+Label.infobox {
+  /*color: #bdbdbd;*/
+}
+Label.infobox-heading {
+  font: 16px Helvetica, Verdana, sans-serif;
+  color: #31619C; /*#357cd4;*/
+}
+
+Composite.statusbox-warning {
+  background-color: #FFDA73;
+  border: 1px solid #A67A00;
+  border-radius: 1px;
+  opacity: 0.96;
+}
+Label.statusbox-warning {
+  color: #2F2917;
+}
+Label.statusbox-warning-heading {
+  font: 16px Helvetica, Verdana, sans-serif;
+  color: #A67A00;
+}
+
+Label.markup {
+  font: 22px Helvetica, Verdana, sans-serif;
+}
+
+Label.error {
+  color: red;
+}
+
+Text[MULTI].error {
+  border: 1px solid red;
+}
+
+Text[MULTI].error:focused {
+  border: 1px solid red;
+  box-shadow: 0 0 5px red;
+}
+
+Label.text-xxlarge {
+  font: bold 42px Helvetica, Verdana, sans-serif;
+  color: #34332F;
+}
+
+Label.text-large {
+  font: bold 18px Helvetica, Verdana, sans-serif;
+  color: #bdbdbd;
+}
+
+Label.line-separator {
+  color: #e5e5e5;
+}
+
+

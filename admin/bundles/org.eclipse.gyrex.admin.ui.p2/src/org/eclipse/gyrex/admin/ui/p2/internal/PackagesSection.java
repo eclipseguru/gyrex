@@ -12,12 +12,12 @@
  */
 package org.eclipse.gyrex.admin.ui.p2.internal;
 
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
 import org.eclipse.gyrex.p2.internal.P2Activator;
 import org.eclipse.gyrex.p2.internal.packages.IPackageManager;
 import org.eclipse.gyrex.p2.internal.packages.PackageDefinition;
+import org.eclipse.gyrex.rap.application.Page;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
@@ -54,7 +54,7 @@ public class PackagesSection {
 	 * @param page
 	 */
 	@Deprecated
-	public PackagesSection(final Composite parent, final AdminPage page) {
+	public PackagesSection(final Composite parent, final Page page) {
 		this.parent = parent;
 //		super(parent, page.getManagedForm().getToolkit(), Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 //		bindingContext = page.getBindingContext();

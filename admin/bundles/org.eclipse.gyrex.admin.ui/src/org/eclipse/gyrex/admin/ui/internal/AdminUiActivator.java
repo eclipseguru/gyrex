@@ -208,7 +208,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 		// serve admin application directly
 		contextHandler.addServlet(new AdminServletHolder(new RWTServlet()), "/admin");
 
-		// register additional static resources references in body html
+		// register additional static resources references in widgets
 		final ServletHolder staticResources = new AdminServletHolder(new DefaultServlet());
 		staticResources.setInitParameter("resourceBase", FileLocator.resolve(FileLocator.find(getBundle(), new Path("html"), null)).toExternalForm());
 		contextHandler.addServlet(staticResources, "/static/*");
@@ -224,7 +224,7 @@ public class AdminUiActivator extends BaseBundleActivator {
 		}), "");
 
 		// serve context resources (required for RAP/RWT resources)
-		contextHandler.addServlet(new AdminServletHolder(new DefaultServlet()), "/*");
+		contextHandler.addServlet(new AdminServletHolder(new DefaultServlet()), "/" + ApplicationRunner.RESOURCES + "/*");
 
 		// register Logback status servlet
 		try {

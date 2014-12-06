@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;

@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.FilteredTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.PatternFilter;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.layout.PixelConverter;

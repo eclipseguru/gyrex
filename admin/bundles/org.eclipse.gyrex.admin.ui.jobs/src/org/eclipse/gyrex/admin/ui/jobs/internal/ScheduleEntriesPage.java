@@ -11,7 +11,6 @@
  */
 package org.eclipse.gyrex.admin.ui.jobs.internal;
 
-import org.eclipse.gyrex.admin.ui.internal.helper.SwtUtil;
 import org.eclipse.gyrex.admin.ui.internal.widgets.AdminPageWithTree;
 import org.eclipse.gyrex.admin.ui.internal.widgets.Infobox;
 import org.eclipse.gyrex.admin.ui.internal.widgets.NonBlockingMessageDialogs;
@@ -29,6 +28,7 @@ import org.eclipse.gyrex.jobs.internal.schedules.ScheduleStore;
 import org.eclipse.gyrex.jobs.internal.schedules.SchedulingUtil;
 import org.eclipse.gyrex.jobs.internal.util.ContextHashUtil;
 import org.eclipse.gyrex.jobs.manager.IJobManager;
+import org.eclipse.gyrex.rap.helper.SwtUtil;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -185,7 +185,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 								Policy.getStatusHandler().show(new Status(IStatus.ERROR, JobsUiActivator.SYMBOLIC_NAME, "Unable to deactivate schedule.", ex), "Error");
 							}
 
-							BackgroundTasksPage.openSchedule(schedule, getAdminUi());
+							BackgroundTasksPage.openSchedule(schedule, getApplicationService());
 						}
 					});
 				}
@@ -452,7 +452,7 @@ public class ScheduleEntriesPage extends AdminPageWithTree {
 	}
 
 	protected void openSchedulesPage() {
-		getAdminUi().openPage(BackgroundTasksPage.ID);
+		getApplicationService().openPage(BackgroundTasksPage.ID);
 	}
 
 	@Override

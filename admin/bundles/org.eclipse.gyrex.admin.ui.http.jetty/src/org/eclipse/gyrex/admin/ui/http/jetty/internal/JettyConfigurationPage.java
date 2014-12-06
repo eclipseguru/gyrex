@@ -13,7 +13,7 @@
 package org.eclipse.gyrex.admin.ui.http.jetty.internal;
 
 import org.eclipse.gyrex.admin.ui.internal.application.AdminUiUtil;
-import org.eclipse.gyrex.admin.ui.pages.AdminPage;
+import org.eclipse.gyrex.rap.application.Page;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Label;
  * Simple configuration page for the default ports where the built-in local
  * jetty server runs.
  */
-public class JettyConfigurationPage extends AdminPage {
+public class JettyConfigurationPage extends Page {
 
 	boolean disposed;
 	private Composite pageComposite;

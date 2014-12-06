@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Gyrex RAP Support Tests
+Bundle-SymbolicName: org.eclipse.gyrex.rap.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse Gyrex
+Fragment-Host: org.eclipse.gyrex.rap;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.junit;bundle-version="4.11.0",
+ org.mockito;bundle-version="1.9.5",
+ org.hamcrest;bundle-version="1.1.0"
