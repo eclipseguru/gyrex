@@ -31,8 +31,8 @@ public abstract class ApplicationProvider {
 	private String id;
 
 	/**
-	 * Creates a new provider instance allowing extenders to initialize the by
-	 * there one.
+	 * Creates a new provider instance allowing extenders to initialize the
+	 * provider identifier by there own.
 	 * <p>
 	 * When this constructor is used callers must ensure that
 	 * {@link #setId(String)} is called within object creation at some point
@@ -49,7 +49,7 @@ public abstract class ApplicationProvider {
 	 * Invoking this constructor initialized the id using {@link #setId(String)}
 	 * with the specified id.
 	 * </p>
-	 * 
+	 *
 	 * @param id
 	 *            the provider id
 	 * @see #setId(String)
@@ -71,7 +71,7 @@ public abstract class ApplicationProvider {
 	 * {@link Application#initialize(org.eclipse.gyrex.http.application.service.IApplicationServiceSupport)}
 	 * on the returned application object.
 	 * </p>
-	 * 
+	 *
 	 * @param applicationId
 	 *            the application id
 	 * @param context
@@ -84,13 +84,12 @@ public abstract class ApplicationProvider {
 
 	/**
 	 * Returns the provider id.
-	 * 
+	 *
 	 * @return the id
 	 */
 	public final String getId() {
-		if (null == id) {
+		if (null == id)
 			throw new IllegalStateException(String.format("provider id has not been initialized (%s)", getClass().getName()));
-		}
 		return id;
 	}
 
@@ -100,7 +99,7 @@ public abstract class ApplicationProvider {
 	 * The provider id must be set before it can be used. It must only be set
 	 * once and cannot be changed thereafter.
 	 * </p>
-	 * 
+	 *
 	 * @param id
 	 *            the provider id (will be {@link IdHelper#isValidId(String)
 	 *            validated}
@@ -111,9 +110,8 @@ public abstract class ApplicationProvider {
 	 * @see IdHelper#isValidId(String)
 	 */
 	protected final void setId(final String id) throws IllegalArgumentException, IllegalStateException {
-		if (!IdHelper.isValidId(id)) {
+		if (!IdHelper.isValidId(id))
 			throw new IllegalArgumentException("invalid id; please use only ASCII chars a..z (lower and/or upper case), number 0..9 and/or dot, dash and underscore (.-_)");
-		}
 		this.id = id.intern();
 	}
 
