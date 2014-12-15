@@ -27,6 +27,7 @@ import org.eclipse.gyrex.cloud.environment.INodeEnvironment;
 import org.eclipse.gyrex.cloud.internal.CloudActivator;
 import org.eclipse.gyrex.cloud.internal.zk.IZooKeeperLayout;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGate;
+import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperGateListener;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperMonitor;
 import org.eclipse.gyrex.cloud.internal.zk.ZooKeeperNodeInfo;
 import org.eclipse.gyrex.common.services.IServiceProxy;
@@ -73,6 +74,26 @@ public class CloudManagerImpl implements ICloudManager {
 		};
 	};
 
+	final ZooKeeperGateListener nodeMonitorInstaller = new ZooKeeperGateListener() {
+
+		@Override
+		public void gateDown(final ZooKeeperGate gate) {
+			// nothing
+		}
+
+		@Override
+		public void gateRecovering(final ZooKeeperGate gate) {
+			// nothing
+		}
+
+		@Override
+		public void gateUp(final ZooKeeperGate gate) {
+			installNodesMonitor(IZooKeeperLayout.PATH_NODES_PENDING);
+			installNodesMonitor(IZooKeeperLayout.PATH_NODES_APPROVED);
+			installNodesMonitor(IZooKeeperLayout.PATH_NODES_ONLINE);
+		}
+	};
+
 	@Override
 	public void addNodeListener(final INodeListener nodeListener) {
 		if (listenerList == null) {
@@ -81,9 +102,9 @@ public class CloudManagerImpl implements ICloudManager {
 					listenerList = new ListenerList();
 				}
 			}
-			installNodesMonitor(IZooKeeperLayout.PATH_NODES_PENDING);
-			installNodesMonitor(IZooKeeperLayout.PATH_NODES_APPROVED);
-			installNodesMonitor(IZooKeeperLayout.PATH_NODES_ONLINE);
+
+			// hook the node monitor listener
+			ZooKeeperGate.addConnectionMonitor(nodeMonitorInstaller);
 		}
 		listenerList.add(nodeListener);
 	}
@@ -96,7 +117,7 @@ public class CloudManagerImpl implements ICloudManager {
 		} catch (final Exception e) {
 			return new Status(IStatus.ERROR, CloudActivator.SYMBOLIC_NAME, String.format("Error approving node %s. %s", nodeId, ExceptionUtils.getRootCauseMessage(e)), e);
 		}
-	};
+	}
 
 	void fireNodesChanged() {
 		final Object[] listeners = listenerList.getListeners();
@@ -184,6 +205,9 @@ public class CloudManagerImpl implements ICloudManager {
 		final ListenerList list = listenerList;
 		if (list != null) {
 			list.remove(nodeListener);
+			if (list.isEmpty()) {
+				ZooKeeperGate.removeConnectionMonitor(nodeMonitorInstaller);
+			}
 		}
 	}
 
