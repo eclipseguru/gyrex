@@ -76,7 +76,11 @@ public class CloudManagerImpl implements ICloudManager {
 	@Override
 	public void addNodeListener(final INodeListener nodeListener) {
 		if (listenerList == null) {
-			listenerList = new ListenerList();
+			synchronized (this) {
+				if (listenerList == null) {
+					listenerList = new ListenerList();
+				}
+			}
 			installNodesMonitor(IZooKeeperLayout.PATH_NODES_PENDING);
 			installNodesMonitor(IZooKeeperLayout.PATH_NODES_APPROVED);
 			installNodesMonitor(IZooKeeperLayout.PATH_NODES_ONLINE);
@@ -177,7 +181,10 @@ public class CloudManagerImpl implements ICloudManager {
 
 	@Override
 	public void removeNodeListener(final INodeListener nodeListener) {
-		listenerList.remove(nodeListener);
+		final ListenerList list = listenerList;
+		if (list != null) {
+			list.remove(nodeListener);
+		}
 	}
 
 	@Override
