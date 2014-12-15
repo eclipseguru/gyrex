@@ -14,6 +14,7 @@ package org.eclipse.gyrex.http.internal.application.manager;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -140,13 +141,14 @@ public class AutomountComponent implements IAutomountService {
 
 		// log a warning for auto-mount urls which are not mounted
 		final SortedSet<String> mounts = getApplicationManager().getMounts(applicationId);
+		final List<String> urlsNotMounted = new ArrayList<String>(urls);
 		for (final String url : urls) {
 			if (mounts.contains(url)) {
-				urls.remove(url);
+				urlsNotMounted.remove(url);
 			}
 		}
-		if (!urls.isEmpty()) {
-			LOG.warn("Auto-mount disabled for url(s) '{}'. The exising application '{}' is configured differntly.", urls, applicationId);
+		if (!urlsNotMounted.isEmpty()) {
+			LOG.warn("Auto-mount not possible for url(s) '{}'. The exising application '{}' is configured differntly.", urlsNotMounted, applicationId);
 		}
 	}
 
