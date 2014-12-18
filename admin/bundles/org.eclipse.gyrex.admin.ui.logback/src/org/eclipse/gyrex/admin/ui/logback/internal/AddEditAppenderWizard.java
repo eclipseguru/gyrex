@@ -133,7 +133,7 @@ public class AddEditAppenderWizard extends Wizard {
 	}
 
 	public Appender getScheduleEntry() {
-		return appender;
+		return appender == null ? currentSession.getAppender() : appender;
 	}
 
 	void initializeCurrentAppenderConfigurationSession(final String id, final String name, final AppenderConfigurationWizardAdapter wizardAdapter) {

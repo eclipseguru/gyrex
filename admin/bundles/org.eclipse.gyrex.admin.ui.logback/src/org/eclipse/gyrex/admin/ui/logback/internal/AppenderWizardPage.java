@@ -197,6 +197,14 @@ public class AppenderWizardPage extends WizardPage {
 		return StringUtils.trimToNull(nameField.getText());
 	}
 
+	/**
+	 * @param name
+	 */
+	private void setAppenderName(final String name) {
+		final AddEditAppenderWizard wizard = (AddEditAppenderWizard) getWizard();
+		wizard.getScheduleEntry().setName(name);
+	}
+
 	private void setAppenderType(final AppenderType type) {
 		final AddEditAppenderWizard wizard = (AddEditAppenderWizard) getWizard();
 		if (type != null) {
@@ -226,7 +234,7 @@ public class AppenderWizardPage extends WizardPage {
 		}
 
 		setAppenderType((AppenderType) selectedElements.get(0));
-
+		setAppenderName(name);
 		setMessage(null);
 		setPageComplete(true);
 	}

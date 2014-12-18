@@ -61,7 +61,6 @@ public class FileAppenderWizardPage extends WizardPage {
 			this.appender = new FileAppender();
 			session.setAppender(this.appender);
 		}
-
 		setPageComplete(false); // initial status is incomplete
 	}
 

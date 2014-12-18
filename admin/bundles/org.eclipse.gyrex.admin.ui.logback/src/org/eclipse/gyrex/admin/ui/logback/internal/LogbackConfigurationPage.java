@@ -28,7 +28,6 @@ import org.eclipse.gyrex.logback.config.model.LogbackConfig;
 import org.eclipse.gyrex.logback.config.model.Logger;
 import org.eclipse.gyrex.preferences.CloudScope;
 import org.eclipse.gyrex.rap.helper.SwtUtil;
-import org.eclipse.gyrex.server.Platform;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -312,7 +311,8 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 	}
 
 	void openAppenderWizard(final Appender appenderToEdit) {
-		final NonBlockingWizardDialog dialog = new NonBlockingWizardDialog(SwtUtil.getShell(getTreeViewer().getTree()), new AddEditAppenderWizard(currentInput, appenderToEdit));
+		final AddEditAppenderWizard addEditAppenderWizard = new AddEditAppenderWizard(currentInput, appenderToEdit);
+		final NonBlockingWizardDialog dialog = new NonBlockingWizardDialog(SwtUtil.getShell(getTreeViewer().getTree()), addEditAppenderWizard);
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 
@@ -320,7 +320,8 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
 					if (appenderToEdit == null) {
-
+						final Appender appender = addEditAppenderWizard.getScheduleEntry();
+						currentInput.getAppenders().put(appender.getName(), appender);
 					}
 					getTreeViewer().refresh(appenderToEdit);
 				}
