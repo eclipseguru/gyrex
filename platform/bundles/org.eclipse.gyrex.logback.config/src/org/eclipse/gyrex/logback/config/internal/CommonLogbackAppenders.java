@@ -96,7 +96,10 @@ public class CommonLogbackAppenders extends AppenderProvider {
 		fileAppender.setPattern(node.get(PATTERN, null));
 		fileAppender.setFileName(node.get(FILE_NAME, null));
 		try {
-			fileAppender.setRotationPolicy(RotationPolicy.valueOf(node.get(ROTATION_POLICY, null)));
+			final String rotationPolicy = node.get(ROTATION_POLICY, null);
+			if (rotationPolicy != null) {
+				fileAppender.setRotationPolicy(RotationPolicy.valueOf(rotationPolicy));
+			}
 			fileAppender.setMaxHistory(node.get(MAX_HISTORY, null));
 			fileAppender.setMaxFileSize(node.get(MAX_FILE_SIZE, null));
 			if (null != node.get(COMPRESS_ROTATED_LOGS, null)) {
