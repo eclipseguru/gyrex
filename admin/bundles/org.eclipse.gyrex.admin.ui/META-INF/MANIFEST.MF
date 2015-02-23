@@ -16,6 +16,7 @@ Require-Bundle: org.eclipse.gyrex.boot;bundle-version="[1.2.0,2.0.0)",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: ch.qos.logback.classic;version="[1.0.0,2.0.0)";resolution:=optional,
+ com.google.common.base;version="15.0.0",
  javax.servlet;version="[2.6.0,4.0.0)",
  javax.servlet.http;version="[2.6.0,4.0.0)",
  org.apache.commons.fileupload;version="[1.2.2,2.0.0)";resolution:=optional,

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -113,21 +115,35 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 		}
 	}
 
-	// ------- ui creation
-
 	private void doWidgetSelected(final SelectionEvent e) {
 		final Button button = (Button) e.widget;
 		if (fButtonsStyle == SWT.RADIO) {
-			for (int i = 0; i < fButtons.length; i++) {
-				fButtonsSelected[i] = false;
-			}
-		}
+			// interesting observation:
+			//
+			// this reset might actually not be necessary because SWT sends *two* events for the whole radio group
+			//  1. an event is generated for de-selecting an old radio button (if one was selected)
+			//  2. the actual selection event is fired for the new radio button
+			//
+			// but this could possibly also be an RWT thing
 
-		for (int i = 0; i < fButtons.length; i++) {
-			if (fButtons[i] == button) {
-				fButtonsSelected[i] = button.getSelection();
-				dialogFieldChanged();
-				return;
+			for (int i = 0; i < fButtons.length; i++) {
+				if (fButtons[i] == button) {
+					fButtonsSelected[i] = button.getSelection();
+
+					// ignore the de-selection event for RADIO buttons
+					if (button.getSelection()) {
+						dialogFieldChanged();
+					}
+					return;
+				}
+			}
+		} else {
+			for (int i = 0; i < fButtons.length; i++) {
+				if (fButtons[i] == button) {
+					fButtonsSelected[i] = button.getSelection();
+					dialogFieldChanged();
+					return;
+				}
 			}
 		}
 	}
@@ -147,9 +163,6 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 		}
 	}
 
-	/*
-	 * @see DialogField#doFillIntoGrid
-	 */
 	@Override
 	public int getNumberOfControls() {
 		return fGroupBorderStyle == SWT.NONE ? 2 : 1;
@@ -164,12 +177,10 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 		return null;
 	}
 
-	// ------ model access
-
 	/**
 	 * Returns the group widget. When called the first time, the widget will be
 	 * created.
-	 * 
+	 *
 	 * @param parent
 	 *            The parent composite when called the first time, or
 	 *            <code>null</code> after.
@@ -239,7 +250,7 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 
 	/**
 	 * Returns the selection state of a button contained in the group.
-	 * 
+	 *
 	 * @param index
 	 *            The index of the button
 	 */
@@ -249,11 +260,6 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 		return false;
 	}
 
-	// ------ enable / disable management
-
-	/*(non-Javadoc)
-	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField#refresh()
-	 */
 	@Override
 	public void refresh() {
 		super.refresh();
@@ -271,12 +277,18 @@ public class SelectionButtonDialogFieldGroup extends DialogField {
 	public void setSelection(final int index, final boolean selected) {
 		if ((index >= 0) && (index < fButtonsSelected.length)) {
 			if (fButtonsSelected[index] != selected) {
-				fButtonsSelected[index] = selected;
-				if (fButtons != null) {
-					final Button button = fButtons[index];
-					if (isOkToUse(button)) {
-						button.setSelection(selected);
+
+				if (fButtonsStyle == SWT.RADIO) {
+					checkArgument(selected, "de-selection of a radio button group is not supported");
+					for (int i = 0; i < fButtonsSelected.length; i++) {
+						fButtonsSelected[i] = false;
 					}
+				}
+
+				fButtonsSelected[index] = selected;
+
+				if (fButtons != null) {
+					refresh(); // refresh all buttons due to SWT/RWT showing two selections for radios
 				}
 			}
 		}
