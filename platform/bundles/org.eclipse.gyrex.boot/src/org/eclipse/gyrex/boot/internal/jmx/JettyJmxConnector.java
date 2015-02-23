@@ -13,12 +13,11 @@ package org.eclipse.gyrex.boot.internal.jmx;
 
 import javax.management.remote.JMXServiceURL;
 
-import org.eclipse.gyrex.boot.internal.BootActivator;
 import org.eclipse.gyrex.boot.internal.app.ServerApplication;
 import org.eclipse.gyrex.server.Platform;
+import org.eclipse.gyrex.server.settings.SystemSetting;
 
 import org.eclipse.jetty.jmx.ConnectorServer;
-import org.eclipse.osgi.service.environment.EnvironmentInfo;
 
 import org.apache.commons.lang.UnhandledException;
 
@@ -35,38 +34,14 @@ public class JettyJmxConnector {
 		STARTING, STARTED
 	}
 
-	private static final String PROPERTY_HOST = "gyrex.jmxrmi.host";
-	private static final String PROPERTY_PORT = "gyrex.jmxrmi.port";
-
-	private static final Logger LOG = LoggerFactory.getLogger(JettyJmxConnector.class);
-
-	private static ConnectorServer connectorServer;
-	private static Status state;
-
 	static synchronized void doStart() throws Exception {
 		if (state != Status.STARTING)
 			return;
 
-		// do not start if running in production mode and not explicitly set
-		final EnvironmentInfo info = BootActivator.getEnvironmentInfo();
-		if (info.getProperty("gyrex.jmxrmi.skip") != null)
-			return;
-
-		// use defaults from http://wiki.eclipse.org/Jetty/Tutorial/JMX#Enabling_JMXConnectorServer_for_Remote_Access
-		String host = "localhost";
-		int port = Platform.getInstancePort(1099);
-
+		// using defaults from http://wiki.eclipse.org/Jetty/Tutorial/JMX#Enabling_JMXConnectorServer_for_Remote_Access
 		// allow port and host override through arguments
-		if (info.getProperty(PROPERTY_PORT) != null) {
-			try {
-				port = Integer.parseInt(info.getProperty(PROPERTY_PORT));
-			} catch (final Exception e) {
-				throw new IllegalArgumentException(String.format("Invalid JMX port (%s).", info.getProperty(PROPERTY_PORT)), e);
-			}
-		}
-		if (info.getProperty(PROPERTY_HOST) != null) {
-			host = info.getProperty(PROPERTY_HOST);
-		}
+		final String host = jmxConnectorHostSetting.get();
+		final int port = jmxConnectorPortSetting.get();
 
 		// TODO: may want to support protected access using <instance-location>/etc/jmx/... files
 
@@ -80,6 +55,9 @@ public class JettyJmxConnector {
 	}
 
 	public static synchronized void start() throws Exception {
+		if (skipJmxConnectorSetting.isTrue())
+			return;
+
 		if ((state == Status.STARTING) || (state == Status.STARTED))
 			throw new IllegalStateException("already started");
 
@@ -89,12 +67,10 @@ public class JettyJmxConnector {
 			public void run() {
 				try {
 					doStart();
-				} catch (final ClassNotFoundException e) {
-					LOG.warn("Jetty JMX is not available. Please configure JMX support manually. ({})", e.getMessage());
-				} catch (final LinkageError e) {
+				} catch (final ClassNotFoundException | LinkageError | AssertionError e) {
 					LOG.warn("Jetty JMX is not available. Please configure JMX support manually. ({})", e.getMessage());
 				} catch (final Exception e) {
-					ServerApplication.shutdown(new UnhandledException("An error occured while starting the embedded JMX server. Please verify the port/host configuration is correct and no other server is running. JMX can also be disabled by setting system property 'gyrex.jmxrmi.skip'.", e));
+					ServerApplication.shutdown(new UnhandledException("An error occured while starting the embedded JMX server. Please verify the port/host configuration is correct and no other server is running. JMX can also be disabled by setting system property 'gyrex.jmxrmi.skip' to true.", e));
 				}
 			};
 		};
@@ -115,4 +91,16 @@ public class JettyJmxConnector {
 			connectorServer = null;
 		}
 	}
+
+	private static final String DEFAULT_JMXRMI_HOST = "localhost";
+
+	private static final int DEFAULT_JMXRMI_PORT = 1099;
+	private static final Logger LOG = LoggerFactory.getLogger(JettyJmxConnector.class);
+	private static ConnectorServer connectorServer;
+
+	private static Status state;
+
+	private static final SystemSetting<Boolean> skipJmxConnectorSetting = SystemSetting.newBooleanSetting("gyrex.jmxrmi.skip", "Prevents start of the built-in JMX connector for easier access through firewalls.").create();
+	private static final SystemSetting<String> jmxConnectorHostSetting = SystemSetting.newStringSetting("gyrex.jmxrmi.host", "Host for accepting JMX connections.").usingDefault(DEFAULT_JMXRMI_HOST).create();
+	private static final SystemSetting<Integer> jmxConnectorPortSetting = SystemSetting.newIntegerSetting("gyrex.jmxrmi.port", "Port for accepting JMX connections.").usingDefault(Platform.getInstancePort(DEFAULT_JMXRMI_PORT)).create();
 }
