@@ -59,7 +59,7 @@ public class AddAppenderDialog extends NonBlockingStatusDialog {
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param parent
 	 */
 	public AddAppenderDialog(final Shell parent) {
@@ -125,7 +125,7 @@ public class AddAppenderDialog extends NonBlockingStatusDialog {
 
 	/**
 	 * Returns the appender.
-	 * 
+	 *
 	 * @return the appender
 	 */
 	public Appender getAppender() {
@@ -135,8 +135,9 @@ public class AddAppenderDialog extends NonBlockingStatusDialog {
 	@Override
 	protected void okPressed() {
 		validate();
-		if (!getStatus().isOK())
+		if (!getStatus().isOK()) {
 			return;
+		}
 
 		try {
 			if (typeField.isSelected(0)) {

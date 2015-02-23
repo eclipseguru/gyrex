@@ -27,7 +27,7 @@ public class LogbackUiImages {
 	/**
 	 * Returns the image descriptor for the given image ID. Returns
 	 * <code>null</code> if there is no such image.
-	 * 
+	 *
 	 * @param id
 	 *            the identifier for the image to retrieve
 	 * @return the image descriptor associated with the given ID

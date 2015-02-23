@@ -40,8 +40,9 @@ public class AppenderType implements ImageAdapter {
 
 	@Override
 	public ImageDescriptor getImageDescriptor(final Object object) {
-		if (object != this)
+		if (object != this) {
 			return null;
+		}
 
 		switch (getId()) {
 			case "console":
@@ -56,9 +57,10 @@ public class AppenderType implements ImageAdapter {
 	}
 
 	public String getName() {
-		if (StringUtils.isNotBlank(name))
+		if (StringUtils.isNotBlank(name)) {
 			return name;
-		// fallback to id
+		}
+
 		return id;
 	}
 

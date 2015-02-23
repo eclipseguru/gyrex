@@ -217,7 +217,7 @@ public class LoggerSettingsDialog extends NonBlockingStatusDialog {
 
 	/**
 	 * Returns the logger.
-	 * 
+	 *
 	 * @return the logger
 	 */
 	public Logger getLogger() {
@@ -251,7 +251,7 @@ public class LoggerSettingsDialog extends NonBlockingStatusDialog {
 			final List elements = appenderRefsField.getElements();
 			final List<String> appenderRefs = new ArrayList<String>();
 			for (final Object appenderRef : elements) {
-				if (appenderRef instanceof String && !appenderRefs.contains(appenderRef)) {
+				if ((appenderRef instanceof String) && !appenderRefs.contains(appenderRef)) {
 					appenderRefs.add((String) appenderRef);
 				}
 			}

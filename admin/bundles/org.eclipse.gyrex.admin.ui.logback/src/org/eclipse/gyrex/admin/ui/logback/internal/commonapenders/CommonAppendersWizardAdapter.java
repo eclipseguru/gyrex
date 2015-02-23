@@ -14,13 +14,30 @@ package org.eclipse.gyrex.admin.ui.logback.internal.commonapenders;
 import org.eclipse.gyrex.admin.ui.logback.configuration.wizard.AppenderConfigurationWizardAdapter;
 import org.eclipse.gyrex.admin.ui.logback.configuration.wizard.AppenderConfigurationWizardSession;
 import org.eclipse.gyrex.logback.config.internal.CommonLogbackAppenders;
+import org.eclipse.gyrex.logback.config.model.Appender;
+import org.eclipse.gyrex.logback.config.model.ConsoleAppender;
+import org.eclipse.gyrex.logback.config.model.FileAppender;
 
 import org.eclipse.jface.wizard.IWizardPage;
 
 /**
  * Adapter for {@link CommonLogbackAppenders}
  */
-public class CommonApendersWizardAdapter extends AppenderConfigurationWizardAdapter {
+public class CommonAppendersWizardAdapter extends AppenderConfigurationWizardAdapter {
+
+	@Override
+	protected Appender createAppender(final String typeId) throws IllegalArgumentException {
+		switch (typeId) {
+			case "console":
+				return new ConsoleAppender();
+
+			case "file":
+				return new FileAppender();
+
+			default:
+				throw new IllegalArgumentException("unsupported type: " + typeId);
+		}
+	}
 
 	@Override
 	public IWizardPage[] createPages(final AppenderConfigurationWizardSession session) {
@@ -35,6 +52,20 @@ public class CommonApendersWizardAdapter extends AppenderConfigurationWizardAdap
 				break;
 		}
 		return null;
+	}
+
+	@Override
+	protected boolean isCompatibleAppender(final String typeId, final Appender appender) throws IllegalArgumentException {
+		switch (typeId) {
+			case "console":
+				return appender instanceof ConsoleAppender;
+
+			case "file":
+				return appender instanceof FileAppender;
+
+			default:
+				throw new IllegalArgumentException("unsupported type: " + typeId);
+		}
 	}
 
 }

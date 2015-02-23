@@ -11,6 +11,9 @@
  */
 package org.eclipse.gyrex.logback.config.internal;
 
+import static com.google.common.base.Preconditions.checkState;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,15 +37,28 @@ public class PreferenceBasedLogbackConfigStore {
 	private static final String APPENDERS = "appenders";
 	private static final String DEFAULT_APPENDER_REFS = "defaultAppenderRefs";
 	private static final String DEFAULT_LEVEL = "defaultLevel";
+	private static final String THRESHOLD = "threshold";
+
+	private void configureAppender(final Appender appender, final Preferences node, final AppenderProvider provider) throws Exception {
+		appender.setName(node.name());
+		if (null != node.get(THRESHOLD, null)) {
+			appender.setThreshold(Level.toLevel(node.get(THRESHOLD, null), Level.OFF));
+		}
+
+		provider.configureAppender(appender, node);
+		checkState(node.name().equals(appender.getName()), "provider (%s) must not change appender name from '%s' to '%s'", provider, node.name(), appender.getName());
+	}
 
 	private Appender loadAppender(final Preferences node) throws Exception {
 		final String typeId = node.get(TYPE, null);
 		final AppenderProvider provider = LogbackConfigActivator.getInstance().getAppenderProviderRegistry().getProvider(typeId);
 		if (provider != null) {
-			final Appender appender = provider.loadAppender(typeId, node);
-			if (appender != null)
-				return appender;
+			final Appender appender = provider.createAppender(typeId);
+			checkState(appender != null, "provider (%s) did not return an appender for type '%s'", provider, typeId);
+			configureAppender(appender, node, provider);
+			return appender;
 		}
+
 		// TODO can we support a generic appender?
 		throw new IllegalArgumentException(String.format("unknown appender type '%s' (appender '%s')", typeId, node.name()));
 	}
@@ -89,10 +105,10 @@ public class PreferenceBasedLogbackConfigStore {
 	private void saveAppender(final Appender appender, final Preferences node) throws Exception {
 		final AppenderProvider provider = LogbackConfigActivator.getInstance().getAppenderProviderRegistry().getProvider(appender.getTypeId());
 		if (provider != null) {
-			provider.writeAppender(appender, node);
-			node.put(TYPE, appender.getTypeId());
-		} else
+			writeAppenderConfiguration(appender, node, provider);
+		} else {
 			throw new IllegalArgumentException(String.format("unknown appender type '%s' (appender '%s')", appender.getClass().getSimpleName(), appender.getName()));
+		}
 	}
 
 	private void saveAppenderRefs(final List<String> appenderRefs, final Preferences appenderRefsNode) throws BackingStoreException {
@@ -120,7 +136,7 @@ public class PreferenceBasedLogbackConfigStore {
 		saveAppenderRefs(config.getDefaultAppenders(), node.node(DEFAULT_APPENDER_REFS));
 
 		final Preferences appendersNode = node.node(APPENDERS);
-		final Map<String, Appender> appenders = config.getAppenders();
+		final Map<String, Appender> appenders = toAppendersByNameMap(config.getAppenders());
 		for (final String appender : appendersNode.childrenNames()) {
 			if (!appenders.containsKey(appender)) {
 				appendersNode.node(appender).removeNode();
@@ -131,7 +147,7 @@ public class PreferenceBasedLogbackConfigStore {
 		}
 
 		final Preferences loggersNode = node.node(LOGGERS);
-		final Map<String, Logger> loggers = config.getLoggers();
+		final Map<String, Logger> loggers = toLoggersByNameMap(config.getLoggers());
 		for (final String logger : loggersNode.childrenNames()) {
 			if (!loggers.containsKey(logger)) {
 				loggersNode.node(logger).removeNode();
@@ -157,5 +173,32 @@ public class PreferenceBasedLogbackConfigStore {
 		}
 
 		saveAppenderRefs(logger.getAppenderReferences(), node.node(APPENDER_REFS));
+	}
+
+	private Map<String, Appender> toAppendersByNameMap(final List<Appender> appenders) {
+		final LinkedHashMap<String, Appender> map = new LinkedHashMap<String, Appender>(appenders.size());
+		for (final Appender a : appenders) {
+			map.put(a.getName(), a);
+		}
+		return map;
+	}
+
+	private Map<String, Logger> toLoggersByNameMap(final List<Logger> loggers) {
+		final LinkedHashMap<String, Logger> map = new LinkedHashMap<String, Logger>(loggers.size());
+		for (final Logger l : loggers) {
+			map.put(l.getName(), l);
+		}
+		return map;
+	}
+
+	private void writeAppenderConfiguration(final Appender appender, final Preferences node, final AppenderProvider provider) throws Exception {
+		if (null != appender.getThreshold()) {
+			node.put(THRESHOLD, appender.getThreshold().toString());
+		} else {
+			node.remove(THRESHOLD);
+		}
+
+		provider.writeAppenderConfiguration(appender, node);
+		node.put(TYPE, appender.getTypeId());
 	}
 }

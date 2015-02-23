@@ -60,8 +60,9 @@ public class AppenderWizardPage extends WizardPage {
 		private LocalResourceManager resourceManager;
 
 		private Image createImage(final ImageDescriptor descriptor) {
-			if (descriptor == null)
+			if (descriptor == null) {
 				return null;
+			}
 
 			if (resourceManager == null) {
 				resourceManager = new LocalResourceManager(JFaceResources.getResources());
@@ -82,15 +83,17 @@ public class AppenderWizardPage extends WizardPage {
 		@Override
 		public Image getImage(final Object element) {
 			final ImageAdapter adapter = AdapterUtil.getAdapter(element, ImageAdapter.class);
-			if (adapter != null)
+			if (adapter != null) {
 				return createImage(adapter.getImageDescriptor(element));
+			}
 			return super.getImage(element);
 		};
 
 		@Override
 		public String getText(final Object element) {
-			if (element instanceof AppenderType)
+			if (element instanceof AppenderType) {
 				return ((AppenderType) element).getName();
+			}
 			return super.getText(element);
 		};
 	};
@@ -135,11 +138,10 @@ public class AppenderWizardPage extends WizardPage {
 	private final TreeListDialogField appenderTypeField = new TreeListDialogField(appenderTreeListAdapter, null, appenderTreeLabelProvider, new PatternFilter());
 	private final StringDialogField nameField = new StringDialogField();
 
-	private final Appender appender;
+	private List<AppenderType> types;
 
-	protected AppenderWizardPage(final Appender appender) {
+	protected AppenderWizardPage() {
 		super("type");
-		this.appender = appender;
 		setTitle("Appender");
 		setDescription("Configure the appender basics (such as name and type).");
 		setPageComplete(false);
@@ -171,6 +173,19 @@ public class AppenderWizardPage extends WizardPage {
 		LayoutUtil.setHorizontalGrabbing(nameField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(appenderTypeField.getTreeControl(null));
 
+		appenderTypeField.setElements(getAppenderTypes());
+
+	}
+
+	public String getAppenderName() {
+		return StringUtils.trimToNull(nameField.getText());
+	}
+
+	private List<AppenderType> getAppenderTypes() {
+		if (types != null) {
+			return types;
+		}
+
 		final List<AppenderType> types = new ArrayList<>();
 		final AppenderProviderRegistry registry = LogbackConfigActivator.getInstance().getAppenderProviderRegistry();
 		for (final AppenderProvider provider : registry.getTracked().values()) {
@@ -178,34 +193,10 @@ public class AppenderWizardPage extends WizardPage {
 				types.add(new AppenderType(typeId, registry.getName(typeId), provider));
 			}
 		}
-		appenderTypeField.setElements(types);
-
-		if (appender != null) {
-			nameField.setText(appender.getName());
-			for (final AppenderType type : types) {
-				if (appender.getTypeId().equals(type.getId())) {
-					appenderTypeField.selectElements(new StructuredSelection(type));
-					break;
-				}
-			}
-			appenderTypeField.setEnabled(false);
-		}
+		return this.types = types;
 	}
 
-	@Override
-	public String getName() {
-		return StringUtils.trimToNull(nameField.getText());
-	}
-
-	/**
-	 * @param name
-	 */
-	private void setAppenderName(final String name) {
-		final AddEditAppenderWizard wizard = (AddEditAppenderWizard) getWizard();
-		wizard.getScheduleEntry().setName(name);
-	}
-
-	private void setAppenderType(final AppenderType type) {
+	private void initializeAppenderConfigurationForType(final AppenderType type) {
 		final AddEditAppenderWizard wizard = (AddEditAppenderWizard) getWizard();
 		if (type != null) {
 			wizard.initializeCurrentAppenderConfigurationSession(type.getId(), type.getName(), type.getWizardAdapter());
@@ -214,8 +205,19 @@ public class AppenderWizardPage extends WizardPage {
 		}
 	}
 
+	public void initializeFromExistingAppender(final Appender appender) {
+		nameField.setText(appender.getName());
+		for (final AppenderType type : getAppenderTypes()) {
+			if (appender.getTypeId().equals(type.getId())) {
+				appenderTypeField.selectElements(new StructuredSelection(type));
+				break;
+			}
+		}
+		appenderTypeField.setEnabled(false);
+	}
+
 	void validate() {
-		final String name = getName();
+		final String name = getAppenderName();
 		if (name == null) {
 			setMessage("Please enter an appender name.", INFORMATION);
 			setPageComplete(false);
@@ -233,8 +235,7 @@ public class AppenderWizardPage extends WizardPage {
 			return;
 		}
 
-		setAppenderType((AppenderType) selectedElements.get(0));
-		setAppenderName(name);
+		initializeAppenderConfigurationForType((AppenderType) selectedElements.get(0));
 		setMessage(null);
 		setPageComplete(true);
 	}

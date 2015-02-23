@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal.commonapenders;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.DialogField;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.LayoutUtil;
@@ -20,7 +22,6 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.admin.ui.logback.configuration.wizard.AppenderConfigurationWizardSession;
 import org.eclipse.gyrex.common.identifiers.IdHelper;
-import org.eclipse.gyrex.logback.config.model.Appender;
 import org.eclipse.gyrex.logback.config.model.FileAppender;
 import org.eclipse.gyrex.logback.config.model.FileAppender.RotationPolicy;
 
@@ -48,19 +49,14 @@ public class FileAppenderWizardPage extends WizardPage {
 	private final StringDialogField siftingPropertyNameField = new StringDialogField();
 	private final StringDialogField siftingPropertyDefaultField = new StringDialogField();
 
-	private FileAppender appender;
+	private final FileAppender appender;
 
 	public FileAppenderWizardPage(final AppenderConfigurationWizardSession session) {
 		super("file");
 		setTitle("File Appender");
 		setDescription("Configure log file details like name and rotation.");
-		final Appender appender = session.getAppender();
-		if (appender instanceof FileAppender) {
-			this.appender = (FileAppender) appender;
-		} else {
-			this.appender = new FileAppender();
-			session.setAppender(this.appender);
-		}
+
+		appender = (FileAppender) checkNotNull(session.getAppender());
 		setPageComplete(false); // initial status is incomplete
 	}
 

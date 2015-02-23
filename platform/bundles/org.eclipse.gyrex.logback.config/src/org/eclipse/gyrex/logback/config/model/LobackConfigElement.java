@@ -26,7 +26,7 @@ public abstract class LobackConfigElement {
 	 * heavily on Logback and may be bound to different evolution/compatibility
 	 * rules.
 	 * </p>
-	 * 
+	 *
 	 * @param writer
 	 *            the stream writer
 	 * @throws XMLStreamException

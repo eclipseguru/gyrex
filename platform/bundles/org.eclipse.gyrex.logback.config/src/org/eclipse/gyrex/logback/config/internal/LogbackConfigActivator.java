@@ -22,7 +22,7 @@ public class LogbackConfigActivator extends BaseBundleActivator {
 
 	/**
 	 * Returns the instance.
-	 * 
+	 *
 	 * @return the instance
 	 */
 	public static LogbackConfigActivator getInstance() {
@@ -59,18 +59,20 @@ public class LogbackConfigActivator extends BaseBundleActivator {
 	 * Note, the registry is lazily initialized. This call may block during
 	 * initialization.
 	 * </p>
-	 * 
+	 *
 	 * @return the registry
 	 */
 	public AppenderProviderRegistry getAppenderProviderRegistry() {
 		AppenderProviderRegistry registry = appenderProviderRegistry;
 		if (null == registry) {
 			synchronized (this) {
-				if (appenderProviderRegistry != null)
+				if (appenderProviderRegistry != null) {
 					return appenderProviderRegistry;
+				}
 
-				if (!isActive())
+				if (!isActive()) {
 					throw createBundleInactiveException();
+				}
 
 				// start the object provider registry
 				registry = appenderProviderRegistry = new AppenderProviderRegistry(getBundle().getBundleContext());

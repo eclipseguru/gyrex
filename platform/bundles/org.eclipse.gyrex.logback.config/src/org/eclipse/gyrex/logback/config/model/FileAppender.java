@@ -103,8 +103,9 @@ public class FileAppender extends Appender {
 
 	private void writeRotation(final XMLStreamWriter writer) throws XMLStreamException {
 		final RotationPolicy policy = getRotationPolicy();
-		if (null == policy)
+		if (null == policy) {
 			return;
+		}
 
 		switch (policy) {
 			case SIZE:

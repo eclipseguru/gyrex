@@ -42,14 +42,15 @@ public abstract class Appender extends LobackConfigElement {
 	 * Creates a new instance.
 	 */
 	public Appender(final String typeId) {
-		if (!IdHelper.isValidId(typeId))
+		if (!IdHelper.isValidId(typeId)) {
 			throw new IllegalArgumentException("invalid type id: " + typeId);
+		}
 		this.typeId = typeId;
 	}
 
 	/**
 	 * Indicates if the appender can be wrapped into a sifting appender.
-	 * 
+	 *
 	 * @return <code>true</code> if it can be wrapped, <code>false</code>
 	 *         otherwise
 	 */
@@ -59,14 +60,14 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Returns the appender class name.
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract String getAppenderClassName();
 
 	/**
 	 * Returns the name.
-	 * 
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -75,7 +76,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Returns the pattern.
-	 * 
+	 *
 	 * @return the pattern
 	 */
 	public String getPattern() {
@@ -85,7 +86,7 @@ public abstract class Appender extends LobackConfigElement {
 	/**
 	 * Returns the default value if no MDC property is set with the name
 	 * returned by {@link #getSiftingMdcPropertyName()}.
-	 * 
+	 *
 	 * @return a default value
 	 */
 	public String getSiftingMdcPropertyDefaultValue() {
@@ -96,7 +97,7 @@ public abstract class Appender extends LobackConfigElement {
 	 * Returns the name of the property that should be used for determining the
 	 * log output if {@link #isSeparateLogOutputsPerMdcProperty() sifting} is
 	 * enabled.
-	 * 
+	 *
 	 * @return the name of the property (may be <code>null</code>)
 	 */
 	public String getSiftingMdcPropertyName() {
@@ -105,7 +106,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Returns the threshold.
-	 * 
+	 *
 	 * @return the threshold
 	 */
 	public Level getThreshold() {
@@ -118,7 +119,7 @@ public abstract class Appender extends LobackConfigElement {
 	 * The id will be used to identify the {@link AppenderProvider} responsible
 	 * for reading and writing the appender.
 	 * </p>
-	 * 
+	 *
 	 * @return the type id
 	 */
 	public final String getTypeId() {
@@ -128,7 +129,7 @@ public abstract class Appender extends LobackConfigElement {
 	/**
 	 * Indicates if log output should be written to different targets (eg.
 	 * files) based on an MDC property value.
-	 * 
+	 *
 	 * @return <code>true</code> if separate log outputs should be created,
 	 *         <code>false</code> otherwise
 	 */
@@ -138,7 +139,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Indicates if the appender prefers a short pattern.
-	 * 
+	 *
 	 * @return <code>true</code> if the short pattern is prefered,
 	 *         <code>false</code> otherwise
 	 */
@@ -148,7 +149,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Sets the name.
-	 * 
+	 *
 	 * @param name
 	 *            the name to set
 	 */
@@ -158,7 +159,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Sets the pattern.
-	 * 
+	 *
 	 * @param pattern
 	 *            the pattern to set
 	 */
@@ -168,7 +169,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Sets the siftingMdcPropertyDefaultValue.
-	 * 
+	 *
 	 * @param siftingMdcPropertyDefaultValue
 	 *            the siftingMdcPropertyDefaultValue to set
 	 */
@@ -178,7 +179,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Sets the siftingMdcPropertyName.
-	 * 
+	 *
 	 * @param siftingMdcPropertyName
 	 *            the siftingMdcPropertyName to set
 	 */
@@ -188,7 +189,7 @@ public abstract class Appender extends LobackConfigElement {
 
 	/**
 	 * Sets the threshold.
-	 * 
+	 *
 	 * @param threshold
 	 *            the threshold to set
 	 */

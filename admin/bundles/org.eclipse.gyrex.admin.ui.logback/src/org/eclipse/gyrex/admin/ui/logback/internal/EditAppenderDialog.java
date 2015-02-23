@@ -57,7 +57,7 @@ public class EditAppenderDialog extends NonBlockingStatusDialog {
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param parent
 	 */
 	public EditAppenderDialog(final Shell parent) {
@@ -190,7 +190,7 @@ public class EditAppenderDialog extends NonBlockingStatusDialog {
 
 	/**
 	 * Returns the appender.
-	 * 
+	 *
 	 * @return the appender
 	 */
 	public Appender getAppender() {

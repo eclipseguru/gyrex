@@ -55,30 +55,46 @@ public abstract class AppenderProvider extends PlatformObject {
 
 	/**
 	 * Creates a new instance using the specified provider id.
-	 * 
+	 *
 	 * @param providedTypeIds
 	 *            the ids of the provided appenders (may not be
 	 *            <code>null</code> or empty, will be
 	 *            {@link IdHelper#isValidId(String) validated})
 	 */
 	protected AppenderProvider(final String... providedTypeIds) {
-		if ((null == providedTypeIds) || (providedTypeIds.length == 0))
+		if ((null == providedTypeIds) || (providedTypeIds.length == 0)) {
 			throw new IllegalArgumentException("appender types must not be null or empty");
+		}
 
 		// validate & save
 		this.providedTypeIds = new ArrayList<String>(providedTypeIds.length);
 		for (final String id : providedTypeIds) {
-			if (!IdHelper.isValidId(id))
+			if (!IdHelper.isValidId(id)) {
 				throw new IllegalArgumentException(String.format("type id \"%s\" is invalid; valid chars are US-ASCII a-z / A-Z / 0-9 / '.' / '-' / '_'", id));
-			else {
+			} else {
 				this.providedTypeIds.add(id);
 			}
 		}
 	}
 
 	/**
+	 * Reads and configures the specified appender from a preference node.
+	 * <p>
+	 * Note, implementors can rely upon the contract that
+	 * {@link #createAppender(String)} has been called for obtaining a correct
+	 * appender object based on {@link Appender#getTypeId() the appender type}.
+	 * </p>
+	 *
+	 * @param appender
+	 *            the appender to configure
+	 * @param node
+	 *            the preference node
+	 */
+	public abstract void configureAppender(Appender appender, final Preferences node) throws Exception;
+
+	/**
 	 * Creates and returns a new appender object of the specified type.
-	 * 
+	 *
 	 * @param typeId
 	 *            the appender type id
 	 * @return the appender configuration
@@ -93,7 +109,7 @@ public abstract class AppenderProvider extends PlatformObject {
 	 * in. Subclasses may override and return a specific name for the specified
 	 * type id. If the type is unknown, <code>null</code> should be returned.
 	 * </p>
-	 * 
+	 *
 	 * @param typeId
 	 *            the appender type identifier
 	 * @return the type name (maybe <code>null</code>)
@@ -104,7 +120,7 @@ public abstract class AppenderProvider extends PlatformObject {
 
 	/**
 	 * Returns a list of provided appender type identifiers.
-	 * 
+	 *
 	 * @return an unmodifiable collection of provided appender type identifiers
 	 */
 	public final Collection<String> getProvidedTypeIds() {
@@ -112,20 +128,9 @@ public abstract class AppenderProvider extends PlatformObject {
 	}
 
 	/**
-	 * Reads and returns an appender configuration from a preference node.
-	 * 
-	 * @param typeId
-	 *            the appender type id
-	 * @param node
-	 *            the preference node
-	 * @return the appender configuration
-	 */
-	public abstract Appender loadAppender(String typeId, final Preferences node) throws Exception;
-
-	/**
 	 * Returns a string containing a concise, human-readable description of the
 	 * provider.
-	 * 
+	 *
 	 * @return a string representation of the provider
 	 */
 	@Override
@@ -134,19 +139,19 @@ public abstract class AppenderProvider extends PlatformObject {
 	}
 
 	/**
-	 * Writes the specified appender configuration into the given preference
-	 * node.
+	 * Writes the configuration of the specified appender into the given
+	 * preference node.
 	 * <p>
 	 * Note, implementors should not call {@link Preferences#flush()} on the
 	 * given node in order to avoid redundant work. The node will be flushed by
 	 * the framework when appropriate.
 	 * </p>
-	 * 
+	 *
 	 * @param appender
 	 *            the appender to write
 	 * @param node
 	 *            the node to write the appender configuration to
 	 */
-	public abstract void writeAppender(Appender appender, Preferences node) throws Exception;
+	public abstract void writeAppenderConfiguration(Appender appender, Preferences node) throws Exception;
 
 }

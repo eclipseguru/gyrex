@@ -39,15 +39,15 @@ public class LogbackConfigContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getChildren(final Object o) {
-		if (o instanceof LogbackConfig)
+		if (o instanceof LogbackConfig) {
 			return new Object[] { appendersGroup, loggersGroup, defaultLogger };
-		else if (o == appendersGroup)
-			return appendersGroup.getAppenders().values().toArray();
-		else if (o == loggersGroup)
-			return loggersGroup.getLoggers().values().toArray();
-		else if (o == defaultLogger)
+		} else if (o == appendersGroup) {
+			return appendersGroup.getAppenders().toArray();
+		} else if (o == loggersGroup) {
+			return loggersGroup.getLoggers().toArray();
+		} else if (o == defaultLogger) {
 			return toAppenderReferences(defaultLogger, defaultLogger.getAppenderReferences());
-		else if (o instanceof Logger) {
+		} else if (o instanceof Logger) {
 			final Logger logger = (Logger) o;
 			return toAppenderReferences(logger, logger.getAppenderReferences());
 		}
@@ -61,14 +61,18 @@ public class LogbackConfigContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(final Object element) {
-		if (element instanceof AppenderReference)
+		if (element instanceof AppenderReference) {
 			return ((AppenderReference) element).getParent();
-		if (element instanceof Logger)
+		}
+		if (element instanceof Logger) {
 			return loggersGroup;
-		if (element instanceof Appender)
+		}
+		if (element instanceof Appender) {
 			return appendersGroup;
-		if ((element == appendersGroup) || (element == loggersGroup) || (element == defaultLogger))
+		}
+		if ((element == appendersGroup) || (element == loggersGroup) || (element == defaultLogger)) {
 			return defaultLogger.getConfig();
+		}
 		return null;
 	}
 

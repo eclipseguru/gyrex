@@ -63,16 +63,16 @@ public class AppenderProviderRegistry extends ServiceTracker<AppenderProvider, A
 		return service;
 	}
 
+	public Collection<String> getAvailableTypeIds() {
+		return providerById.keySet();
+	}
+
 	public String getName(final String appenderTypeId) {
 		return nameById.get(appenderTypeId);
 	}
 
 	public AppenderProvider getProvider(final String id) {
 		return providerById.get(id);
-	}
-
-	public Collection<String> getAvailableTypeIds() {
-		return providerById.keySet();
 	}
 
 	void removeAppenderProvider(final AppenderProvider provider) {

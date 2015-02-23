@@ -11,13 +11,16 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.configuration.wizard;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import org.eclipse.gyrex.logback.config.model.Appender;
 import org.eclipse.gyrex.logback.config.spi.AppenderProvider;
 
 import org.eclipse.jface.wizard.IWizardPage;
 
 /**
- * A container to maintain configuration session state.
+ * A container to maintain state for an appender configuration session.
  */
 public final class AppenderConfigurationWizardSession {
 
@@ -28,7 +31,7 @@ public final class AppenderConfigurationWizardSession {
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param appenderTypeId
 	 *            the appender type id
 	 * @param appenderTypeName
@@ -43,13 +46,15 @@ public final class AppenderConfigurationWizardSession {
 
 	public boolean canFinish() {
 		// never finish if pages haven't been initialized
-		if (pages == null)
+		if (pages == null) {
 			return false;
+		}
 
 		// do not finish if one of the pages is not complete
 		for (final IWizardPage page : pages) {
-			if (!page.isPageComplete())
+			if (!page.isPageComplete()) {
 				return false;
+			}
 		}
 
 		// all good
@@ -58,7 +63,7 @@ public final class AppenderConfigurationWizardSession {
 
 	/**
 	 * Returns the appender.
-	 * 
+	 *
 	 * @return the appender
 	 */
 	public final Appender getAppender() {
@@ -67,7 +72,7 @@ public final class AppenderConfigurationWizardSession {
 
 	/**
 	 * Returns the appender type id.
-	 * 
+	 *
 	 * @return the appender type id
 	 */
 	public final String getAppenderTypeId() {
@@ -76,7 +81,7 @@ public final class AppenderConfigurationWizardSession {
 
 	/**
 	 * Returns a human readable name of the appender type.
-	 * 
+	 *
 	 * @return the appender type name
 	 * @see AppenderProvider#getName(String)
 	 */
@@ -86,7 +91,7 @@ public final class AppenderConfigurationWizardSession {
 
 	/**
 	 * Returns the pages.
-	 * 
+	 *
 	 * @return the pages
 	 */
 	public final IWizardPage[] getPages() {
@@ -95,17 +100,25 @@ public final class AppenderConfigurationWizardSession {
 
 	/**
 	 * Sets the appender.
-	 * 
+	 * <p>
+	 * Note, this method can only be called once to initialize the appender.
+	 * After an appender has been set, this method will start throwing
+	 * {@link IllegalStateException exceptions}.
+	 * </p>
+	 *
 	 * @param appender
 	 *            the appender to set
+	 * @throws IllegalStateException
+	 *             if an appender has already been set
 	 */
 	public void setAppender(final Appender appender) {
-		this.appender = appender;
+		checkState(this.appender == null, "appender alredy initialized");
+		this.appender = checkNotNull(appender);
 	}
 
 	/**
 	 * Sets the pages.
-	 * 
+	 *
 	 * @param pages
 	 *            the pages to set
 	 * @noreference This method is not intended to be referenced by clients.

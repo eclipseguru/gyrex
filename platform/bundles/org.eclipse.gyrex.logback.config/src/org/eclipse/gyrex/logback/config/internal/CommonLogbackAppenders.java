@@ -22,6 +22,8 @@ import org.osgi.service.prefs.Preferences;
 
 import org.apache.commons.lang.StringUtils;
 
+import ch.qos.logback.core.joran.spi.ConsoleTarget;
+
 /**
  * Provides default appenders
  */
@@ -31,6 +33,7 @@ public class CommonLogbackAppenders extends AppenderProvider {
 	private static final String CONSOLE = "console";
 
 	private static final String PATTERN = "pattern";
+	private static final String TARGET = "target";
 	private static final String ROTATION_POLICY = "rotationPolicy";
 	private static final String SIFTING_MDC_PROPERTYDEFAULT_VALUE = "siftingMdcPropertydefaultValue";
 	private static final String SIFTING_MDC_PROPERTY_NAME = "siftingMdcPropertyName";
@@ -42,6 +45,15 @@ public class CommonLogbackAppenders extends AppenderProvider {
 
 	public CommonLogbackAppenders() {
 		super(CONSOLE, FILE);
+	}
+
+	@Override
+	public void configureAppender(final Appender appender, final Preferences node) throws Exception {
+		if (appender instanceof ConsoleAppender) {
+			loadConsoleAppender((ConsoleAppender) appender, node);
+		} else if (appender instanceof FileAppender) {
+			loadFileAppender((FileAppender) appender, node);
+		}
 	}
 
 	@Override
@@ -70,29 +82,16 @@ public class CommonLogbackAppenders extends AppenderProvider {
 		}
 	}
 
-	@Override
-	public Appender loadAppender(final String typeId, final Preferences node) throws Exception {
-		switch (typeId) {
-			case CONSOLE:
-				return loadConsoleAppender(node);
-			case FILE:
-				return loadFileAppender(node);
-
-			default:
-				return null;
-		}
-	}
-
-	private Appender loadConsoleAppender(final Preferences node) throws BackingStoreException {
-		final ConsoleAppender appender = new ConsoleAppender();
-		appender.setName(node.name());
+	private Appender loadConsoleAppender(final ConsoleAppender appender, final Preferences node) throws BackingStoreException {
 		appender.setPattern(node.get(PATTERN, null));
+
+		if (null != node.get(TARGET, null)) {
+			appender.setTarget(ConsoleTarget.findByName(node.get(TARGET, null)));
+		}
 		return appender;
 	}
 
-	private Appender loadFileAppender(final Preferences node) throws BackingStoreException {
-		final FileAppender fileAppender = new FileAppender();
-		fileAppender.setName(node.name());
+	private Appender loadFileAppender(final FileAppender fileAppender, final Preferences node) throws BackingStoreException {
 		fileAppender.setPattern(node.get(PATTERN, null));
 		fileAppender.setFileName(node.get(FILE_NAME, null));
 		try {
@@ -122,6 +121,12 @@ public class CommonLogbackAppenders extends AppenderProvider {
 			node.put(PATTERN, appender.getPattern());
 		} else {
 			node.remove(PATTERN);
+		}
+
+		if (null != appender.getTarget()) {
+			node.put(TARGET, appender.getTarget().getName());
+		} else {
+			node.remove(TARGET);
 		}
 	}
 
@@ -166,7 +171,7 @@ public class CommonLogbackAppenders extends AppenderProvider {
 	}
 
 	@Override
-	public void writeAppender(final Appender appender, final Preferences node) throws Exception {
+	public void writeAppenderConfiguration(final Appender appender, final Preferences node) throws Exception {
 		if (appender instanceof ConsoleAppender) {
 			saveConsoleAppender((ConsoleAppender) appender, node);
 		} else if (appender instanceof FileAppender) {

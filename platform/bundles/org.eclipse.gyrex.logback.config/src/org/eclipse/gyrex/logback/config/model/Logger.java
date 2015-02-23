@@ -31,7 +31,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Returns the appenders.
-	 * 
+	 *
 	 * @return the appenders
 	 */
 	public List<String> getAppenderReferences() {
@@ -43,7 +43,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Returns the level.
-	 * 
+	 *
 	 * @return the level
 	 */
 	public Level getLevel() {
@@ -52,7 +52,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Returns the name.
-	 * 
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -61,7 +61,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Returns the inheritOtherAppenders.
-	 * 
+	 *
 	 * @return the inheritOtherAppenders
 	 */
 	public boolean isInheritOtherAppenders() {
@@ -70,7 +70,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Sets the appenders.
-	 * 
+	 *
 	 * @param appenders
 	 *            the appenders to set
 	 */
@@ -80,7 +80,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Sets the inheritOtherAppenders.
-	 * 
+	 *
 	 * @param inheritOtherAppenders
 	 *            the inheritOtherAppenders to set
 	 */
@@ -90,7 +90,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Sets the level.
-	 * 
+	 *
 	 * @param level
 	 *            the level to set
 	 */
@@ -100,7 +100,7 @@ public final class Logger extends LobackConfigElement {
 
 	/**
 	 * Sets the name.
-	 * 
+	 *
 	 * @param name
 	 *            the name to set
 	 */

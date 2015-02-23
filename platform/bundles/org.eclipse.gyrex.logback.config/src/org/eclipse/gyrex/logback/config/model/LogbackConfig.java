@@ -11,10 +11,11 @@
  */
 package org.eclipse.gyrex.logback.config.model;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -43,36 +44,45 @@ public final class LogbackConfig extends LobackConfigElement {
 		writer.writeAttribute("value", value);
 	}
 
-	private Map<String, Appender> appenders;
-	private Map<String, Logger> loggers;
+	private final List<Appender> appenders = new ArrayList<Appender>();
+	private final List<Logger> loggers = new ArrayList<Logger>();
 	private boolean shortenStackTraces;
 	private Level defaultLevel;
 	private List<String> defaultAppenders;
 
 	public void addAppender(final Appender appender) {
-		if (StringUtils.isBlank(appender.getName()))
-			throw new IllegalArgumentException("appender name must not be blank");
-		getAppenders().put(appender.getName(), appender);
+		checkArgument(StringUtils.isNotBlank(appender.getName()), "appender name must not be blank");
+		checkArgument(getAppender(appender.getName()) == null, "Duplicate appender name '%s'!", appender.getName());
+
+		appenders.add(appender);
 	}
 
 	private String addExceptionPattern(final String pattern) {
-		if (isShortenStackTraces())
+		if (isShortenStackTraces()) {
 			return pattern + "%rootException{6}";
-		else
+		} else {
 			return pattern + "%rootException";
+		}
 	}
 
 	public void addLogger(final org.eclipse.gyrex.logback.config.model.Logger logger) {
-		if (StringUtils.isBlank(logger.getName()))
-			throw new IllegalArgumentException("logger name must not be blank");
-		getLoggers().put(logger.getName(), logger);
+		checkArgument(StringUtils.isNotBlank(logger.getName()), "logger name must not be blank");
+		checkArgument(getAppender(logger.getName()) == null, "Duplicate logger name '%s'!", logger.getName());
+
+		loggers.add(logger);
 	}
 
-	public Map<String, Appender> getAppenders() {
-		if (null == appenders) {
-			appenders = new LinkedHashMap<String, Appender>();
+	public Appender getAppender(final String name) {
+		for (final Appender a : getAppenders()) {
+			if (name.equals(a.getName())) {
+				return a;
+			}
 		}
-		return appenders;
+		return null;
+	}
+
+	public List<Appender> getAppenders() {
+		return Collections.unmodifiableList(appenders);
 	}
 
 	public List<String> getDefaultAppenders() {
@@ -84,20 +94,27 @@ public final class LogbackConfig extends LobackConfigElement {
 
 	/**
 	 * Returns the defaultLevel.
-	 * 
+	 *
 	 * @return the defaultLevel
 	 */
 	public Level getDefaultLevel() {
-		if (null == defaultLevel)
+		if (null == defaultLevel) {
 			return Level.INFO;
+		}
 		return defaultLevel;
 	}
 
-	public Map<String, Logger> getLoggers() {
-		if (null == loggers) {
-			loggers = new LinkedHashMap<String, Logger>();
+	public Logger getLogger(final String name) {
+		for (final Logger l : getLoggers()) {
+			if (name.equals(l.getName())) {
+				return l;
+			}
 		}
-		return loggers;
+		return null;
+	}
+
+	public List<Logger> getLoggers() {
+		return Collections.unmodifiableList(loggers);
 	}
 
 	private String getLongPattern() {
@@ -112,13 +129,31 @@ public final class LogbackConfig extends LobackConfigElement {
 		return shortenStackTraces;
 	}
 
+	public void removeAppender(final String name) {
+		checkArgument(StringUtils.isNotBlank(name), "appender name must not be blank");
+
+		final Appender appender = getAppender(name);
+		if (appender != null) {
+			appenders.remove(appender);
+		}
+	}
+
+	public void removeLogger(final String name) {
+		checkArgument(StringUtils.isNotBlank(name), "logger name must not be blank");
+
+		final Logger logger = getLogger(name);
+		if (logger != null) {
+			loggers.remove(logger);
+		}
+	}
+
 	public void setDefaultAppenders(final List<String> defaultAppenders) {
 		this.defaultAppenders = defaultAppenders;
 	}
 
 	/**
 	 * Sets the defaultLevel.
-	 * 
+	 *
 	 * @param defaultLevel
 	 *            the defaultLevel to set
 	 */
@@ -137,7 +172,7 @@ public final class LogbackConfig extends LobackConfigElement {
 	 * heavily on Logback and may be bound to different evolution/compatibility
 	 * rules.
 	 * </p>
-	 * 
+	 *
 	 * @param writer
 	 *            the stream writer
 	 * @throws XMLStreamException
@@ -153,10 +188,10 @@ public final class LogbackConfig extends LobackConfigElement {
 		writeCommonProperties(writer);
 		writeJulLevelChangePropagator(writer);
 
-		for (final Appender appender : getAppenders().values()) {
+		for (final Appender appender : getAppenders()) {
 			appender.toXml(writer);
 		}
-		for (final Logger logger : getLoggers().values()) {
+		for (final Logger logger : getLoggers()) {
 			logger.toXml(writer);
 		}
 

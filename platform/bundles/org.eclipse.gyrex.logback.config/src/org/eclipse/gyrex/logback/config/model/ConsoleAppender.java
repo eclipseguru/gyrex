@@ -21,7 +21,7 @@ import ch.qos.logback.core.joran.spi.ConsoleTarget;
  */
 public class ConsoleAppender extends Appender {
 
-	ConsoleTarget target;
+	private ConsoleTarget target;
 
 	/**
 	 * Creates a new instance.
@@ -38,7 +38,7 @@ public class ConsoleAppender extends Appender {
 
 	/**
 	 * Returns the target.
-	 * 
+	 *
 	 * @return the target
 	 */
 	public ConsoleTarget getTarget() {
@@ -52,7 +52,7 @@ public class ConsoleAppender extends Appender {
 
 	/**
 	 * Sets the target.
-	 * 
+	 *
 	 * @param target
 	 *            the target to set
 	 */

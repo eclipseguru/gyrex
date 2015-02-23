@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,19 +39,22 @@ public class AddEditAppenderWizard extends Wizard {
 	private final Map<String, AppenderConfigurationWizardSession> sessionsByAppenderTypeId = new HashMap<String, AppenderConfigurationWizardSession>(2);
 
 	private final LogbackConfig logbackConfig;
-	private final Appender appender;
+	private final Appender existingAppender;
 
 	private final AppenderWizardPage appenderTypeWizardPage;
 
 	private AppenderConfigurationWizardSession currentSession;
 
-	public AddEditAppenderWizard(final LogbackConfig logbackConfig, final Appender appender) {
+	public AddEditAppenderWizard(final LogbackConfig logbackConfig, final Appender existingAppender) {
 		this.logbackConfig = logbackConfig;
-		this.appender = appender;
+		this.existingAppender = existingAppender;
 
-		appenderTypeWizardPage = new AppenderWizardPage(appender);
+		appenderTypeWizardPage = new AppenderWizardPage();
+		if (existingAppender != null) {
+			appenderTypeWizardPage.initializeFromExistingAppender(existingAppender);
+		}
 
-		// force previous and next buttons (we don't know about potential job type pages)
+		// force previous and next buttons (we don't know about potential appender type pages)
 		setForcePreviousAndNextButtons(true);
 	}
 
@@ -68,35 +73,53 @@ public class AddEditAppenderWizard extends Wizard {
 		getContainer().showPage(appenderTypeWizardPage);
 	}
 
+	private AppenderConfigurationWizardSession findExistingSessionOrCreateNew(final String id, final String name) {
+		if (!sessionsByAppenderTypeId.containsKey(id)) {
+			final AppenderConfigurationWizardSession session = new AppenderConfigurationWizardSession(id, name);
+			sessionsByAppenderTypeId.put(id, session);
+		}
+
+		final AppenderConfigurationWizardSession session = sessionsByAppenderTypeId.get(id);
+		return session;
+	}
+
+	public Appender getAppender() {
+		checkState(currentSession != null, "No appender type selected!");
+		final Appender appender = currentSession.getAppender();
+		checkState(appender != null, "No appender initialized for appender type '%s'!", currentSession.getAppenderTypeId());
+		return appender;
+	}
+
+	public LogbackConfig getLogbackConfig() {
+		return logbackConfig;
+	}
+
 	@Override
 	public IWizardPage getNextPage(final IWizardPage page) {
 		// REMINDER: this logic is inverted in #getPreviousPage
 		// the flow is as follows
 		//   first: appenderTypeWizardPage (if available)
-		//    2-..: job type specific pages
+		//    2-..: appender type specific pages
 		final IWizardPage[] sessionPages = null != currentSession ? currentSession.getPages() : NO_PAGES;
 		if (page == appenderTypeWizardPage) {
-			if (sessionPages.length > 0)
-				// show first job type page after scheduleEntryPage
+			if (sessionPages.length > 0) {
 				return sessionPages[0];
-			else
-				// no next page
+			} else {
 				return null;
-		}
-
-		// find the current job type page
-		for (int i = 0; i < sessionPages.length; i++) {
-			if (page == sessionPages[i]) {
-				if ((i + 1) < sessionPages.length)
-					// show next job type page
-					return sessionPages[i + 1];
-				else
-					// no next page
-					return null;
 			}
 		}
 
-		// no next page
+		// find the current appender type page
+		for (int i = 0; i < sessionPages.length; i++) {
+			if (page == sessionPages[i]) {
+				if ((i + 1) < sessionPages.length) {
+					return sessionPages[i + 1];
+				} else {
+					return null;
+				}
+			}
+		}
+
 		return null;
 	}
 
@@ -105,63 +128,52 @@ public class AddEditAppenderWizard extends Wizard {
 		// REMINDER: this logic is inverted in #getPreviousPage
 		// the flow is as follows
 		//   first: appenderTypeWizardPage
-		//    2-..: job type specific pages
+		//    2-..: appender type specific pages
 		final IWizardPage[] sessionPages = null != currentSession ? currentSession.getPages() : NO_PAGES;
 
-		if (page == appenderTypeWizardPage)
-			// no previous page for the first page
+		if (page == appenderTypeWizardPage) {
 			return null;
+		}
 
-		// find the current job type page
+		// find the current appender type page
 		for (int i = sessionPages.length - 1; i >= 0; i--) {
 			if (page == sessionPages[i]) {
-				if ((i - 1) >= 0)
-					// show previous job type page
+				if ((i - 1) >= 0) {
 					return sessionPages[i - 1];
-				else
-					// previous page is appenderTypeWizardPage if not in edit mode
-					return isEditMode() ? null : appenderTypeWizardPage;
+				} else {
+					return appenderTypeWizardPage;
+				}
 			}
 		}
 
-		// no previous page
 		return null;
 	}
 
-	public LogbackConfig getSchedule() {
-		return logbackConfig;
-	}
-
-	public Appender getScheduleEntry() {
-		return appender == null ? currentSession.getAppender() : appender;
-	}
-
 	void initializeCurrentAppenderConfigurationSession(final String id, final String name, final AppenderConfigurationWizardAdapter wizardAdapter) {
-		if (!sessionsByAppenderTypeId.containsKey(id)) {
-			final AppenderConfigurationWizardSession session = new AppenderConfigurationWizardSession(id, name);
-			session.setAppender(appender);
-			sessionsByAppenderTypeId.put(id, session);
-		}
+		checkState(wizardAdapter != null, "No adapter available for editing appenders of type '%s'!", id);
 
-		final AppenderConfigurationWizardSession session = sessionsByAppenderTypeId.get(id);
-
-		if (session == currentSession)
+		final AppenderConfigurationWizardSession session = findExistingSessionOrCreateNew(id, name);
+		if (session == currentSession) {
 			// nothing changed
 			return;
+		}
+
+		if (session.getAppender() == null) {
+			wizardAdapter.initializeAppender(session, existingAppender);
+		}
 
 		// lazy initialize pages
 		if (null == session.getPages()) {
-			final IWizardPage[] pages = wizardAdapter != null ? wizardAdapter.createPages(session) : new IWizardPage[0];
+			final IWizardPage[] pages = wizardAdapter != null ? wizardAdapter.createPages(session) : NO_PAGES;
 			if (pages != null) {
 				session.setPages(pages);
 				for (final IWizardPage page : pages) {
 					addPage(page);
 				}
 			} else {
-				LOG.debug("No pages returned for job type {} (adapter {})", id, wizardAdapter);
+				LOG.debug("No pages returned for appender type {} (adapter {})", id, wizardAdapter);
 				session.setPages(NO_PAGES);
 			}
-
 		}
 
 		currentSession = session;
@@ -170,17 +182,16 @@ public class AddEditAppenderWizard extends Wizard {
 		}
 	}
 
-	public final boolean isEditMode() {
-		return appender != null;
-	}
-
 	@Override
 	public boolean performFinish() {
 		try {
+			getAppender().setName(appenderTypeWizardPage.getAppenderName());
+			// we rely on all pages applying any valid values immediately;
+			// thus, no further action here
 			return true;
 		} catch (final Exception | LinkageError | AssertionError e) {
 			// handle error
-			LOG.debug("Error adding appender. ", e);
+			LOG.debug("Error writing appender. ", e);
 			NonBlockingMessageDialogs.openError(getShell(), "Error Updating Appender", "Unable to update appender. " + e.getMessage(), null);
 			return false;
 		}

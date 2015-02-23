@@ -74,7 +74,7 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 	}
 
 	void addLoggerButtonPressed() {
-		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), currentInput.getAppenders().values());
+		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), currentInput.getAppenders());
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 
@@ -171,7 +171,7 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 	}
 
 	void editDefaultLoggerButtonPressed() {
-		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), currentInput.getDefaultLevel(), currentInput.getDefaultAppenders(), currentInput.getAppenders().values());
+		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), currentInput.getDefaultLevel(), currentInput.getDefaultAppenders(), currentInput.getAppenders());
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 
@@ -188,11 +188,12 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 
 	void editLoggerButtonPressed() {
 		final Object selectedElement = getFirstSelectedElement();
-		if (!(selectedElement instanceof Logger))
+		if (!(selectedElement instanceof Logger)) {
 			return;
+		}
 		final Logger logger = (Logger) selectedElement;
 		final String originalName = logger.getName();
-		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), originalName, logger.getLevel(), logger.isInheritOtherAppenders(), logger.getAppenderReferences(), currentInput.getAppenders().values());
+		final LoggerSettingsDialog dialog = new LoggerSettingsDialog(getShell(), originalName, logger.getLevel(), logger.isInheritOtherAppenders(), logger.getAppenderReferences(), currentInput.getAppenders());
 		dialog.openNonBlocking(new DialogCallback() {
 			private static final long serialVersionUID = 1L;
 
@@ -240,12 +241,13 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 	@Override
 	protected int getElementCategory(final Object element, final int column) {
 		if (column == COLUMN_NAME) {
-			if (element instanceof DefaultLogger)
+			if (element instanceof DefaultLogger) {
 				return 30;
-			else if (element instanceof AppendersGroup)
+			} else if (element instanceof AppendersGroup) {
 				return 10;
-			else if (element instanceof LoggersGroup)
+			} else if (element instanceof LoggersGroup) {
 				return 20;
+			}
 		}
 		return 100;
 	}
@@ -254,25 +256,27 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 	protected String getElementLabel(final Object element, final int column) {
 		if (column == COLUMN_NAME) {
 			final LabelAdapter labelAdapter = AdapterUtil.getAdapter(element, LabelAdapter.class);
-			if (labelAdapter != null)
+			if (labelAdapter != null) {
 				return labelAdapter.getLabel(element);
-			else if (element instanceof Appender)
+			} else if (element instanceof Appender) {
 				return getAppenderName((Appender) element);
-			else if (element instanceof Logger)
+			} else if (element instanceof Logger) {
 				return ((Logger) element).getName();
-			else if (element instanceof AppenderReference)
+			} else if (element instanceof AppenderReference) {
 				return ((AppenderReference) element).getAppenderRef();
-			else if (element instanceof DefaultLogger)
+			} else if (element instanceof DefaultLogger) {
 				return "Default Logger";
-			else if (element instanceof AppendersGroup)
+			} else if (element instanceof AppendersGroup) {
 				return "Appenders";
-			else if (element instanceof LoggersGroup)
+			} else if (element instanceof LoggersGroup) {
 				return "Loggers";
+			}
 		} else if (column == COLUMN_LEVEL) {
-			if (element instanceof Logger)
+			if (element instanceof Logger) {
 				return String.valueOf(((Logger) element).getLevel());
-			else if (element instanceof DefaultLogger)
+			} else if (element instanceof DefaultLogger) {
 				return String.valueOf(((DefaultLogger) element).getLevel());
+			}
 		}
 		return null;
 	}
@@ -320,8 +324,7 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 			public void dialogClosed(final int returnCode) {
 				if (returnCode == Window.OK) {
 					if (appenderToEdit == null) {
-						final Appender appender = addEditAppenderWizard.getScheduleEntry();
-						currentInput.getAppenders().put(appender.getName(), appender);
+						currentInput.addAppender(addEditAppenderWizard.getAppender());
 					}
 					getTreeViewer().refresh(appenderToEdit);
 				}
@@ -333,8 +336,9 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 	@Override
 	protected void openSelectedElement() {
 		final Object selectedElement = getFirstSelectedElement();
-		if (selectedElement == null)
+		if (selectedElement == null) {
 			return;
+		}
 
 		if (selectedElement instanceof Logger) {
 			editLoggerButtonPressed();
@@ -347,8 +351,9 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 
 	void removeButtonPressed() {
 		final Object selectedElement = getFirstSelectedElement();
-		if (selectedElement == null)
+		if (selectedElement == null) {
 			return;
+		}
 
 		if (selectedElement instanceof AppenderReference) {
 			final AppenderReference appenderRef = (AppenderReference) selectedElement;
@@ -359,14 +364,14 @@ public class LogbackConfigurationPage extends AdminPageWithTree {
 				((DefaultLogger) parent).getAppenderReferences().remove(appenderRef.getAppenderRef());
 			}
 		} else if (selectedElement instanceof Logger) {
-			currentInput.getLoggers().remove(((Logger) selectedElement).getName());
+			currentInput.removeLogger(((Logger) selectedElement).getName());
 		} else if (selectedElement instanceof Appender) {
 			final String appenderName = ((Appender) selectedElement).getName();
-			final Collection<Logger> loggers = currentInput.getLoggers().values();
+			final Collection<Logger> loggers = currentInput.getLoggers();
 			for (final Logger logger : loggers) {
 				logger.getAppenderReferences().remove(appenderName);
 			}
-			currentInput.getAppenders().remove(appenderName);
+			currentInput.removeAppender(appenderName);
 		}
 		getTreeViewer().refresh();
 	}

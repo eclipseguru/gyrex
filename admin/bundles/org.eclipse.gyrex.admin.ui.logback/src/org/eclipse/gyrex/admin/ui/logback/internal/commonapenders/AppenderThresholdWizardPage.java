@@ -75,29 +75,37 @@ public class AppenderThresholdWizardPage extends WizardPage {
 		layout.marginLeft = 20;
 
 		if (session.getAppender() != null) {
-			final Level level = session.getAppender().getThreshold();
-			if (level != null) {
-				switch (level.levelInt) {
-					case Level.DEBUG_INT:
-						thresholdField.setSelection(IDX_DEBUG, true);
-						break;
-					case Level.INFO_INT:
-						thresholdField.setSelection(IDX_INFO, true);
-						break;
-					case Level.WARN_INT:
-						thresholdField.setSelection(IDX_WARN, true);
-						break;
-					case Level.ERROR_INT:
-						thresholdField.setSelection(IDX_ERROR, true);
-						break;
-					default:
-						thresholdField.setSelection(IDX_NONE, true);
-						break;
-				}
-			} else {
-				thresholdField.setSelection(IDX_NONE, true);
-			}
+
 		}
+	}
+
+	@Override
+	public void setVisible(final boolean visible) {
+		final Level level = session.getAppender().getThreshold();
+		if (level != null) {
+			switch (level.levelInt) {
+				case Level.DEBUG_INT:
+					thresholdField.setSelection(IDX_DEBUG, true);
+					break;
+				case Level.INFO_INT:
+					thresholdField.setSelection(IDX_INFO, true);
+					break;
+				case Level.WARN_INT:
+					thresholdField.setSelection(IDX_WARN, true);
+					break;
+				case Level.ERROR_INT:
+					thresholdField.setSelection(IDX_ERROR, true);
+					break;
+				case Level.OFF_INT:
+				default:
+					thresholdField.setSelection(IDX_NONE, true);
+					break;
+			}
+		} else {
+			thresholdField.setSelection(IDX_NONE, true);
+		}
+
+		super.setVisible(visible);
 	}
 
 	void validate() {

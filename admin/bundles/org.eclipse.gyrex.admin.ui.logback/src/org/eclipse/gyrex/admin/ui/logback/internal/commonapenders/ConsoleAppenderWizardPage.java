@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal.commonapenders;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -22,7 +23,6 @@ import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.SelectionButtonD
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.Separator;
 import org.eclipse.gyrex.admin.ui.internal.wizards.dialogfields.StringDialogField;
 import org.eclipse.gyrex.admin.ui.logback.configuration.wizard.AppenderConfigurationWizardSession;
-import org.eclipse.gyrex.logback.config.model.Appender;
 import org.eclipse.gyrex.logback.config.model.ConsoleAppender;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -45,22 +45,16 @@ public class ConsoleAppenderWizardPage extends WizardPage {
 
 	private final StringDialogField patternField = new StringDialogField();
 	private final DescriptionDialogField patternDescriptionField = new DescriptionDialogField();
+	private final ConsoleAppender appender;
 
 	SelectionButtonDialogFieldGroup targetGroup = new SelectionButtonDialogFieldGroup(SWT.RADIO, new String[] { "STDOUT", "STDERR" }, 2);
 
-	private final ConsoleAppender appender;
-
 	public ConsoleAppenderWizardPage(final AppenderConfigurationWizardSession session) {
 		super("console");
-		final Appender appender = session.getAppender();
-		if (appender instanceof ConsoleAppender) {
-			this.appender = (ConsoleAppender) appender;
-		} else {
-			this.appender = new ConsoleAppender();
-			session.setAppender(this.appender);
-		}
 		setTitle("Console Appender");
 		setDescription("Configure details for a console appender.");
+
+		appender = (ConsoleAppender) checkNotNull(session.getAppender());
 	}
 
 	@Override
@@ -82,22 +76,13 @@ public class ConsoleAppenderWizardPage extends WizardPage {
 			}
 		};
 
-		patternDescriptionField.setDialogFieldListener(validateListener);
 		patternField.setDialogFieldListener(validateListener);
+		targetGroup.setDialogFieldListener(validateListener);
 
 		LayoutUtil.doDefaultLayout(composite, new DialogField[] { targetGroup, new Separator(), patternField, patternDescriptionField }, false);
 		LayoutUtil.setHorizontalGrabbing(targetGroup.getSelectionButtonsGroup(null));
 		LayoutUtil.setHorizontalGrabbing(patternField.getTextControl(null));
 		LayoutUtil.setHorizontalGrabbing(patternDescriptionField.getDescriptionControl(null));
-
-		if (appender != null) {
-			if (isNotBlank(appender.getPattern())) {
-				patternField.setText(appender.getPattern());
-			}
-			if (appender.getTarget() == ConsoleTarget.SystemErr) {
-				targetGroup.setSelection(INDEX_STD_ERR, true);
-			}
-		}
 	}
 
 	public String getPattern() {
@@ -106,6 +91,20 @@ public class ConsoleAppenderWizardPage extends WizardPage {
 
 	private ConsoleTarget getTarget() {
 		return targetGroup.isSelected(INDEX_STD_ERR) ? ConsoleTarget.SystemErr : ConsoleTarget.SystemOut;
+	}
+
+	@Override
+	public void setVisible(final boolean visible) {
+		// refresh data
+		if (isNotBlank(appender.getPattern())) {
+			patternField.setText(appender.getPattern());
+		}
+
+		if (appender.getTarget() == ConsoleTarget.SystemErr) {
+			targetGroup.setSelection(INDEX_STD_ERR, true);
+		}
+
+		super.setVisible(visible);
 	}
 
 	void validate() {

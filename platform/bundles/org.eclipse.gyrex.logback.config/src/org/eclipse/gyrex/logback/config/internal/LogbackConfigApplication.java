@@ -72,8 +72,9 @@ public class LogbackConfigApplication extends BaseApplication implements IApplic
 
 	private LogbackConfig getConfig() throws Exception {
 		final IEclipsePreferences node = CloudScope.INSTANCE.getNode(LogbackConfigActivator.SYMBOLIC_NAME);
-		if (node.nodeExists(PREF_NODE_CONFIG))
+		if (node.nodeExists(PREF_NODE_CONFIG)) {
 			return new PreferenceBasedLogbackConfigStore().loadConfig(node.node(PREF_NODE_CONFIG));
+		}
 		return null;
 	}
 

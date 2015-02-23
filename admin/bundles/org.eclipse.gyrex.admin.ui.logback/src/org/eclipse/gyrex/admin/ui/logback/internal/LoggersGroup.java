@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.gyrex.logback.config.model.LogbackConfig;
 import org.eclipse.gyrex.logback.config.model.Logger;
@@ -23,7 +23,7 @@ public class LoggersGroup {
 		config = logbackConfig;
 	}
 
-	public Map<String, Logger> getLoggers() {
+	public List<Logger> getLoggers() {
 		return config.getLoggers();
 	}
 }

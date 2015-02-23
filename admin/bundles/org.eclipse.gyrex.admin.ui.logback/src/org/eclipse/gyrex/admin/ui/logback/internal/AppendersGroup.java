@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.admin.ui.logback.internal;
 
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.gyrex.logback.config.model.Appender;
 import org.eclipse.gyrex.logback.config.model.LogbackConfig;
@@ -23,7 +23,7 @@ public class AppendersGroup {
 		config = logbackConfig;
 	}
 
-	public Map<String, Appender> getAppenders() {
+	public List<Appender> getAppenders() {
 		return config.getAppenders();
 	}
 }
