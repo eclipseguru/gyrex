@@ -60,7 +60,7 @@ public class LogbackConfigurator {
 		// reset JUL (this should disable the default JUL console output)
 		LogManager.getLogManager().reset();
 
-		// install SLF4J Bridge
+		// install JUL SLF4J Bridge
 		if (!SLF4JBridgeHandler.isInstalled()) {
 			SLF4JBridgeHandler.install();
 		}
@@ -96,7 +96,7 @@ public class LogbackConfigurator {
 		}
 
 		// signal Gyrex configuration
-		sm.add(new InfoStatus("Setting up Gyrex log configuration.", lc));
+		sm.add(new InfoStatus("Setting up Gyrex log configuration.", LogbackConfigurator.class));
 
 		// ensure log directory exists
 		final IPath instanceLogfileDirectory = getLogfileDir();
@@ -108,7 +108,7 @@ public class LogbackConfigurator {
 		final File configurationFile = getLogConfigurationFile();
 		if ((null != configurationFile) && configurationFile.isFile() && configurationFile.canRead()) {
 
-			sm.add(new InfoStatus(String.format("Loading configuration from '%s'.", configurationFile.getAbsolutePath()), lc));
+			sm.add(new InfoStatus(String.format("Using configuration '%s'.", configurationFile.getAbsolutePath()), LogbackConfigurator.class));
 
 			// create our customized configurator
 			final JoranConfigurator configurator = new JoranConfigurator() {
@@ -131,6 +131,8 @@ public class LogbackConfigurator {
 
 			// done'
 			return;
+		} else {
+			sm.add(new InfoStatus("Using built-in default configuration. Enhancements and suggestions welcome.", LogbackConfigurator.class));
 		}
 
 		// get root logger
@@ -256,7 +258,7 @@ public class LogbackConfigurator {
 	 * This may only be called during bootstrapping before any custom overrides
 	 * are set. Your milage may vary if called while the application is running.
 	 * </p>
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public static void initializeLogLevelOverrides() throws Exception {
@@ -274,7 +276,7 @@ public class LogbackConfigurator {
 
 	/**
 	 * Allows to change the log configuration file at runtime.
-	 * 
+	 *
 	 * @param file
 	 *            the file to set
 	 * @return the previously used file
@@ -287,7 +289,7 @@ public class LogbackConfigurator {
 
 	/**
 	 * Sets or unsets a log level override.
-	 * 
+	 *
 	 * @param loggerName
 	 * @param level
 	 * @throws Exception
