@@ -112,7 +112,7 @@ public class ScheduleImpl implements ISchedule, IScheduleWorkingCopy {
 		checkModifiable();
 
 		if (!IdHelper.isValidId(entryId))
-			throw new IllegalArgumentException("invalid id: " + id);
+			throw new IllegalArgumentException("invalid id: " + entryId);
 
 		if (null == entriesById) {
 			entriesById = new HashMap<String, ScheduleEntryImpl>(4);
