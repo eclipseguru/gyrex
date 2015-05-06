@@ -164,7 +164,7 @@ public class ZooKeeperNodeStatePublisher extends ZooKeeperBasedService {
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param myNodeId
 	 */
 	public ZooKeeperNodeStatePublisher(final String myNodeId) {
@@ -281,9 +281,9 @@ public class ZooKeeperNodeStatePublisher extends ZooKeeperBasedService {
 			// safe to ignore because we use ephemeral nodes
 		} catch (final Exception e) {
 			if ((e instanceof ConnectionLossException) || (e instanceof GateDownException)) {
-				LOG.debug("Unable to remove node state '{}'. {}", new Object[] { pid, ExceptionUtils.getRootCauseMessage(e), e });
+				LOG.debug("Unable to remove node state '{}'. {}. This may happen during node shutdown, which can be ignored.", pid, e.getMessage());
 			} else {
-				LOG.error("Unable to remove node state '{}'. {}", new Object[] { pid, ExceptionUtils.getRootCauseMessage(e), e });
+				LOG.error("Unable to remove node state '{}'. {}. Please clean-up stale information in ZooKeeper manually.", pid, ExceptionUtils.getRootCauseMessage(e), e);
 			}
 		}
 	}
