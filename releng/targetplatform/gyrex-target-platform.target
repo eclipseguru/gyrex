@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Gyrex Development" sequenceNumber="123">
+<?pde version="3.8"?><target name="Gyrex Development" sequenceNumber="124">
 <locations>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
@@ -146,11 +146,11 @@
 <unit id="org.apache.lucene.spellchecker.source" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.spatial" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.spatial.source" version="3.5.0.v20120725-1805"/>
-<unit id="org.apache.solr.core" version="3.5.0.v20120530-0900"/>
-<unit id="org.apache.solr.core.source" version="3.5.0.v20120530-0900"/>
-<unit id="org.apache.solr.client.solrj" version="3.5.0.v20120530-0900"/>
-<unit id="org.apache.solr.client.solrj.source" version="3.5.0.v20120530-0900"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20150428165605/repository/"/>
+<unit id="org.apache.solr.core" version="3.5.0.v20150506-0844"/>
+<unit id="org.apache.solr.core.source" version="3.5.0.v20150506-0844"/>
+<unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
+<unit id="org.apache.solr.client.solrj.source" version="3.5.0.v20150506-0844"/>
+<repository location="http://build.eclipse.org/orbit/committers/orbit-I/20150506091827/I20150506091827/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
