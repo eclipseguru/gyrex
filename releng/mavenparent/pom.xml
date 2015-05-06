@@ -119,6 +119,7 @@
             <version>${tycho.version}</version>
             <configuration>
               <includePackedArtifacts>false</includePackedArtifacts>
+              <targetDefinitionIncludeSource>honor</targetDefinitionIncludeSource>
             </configuration>
           </plugin>
           <!-- note, there are issues with pack200, Tycho does not honor the eclipse.inf exclusions -->
