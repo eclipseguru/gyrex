@@ -20,7 +20,6 @@
     <module>org.eclipse.gyrex.features.dependencies.admin</module>
     <module>org.eclipse.gyrex.features.dependencies.commons</module>
     <module>org.eclipse.gyrex.features.dependencies.processing</module>
-    <module>org.eclipse.gyrex.features.dependencies.eclipselink</module>
     <module>org.eclipse.gyrex.features.dependencies.provisioning</module>
     <module>org.eclipse.gyrex.features.dependencies.persistence</module>
     <module>org.eclipse.gyrex.features.dependencies.solr</module>
@@ -32,12 +31,16 @@
     <module>org.eclipse.gyrex.features.processing</module>
     <module>org.eclipse.gyrex.features.server</module>
     <module>org.eclipse.gyrex.features.admin</module>
+  
+    <module>org.eclipse.gyrex.features.dependencies.eclipselink</module>
+    <module>org.eclipse.gyrex.features.jpa</module>
 
     <module>org.eclipse.gyrex.features.tests</module>
 	
     <module>org.eclipse.gyrex.features.sdk.withoutdeps</module>
     <module>org.eclipse.gyrex.features.sdk</module>
-	
+    <module>org.eclipse.gyrex.features.sdk.addons</module>
+
 	<module>org.eclipse.gyrex.features.master</module>
 
 	</modules>
