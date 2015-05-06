@@ -72,7 +72,7 @@
     </pluginRepository>
     <pluginRepository>
       <id>tycho</id>
-      <url>https://repo.eclipse.org/content/groups/cbi/</url>
+      <url>https://repo.eclipse.org/content/groups/tycho/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
