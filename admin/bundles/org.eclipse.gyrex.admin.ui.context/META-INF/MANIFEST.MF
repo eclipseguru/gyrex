@@ -16,8 +16,8 @@ Require-Bundle: org.eclipse.gyrex.common;bundle-version="1.0.0",
  org.eclipse.gyrex.preferences;bundle-version="1.0.0",
  org.eclipse.gyrex.admin.ui;bundle-version="1.0.0",
  org.eclipse.core.databinding;bundle-version="[1.4.1,2.0.0)",
- org.eclipse.rap.jface;bundle-version="[2.0.0,3.0.0)",
- org.eclipse.rap.jface.databinding;bundle-version="[2.0.0,3.0.0)"
+ org.eclipse.rap.jface;bundle-version="[3.0.0,4.0.0)",
+ org.eclipse.rap.jface.databinding;bundle-version="[3.0.0,4.0.0)"
 Export-Package: org.eclipse.gyrex.admin.ui.context;version="1.0.0";
   x-friends:="org.eclipse.gyrex.admin.ui.http,
    org.eclipse.gyrex.admin.ui.http.jetty,

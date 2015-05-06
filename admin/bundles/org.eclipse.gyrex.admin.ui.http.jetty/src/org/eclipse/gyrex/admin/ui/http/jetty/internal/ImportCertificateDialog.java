@@ -38,6 +38,7 @@ import org.eclipse.gyrex.http.jetty.admin.IJettyManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -74,7 +75,7 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 
 	/**
 	 * Creates a new instance.
-	 * 
+	 *
 	 * @param parent
 	 */
 	public ImportCertificateDialog(final Shell parent, final IJettyManager jettyManager) {
@@ -135,9 +136,8 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 			tempKs = KeyStore.getInstance("JKS");
 		} else if (keystoreTypeField.isSelected(1)) {
 			tempKs = KeyStore.getInstance("PKCS12");
-		} else {
+		} else
 			throw new IllegalArgumentException("Please select a keystore type before uploading a keystore and retry.");
-		}
 
 		final String keystorePassword = keyStorePasswordField.getText();
 		final String keyPassword = keyPasswordField.getText();
@@ -172,9 +172,8 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 			}
 		}
 
-		if (!ks.aliases().hasMoreElements()) {
+		if (!ks.aliases().hasMoreElements())
 			throw new IllegalArgumentException("The uploaded keystore does not have a valid key + certificate chain entry. Please use a different keystore and retry.");
-		}
 
 		// write into bytes
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -185,14 +184,15 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 
 	@Override
 	protected void okPressed() {
-//		// activate background updates
-//		UICallBack.activate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
-//
-		// start and wait for update
 		final Display display = getShell().getDisplay();
 		final String fileName = keystoreUploadField.getFileName();
-		if (StringUtils.isNotBlank(fileName) && (keystoreBytes == null || keystoreFileName == null || !StringUtils.equals(keystoreFileName, fileName))) {
+		if (StringUtils.isNotBlank(fileName) && ((keystoreBytes == null) || (keystoreFileName == null) || !StringUtils.equals(keystoreFileName, fileName))) {
+			// activate background updates
+			final ServerPushSession serverPushSession = new ServerPushSession();
+
+			// start and wait for update
 			updateButtonsEnableState(new Status(IStatus.ERROR, JettyConfigActivator.SYMBOLIC_NAME, "Upload in progress!")); // deactivate buttons
+			serverPushSession.start();
 			keystoreUploadField.startUpload(new IUploadAdapter() {
 				@Override
 				public void receive(final InputStream stream, final String fileName, final String contentType, final long contentLength) {
@@ -217,6 +217,7 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 							okPressedAndFileReceived();
 						}
 					});
+					serverPushSession.stop();
 				}
 			});
 		} else {
@@ -226,18 +227,14 @@ public class ImportCertificateDialog extends NonBlockingStatusDialog {
 	}
 
 	void okPressedAndFileReceived() {
-		// deactivate background updates
-//		UICallBack.deactivate(getClass().getName() + "#" + Integer.toHexString(System.identityHashCode(this)));
-
 		if (importError != null) {
 			setError("The uploaded keystore could not be imported.\n" + importError.getMessage());
 			return;
 		}
 
 		validate();
-		if (!getStatus().isOK()) {
+		if (!getStatus().isOK())
 			return;
-		}
 
 		try {
 			jettyManager.addCertificate(idField.getText(), keystoreBytes, generatedKeystorePassword, generatedKeyPassword);

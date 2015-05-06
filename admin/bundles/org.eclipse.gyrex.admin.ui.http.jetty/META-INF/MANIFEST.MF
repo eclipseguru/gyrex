@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RAP Based Admin UI For Jetty Configuration
 Bundle-SymbolicName: org.eclipse.gyrex.admin.ui.http.jetty;singleton:=true
-Bundle-Version: 1.2.0.qualifier
+Bundle-Version: 1.4.0.qualifier
 Bundle-Vendor: Eclipse Gyrex
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gyrex.admin.ui;bundle-version="1.1.0",
- org.eclipse.rap.jface;bundle-version="[2.0.0,3.0.0)",
+ org.eclipse.rap.jface;bundle-version="[3.0.0,4.0.0)",
  org.eclipse.gyrex.preferences;bundle-version="1.0.0",
  org.eclipse.gyrex.http.jetty;bundle-version="1.0.0",
  org.eclipse.gyrex.common;bundle-version="1.0.0"
