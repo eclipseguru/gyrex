@@ -138,7 +138,7 @@
 <unit id="org.apache.solr.core.source" version="3.5.0.v20150506-0844"/>
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
 <unit id="org.apache.solr.client.solrj.source" version="3.5.0.v20150506-0844"/>
-<repository location="http://build.eclipse.org/orbit/committers/orbit-I/20150506091827/I20150506091827/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/I20150506154613/repository/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
