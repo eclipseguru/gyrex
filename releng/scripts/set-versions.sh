@@ -3,7 +3,7 @@ set -eu
 
 #
 # This script can be used to set the Gyrex features and product versions.
-# 
+#
 
 echoerr() { echo "$@" 1>&2; }
 
@@ -28,7 +28,7 @@ fi
 
 # allow additional maven arguments
 if [ -z ${MAVEN_ARGS+x} ] || [ -z "$MAVEN_ARGS" ]; then
-  MAVEN_ARGS=""
+  MAVEN_ARGS="-DskipTests"
 fi
 
 echo ""
@@ -37,7 +37,7 @@ echo "**************************************************"
 echo "Building Gyrex to have it in the local repository."
 echo "**************************************************"
 echo ""
-mvn clean install -Dmaven.repo.local="$MAVEN_REPO" "$MAVEN_ARGS" -f "../aggregator/pom.xml" 
+mvn clean install -Dmaven.repo.local="$MAVEN_REPO" "$MAVEN_ARGS" -f "../aggregator/pom.xml"
 
 echo ""
 echo ""
