@@ -33,6 +33,9 @@
     <!-- property for generating Eclipse source reference bundle headers -->
     <!-- (note, this needs to be overridden by module poms in other Git repos) -->
     <tycho.scmUrl>scm:git:https://git.eclipse.org/r/p/gyrex/gyrex-server.git</tycho.scmUrl>
+    
+    <!-- allow to build with dirty working tree -->
+    <jgit.dirtyWorkingTree>error</jgit.dirtyWorkingTree>
   </properties>
 
   <!-- the Gyrex Maven repos to publish to -->
@@ -310,6 +313,7 @@
             <sourceReferences>
               <generate>true</generate>
             </sourceReferences>
+            <jgit.dirtyWorkingTree>${jgit.dirtyWorkingTree}</jgit.dirtyWorkingTree>
           </configuration>
         </plugin>
         <plugin>
