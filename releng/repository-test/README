@@ -1,0 +1,11 @@
+This test project is a small test to verify that 
+the generated product can be installed all by itself 
+from the generated repository, i.e. that 
+the repository is complete and self-contained.
+
+Note, this must be executed in a separate reactor. Additionally,
+the repository must have been build first.
+
+For best results, this should be run with:
+
+  mvn -Dtycho.localArtifacts=ignore clean verify

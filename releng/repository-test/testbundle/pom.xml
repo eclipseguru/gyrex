@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>org.eclipse.gyrex.releng.repository.test</artifactId>
+  <packaging>eclipse-test-plugin</packaging>
+
+  <parent>
+    <groupId>org.eclipse.gyrex.releng.repository-test</groupId>
+    <artifactId>repository-test</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>locally-build-gyrex-product-repository</id>
+      <url>${project.baseUri}../../repository/target/repository</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>orbit</id>
+      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/</url>
+      <layout>p2</layout>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <configuration>
+          <testRuntime>p2Installed</testRuntime>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <configuration>
+          <!-- <target>
+            <artifact>
+              <groupId>org.eclipse.gyrex.releng.repository-test</groupId>
+              <artifactId>repository-test-target-platform</artifactId>
+              <version>${project.version}</version>
+            </artifact>
+          </target> -->
+          <environments>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>macosx</os>
+              <ws>cocoa</ws>
+              <arch>x86_64</arch>
+            </environment>
+          </environments>
+          <dependency-resolution>
+            <extraRequirements>
+              <!-- add dependency to product IU under test -->
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>org.eclipse.gyrex.products.server</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+            </extraRequirements>
+          </dependency-resolution>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
