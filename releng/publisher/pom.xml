@@ -16,7 +16,7 @@
 
   <properties>
     <!-- the repo stream (maps usually one on one to a branch identifier) -->
-    <publishRepoStream>1.4</publishRepoStream>
+    <publishRepoStream>2.0</publishRepoStream>
     <!-- by default, we publish into /shared -->
     <publishBaseDirectory>/shared/rt/gyrex/drops</publishBaseDirectory>
   </properties>
