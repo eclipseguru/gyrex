@@ -11,8 +11,8 @@
  */
 package org.eclipse.gyrex.context.tests.internal;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.UUID;
 
@@ -92,40 +92,40 @@ public class PreferencesBlackBoxTests {
 		final String value = "avalue" + System.currentTimeMillis();
 
 		// set a default ... should be available in all
-		final Preferences defaultNode = DefaultScope.INSTANCE.getNode(Activator.SYMBOLIC_NAME);
-		LOG.trace("Setting default for key {} in node {}", key, defaultNode.node(Activator.SYMBOLIC_NAME).absolutePath());
+		final Preferences defaultNode = DefaultScope.INSTANCE.getNode(ContextActivator.SYMBOLIC_NAME);
+		LOG.trace("Setting default for key {} in node {}", key, defaultNode.node(ContextActivator.SYMBOLIC_NAME).absolutePath());
 		defaultNode.put(key, value);
 
 		// verify
-		assertEquals("root context default preference lookup failed", value, rootPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("parent context default preference lookup failed", value, parentPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("child context default preference lookup failed", value, childPrefs.get(Activator.SYMBOLIC_NAME, key, null));
+		assertEquals("root context default preference lookup failed", value, rootPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("parent context default preference lookup failed", value, parentPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("child context default preference lookup failed", value, childPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
 
 		// set something on the root ... should inherit to all
 		final String ROOT_VALUE = "root-value";
-		rootPrefs.put(Activator.SYMBOLIC_NAME, key, ROOT_VALUE, false);
-		rootPrefs.flush(Activator.SYMBOLIC_NAME);
-		rootPrefs.sync(Activator.SYMBOLIC_NAME);
-		assertEquals("root context preference storing failed", ROOT_VALUE, rootPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("parent context stored preference lookup failed", ROOT_VALUE, parentPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("child context stored preference lookup failed", ROOT_VALUE, childPrefs.get(Activator.SYMBOLIC_NAME, key, null));
+		rootPrefs.put(ContextActivator.SYMBOLIC_NAME, key, ROOT_VALUE, false);
+		rootPrefs.flush(ContextActivator.SYMBOLIC_NAME);
+		rootPrefs.sync(ContextActivator.SYMBOLIC_NAME);
+		assertEquals("root context preference storing failed", ROOT_VALUE, rootPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("parent context stored preference lookup failed", ROOT_VALUE, parentPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("child context stored preference lookup failed", ROOT_VALUE, childPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
 
 		// set it different in parent
 		final String value3 = "parent-value";
-		parentPrefs.put(Activator.SYMBOLIC_NAME, key, value3, false);
-		parentPrefs.flush(Activator.SYMBOLIC_NAME);
-		parentPrefs.sync(Activator.SYMBOLIC_NAME);
-		assertEquals("root context stored preference failed", ROOT_VALUE, rootPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("parent context stored preference lookup failed", value3, parentPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("child context stored preference lookup failed", value3, childPrefs.get(Activator.SYMBOLIC_NAME, key, null));
+		parentPrefs.put(ContextActivator.SYMBOLIC_NAME, key, value3, false);
+		parentPrefs.flush(ContextActivator.SYMBOLIC_NAME);
+		parentPrefs.sync(ContextActivator.SYMBOLIC_NAME);
+		assertEquals("root context stored preference failed", ROOT_VALUE, rootPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("parent context stored preference lookup failed", value3, parentPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("child context stored preference lookup failed", value3, childPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
 
 		// set it different in child
 		final String value4 = "child-value";
-		childPrefs.put(Activator.SYMBOLIC_NAME, key, value4, false);
-		childPrefs.flush(Activator.SYMBOLIC_NAME);
-		childPrefs.sync(Activator.SYMBOLIC_NAME);
-		assertEquals("root context stored preference failed", ROOT_VALUE, rootPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("parent context stored preference lookup failed", value3, parentPrefs.get(Activator.SYMBOLIC_NAME, key, null));
-		assertEquals("child context stored preference lookup failed", value4, childPrefs.get(Activator.SYMBOLIC_NAME, key, null));
+		childPrefs.put(ContextActivator.SYMBOLIC_NAME, key, value4, false);
+		childPrefs.flush(ContextActivator.SYMBOLIC_NAME);
+		childPrefs.sync(ContextActivator.SYMBOLIC_NAME);
+		assertEquals("root context stored preference failed", ROOT_VALUE, rootPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("parent context stored preference lookup failed", value3, parentPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
+		assertEquals("child context stored preference lookup failed", value4, childPrefs.get(ContextActivator.SYMBOLIC_NAME, key, null));
 	}
 }

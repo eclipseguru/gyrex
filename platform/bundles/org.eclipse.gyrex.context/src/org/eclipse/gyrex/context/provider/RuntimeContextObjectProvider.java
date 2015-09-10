@@ -11,10 +11,14 @@
  */
 package org.eclipse.gyrex.context.provider;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.gyrex.context.IRuntimeContext;
 import org.eclipse.gyrex.context.di.IRuntimeContextInjector;
@@ -41,9 +45,9 @@ import org.osgi.framework.BundleContext;
  * <p>
  * Note, this class is part of a service provider API which may evolve faster
  * than the general contextual runtime API. Please get in touch with the
- * development team through the prefered channels listed on <a
- * href="http://www.eclipse.org/gyrex">the Gyrex website</a> to stay up-to-date
- * of possible changes.
+ * development team through the prefered channels listed on
+ * <a href="http://www.eclipse.org/gyrex">the Gyrex website</a> to stay
+ * up-to-date of possible changes.
  * </p>
  */
 public abstract class RuntimeContextObjectProvider {
@@ -51,7 +55,7 @@ public abstract class RuntimeContextObjectProvider {
 	/**
 	 * The OSGi service name for a runtime context object provider service. This
 	 * name can be used to obtain instances of the service.
-	 * 
+	 *
 	 * @see BundleContext#getServiceReference(String)
 	 */
 	public static final String SERVICE_NAME = RuntimeContextObjectProvider.class.getName();
@@ -65,22 +69,28 @@ public abstract class RuntimeContextObjectProvider {
 	 */
 	private volatile Class<?>[] objectTypes;
 
-	// note, we intentionally don't support this (yet)
-//	/**
-//	 * An OSGi service property used to indicate the full qualified {@link Type}
-//	 * names this provider is able to supply.
-//	 * <p>
-//	 * This property may be supplied in the <code>properties</code>
-//	 * <code>Dictionary</code> object passed to the
-//	 * <code>BundleContext.registerService</code> method. The value of this
-//	 * property must be of type <code>String</code>, <code>String[]</code>, or
-//	 * <code>Collection</code> of <code>String</code>. A <code>String</code>
-//	 * value may also contain a comma separated list of type names.
-//	 * </p>
-//	 *
-//	 * @see BundleContext#registerService(String, Object, java.util.Dictionary)
-//	 */
-//	public static final String OBJECT_TYPES = "runtime.context.object.types"; //$NON-NLS-1$
+	private final Lock initializationLock = new ReentrantLock();
+
+	/**
+	 * Called lazy to initialize the bindings of object types to
+	 * implementations.
+	 * <p>
+	 * Extender should override this method and initialize the bindings. The
+	 * default implementation throws an exception if called to indicate that
+	 * this method should be overridden if called.
+	 * </p>
+	 * <p>
+	 * Note, it doesn't make sense to hold the binder instance. Once this method
+	 * returns, a snapshot of the bindings will be taken and modifications to
+	 * the binder won't have any effect anymore.
+	 * </p>
+	 *
+	 * @param binder
+	 *            the binder to bind object types to their implementation
+	 */
+	protected void bindObjectTypes(final RuntimeContextObjectBinder binder) {
+		throw new IllegalStateException("Please override and bind object types!");
+	}
 
 	/**
 	 * Configures the provided object types.
@@ -91,24 +101,59 @@ public abstract class RuntimeContextObjectProvider {
 	 * possible to reconfigure an object provide once configured. Instead, the
 	 * current one should be disposed and a new one should be registered.
 	 * </p>
-	 * 
+	 *
 	 * @param objectTypesConfiguration
 	 *            a map which maps object types to their implementation type;
 	 *            the key is the object type and the value the implementation
 	 *            type
 	 * @throws IllegalStateException
 	 *             if already configured
+	 * @deprecated clients should no longer call this method directly, instead
+	 *             there is a new binder available
 	 */
+	@Deprecated
 	protected final void configureObjectTypes(final Map<Class<?>, Class<?>> objectTypesConfiguration) throws IllegalStateException {
-		if (null != objectTypesToImplementationTypesMap)
-			throw new IllegalStateException("already configured");
-		if (null != objectTypesConfiguration) {
-			objectTypesToImplementationTypesMap = Collections.unmodifiableMap(objectTypesConfiguration);
-			final Set<Class<?>> keySet = objectTypesToImplementationTypesMap.keySet();
-			objectTypes = keySet.toArray(new Class<?>[keySet.size()]);
-		} else {
-			objectTypesToImplementationTypesMap = Collections.emptyMap();
-			objectTypes = new Class<?>[0];
+		initializationLock.lock();
+		try {
+			if (null != objectTypesToImplementationTypesMap)
+				throw new IllegalStateException("already configured");
+			if (null != objectTypesConfiguration) {
+				objectTypesToImplementationTypesMap = Collections.unmodifiableMap(objectTypesConfiguration);
+				final Set<Class<?>> keySet = objectTypesToImplementationTypesMap.keySet();
+				objectTypes = keySet.toArray(new Class<?>[keySet.size()]);
+			} else {
+				objectTypesToImplementationTypesMap = Collections.emptyMap();
+				objectTypes = new Class<?>[0];
+			}
+		} finally {
+			initializationLock.unlock();
+		}
+	}
+
+	/**
+	 * Initializes the bindings if necessary.
+	 * <p>
+	 * When this method returns, it is guaranteed that neither
+	 * {@link #objectTypesToImplementationTypesMap} nor {@link #objectTypes} are
+	 * <code>null</code>.
+	 * </p>
+	 */
+	private void ensureBindingsAreInitialized() {
+		while ((objectTypesToImplementationTypesMap == null) || (objectTypes == null)) {
+			final RuntimeContextObjectBinder binder = new RuntimeContextObjectBinder();
+			bindObjectTypes(binder);
+			initializationLock.lock();
+			try {
+				if ((objectTypesToImplementationTypesMap == null) || (objectTypes == null)) {
+					objectTypesToImplementationTypesMap = binder.getBindings();
+					objectTypes = objectTypesToImplementationTypesMap.keySet().toArray(new Class<?>[0]);
+				}
+
+				// all done
+				return;
+			} finally {
+				initializationLock.unlock();
+			}
 		}
 	}
 
@@ -130,13 +175,14 @@ public abstract class RuntimeContextObjectProvider {
 	 * {@link #ungetObject(Object, IRuntimeContext)}.
 	 * </p>
 	 * <p>
-	 * The default implementation uses the {@link #configureObjectTypes(Map)
-	 * configured} object type map to lookup the implementation type, creates an
-	 * instance of the implementation type using the contexts
-	 * {@link IRuntimeContextInjector} and returns it. Subclasses may override
-	 * and customize.
+	 * The default implementation performs initialization of bindings (if deemed
+	 * necessary) by calling
+	 * {@link #bindObjectTypes(RuntimeContextObjectBinder)} and then creates an
+	 * instance of the bound implementation type using using the context
+	 * {@link IRuntimeContextInjector injector} and returns it. Subclasses may
+	 * override and customize.
 	 * </p>
-	 * 
+	 *
 	 * @param <T>
 	 *            the object type
 	 * @param type
@@ -149,8 +195,7 @@ public abstract class RuntimeContextObjectProvider {
 	 *             if not configured
 	 */
 	public <T> T getObject(final Class<T> type, final IRuntimeContext context) throws IllegalStateException {
-		if (null == objectTypesToImplementationTypesMap)
-			throw new IllegalStateException("not configured");
+		ensureBindingsAreInitialized();
 		final Class<?> implementationType = objectTypesToImplementationTypesMap.get(type);
 		if (null != implementationType)
 			return makeObject(context, implementationType);
@@ -170,19 +215,19 @@ public abstract class RuntimeContextObjectProvider {
 	 * actual object may be of a specific implementation type.
 	 * </p>
 	 * <p>
-	 * The default implementation returns the object types as configured by
-	 * {@link #configureObjectTypes(Map)}. Subclasses may override to customize.
+	 * The default implementation performs initialization of bindings (if deemed
+	 * necessary) by calling
+	 * {@link #bindObjectTypes(RuntimeContextObjectBinder)} and then returns the
+	 * list of bound object types. Subclasses may override to customize.
 	 * </p>
-	 * 
+	 *
 	 * @return a list of object types
 	 * @throws IllegalStateException
 	 *             if not configured
 	 */
 	public Class<?>[] getObjectTypes() throws IllegalStateException {
-		final Class<?>[] types = objectTypes;
-		if (null == types)
-			throw new IllegalStateException("not configured");
-		return types;
+		ensureBindingsAreInitialized();
+		return checkNotNull(objectTypes, "object types not initialized");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -217,7 +262,7 @@ public abstract class RuntimeContextObjectProvider {
 	 * {@link IRuntimeContextInjector} to un-inject it from the context.
 	 * Subclasses may override and customize.
 	 * </p>
-	 * 
+	 *
 	 * @param <T>
 	 *            the object type
 	 * @param object

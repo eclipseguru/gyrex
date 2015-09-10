@@ -11,13 +11,12 @@
  */
 package org.eclipse.gyrex.context.tests.internal.injection;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotSame;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import org.eclipse.gyrex.context.internal.di.GyrexContextObjectSupplier;
-import org.eclipse.gyrex.context.tests.internal.Activator;
+import org.eclipse.gyrex.context.internal.di.BaseContextObjectSupplier;
 import org.eclipse.gyrex.context.tests.internal.BaseContextTest;
 
 import org.eclipse.core.runtime.IPath;
@@ -47,7 +46,7 @@ public class ContextInjectionTests extends BaseContextTest {
 	@Before
 	public void registerService() {
 		service = new SampleServiceImpl(STRING_1);
-		serviceRegistration = Activator.getActivator().getServiceHelper().registerService(ISampleService.class, service, null, null, null, null);
+		serviceRegistration = getOsgiResources().getServiceHelper().registerService(ISampleService.class, service, null, null, null, null);
 	}
 
 	@Test
@@ -78,12 +77,12 @@ public class ContextInjectionTests extends BaseContextTest {
 		assertSame("wrong service response", STRING_1, object.service.getString());
 
 		// assert that the injected service is a real service but not a proxy
-		if (GyrexContextObjectSupplier.dynamicInjectionEnabled) {
+		if (BaseContextObjectSupplier.dynamicInjectionEnabled) {
 			assertSame("real service expected instead of proxy for dynamic injection", service, object.service);
 		}
 
 		// register second service instance (with higher ranking)
-		final ServiceRegistration<ISampleService> sr2 = Activator.getActivator().getServiceHelper().registerService(ISampleService.class, new SampleServiceImpl(STRING_2), null, null, null, Integer.MAX_VALUE);
+		final ServiceRegistration<ISampleService> sr2 = getOsgiResources().getServiceHelper().registerService(ISampleService.class, new SampleServiceImpl(STRING_2), null, null, null, Integer.MAX_VALUE);
 
 		// wait a bit for injector to catch up
 		// (events are processed asynchronously and collected for batch processing)

@@ -11,14 +11,14 @@
  */
 package org.eclipse.gyrex.context.tests.internal;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotSame;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.eclipse.gyrex.common.services.IServiceProxy;
 import org.eclipse.gyrex.context.IModifiableRuntimeContext;
@@ -105,7 +105,7 @@ public class ContextualRuntimeBlackBoxTests {
 	/** CONTEXT_PATH */
 	private static final Path SOME_CONTEXT_PATH = new Path("/some/other/context");
 
-	static void safeUnregister(final ServiceRegistration serviceRegistration) {
+	static void safeUnregister(final ServiceRegistration<?> serviceRegistration) {
 		if (null != serviceRegistration) {
 			try {
 				serviceRegistration.unregister();
@@ -134,7 +134,7 @@ public class ContextualRuntimeBlackBoxTests {
 	public void setUp() throws Exception {
 		contextRegistry = ContextActivator.getInstance().getContextRegistryImpl();
 
-		contextManagerProxy = Activator.getActivator().getServiceHelper().trackService(IRuntimeContextManager.class);
+		contextManagerProxy = ContextActivator.getInstance().getServiceHelper().trackService(IRuntimeContextManager.class);
 		contextManager = contextManagerProxy.getService();
 	}
 
@@ -167,7 +167,7 @@ public class ContextualRuntimeBlackBoxTests {
 	@Test
 	public void testContextualObjectScenario001() {
 		// register our provider
-		ServiceRegistration serviceRegistration = Activator.getActivator().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", null, null);
+		ServiceRegistration<?> serviceRegistration = ContextActivator.getInstance().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", null, null);
 
 		try {
 			final IRuntimeContext rootContext = contextRegistry.get(Path.ROOT);
@@ -203,11 +203,11 @@ public class ContextualRuntimeBlackBoxTests {
 	@Test
 	public void testContextualObjectScenario002() {
 		// register our provider
-		ServiceRegistration serviceRegistration = null;
-		ServiceRegistration serviceRegistration2 = null;
+		ServiceRegistration<?> serviceRegistration = null;
+		ServiceRegistration<?> serviceRegistration2 = null;
 
 		try {
-			serviceRegistration = Activator.getActivator().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", null, null);
+			serviceRegistration = ContextActivator.getInstance().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", null, null);
 
 			final IRuntimeContext rootContext = contextRegistry.get(Path.ROOT);
 
@@ -221,7 +221,7 @@ public class ContextualRuntimeBlackBoxTests {
 			assertEquals("The context of the dummy object from the test context does not match!", testContext, dummyObject2.context);
 
 			// now register a second provider instance ... this should destroy the provided objects
-			serviceRegistration2 = Activator.getActivator().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider 2.", null, null);
+			serviceRegistration2 = ContextActivator.getInstance().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider 2.", null, null);
 
 			// verify that the objects were properly destroyed
 			assertEquals("Dummy object from the root context not properly destoryed after additional registration!", 1, dummyObject.ungetCalled);
@@ -249,14 +249,14 @@ public class ContextualRuntimeBlackBoxTests {
 	 */
 	@Test
 	public void testContextualObjectScenario003() {
-		ServiceRegistration serviceRegistration = null;
-		ServiceRegistration serviceRegistration2 = null;
+		ServiceRegistration<?> serviceRegistration = null;
+		ServiceRegistration<?> serviceRegistration2 = null;
 
 		try {
 			// register our providers
 			// give provider one a higher ranking so that it is returned in favour of the second one
-			serviceRegistration = Activator.getActivator().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", "org.eclipse.gyrex.context.tests.dummy1", Integer.MAX_VALUE);
-			serviceRegistration2 = Activator.getActivator().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider2(), "Eclipse.org Gyrex", "Dummy object provider 2.", SERVICE_PID_DUMMY2, Integer.MIN_VALUE);
+			serviceRegistration = ContextActivator.getInstance().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", "org.eclipse.gyrex.context.tests.dummy1", Integer.MAX_VALUE);
+			serviceRegistration2 = ContextActivator.getInstance().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider2(), "Eclipse.org Gyrex", "Dummy object provider 2.", SERVICE_PID_DUMMY2, Integer.MIN_VALUE);
 
 			final IRuntimeContext testContext = assertContextDefined(SOME_CONTEXT_PATH);
 
@@ -293,7 +293,7 @@ public class ContextualRuntimeBlackBoxTests {
 	@Test
 	public void testContextualObjectScenario004() {
 		// register our provider
-		final ServiceRegistration serviceRegistration = Activator.getActivator().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", null, null);
+		final ServiceRegistration<?> serviceRegistration = ContextActivator.getInstance().getServiceHelper().registerService(RuntimeContextObjectProvider.class.getName(), new DummyObjectProvider(), "Eclipse.org Gyrex", "Dummy object provider.", null, null);
 
 		try {
 			final IRuntimeContext root = contextRegistry.get(Path.ROOT);
