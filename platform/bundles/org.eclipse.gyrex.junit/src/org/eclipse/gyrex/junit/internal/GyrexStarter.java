@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.gyrex.junit.internal;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -119,7 +119,7 @@ public class GyrexStarter {
 	 * <p>
 	 * The caller will block until the server is fully started and online.
 	 * </p>
-	 * 
+	 *
 	 * @return <code>true</code> if the server has been started,
 	 *         <code>false</code> otherwise
 	 */

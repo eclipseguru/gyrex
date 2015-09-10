@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Gyrex JUnit Helper
 Bundle-SymbolicName: org.eclipse.gyrex.junit
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.eclipse.gyrex.junit.internal.JUnitActivator
 Bundle-Vendor: Eclipse Gyrex
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.common.base;version="15.0.0",
  junit.framework;version="4.10.0",
  org.apache.commons.lang.exception;version="2.6.0",
@@ -24,5 +24,5 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.gyrex.common;bundle-version="1.2.0",
  org.eclipse.gyrex.boot;bundle-version="1.2.0",
  org.eclipse.gyrex.cloud;bundle-version="1.2.0"
-Export-Package: org.eclipse.gyrex.junit;version="1.0.0",
+Export-Package: org.eclipse.gyrex.junit;version="1.1.0",
  org.eclipse.gyrex.junit.internal;x-internal:=true
