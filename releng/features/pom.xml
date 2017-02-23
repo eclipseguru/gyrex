@@ -32,9 +32,6 @@
     <module>org.eclipse.gyrex.features.server</module>
     <module>org.eclipse.gyrex.features.admin</module>
 
-    <module>org.eclipse.gyrex.features.dependencies.eclipselink</module>
-    <module>org.eclipse.gyrex.features.jpa</module>
-
     <module>org.eclipse.gyrex.features.tests</module>
 
     <module>org.eclipse.gyrex.features.sdk.withoutdeps</module>
