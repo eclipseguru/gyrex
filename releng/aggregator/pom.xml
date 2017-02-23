@@ -51,9 +51,8 @@
     <module>../../admin</module>
     <module>../../jaxrs</module>
     <module>../../eventbus</module>
-    <module>../../mongodb</module>
     <module>../../search</module>
-    
+
     <!-- additional modules triggered via full-build profile defined above -->
   </modules>
 
