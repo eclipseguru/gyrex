@@ -1,0 +1,14 @@
+languange: java
+sudo: false
+
+jdk:
+- oraclejdk8
+
+before_install:
+- cp .travis/maven-settings.xml ~/.m2/settings.xml
+
+install:
+- ./mvnw -f releng/aggregator/pom.xml clean verify
+
+script: true
+

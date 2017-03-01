@@ -32,7 +32,7 @@
         <module>../repository</module>
 
         <!-- publish the build results -->
-        <module>../publisher</module>
+        <!-- module>../publisher</module -->
       </modules>
     </profile>
   </profiles>
