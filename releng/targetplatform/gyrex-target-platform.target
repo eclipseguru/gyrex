@@ -19,10 +19,6 @@
 <repository location="http://download.eclipse.org/tools/orbit/S-builds/S20170120205402/repository"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="javax.ws.rs" version="0.0.0"/>
-<repository location="http://download.eclipse.org/tools/orbit/S-builds/S20170120205402/repository"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.google.guava.ebr" version="0.0.0"/>
 <unit id="net.bytebuddy.ebr" version="0.0.0"/>
 <unit id="org.apache.commons.io.ebr" version="0.0.0"/>
@@ -30,6 +26,16 @@
 <unit id="org.junit.ebr" version="0.0.0"/>
 <unit id="org.mockito.ebr" version="0.0.0"/>
 <unit id="org.objenesis.ebr" version="0.0.0"/>
+<repository location="http://public.runolarity.com/repository"/>
+</location>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="ch.qos.logback.classic.ebr" version="0.0.0"/>
+<unit id="ch.qos.logback.core.ebr" version="0.0.0"/>
+<unit id="ch.qos.logback.slf4j.ebr" version="0.0.0"/>
+<unit id="org.slf4j.api.ebr" version="0.0.0"/>
+<unit id="org.slf4j.jcl.ebr" version="0.0.0"/>
+<unit id="org.slf4j.jul.ebr" version="0.0.0"/>
+<unit id="org.slf4j.log4j.ebr" version="0.0.0"/>
 <repository location="http://public.runolarity.com/repository"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -137,6 +143,11 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="javax.ws.rs" version="1.1.1.v20130318-1750"/>
+<unit id="com.sun.jersey" version="0.0.0"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
+</location>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.httpcomponents.httpclient" version="0.0.0"/>
 <unit id="org.apache.httpcomponents.httpcore" version="0.0.0"/>
 <unit id="org.apache.httpcomponents.httpclient" version="0.0.0"/>
@@ -148,16 +159,6 @@
 <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.1.v20170120/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="ch.qos.logback.classic" version="0.0.0"/>
-<unit id="ch.qos.logback.core" version="0.0.0"/>
-<unit id="ch.qos.logback.slf4j" version="0.0.0"/>
-<unit id="org.slf4j.api" version="0.0.0"/>
-<unit id="org.slf4j.jcl" version="0.0.0"/>
-<unit id="org.slf4j.jul" version="0.0.0"/>
-<unit id="org.slf4j.log4j" version="0.0.0"/>
-<repository location="http://download.eclipse.org/tools/orbit/S-builds/S20170120205402/repository"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.commons.beanutils" version="0.0.0"/>
 <unit id="org.apache.commons.collections" version="0.0.0"/>
 <unit id="org.apache.commons.fileupload" version="0.0.0"/>
@@ -166,6 +167,7 @@
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="javax.inject" version="0.0.0"/>
+<unit id="javax.websocket" version="0.0.0"/>
 <unit id="org.objectweb.asm" version="0.0.0"/>
 <repository location="http://download.eclipse.org/tools/orbit/S-builds/S20170120205402/repository"/>
 </location>
