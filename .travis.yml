@@ -8,7 +8,7 @@ before_install:
 - cp .travis/maven-settings.xml ~/.m2/settings.xml
 
 install:
-- ./mvnw -f releng/aggregator/pom.xml clean verify
+- ./mvnw -f releng/aggregator/pom.xml verify
 
 script: true
 
