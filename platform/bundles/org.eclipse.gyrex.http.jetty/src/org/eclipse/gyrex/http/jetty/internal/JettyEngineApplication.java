@@ -12,7 +12,6 @@
 package org.eclipse.gyrex.http.jetty.internal;
 
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +36,12 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jetty.http.HttpGenerator;
 import org.eclipse.jetty.http.HttpScheme;
+import org.eclipse.jetty.http2.HTTP2Cipher;
+import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.NegotiatingServerConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.log.Log;
@@ -55,6 +57,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JettyEngineApplication implements IApplication {
+
+	private static final Logger LOG = LoggerFactory.getLogger(JettyEngineApplication.class);
+
+	// OSGi Http Service suggest these properties for setting the default ports
+	private static final String ORG_OSGI_SERVICE_HTTP_PORT = "org.osgi.service.http.port"; //$NON-NLS-1$
+
+	//	private static final String ORG_OSGI_SERVICE_HTTP_PORT_SECURE = "org.osgi.service.http.port.secure"; //$NON-NLS-1$
+	private static final SystemSetting<Integer> httpServicePort = SystemSetting.newIntegerSetting(ORG_OSGI_SERVICE_HTTP_PORT, "Port for the OSGi HttpService to listen on (will only be used if no channels are configured).").usingDefault(Platform.getInstancePort(8080)).create();
+
+	/** Exit object indicating error termination */
+	private static final Integer EXIT_ERROR = Integer.valueOf(1);
+
+	private static final AtomicReference<CountDownLatch> stopSignalRef = new AtomicReference<CountDownLatch>(null);
+	private static final AtomicReference<Throwable> jettyErrorRef = new AtomicReference<Throwable>();
+
+	private static Map<MetricSet, ServiceRegistration<MetricSet>> metricsRegistrations = new ConcurrentHashMap<>();
 
 	/**
 	 * Force a shutdown of the ZooKeeper gate.
@@ -89,22 +107,6 @@ public class JettyEngineApplication implements IApplication {
 			}
 		}
 	}
-
-	private static final Logger LOG = LoggerFactory.getLogger(JettyEngineApplication.class);
-
-	// OSGi Http Service suggest these properties for setting the default ports
-	private static final String ORG_OSGI_SERVICE_HTTP_PORT = "org.osgi.service.http.port"; //$NON-NLS-1$
-//	private static final String ORG_OSGI_SERVICE_HTTP_PORT_SECURE = "org.osgi.service.http.port.secure"; //$NON-NLS-1$
-	private static final SystemSetting<Integer> httpServicePort = SystemSetting.newIntegerSetting(ORG_OSGI_SERVICE_HTTP_PORT, "Port for the OSGi HttpService to listen on (will only be used if no channels are configured).").usingDefault(Platform.getInstancePort(8080)).create();
-
-	/** Exit object indicating error termination */
-	private static final Integer EXIT_ERROR = Integer.valueOf(1);
-
-	private static final AtomicReference<CountDownLatch> stopSignalRef = new AtomicReference<CountDownLatch>(null);
-
-	private static final AtomicReference<Throwable> jettyErrorRef = new AtomicReference<Throwable>();
-
-	private static Map<MetricSet, ServiceRegistration<MetricSet>> metricsRegistrations = new ConcurrentHashMap<>();
 
 	private void configureServer(final Server server) {
 		if (JettyDebug.engine) {
@@ -193,13 +195,6 @@ public class JettyEngineApplication implements IApplication {
 			final ServerConnector connector = createJettyConnector(server, sslFactory, httpConfig);
 			connector.setPort(channel.getPort());
 			connector.setIdleTimeout(200000);
-			// TODO: (Jetty9?) connector.setAcceptors(2);
-			// TODO: (Jetty9?) connector.setStatsOn(false);
-			// TODO: (Jetty9?) connector.setLowResourcesMaxIdleTime(5000);
-			// TODO: (Jetty9?) connector.setForwarded(true);
-			// TODO: (Jetty9?) if (connector instanceof SelectChannelConnector) {
-			// TODO: (Jetty9?) 	((SelectChannelConnector) connector).setLowResourcesConnections(20000);
-			// TODO: (Jetty9?) }
 
 			server.addConnector(connector);
 		} catch (final Exception e) {
@@ -208,30 +203,35 @@ public class JettyEngineApplication implements IApplication {
 	}
 
 	private ServerConnector createJettyConnector(final Server server, final SslContextFactory sslFactory, final HttpConfiguration httpConfig) {
-		try {
-			// use SPDY if NPN is available
-			final Class<?> npnClass = HttpJettyActivator.getInstance().getBundle().loadClass("org.eclipse.jetty.npn.NextProtoNego");
-			if (npnClass.getClassLoader() == null) {
-				// NPN is available; try loading the SPDY connector
-				// note, we still use reflection because SPDY is optional
-				final Class<?> spdyConnectorClass = HttpJettyActivator.getInstance().getBundle().loadClass("org.eclipse.jetty.spdy.server.http.HTTPSPDYServerConnector");
-				// HTTPSPDYServerConnector(Server server, HttpConfiguration config, SslContextFactory sslContextFactory, Map<Short, PushStrategy> pushStrategies)
-				final Constructor<?> constructor = spdyConnectorClass.getConstructor(Server.class, HttpConfiguration.class, SslContextFactory.class, Map.class);
-				return (ServerConnector) constructor.newInstance(server, httpConfig, sslFactory, null);
-			} else {
-				// log error and fall through; will force standard connector below
-				LOG.error("Jetty NPN not loaded via boot class loader. Falling back to non-SPDY setup. Please check your server setup (see http://www.eclipse.org/jetty/documentation/current/npn-chapter.html for details)! ({})", npnClass.getClassLoader());
+		final HttpConnectionFactory http1 = new HttpConnectionFactory(httpConfig);
+		if (sslFactory != null) {
+			try {
+				// use HTTP/2 if ALPN is available via -Xbootclassloader
+				NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
+				final HTTP2ServerConnectionFactory http2 = new HTTP2ServerConnectionFactory(httpConfig);
+				final ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
+
+				// default to 1.1
+				alpn.setDefaultProtocol(http1.getProtocol());
+
+				// sort TLS ciphers to prefer HTTP/2
+				sslFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
+				sslFactory.setUseCipherSuitesOrder(true);
+
+				LOG.info("Using HTTP/2 with fallback to HTTP/1.1 on port {}.", httpConfig.getSecurePort());
+				return new ServerConnector(server, sslFactory, alpn, http2, http1);
+			} catch (AssertionError | LinkageError | ClassNotFoundException | IllegalStateException e) {
+				if (JettyDebug.engine) {
+					LOG.debug("Jetty HTTP/2 environment not available: {}", ExceptionUtils.getRootCauseMessage(e), e);
+				}
+				LOG.warn("Jetty HTTP/2 compatible environment not available. To use HTTP/2 in Jetty you need to add the ALPN boot Jar in the boot classpath (see https://www.eclipse.org/jetty/documentation/current/alpn-chapter.html#alpn-starting).");
+			} catch (final Exception e) {
+				LOG.error("Error loading the Jetty HTTP/2 implementation. {}", ExceptionUtils.getRootCauseMessage(e), e);
 			}
-		} catch (AssertionError | LinkageError | ClassNotFoundException e) {
-			if (JettyDebug.engine) {
-				LOG.debug("Jetty SPDY environment not available: {}", ExceptionUtils.getRootCauseMessage(e), e);
-			}
-			LOG.warn("Jetty SPDY compatible environment not available. To use SPDY in Jetty you need to add the NPN boot Jar in the boot classpath (see http://www.eclipse.org/jetty/documentation/current/npn-chapter.html#npn-starting).");
-		} catch (final Exception e) {
-			LOG.error("Error loading the Jetty SPDY implementation. {}", ExceptionUtils.getRootCauseMessage(e), e);
 		}
-		LOG.info("Using non SPDY implementation.");
-		return new ServerConnector(server, sslFactory, new HttpConnectionFactory(httpConfig));
+
+		LOG.info("Using HTTP/1.1 only implementation.");
+		return new ServerConnector(server, sslFactory, http1);
 	}
 
 	private Map<String, Object> getNodeProperties() {
