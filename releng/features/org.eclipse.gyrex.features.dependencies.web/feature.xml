@@ -34,13 +34,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.equinox.http.registry"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.jetty.client"
          download-size="0"
          install-size="0"
@@ -232,6 +225,27 @@
 
    <plugin
          id="org.eclipse.jetty.proxy"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.aries.spifly.dynamic.bundle.ebr"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.aries.util.ebr"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ow2.asm.debug-all.ebr"
          download-size="0"
          install-size="0"
          version="0.0.0"
