@@ -4,7 +4,7 @@ Bundle-Name: Jersey Integration for Gyrex HTTP Applications
 Bundle-SymbolicName: org.eclipse.gyrex.http.jersey
 Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: Eclipse Gyrex
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.sun.jersey.api.container.filter;version="[1.17.0,2.0.0)",
  com.sun.jersey.api.core;version="[1.17.0,2.0.0)",
  com.sun.jersey.api.wadl.config;version="[1.17.0,2.0.0)",
