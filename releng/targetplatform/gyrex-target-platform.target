@@ -108,17 +108,19 @@
 <unit id="org.eclipse.core.expressions" version="0.0.0"/>
 <unit id="org.eclipse.core.jobs" version="0.0.0"/>
 <unit id="org.eclipse.core.runtime" version="0.0.0"/>
-<unit id="org.eclipse.equinox.p2.operations" version="0.0.0"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.7milestones/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.compendium.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.core.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.equinox.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.http.servlet" version="0.0.0"/>
+<unit id="org.eclipse.equinox.p2.operations" version="0.0.0"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.7milestones/"/>
+</location>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="javax.servlet" version="0.0.0"/>
+<repository location="http://download.eclipse.org/tools/orbit/S-builds/S20170120205402/repository"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.ibm.icu.base" version="0.0.0"/>
@@ -146,7 +148,7 @@
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.jetty.bundles.f.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jetty.bundles.f.source.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.1.v20170120/"/>
+<repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.2.v20170220/"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.commons.beanutils" version="0.0.0"/>
