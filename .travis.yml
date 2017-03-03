@@ -2,13 +2,15 @@ languange: java
 sudo: false
 
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
 before_install:
-- cp .travis/maven-settings.xml ~/.m2/settings.xml
+  - cp .travis/maven-settings.xml ~/.m2/settings.xml
 
 install:
-- ./mvnw -f releng/aggregator/pom.xml verify
+  - ./mvnw -f releng/aggregator/pom.xml verify
 
 script: true
 
+after_failure:
+  - find . -type f -name "*.log" | xargs cat
