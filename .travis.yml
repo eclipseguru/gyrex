@@ -7,10 +7,10 @@ jdk:
 before_install:
   - cp .travis/maven-settings.xml ~/.m2/settings.xml
 
-install:
-  - ./mvnw -f releng/aggregator/pom.xml verify
+install: true
 
-script: true
+script:
+  - ./mvnw -f releng/aggregator/pom.xml verify
 
 after_failure:
   - find . -type f -name "*.log" | xargs cat
