@@ -407,10 +407,10 @@
                 <type>p2-installable-unit</type>
                 <artifactId>org.apache.aries.util.ebr</artifactId>
               </dependency>
-              <dependency>
+              <!-- <dependency>
                 <type>p2-installable-unit</type>
                 <artifactId>org.ow2.asm.debug-all.ebr</artifactId>
-              </dependency>
+              </dependency>-->
             </dependencies>
             <bundleStartLevel>
               <bundle>
